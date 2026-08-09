@@ -62,6 +62,37 @@ class ModrynBooking(http.Controller):
                 days.append({'date': day, 'times': times})
         return days
 
+    def _organizer(self):
+        """The internal user who owns the boutique's calendar, or None.
+
+        WHY this has to be looked up at all: sudo() elevates PRIVILEGES but
+        deliberately leaves env.user alone, so calendar.event's user_id default
+        (lambda self: self.env.user) still resolves to the anonymous website
+        user on a public route. Every booking came out organised by login
+        'public'. Elevating access is not the same as changing identity, and
+        the organizer is identity.
+
+        The owner group is resolved by xmlid, defensively: modryn_staff depends
+        on modryn_booking, so depending on it back would be a load cycle — the
+        group legitimately may not exist in this database.
+        """
+        env = request.env
+        owner_group = env.ref('modryn_staff.group_boutique_owner', raise_if_not_found=False)
+        internal_group = env.ref('base.group_user', raise_if_not_found=False)
+        if owner_group and internal_group:
+            # all_group_ids, not group_ids: group_ids holds only the groups
+            # assigned directly, and an owner inherits base.group_user through
+            # the internal-user template rather than by explicit assignment.
+            owner = env['res.users'].sudo().search([
+                ('active', '=', True),
+                ('all_group_ids', 'in', owner_group.ids),
+                ('all_group_ids', 'in', internal_group.ids),
+            ], limit=1, order='id')
+            if owner:
+                return owner
+        # modryn_staff not installed, or no owner provisioned yet.
+        return env.ref('base.user_admin', raise_if_not_found=False)
+
     def _render_form(self, dress=None, variant=None, errors=None, values=None):
         return request.render('modryn_booking.booking_form', {
             'days': self._slots(),
@@ -158,7 +189,7 @@ class ModrynBooking(http.Controller):
             'name': name, 'phone': phone,
         })
 
-        event = request.env['calendar.event'].sudo().create({
+        vals = {
             'name': ("מדידה: %s" % dress.name) if dress else ("פגישת ייעוץ: %s" % name),
             'start': start,
             'stop': start + timedelta(minutes=SLOT_MINUTES),
@@ -168,7 +199,14 @@ class ModrynBooking(http.Controller):
             'modryn_variant_id': variant.id if variant else False,
             'modryn_customer_phone': phone,
             'modryn_terms_accepted_at': datetime.utcnow(),
-        })
+        }
+        # Named explicitly because sudo() below does NOT change env.user — see
+        # _organizer(). Omitted rather than set to False when there is no
+        # candidate at all, so calendar.event keeps its own default.
+        organizer = self._organizer()
+        if organizer:
+            vals['user_id'] = organizer.id
+        event = request.env['calendar.event'].sudo().create(vals)
         return request.redirect('/book/confirmed/%s' % event.id)
 
     @http.route('/book/confirmed/<int:event_id>', type='http', auth='public', website=True,

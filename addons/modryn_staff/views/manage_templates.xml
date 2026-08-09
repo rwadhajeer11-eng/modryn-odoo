@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Shared owner shell: staff screens get the theme's CSS but none of the
+         storefront's header, cart or footer. -->
+    <template id="manage_layout" name="MODRYN owner layout">
+        <t t-call="web.frontend_layout">
+            <t t-set="no_header" t-value="true"/>
+            <t t-set="no_footer" t-value="true"/>
+            <div id="wrap" dir="rtl" class="modryn_admin">
+                <nav class="modryn_admin_nav">
+                    <span class="modryn_admin_brand">MODRYN</span>
+                    <a href="/manage/staff"
+                       t-attf-class="modryn_admin_link #{'is_active' if active_tab == 'staff' else ''}">צוות</a>
+                    <a href="/manage/roles"
+                       t-attf-class="modryn_admin_link #{'is_active' if active_tab == 'roles' else ''}">תפקידים</a>
+                    <a href="/floor" class="modryn_admin_link">מסך משמרת</a>
+                    <a href="/staff/logout" class="modryn_admin_link modryn_admin_logout">יציאה</a>
+                </nav>
+                <main class="modryn_admin_main">
+                    <t t-out="0"/>
+                </main>
+            </div>
+        </t>
+    </template>
+
+    <!-- ============================ staff list ============================ -->
+    <template id="manage_staff_list" name="MODRYN staff list">
+        <t t-call="modryn_staff.manage_layout">
+            <div class="d-flex align-items-center justify-content-between mb-4">
+                <h1 class="mb-0">צוות</h1>
+                <a href="/manage/staff/new" class="btn btn-primary">הוספת עובדת</a>
+            </div>
+
+            <div t-if="not employees" class="modryn_empty">עדיין אין עובדות.</div>
+
+            <table t-else="" class="table modryn_table align-middle">
+                <thead>
+                    <tr>
+                        <th>שם</th>
+                        <th>תפקיד</th>
+                        <th>רמת הרשאה</th>
+                        <th>שם משתמש</th>
+                        <th>טלפון</th>
+                        <th>סטטוס</th>
+                        <th class="text-end">פעולות</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr t-foreach="employees" t-as="e"
+                        t-attf-class="#{'modryn_archived' if not e['active'] else ''}">
+                        <td t-out="e['name']"/>
+                        <td t-out="e['role']"/>
+                        <td t-out="e['level']"/>
+                        <td dir="ltr" t-out="e['login']"/>
+                        <td dir="ltr" t-out="e['phone']"/>
+                        <td>
+                            <span t-if="not e['active']" class="modryn_badge is_muted">בארכיון</span>
+                            <span t-elif="e['occupied']" class="modryn_badge is_busy">
+                                תפוסה<t t-if="e['occupied_with']"> · <t t-out="e['occupied_with']"/></t>
+                            </span>
+                            <span t-else="" class="modryn_badge is_free">פנויה</span>
+                        </td>
+                        <td class="text-end">
+                            <a t-attf-href="/manage/staff/edit/#{e['id']}"
+                               class="btn btn-sm btn-outline-dark">עריכה</a>
+                            <form t-attf-action="/manage/staff/archive/#{e['id']}" method="post"
+                                  class="d-inline">
+                                <input type="hidden" name="csrf_token"
+                                       t-att-value="request.csrf_token()"/>
+                                <button type="submit" class="btn btn-sm btn-outline-dark">
+                                    <t t-if="e['active']">ארכיון</t>
+                                    <t t-else="">שחזור</t>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </t>
+    </template>
+
+    <!-- ========================== staff add / edit ======================== -->
+    <template id="manage_staff_form" name="MODRYN staff form">
+        <t t-call="modryn_staff.manage_layout">
+            <h1 class="mb-4">
+                <t t-if="employee">עריכת עובדת</t>
+                <t t-else="">הוספת עובדת</t>
+            </h1>
+
+            <form method="post" class="modryn_form"
+                  t-attf-action="/manage/staff/#{'edit/%s' % employee.id if employee else 'new'}">
+                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+
+                <div class="mb-3">
+                    <label class="form-label" for="name">שם</label>
+                    <input type="text" id="name" name="name" class="form-control"
+                           t-att-value="values.get('name', '')"/>
+                    <div t-if="errors.get('name')" class="modryn_field_error" t-out="errors['name']"/>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label" for="phone">טלפון</label>
+                    <input type="tel" id="phone" name="phone" class="form-control" dir="ltr"
+                           t-att-value="values.get('phone', '')"/>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label" for="role_id">תפקיד</label>
+                    <select id="role_id" name="role_id" class="form-select">
+                        <option value="">— בחרי תפקיד —</option>
+                        <t t-foreach="roles" t-as="role">
+                            <option t-att-value="role.id"
+                                    t-att-selected="'selected' if str(values.get('role_id', '')) == str(role.id) else None"
+                                    t-out="role.name"/>
+                        </t>
+                    </select>
+                    <div t-if="errors.get('role_id')" class="modryn_field_error" t-out="errors['role_id']"/>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label" for="level">רמת הרשאה</label>
+                    <select id="level" name="level" class="form-select">
+                        <t t-foreach="levels" t-as="lvl">
+                            <option t-att-value="lvl[0]"
+                                    t-att-selected="'selected' if values.get('level') == lvl[0] else None"
+                                    t-out="lvl[1]"/>
+                        </t>
+                    </select>
+                    <div t-if="errors.get('level')" class="modryn_field_error" t-out="errors['level']"/>
+                </div>
+
+                <!-- Credentials are set once, at hire. Changing them later is a
+                     separate concern (reset flow) and deliberately not here. -->
+                <t t-if="not employee">
+                    <hr class="my-4"/>
+                    <div class="mb-3">
+                        <label class="form-label" for="username">שם משתמש</label>
+                        <input type="text" id="username" name="username" class="form-control" dir="ltr"
+                               t-att-value="values.get('username', '')"/>
+                        <div t-if="errors.get('username')" class="modryn_field_error"
+                             t-out="errors['username']"/>
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label" for="password">סיסמה</label>
+                        <input type="password" id="password" name="password" class="form-control"
+                               dir="ltr"/>
+                        <div t-if="errors.get('password')" class="modryn_field_error"
+                             t-out="errors['password']"/>
+                    </div>
+                </t>
+
+                <button type="submit" class="btn btn-primary btn-lg">שמירה</button>
+                <a href="/manage/staff" class="btn btn-link">ביטול</a>
+            </form>
+        </t>
+    </template>
+
+    <!-- ============================== roles =============================== -->
+    <template id="manage_roles" name="MODRYN roles">
+        <t t-call="modryn_staff.manage_layout">
+            <h1 class="mb-2">תפקידים</h1>
+            <p class="text-muted mb-4">
+                התפקידים נקבעים על ידך — אפשר להוסיף כל תפקיד שהבוטיק צריך.
+            </p>
+
+            <div t-if="error" class="modryn_field_error mb-3" role="alert" t-out="error"/>
+
+            <form action="/manage/roles/new" method="post" class="d-flex gap-2 mb-4"
+                  style="max-width: 480px;">
+                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                <input type="text" name="name" class="form-control" placeholder="שם תפקיד חדש"/>
+                <button type="submit" class="btn btn-primary">הוספה</button>
+            </form>
+
+            <table class="table modryn_table align-middle" style="max-width: 480px;">
+                <tbody>
+                    <tr t-foreach="roles" t-as="role"
+                        t-attf-class="#{'modryn_archived' if not role.active else ''}">
+                        <td t-out="role.name"/>
+                        <td class="text-end">
+                            <form t-attf-action="/manage/roles/archive/#{role.id}" method="post"
+                                  class="d-inline">
+                                <input type="hidden" name="csrf_token"
+                                       t-att-value="request.csrf_token()"/>
+                                <button type="submit" class="btn btn-sm btn-outline-dark">
+                                    <t t-if="role.active">ארכיון</t>
+                                    <t t-else="">שחזור</t>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </t>
+    </template>
+
+</odoo>

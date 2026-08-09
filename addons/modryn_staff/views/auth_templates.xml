@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!--
+        web.frontend_layout, NOT website.layout: this is a staff screen, so it
+        gets the theme's CSS but none of the storefront's header, cart or footer.
+    -->
+    <template id="staff_login" name="MODRYN staff login">
+        <t t-call="web.frontend_layout">
+            <t t-set="no_header" t-value="true"/>
+            <t t-set="no_footer" t-value="true"/>
+            <div id="wrap" dir="rtl" class="modryn_staff_auth">
+                <div class="modryn_staff_auth_card">
+                    <h1 class="mb-1">MODRYN</h1>
+                    <p class="text-muted mb-4">כניסת צוות</p>
+
+                    <form action="/staff/login" method="post" class="text-start">
+                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                        <input type="hidden" name="redirect" t-att-value="redirect"/>
+
+                        <div t-if="error" class="modryn_staff_auth_error mb-3" role="alert">
+                            <t t-out="error"/>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label" for="username">שם משתמש</label>
+                            <input type="text" id="username" name="username" class="form-control"
+                                   autocomplete="username" autofocus="autofocus"
+                                   t-att-value="username"/>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label" for="password">סיסמה</label>
+                            <input type="password" id="password" name="password" class="form-control"
+                                   autocomplete="current-password"/>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-lg w-100">כניסה</button>
+                    </form>
+                </div>
+            </div>
+        </t>
+    </template>
+
+</odoo>

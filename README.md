@@ -88,17 +88,33 @@ These cost real time; they are recorded so the next person skips them.
 - `--without-demo` is a BOOL in Odoo 19, not the old `all`.
 - Odoo 19 split the CLI into subcommands: `odoo-bin server ...`, `odoo-bin shell ...`.
 
-## Three traps worth knowing before writing an addon
+## Traps worth knowing before writing an addon
 
-1. **`'category': 'Theme/*'` silently disables your assets.** `website/models/ir_asset.py`
+Every one of these failed **silently** — no error, no log line — which is the point.
+
+1. **`'category': 'Theme/*'` disables all your assets.** `website/models/ir_asset.py`
    discards the assets of every module in a Theme category except the website's selected
-   `theme_id` — no error, no log line. Our theme's SCSS vanished until the category
-   changed to `Website`.
+   `theme_id`. Our theme's SCSS vanished until the category changed to `Website`.
 2. **Odoo compiles SCSS with LibSass.** Modern CSS Color Level 4 syntax
    (`rgb(43 33 24 / 0.1)`) fails with *"Function rgb is missing argument $green"* and
    takes the **entire frontend bundle** down, not just that rule. Use `rgba()`.
 3. **`recordset.mapped(callable)` on an EMPTY recordset** calls the callable once with the
    recordset itself, so `empty.start` is `False`. Use a comprehension.
+4. **`_sql_constraints` no longer exists in Odoo 19.** A model still declaring it gets no
+   index and no warning — the constraint simply is not there. Use
+   `_name_uniq = models.Constraint('unique(name)', "…")`. Caught only because a duplicate
+   role sailed through a form that was supposed to reject it.
+5. **A `translate=True` field is stored as `jsonb`**, so `unique(name)` compares whole JSON
+   objects: `{"en_US": "x"}` and `{"en_US": "x", "he_IL": "x"}` are "different" and a
+   visible duplicate gets through. Worse, flipping the field to non-translatable does
+   **not** migrate the column, and the resulting mismatch makes every write fail with
+   `InvalidTextRepresentation`. Enforce that kind of uniqueness in Python.
+6. **CSRF depends on a session cookie that a plain GET does not create.** The token is an
+   HMAC over `session.sid`, but Odoo only sends the cookie when the session is *dirty*. A
+   visitor whose **first** request is your form posts under a new sid and gets a bare 400.
+   Call `request.session.touch()` when rendering a form that anonymous users land on
+   directly. Other pages hide this bug because the visitor already had a cookie.
 
-Also: `res.users.groups_id` was renamed `group_ids` in 19 — the sort of drift that makes
-custom addons the real cost of a version upgrade.
+Also renamed in 19: `res.users.groups_id` → `group_ids`, and `res.groups.category_id` →
+`privilege_id` (pointing at a new `res.groups.privilege` model). That drift is the real
+cost of a version upgrade, and it is why the addon count matters.

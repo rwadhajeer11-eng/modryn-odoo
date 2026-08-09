@@ -1,0 +1,205 @@
+// Staff-facing chrome. The storefront theme already supplies the palette and
+// fonts; this is only the layout those screens need.
+//
+// rgba() everywhere, NEVER the modern `rgb(a b c / d)` syntax: Odoo compiles
+// SCSS with LibSass, which fails on Color Level 4 and takes down the entire
+// frontend bundle rather than just the offending rule.
+
+$modryn-bg: #FDFBF7;
+$modryn-surface: #F6F0E6;
+$modryn-ink: #2B2118;
+$modryn-ink-muted: #6B5D4F;
+$modryn-gold: #C5A059;
+$modryn-gold-text: #7F612B; // the ONLY gold that may carry text (AA)
+$modryn-border: #E4DACA;
+$modryn-danger: #A03232;
+$modryn-success: #2E6B4F;
+
+// Odoo shows internal users a fixed corner widget ("edit this content", "go to
+// your Odoo Apps") on every frontend page. It is the one piece of Odoo chrome
+// that leaks into our screens, and the brief was that staff never meet Odoo's
+// vocabulary — so it goes, on the storefront too.
+.o_frontend_to_backend_nav {
+    display: none !important;
+}
+
+// ---------------------------------------------------------------- staff login
+.modryn_staff_auth {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: $modryn-bg;
+    padding: 24px;
+}
+
+.modryn_staff_auth_card {
+    width: 100%;
+    max-width: 380px;
+    background: #FFFFFF;
+    border: 1px solid $modryn-border;
+    border-radius: 8px;
+    padding: 32px;
+    text-align: center;
+    box-shadow: 0 12px 32px rgba(43, 33, 24, 0.08);
+
+    h1 {
+        letter-spacing: 0.18em;
+        font-size: 1.5rem;
+    }
+}
+
+.modryn_staff_auth_error {
+    background: rgba(160, 50, 50, 0.08);
+    border: 1px solid rgba(160, 50, 50, 0.35);
+    color: $modryn-danger;
+    border-radius: 4px;
+    padding: 8px 12px;
+    font-size: 0.875rem;
+}
+
+// ------------------------------------------------------------- admin + floor
+.modryn_admin {
+    min-height: 100vh;
+    background-color: $modryn-bg;
+    color: $modryn-ink;
+}
+
+.modryn_admin_nav {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 14px 24px;
+    background: #FFFFFF;
+    border-block-end: 1px solid $modryn-border;
+}
+
+.modryn_admin_brand {
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    margin-inline-end: 8px;
+}
+
+.modryn_admin_link {
+    color: $modryn-ink;
+    text-decoration: none;
+    padding-block: 4px;
+
+    &:hover { color: $modryn-gold-text; }
+
+    &.is_active {
+        color: $modryn-gold-text;
+        border-block-end: 2px solid $modryn-gold;
+    }
+}
+
+.modryn_admin_who {
+    margin-inline-start: auto;
+    color: $modryn-ink-muted;
+    font-size: 0.875rem;
+}
+
+.modryn_admin_logout { color: $modryn-ink-muted; }
+
+.modryn_admin_main { padding: 32px 24px; }
+
+// ---------------------------------------------------------------- primitives
+.modryn_table {
+    background: #FFFFFF;
+    border: 1px solid $modryn-border;
+    border-radius: 8px;
+    overflow: hidden;
+
+    thead th {
+        background: $modryn-surface;
+        border-block-end: 1px solid $modryn-border;
+        font-size: 0.8125rem;
+        color: $modryn-ink-muted;
+        font-weight: 600;
+    }
+}
+
+.modryn_form { max-width: 520px; }
+
+.modryn_field_error {
+    color: $modryn-danger;
+    font-size: 0.875rem;
+    margin-block-start: 4px;
+}
+
+.modryn_empty {
+    color: $modryn-ink-muted;
+    padding: 16px 0;
+}
+
+.modryn_archived { opacity: 0.5; }
+
+.modryn_badge {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 9999px;
+    font-size: 0.8125rem;
+    border: 1px solid $modryn-border;
+
+    &.is_free  { color: $modryn-success; border-color: rgba(46, 107, 79, 0.4); }
+    &.is_busy  { color: $modryn-gold-text; border-color: rgba(197, 160, 89, 0.6); }
+    &.is_wait  { color: $modryn-ink-muted; }
+    &.is_muted { color: $modryn-ink-muted; }
+}
+
+.modryn_strong { font-weight: 600; }
+.modryn_sub { color: $modryn-ink-muted; font-size: 0.875rem; }
+
+// --------------------------------------------------------------------- floor
+.modryn_floor_grid {
+    display: grid;
+    gap: 24px;
+}
+
+.modryn_panel {
+    background: #FFFFFF;
+    border: 1px solid $modryn-border;
+    border-radius: 8px;
+    padding: 20px 24px;
+}
+
+.modryn_panel_head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-block-end: 12px;
+
+    h2 { font-size: 1.25rem; margin: 0; }
+}
+
+.modryn_count { color: $modryn-ink-muted; font-size: 0.875rem; }
+
+.modryn_pos {
+    font-size: 1.125rem;
+    color: $modryn-gold-text;
+    width: 4rem;
+}
+
+.modryn_staff_cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+    gap: 12px;
+}
+
+.modryn_staff_card {
+    border: 1px solid $modryn-border;
+    border-radius: 8px;
+    padding: 12px 14px;
+    background: $modryn-bg;
+
+    // Status is carried by the text below, not by this stripe — colour alone is
+    // never the indicator.
+    &.is_free { border-inline-start: 3px solid $modryn-success; }
+    &.is_busy { border-inline-start: 3px solid $modryn-gold; }
+}
+
+.modryn_status {
+    margin-block-start: 6px;
+    font-weight: 600;
+    font-size: 0.875rem;
+}

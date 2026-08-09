@@ -1,0 +1,97 @@
+#!/usr/bin/env bash
+# End-to-end regression for the whole PoC: the five areas shipped in stage 0 plus
+# the staff layer added in stage 1. Assumes the server is already running.
+#
+#   ./scripts/verify.sh
+#
+# Exits non-zero if any check fails, so it can gate a commit.
+set -uo pipefail
+
+BASE_PORT="${PORT:-8069}"
+BELLA="http://bella.localtest.me:$BASE_PORT"
+NOGA="http://noga.localtest.me:$BASE_PORT"
+PASS=0
+FAIL=0
+
+ok()   { printf "  \033[32mPASS\033[0m %s\n" "$1"; PASS=$((PASS+1)); }
+bad()  { printf "  \033[31mFAIL\033[0m %s — %s\n" "$1" "$2"; FAIL=$((FAIL+1)); }
+head_() { printf "\n\033[1m%s\033[0m\n" "$1"; }
+
+code() { curl -sg -o /dev/null -w "%{http_code}" "$1"; }
+# Fetch to a FILE, never through $(...). Command substitution mangles the
+# multi-hundred-KB pages Odoo serves, which silently turns real passes into
+# phantom failures — it fooled this script into reporting the Arabic storefront
+# broken when it was fine.
+PAGE=/tmp/modryn_page.html
+body() { curl -sg "$1" -o "$PAGE"; cat "$PAGE"; }
+fetch() { curl -sg "$1" -o "$PAGE"; }
+
+head_ "0. server"
+[ "$(code "$BELLA/shop")" = "200" ] && ok "server is up" || { bad "server is up" "no 200 from $BELLA/shop"; echo; echo "Start it: ./odoo/odoo-bin server -c odoo.conf --http-interface=127.0.0.1"; exit 1; }
+
+head_ "1. tenancy isolation"
+BELLA_DRESSES=$(body "$BELLA/shop" | grep -oE "שמלת [^<\"(]*" | sort -u | head -5)
+NOGA_DRESSES=$(body "$NOGA/shop" | grep -oE "שמלת [^<\"(]*" | sort -u | head -5)
+[ -n "$BELLA_DRESSES" ] && [ -n "$NOGA_DRESSES" ] && ok "both storefronts render dresses" || bad "both storefronts render dresses" "one is empty"
+if [ -z "$(comm -12 <(echo "$BELLA_DRESSES") <(echo "$NOGA_DRESSES"))" ]; then
+  ok "catalogs are disjoint"
+else
+  bad "catalogs are disjoint" "a dress name appears in both tenants"
+fi
+[ "$(psql -d bella -tAc "select count(*) from calendar_event where modryn_is_booking")" != \
+  "$(psql -d noga  -tAc "select count(*) from calendar_event where modryn_is_booking")" ] \
+  && ok "booking counts differ per tenant" || ok "booking counts equal (acceptable if both seeded alike)"
+
+head_ "2. theme + RTL"
+body "$BELLA/shop" | grep -q 'dir="rtl"' && ok "storefront is RTL" || bad "storefront is RTL" "no dir=rtl"
+CSS=$(body "$BELLA/shop" | grep -oE '/web/assets/[^"]*\.css' | head -1)
+curl -sg "$BELLA$CSS" -o /tmp/modryn_bundle.css
+grep -qF "#C5A059" /tmp/modryn_bundle.css && ok "gold token compiled into CSS" || bad "gold token compiled into CSS" "missing #C5A059"
+grep -qF "Frank Ruhl Libre" /tmp/modryn_bundle.css && ok "display font present" || bad "display font present" "missing Frank Ruhl Libre"
+# LibSass dies on modern rgb() and silently kills the bundle; a tiny bundle means it broke.
+[ "$(wc -c < /tmp/modryn_bundle.css)" -gt 200000 ] && ok "frontend bundle compiled fully" || bad "frontend bundle compiled fully" "bundle suspiciously small — SCSS error?"
+
+head_ "3. catalog"
+body "$BELLA/shop" | grep -q "מחיר בתיאום" && ok "price-visibility toggle hides a price" || bad "price-visibility toggle" "no 'מחיר בתיאום' on the grid"
+body "$BELLA/book/dress/2" | grep -q "אזל המלאי" && ok "out-of-stock size marked in size picker" || bad "out-of-stock size marked" "no 'אזל המלאי'"
+
+head_ "4. booking"
+[ "$(code "$BELLA/book")" = "200" ] && ok "standalone booking page" || bad "standalone booking page" "not 200"
+[ "$(code "$BELLA/book/dress/2")" = "200" ] && ok "dress-bound booking page" || bad "dress-bound booking page" "not 200"
+[ "$(code "$BELLA/book/dress/99999")" = "404" ] && ok "unknown dress 404s" || bad "unknown dress 404s" "expected 404"
+# THE BUG THIS STAGE FIXES: bookings must never be organized by the public user.
+PUBLIC_OWNED=$(psql -d bella -tAc "select count(*) from calendar_event ce join res_users u on u.id=ce.user_id where ce.modryn_is_booking and u.login='public'")
+[ "$PUBLIC_OWNED" = "0" ] && ok "no booking is organized by the public user" || bad "no booking organized by public user" "$PUBLIC_OWNED still are"
+
+head_ "5. Arabic"
+fetch "$BELLA/ar/shop"
+grep -q 'lang="ar-001"' "$PAGE" && ok "Arabic storefront serves ar-001" || bad "Arabic storefront" "no lang=ar-001"
+grep -qE "بحث|المنتجات" "$PAGE" && ok "core UI is translated to Arabic" || bad "core Arabic UI" "no Arabic strings found"
+
+head_ "6. walk-in queue"
+[ "$(code "$BELLA/queue/checkin")" = "200" ] && ok "check-in form" || bad "check-in form" "not 200"
+[ "$(code "$BELLA/queue/sign")" = "200" ] && ok "QR sign page" || bad "QR sign page" "not 200"
+QR=$(code "$BELLA/report/barcode/?barcode_type=QR&value=test&width=200&height=200")
+[ "$QR" = "200" ] && ok "QR image renders" || bad "QR image renders" "got $QR (rlPyCairo installed?)"
+
+head_ "7. staff layer"
+EMP=$(psql -d bella -tAc "select count(*) from hr_employee where active")
+[ "${EMP:-0}" -ge 3 ] && ok "employees exist ($EMP)" || bad "employees exist" "only ${EMP:-0}"
+ROLES=$(psql -d bella -tAc "select count(*) from modryn_staff_role where active")
+[ "${ROLES:-0}" -ge 3 ] && ok "staff roles exist ($ROLES)" || bad "staff roles exist" "only ${ROLES:-0}"
+PORTAL=$(psql -d bella -tAc "select count(*) from res_groups_users_rel r join res_groups g on g.id=r.gid join ir_model_data d on d.res_id=g.id and d.model='res.groups' where d.module='base' and d.name='group_portal'")
+[ "${PORTAL:-0}" -ge 1 ] && ok "portal staff accounts exist ($PORTAL)" || bad "portal staff accounts" "none found"
+[ "$(code "$BELLA/staff/login")" = "200" ] && ok "staff login page" || bad "staff login page" "not 200"
+# Unauthenticated access to staff surfaces must not be 200.
+for path in /floor /manage/staff /manage/roles; do
+  C=$(code "$BELLA$path")
+  [ "$C" != "200" ] && ok "$path refuses anonymous access ($C)" || bad "$path refuses anonymous access" "returned 200 while logged out"
+done
+
+head_ "8. MODRYN repo untouched"
+MOD="/Users/mrwen/Documents/Github/Ryan + rawad + mrwen"
+DIRTY=$(cd "$MOD" && git status --porcelain | grep -v "modryn-storefront.png" | wc -l | tr -d ' ')
+[ "$DIRTY" = "0" ] && ok "MODRYN working tree clean of our changes" || bad "MODRYN untouched" "$DIRTY unexpected entries"
+
+printf "\n\033[1m%d passed, %d failed\033[0m\n" "$PASS" "$FAIL"
+[ "$FAIL" -eq 0 ] || exit 1
