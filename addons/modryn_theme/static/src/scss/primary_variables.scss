@@ -1,0 +1,72 @@
+// MODRYN design tokens expressed in Odoo's native theming slots.
+//
+// This file is APPENDED to web._assets_primary_variables, so it runs after
+// website's own primary_variables.scss. Every variable it touches is declared
+// `!default` there, which means a plain assignment here simply wins — no
+// !important, no specificity war. The maps set here are consumed later, in
+// web._assets_secondary_variables.
+//
+// Source of truth for the values: Frontend/packages/ui/src/theme.css (MODRYN).
+
+//------------------------------------------------------------------------------
+// Fonts
+//------------------------------------------------------------------------------
+// map-merge (not a bare assignment) so Odoo's built-in font list survives and
+// only gains ours. 'url' is the Google Fonts query fragment Odoo appends to
+// https://fonts.googleapis.com/css?family=
+//
+// NB: MODRYN self-hosts these via @fontsource. The PoC uses the Google CDN
+// because it is Odoo's native path; production parity would mean shipping the
+// woff2 files as addon assets. Recorded in the scorecard, not hidden.
+$o-theme-font-configs: map-merge(
+    $o-theme-font-configs,
+    (
+        'Frank Ruhl Libre': (
+            'family': ('Frank Ruhl Libre', 'David Libre', serif),
+            'url': 'Frank+Ruhl+Libre:400,500,700',
+        ),
+        'Assistant': (
+            'family': ('Assistant', 'Heebo', sans-serif),
+            'url': 'Assistant:400,600,700',
+        ),
+    )
+);
+
+//------------------------------------------------------------------------------
+// Website colour combinations (o-color-1..5)
+//------------------------------------------------------------------------------
+// These drive Odoo's "color combination" system (o_cc1..o_cc5) that snippets,
+// headers and footers paint themselves with.
+$o-user-color-palette: (
+    'o-color-1': #C5A059,  // gold      — accents, CTA surfaces
+    'o-color-2': #F6F0E6,  // surface   — raised panels, footer
+    'o-color-3': #FDFBF7,  // cream     — page background
+    'o-color-4': #FFFFFF,  // white     — cards
+    'o-color-5': #2B2118,  // ink       — text, dark anchors
+);
+
+//------------------------------------------------------------------------------
+// Bootstrap theme colours
+//------------------------------------------------------------------------------
+// Values mirror theme.css exactly. Text colours on these are enforced in
+// modryn.scss — Odoo's auto-contrast would put white on gold (2.3:1, fails AA).
+$o-user-theme-color-palette: (
+    'primary': #C5A059,    // --color-gold
+    'secondary': #2B2118,  // --color-ink
+    'success': #2E6B4F,
+    'danger': #A03232,
+    'warning': #8A5A1E,
+);
+
+//------------------------------------------------------------------------------
+// Website values (typography + shape)
+//------------------------------------------------------------------------------
+$o-user-website-values: (
+    'font': 'Assistant',
+    'headings-font': 'Frank Ruhl Libre',
+    // MODRYN's --radius-md / --radius-sm. Odoo's default pill buttons (2rem)
+    // read as "consumer app", not couture.
+    'btn-border-radius': 8px,
+    'btn-border-radius-lg': 8px,
+    'btn-border-radius-sm': 4px,
+);

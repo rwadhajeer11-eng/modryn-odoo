@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Staff-facing: the booking columns on the meeting form. -->
+    <record id="calendar_event_form_modryn" model="ir.ui.view">
+        <field name="name">calendar.event.form.modryn</field>
+        <field name="model">calendar.event</field>
+        <field name="inherit_id" ref="calendar.view_calendar_event_form"/>
+        <field name="arch" type="xml">
+            <field name="name" position="after">
+                <field name="modryn_is_booking" invisible="1"/>
+                <field name="modryn_booking_type" invisible="not modryn_is_booking"/>
+                <field name="modryn_variant_id" invisible="not modryn_is_booking"/>
+                <field name="modryn_customer_phone" invisible="not modryn_is_booking"/>
+                <field name="modryn_terms_accepted_at" readonly="1"
+                       invisible="not modryn_is_booking"/>
+            </field>
+        </field>
+    </record>
+
+</odoo>

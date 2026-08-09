@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ================= Booking form (both paths) ================= -->
+    <template id="booking_form" name="MODRYN booking form">
+        <t t-call="website.layout">
+            <div id="wrap" class="oe_structure">
+                <div class="container py-5" style="max-width: 720px;">
+
+                    <h1 class="mb-2">
+                        <t t-if="dress">קביעת תור למדידה</t>
+                        <t t-else="">קביעת פגישת ייעוץ</t>
+                    </h1>
+
+                    <!-- Path 1: the dress rides along, visibly. -->
+                    <div t-if="dress" class="d-flex align-items-center gap-3 mb-4 p-3"
+                         style="background:#F6F0E6; border-radius:8px;">
+                        <img t-att-src="'/web/image/product.template/%s/image_128' % dress.id"
+                             t-att-alt="dress.name" style="width:64px; height:auto; border-radius:4px;"/>
+                        <div>
+                            <div style="font-weight:600;" t-out="dress.name"/>
+                            <div class="text-muted small">השמלה תשוריין לפגישה</div>
+                        </div>
+                    </div>
+
+                    <form action="/book/submit" method="post">
+                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                        <input t-if="dress" type="hidden" name="dress_id" t-att-value="dress.id"/>
+
+                        <div class="mb-3">
+                            <label class="form-label" for="name">שם מלא</label>
+                            <input type="text" id="name" name="name" class="form-control"
+                                   t-att-value="values.get('name', '')"/>
+                            <div t-if="errors.get('name')" class="text-danger small mt-1"
+                                 t-out="errors['name']"/>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label" for="phone">טלפון</label>
+                            <input type="tel" id="phone" name="phone" class="form-control"
+                                   dir="ltr" placeholder="050-1234567"
+                                   t-att-value="values.get('phone', '')"/>
+                            <div t-if="errors.get('phone')" class="text-danger small mt-1"
+                                 t-out="errors['phone']"/>
+                        </div>
+
+                        <!-- Size picker: only on the dress path. -->
+                        <div t-if="dress" class="mb-3">
+                            <label class="form-label" for="variant_id">מידה</label>
+                            <select id="variant_id" name="variant_id" class="form-select">
+                                <option value="">— בחרי מידה —</option>
+                                <t t-foreach="variants" t-as="v">
+                                    <option t-att-value="v.id"
+                                            t-att-selected="'selected' if variant and v.id == variant.id else None">
+                                        <t t-out="v.product_template_attribute_value_ids[:1].name or v.name"/>
+                                        <t t-if="v.qty_available &lt;= 0"> (אזל המלאי)</t>
+                                    </option>
+                                </t>
+                            </select>
+                            <div t-if="errors.get('variant')" class="text-danger small mt-1"
+                                 t-out="errors['variant']"/>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label" for="slot">מועד</label>
+                            <select id="slot" name="slot" class="form-select">
+                                <option value="">— בחרי מועד —</option>
+                                <t t-foreach="days" t-as="day">
+                                    <optgroup t-att-label="day['date'].strftime('%d.%m.%Y')">
+                                        <t t-foreach="day['times']" t-as="slot">
+                                            <option t-att-value="slot['value']"
+                                                    t-att-selected="'selected' if values.get('slot') == slot['value'] else None">
+                                                <t t-out="slot['label']"/>
+                                            </option>
+                                        </t>
+                                    </optgroup>
+                                </t>
+                            </select>
+                            <div t-if="errors.get('slot')" class="text-danger small mt-1"
+                                 t-out="errors['slot']"/>
+                        </div>
+
+                        <div class="form-check mb-4">
+                            <input class="form-check-input" type="checkbox" value="1"
+                                   id="terms" name="terms"/>
+                            <label class="form-check-label" for="terms">
+                                קראתי ואני מאשרת את תנאי הביטול, האיחור ואי-ההגעה של הבוטיק
+                            </label>
+                            <div t-if="errors.get('terms')" class="text-danger small mt-1"
+                                 t-out="errors['terms']"/>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-lg">אישור התור</button>
+                    </form>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- ================= Confirmation ================= -->
+    <template id="booking_confirmed" name="MODRYN booking confirmed">
+        <t t-call="website.layout">
+            <div id="wrap" class="oe_structure">
+                <div class="container py-5 text-center" style="max-width: 640px;">
+                    <h1 class="mb-3">התור נקבע</h1>
+                    <p class="text-muted mb-4">נשלח לך אישור בהודעה</p>
+
+                    <div class="p-4 mb-4" style="background:#F6F0E6; border-radius:8px;">
+                        <div class="mb-2">
+                            <strong>תאריך:</strong> <t t-out="local_date"/>
+                        </div>
+                        <div class="mb-2">
+                            <strong>שעה:</strong> <t t-out="local_time"/>
+                        </div>
+                        <div t-if="event.modryn_variant_id" class="mb-2">
+                            <strong>שמלה:</strong>
+                            <t t-out="event.modryn_variant_id.product_tmpl_id.name"/>
+                            (<t t-out="event.modryn_variant_id.product_template_attribute_value_ids[:1].name"/>)
+                        </div>
+                        <div>
+                            <strong>טלפון:</strong>
+                            <span dir="ltr" t-out="event.modryn_customer_phone"/>
+                        </div>
+                    </div>
+
+                    <a href="/shop" class="btn btn-primary">חזרה לקטלוג</a>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- ============ "Book this dress" on the product page ============ -->
+    <template id="product_book_button"
+              inherit_id="website_sale.product"
+              name="MODRYN: book this dress">
+        <xpath expr="//div[@id='product_details']" position="inside">
+            <a t-att-href="'/book/dress/%s' % product.id"
+               class="btn btn-primary btn-lg w-100 mt-3">
+                קביעת תור למדידה
+            </a>
+        </xpath>
+    </template>
+
+</odoo>

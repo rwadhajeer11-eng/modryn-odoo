@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Walk-in check-in: the QR target. Three fields, nothing else. -->
+    <template id="checkin_form" name="MODRYN walk-in check-in">
+        <t t-call="website.layout">
+            <div id="wrap" class="oe_structure">
+                <div class="container py-5" style="max-width: 520px;">
+                    <h1 class="mb-4">ברוכה הבאה</h1>
+
+                    <form action="/queue/checkin/submit" method="post">
+                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+
+                        <div class="mb-3">
+                            <label class="form-label" for="name">שם מלא</label>
+                            <input type="text" id="name" name="name" class="form-control"
+                                   t-att-value="values.get('name', '')"/>
+                            <div t-if="errors.get('name')" class="text-danger small mt-1"
+                                 t-out="errors['name']"/>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label" for="phone">טלפון</label>
+                            <input type="tel" id="phone" name="phone" class="form-control" dir="ltr"
+                                   placeholder="050-1234567" t-att-value="values.get('phone', '')"/>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label" for="client_type">סוג לקוחה</label>
+                            <select id="client_type" name="client_type" class="form-select">
+                                <option value="bride">כלה</option>
+                                <option value="evening">ערב</option>
+                            </select>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-lg w-100">
+                            כניסה לתור
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <template id="checkin_done" name="MODRYN check-in done">
+        <t t-call="website.layout">
+            <div id="wrap" class="oe_structure">
+                <div class="container py-5 text-center" style="max-width: 520px;">
+                    <h1 class="mb-3">נרשמת בהצלחה</h1>
+                    <div class="p-4 mb-3" style="background:#F6F0E6; border-radius:8px;">
+                        <div class="text-muted mb-1">מקומך בתור</div>
+                        <div style="font-size:3rem; line-height:1;" t-out="position"/>
+                    </div>
+                    <p class="text-muted">נציגה תיגש אליך בקרוב</p>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- The lounge sign. Print it, frame it, done. -->
+    <template id="queue_sign" name="MODRYN queue QR sign">
+        <t t-call="website.layout">
+            <div id="wrap" class="oe_structure">
+                <div class="container py-5 text-center" style="max-width: 520px;">
+                    <h1 class="mb-2">כניסה לתור</h1>
+                    <p class="text-muted mb-4">סרקי את הקוד כדי להצטרף לתור</p>
+                    <!-- Trailing slash after /barcode is required: without it the
+                         request falls through to the <barcode_type>/<value> form
+                         and 500s. Rendering also needs reportlab's raster backend
+                         (rlPyCairo), which is NOT in odoo/requirements.txt. -->
+                    <img t-att-src="'/report/barcode/?barcode_type=QR&amp;value=%s&amp;width=600&amp;height=600' % checkin_url"
+                         alt="QR" style="width:280px; height:280px;"/>
+                </div>
+            </div>
+        </t>
+    </template>
+
+</odoo>

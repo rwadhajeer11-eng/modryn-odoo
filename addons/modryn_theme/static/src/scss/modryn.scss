@@ -1,0 +1,112 @@
+// The layer the variable system cannot express.
+//
+// SCORECARD NOTE: every rule below is a place where Odoo's defaults disagreed
+// with the MODRYN design system. The length of this file IS the theming-ceiling
+// measurement — keep it honest, do not quietly grow it.
+
+//==============================================================================
+// 1. The three-gold law
+//==============================================================================
+// tokens.md: gold #C5A059 is a SURFACE colour, gold-strong #9E7B36 carries no
+// text at any size, and #7F612B is the ONLY gold permitted as text.
+// Odoo's auto-contrast picks white for text on primary (2.3:1 — fails WCAG AA).
+// MODRYN's real pairing is gold background + ink text = 6.41:1.
+.btn-primary {
+    --btn-color: #2B2118;
+    color: #2B2118;
+
+    &:hover,
+    &:focus,
+    &:active {
+        color: #2B2118;
+        background-color: #C5A059;
+        // Elevation, not a colour change: gold-strong must never carry text.
+        //
+        // rgba(), NOT the modern `rgb(43 33 24 / .1)` space-separated syntax
+        // that theme.css uses: Odoo compiles SCSS with LibSass, which predates
+        // CSS Color Level 4 and fails with "Function rgb is missing argument
+        // $green" — taking the ENTIRE frontend bundle down with it, not just
+        // this rule.
+        box-shadow: 0 4px 12px rgba(43, 33, 24, 0.10);
+    }
+}
+
+// Gold as text is only ever the dark variant.
+a:not(.btn) {
+    color: #7F612B;
+
+    &:hover {
+        color: #2B2118;
+    }
+}
+
+//==============================================================================
+// 2. Focus ring
+//==============================================================================
+// MODRYN --color-focus. Odoo's default focus ring is Bootstrap blue.
+:focus-visible {
+    outline: 2px solid #7F612B;
+    outline-offset: 2px;
+}
+
+//==============================================================================
+// 3. Typographic hierarchy
+//==============================================================================
+// The font FAMILIES come from the variables layer; the weights and rhythm do
+// not. Odoo ships headings at 700 across the board, which reads heavy in
+// Hebrew — Frank Ruhl Libre at 400/500 is the couture voice.
+h1, h2, h3, .h1, .h2, .h3 {
+    font-weight: 500;
+    letter-spacing: -0.01em;
+}
+
+h1, .h1 { font-weight: 400; }
+
+body {
+    background-color: #FDFBF7;
+    color: #2B2118;
+    // theme.css --text-base--line-height
+    line-height: 1.6;
+}
+
+//==============================================================================
+// 4. eCommerce chrome removal
+//==============================================================================
+// A bridal boutique is not a webshop: nothing here should read "add to cart,
+// compare, wishlist, N in stock". These are display-level removals; the real
+// fix is configuration (see docs/scorecard.md).
+.o_wsale_product_btn,          // "Add to cart" on grid tiles
+.o_wsale_products_grid_before, // left filter rail
+#o_wsale_offcanvas_filters,
+.o_wsale_apply_layout {        // grid/list layout switcher
+    display: none !important;
+}
+
+// Product tiles: quiet cards, generous air.
+.oe_product_cart {
+    background-color: transparent;
+    border: 0;
+
+    .o_wsale_product_information {
+        // theme.css --space-4
+        padding-block-start: 16px;
+        text-align: center;
+    }
+
+    img {
+        border-radius: 8px;
+    }
+}
+
+//==============================================================================
+// 5. Editorial spacing
+//==============================================================================
+// Odoo's default section rhythm is dense. theme.css --space-12 / --space-16.
+#wrap .oe_website_sale {
+    padding-block: 48px;
+}
+
+.oe_website_sale .products_header,
+#products_grid_before + div h1 {
+    margin-block-end: 32px;
+}

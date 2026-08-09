@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!--
+        Price visibility, storefront side.
+
+        Two touch points because Odoo renders the price twice from different
+        templates: the shop grid tile and the product detail page. Both swap the
+        number for "מחיר בתיאום" (price on consultation) rather than hiding the
+        row, so the layout does not collapse and the client is told why.
+    -->
+
+    <!-- Shop grid tile -->
+    <template id="products_item_price_visibility"
+              inherit_id="website_sale.products_item"
+              name="MODRYN: hide price on grid tile">
+        <xpath expr="//div[hasclass('product_price')]" position="before">
+            <div t-if="not product.modryn_price_visible"
+                 class="product_price modryn_price_tbd text-muted">
+                <span>מחיר בתיאום</span>
+            </div>
+        </xpath>
+        <xpath expr="//div[hasclass('product_price')][last()]" position="attributes">
+            <attribute name="t-if">product.modryn_price_visible</attribute>
+        </xpath>
+    </template>
+
+    <!-- Product detail page -->
+    <template id="product_price_visibility"
+              inherit_id="website_sale.product_price"
+              name="MODRYN: hide price on product page">
+        <xpath expr="//div[@name='product_price']" position="before">
+            <div t-if="not product.modryn_price_visible"
+                 class="modryn_price_tbd h5 mb-0 text-muted">
+                <span>מחיר בתיאום</span>
+            </div>
+        </xpath>
+        <xpath expr="//div[@name='product_price']" position="attributes">
+            <attribute name="t-if">product.modryn_price_visible</attribute>
+        </xpath>
+    </template>
+
+</odoo>

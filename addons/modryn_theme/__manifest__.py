@@ -1,0 +1,36 @@
+{
+    'name': 'MODRYN Theme',
+    'summary': 'Luxury bridal storefront theme: cream/ink/gold palette, Hebrew-first RTL typography.',
+    'description': """
+Reproduces the MODRYN design tokens on Odoo's website/eCommerce storefront, and
+adds the one catalog control the storefront needs that Odoo has no concept of:
+per-dress price visibility.
+
+Token source of truth: Frontend/packages/ui/src/theme.css in the MODRYN repo.
+""",
+    # NOT 'Theme/*'. website/models/ir_asset.py::_get_active_addons_list discards
+    # the assets of every module in a Theme category except the one the website
+    # has selected as its theme_id — silently, with no error and no log line.
+    # Declaring this a theme made all the SCSS below vanish from the bundle.
+    'category': 'Website',
+    'version': '19.0.1.0.0',
+    'depends': ['website_sale'],
+    'data': [
+        'views/product_views.xml',
+        'views/website_sale_templates.xml',
+    ],
+    'assets': {
+        # Colors + font registration. This bundle is where Odoo expects a theme
+        # to speak; the palette maps here are consumed by later bundles.
+        'web._assets_primary_variables': [
+            'modryn_theme/static/src/scss/primary_variables.scss',
+        ],
+        # Everything the variable layer cannot express (the three-gold rule,
+        # editorial spacing, killing default eCommerce chrome).
+        'web.assets_frontend': [
+            'modryn_theme/static/src/scss/modryn.scss',
+        ],
+    },
+    'author': 'MODRYN',
+    'license': 'LGPL-3',
+}
