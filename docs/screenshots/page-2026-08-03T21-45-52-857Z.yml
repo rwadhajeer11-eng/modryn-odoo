@@ -1,4 +1,0 @@
-- list [ref=f1e2]:
-  - listitem [ref=f1e3]:
-    - button "skip A" [ref=f1e4]
-    - button "call A" [ref=f1e5]

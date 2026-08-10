@@ -1,6 +1,0 @@
-- generic [active] [ref=e1]:
-  - generic [ref=e2]: facts
-  - separator [ref=e5]
-  - generic [ref=e6]: facts
-  - separator [ref=e9]
-  - generic [ref=e10]: facts

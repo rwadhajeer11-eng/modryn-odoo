@@ -1,6 +1,0 @@
-- generic [active] [ref=f1e1]:
-  - main [ref=f1e3]:
-    - generic [ref=f1e5]:
-      - button "שמירה (start side)" [ref=f1e6]
-      - button "שמירה (end side)" [ref=f1e7]
-  - button "קריאות עזרה · 1" [ref=f1e9]
