@@ -314,19 +314,93 @@ psql -d bella -tAc "select state, count(*) from modryn_alteration_task group by 
 **9.5 Staff language.** The nav's **English** button flips the staff screens to English
 (LTR) and back via **עברית** — per user, stored, and independent of what customers see.
 
+## Act 10 — The boutique talks back
+
+**10.1 A confirmation, immediately.** Book anything at `/book`. *Expect:* the confirmation
+page, and in the server log a line beginning `[modryn.sms]` carrying the date, the time and
+a `/b/<token>` link — in the language she booked in. With Twilio configured on `bella` it
+is a real API call; `noga` has no credentials and logs `(no Twilio configured)`, which is
+the honest fallback rather than a silent success.
+
+**10.2 The 24-hour reminder.** The cron fires every 15 minutes and only touches
+appointments starting in roughly a day, once each:
+
+```bash
+psql -d bella -tAc "select id, start, modryn_reminder_sent_at from calendar_event where modryn_is_booking and modryn_reminder_sent_at is not null"
+```
+
+**10.3 She confirms or cancels herself.** Open the `/b/<token>` link from the log.
+*Expect:* her appointment and two buttons. **Cancel** frees the slot without deleting the
+record — the boutique keeps its no-show history. A forged token 404s.
+
+## Act 11 — Nobody is turned away
+
+**11.1 She scans the QR.** `/queue/checkin`. *Expect:* a ticket page that says we will be
+with her soon. No number, no position, no queue mechanics — the premium pattern, where the
+shop absorbs the waiting rather than displaying it.
+
+**11.2 The gate she never sees.** As `sara` → `/floor` shows an **arrivals** panel above
+the queue. **Accept** puts her in line; **Suggest booking** turns her page into a warm
+invitation to book instead. She is never told she was turned away.
+
+**11.3 Two texts, never more.** She gets one when she is next and one when it is her turn,
+the second naming the stylist. Checking in twice with the same number resumes the same
+ticket rather than issuing a second.
+
+**11.4 The day is full — get in line for it anyway.** Fill a day, reload `/book`: the full
+day stays visible with a waitlist form instead of a time picker. Join it, then cancel a
+booking on that day and watch the log: the first woman waiting is texted a `/claim/<token>`
+link, hers for two hours. Let it lapse (or run `_modryn_expire_offers()`) and it passes to
+the next in line. Only ever one live offer per day.
+
+## Act 12 — Rooms, and calling for help
+
+**12.1 The owner names the rooms.** `/manage/rooms` — data, like roles and pieces.
+
+**12.2 Put a customer in one.** On any card on `/floor`, pick a room. Try to put a second
+live customer in the same one: refused, with the name of who is already in there, and
+**the first customer stays put** — the rejected move is rolled back, not half-applied.
+
+**12.3 Call for help.** Press **Call for help** on a card, choose a colleague (or leave it
+on *Any manager*) and add a note. *Expect:* on her board — no reload — a full-screen
+overlay naming you, the room, and the note. **On my way** records who answered; the caller
+sees a quiet strip saying someone is coming. A colleague with no part in it sees nothing.
+
+**12.4 Nobody answers.** After 30 seconds the escalation cron clears the target, which is
+what broadcasts it: every manager's board now shows it. Acked calls never escalate.
+
+## Act 13 — Next week's rota
+
+**13.1 The owner defines the shifts.** `/manage/shifts` — name, weekday, hours, and how
+many of each **role** each shift needs. Targets are per role because two saleswomen and no
+seamstress is not the same as one of each.
+
+**13.2 Staff say when they can work.** As any staff member → `/roster`: next week's cards,
+each with **I can work this**. That is an offer, not a rota.
+
+**13.3 The manager fills it.** As `sara` → `/roster` additionally lists who offered each
+shift. Tick names; a shift stays amber and shows `1/2` until its targets are met — counted
+from who is *rostered*, never from who is *available*.
+
+**13.4 Publish.** One button, the whole week. Afterwards staff see the rota and availability
+is frozen, with a message telling them who to ask. The following week is still open.
+
 ## What this walkthrough does **not** cover
 
 Honest gaps, each sized in [`scorecard.md`](scorecard.md):
 
-- **Customers cannot log in yet.** Phone + SMS OTP and "my bookings" is stage 2. Today a
-  customer books as a guest; her phone is always collected, but she cannot come back and
-  manage the appointment herself.
-- **No availability engine.** Slots are a fixed Sun–Thu 10:00–18:00 grid. Opening hours,
-  capacity, holidays and per-staff calendars are the Phase-2 booking engine.
+- **No availability engine.** Slots are a fixed Sun–Thu 10:00–18:00 grid, and the roster
+  does not feed it. Opening hours, capacity, holidays and per-staff calendars are the
+  Phase-2 booking engine.
 - **No deposit.** No Israeli payment provider (Grow/Meshulam/Tranzila) exists in Odoo;
   that is a custom addon.
-- **No SMS or WhatsApp.** Nothing is actually sent to anyone.
-- **No roster, no SOS, no alterations capacity.** PRD §9–§11 are untouched.
+- **No WhatsApp.** Odoo's WhatsApp module is Enterprise-only, and the Business API needs
+  Meta verification the business has not started. SMS via Twilio is real and wired.
+- **SMS delivery is proven only as far as Twilio's API.** Calls are accepted and errors
+  come back correctly, but no message has been delivered to a second handset — that needs
+  a destination number.
+- **The roster does not drive anything yet.** Publishing a week does not restrict who can
+  be assigned on the floor that day, and does not feed the booking grid.
 
 ---
 

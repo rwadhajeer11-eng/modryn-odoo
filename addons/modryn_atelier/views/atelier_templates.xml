@@ -17,7 +17,7 @@
                 </header>
                 <p t-if="not board['load']" class="modryn_empty">No staff to show.</p>
                 <div t-else="" class="modryn_staff_cards">
-                    <div t-foreach="board['load']" t-as="row" t-key="row['id']"
+                    <div t-foreach="board['load']" t-as="row"
                          t-attf-class="modryn_staff_card #{'is_busy' if row['overdue'] else 'is_free'}">
                         <div class="modryn_strong" t-out="row['name']"/>
                         <div class="modryn_sub" t-out="row['role']"/>
@@ -32,7 +32,7 @@
             </section>
 
             <!-- One panel per state: the workshop reads left to right as work moves. -->
-            <section t-foreach="board['states']" t-as="st" t-key="st[0]" class="modryn_panel mb-4">
+            <section t-foreach="board['states']" t-as="st" class="modryn_panel mb-4">
                 <header class="modryn_panel_head">
                     <h2 t-out="st[1]"/>
                     <span class="modryn_count" t-out="len(board['by_state'][st[0]])"/>
@@ -42,7 +42,7 @@
 
                 <table t-else="" class="table modryn_table align-middle">
                     <tbody>
-                        <tr t-foreach="board['by_state'][st[0]]" t-as="task" t-key="task['id']">
+                        <tr t-foreach="board['by_state'][st[0]]" t-as="task">
                             <td>
                                 <div class="modryn_strong" t-out="task['customer']"/>
                                 <div class="modryn_sub" dir="ltr" t-out="task['phone']"/>
@@ -53,7 +53,7 @@
                                     <t t-if="task['size']"> · <t t-out="task['size']"/></t>
                                 </div>
                                 <div class="modryn_sub">
-                                    <t t-foreach="task['pieces']" t-as="p" t-key="p">
+                                    <t t-foreach="task['pieces']" t-as="p">
                                         <span class="modryn_badge is_muted me-1" t-out="p"/>
                                     </t>
                                 </div>
@@ -97,7 +97,7 @@
 
             <table class="table modryn_table align-middle" style="max-width: 480px;">
                 <tbody>
-                    <tr t-foreach="pieces" t-as="piece" t-key="piece.id"
+                    <tr t-foreach="pieces" t-as="piece"
                         t-attf-class="#{'modryn_archived' if not piece.active else ''}">
                         <td t-out="piece.name"/>
                         <td class="text-end">

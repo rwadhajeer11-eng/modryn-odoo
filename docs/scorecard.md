@@ -1,10 +1,14 @@
 # Odoo evaluation scorecard
 
-Built in one session against Odoo 19 Community. Every row below is backed by something
-that ran, not by reading documentation. Screenshots in `docs/screenshots/`.
+Built against Odoo 19 Community over several sessions. Every row below is backed by
+something that ran, not by reading documentation. Screenshots in `docs/screenshots/`;
+the guided tour is [`walkthrough.md`](walkthrough.md); `scripts/verify.sh` re-checks the
+whole thing in one command (**85 checks, all green** at the time of writing).
 
-**Total custom code written: ~950 lines across 3 addons** (theme 271, booking 369,
-queue 309), plus ~300 lines of provisioning/seed scripts.
+**Total custom code: ~6,400 non-blank lines across 7 addons** — 3,473 Python, 1,898 XML,
+1,040 JS/SCSS — plus provisioning and seed scripts. The addons are `modryn_theme`,
+`modryn_booking`, `modryn_queue_poc`, `modryn_staff`, `modryn_portal`, `modryn_atelier`
+and `modryn_roster`.
 
 ---
 
@@ -30,6 +34,15 @@ agreement to host for third parties.
 is not justified by this PoC.** The defensible use of Odoo is as a *back-office option
 per boutique* (stock, purchasing, invoicing, HR) alongside MODRYN — not as a replacement
 for the storefront and floor tools.
+
+**The extended build did not change that verdict, and it sharpened it.** Everything the
+PRD differentiates on was subsequently built — comms, the premium waitlist, the refill
+loop, fitting rooms, SOS paging, the weekly roster — and all of it was ordinary custom
+development that Odoo neither helped nor hindered much. Odoo contributed the ORM, the
+cron scheduler, the websocket bus and the translation pipeline; it contributed nothing
+domain-specific. The one place it was decisively better than MODRYN remains `bus.bus`:
+every realtime surface here — the floor board, the SOS overlay — rides one channel and
+about fifty lines, against MODRYN's five-second polling.
 
 ---
 
@@ -74,15 +87,39 @@ S ≤2d · M ≤1w · L 1–3w · XL >3w. "Enterprise buys it" never means all o
 |---|---|---|---|
 | 2 | Booking engine: hours→slots, capacity, types, versioned terms, cancel/reschedule links | **XL** | `appointment` buys ~half; the rest is ours regardless |
 | 2 | Israeli PSP provider (Grow/Meshulam/Tranzila) + deposit | **M** each | Custom either way; per-DB tenancy makes per-tenant credentials free |
-| 2 | Twilio SMS + phone OTP + 24h reminders (`ir.cron`) | **M** | Custom (native SMS is IAP-credits). Crons are per-database — N tenants self-schedule, a quiet win |
+| 2 | Twilio SMS + phone OTP + 24h reminders (`ir.cron`) | ~~M~~ **built** | Custom, as predicted (native SMS is IAP-credits). ~180 lines: a Retrofit-style client, an `ir.cron`, HMAC-signed confirm/cancel links. Crons being per-database is a real win — each tenant self-schedules. Twilio credentials are per-tenant config, free under DB-per-tenant. **Delivery proven only to Twilio's API**, not to a second handset |
 | 2 | Owner feature-toggle matrix | **S–M** | `res.config.settings` per tenant DB — trivial here |
-| 3 | Client portal: OTP login, my bookings, `.ics` | **M** | `portal` buys the shell; phone-OTP is ours |
-| 3 | Waitlist auto-reallocation | **M** | Custom |
-| 4 | QR queue hardening · floor terminal · SOS | **M · M · S** | Custom; `frontdesk` is generic kiosk only. **The 51-line probe says these are cheap** |
-| 5 | Weekly roster: availability, headcount targets, shortage alerts | **L** | `planning` buys ~half; submission workflow is ours (**M** residual) |
+| 3 | Client portal: OTP login, my bookings, `.ics` | ~~M~~ **mostly built** | `portal` bought the shell; phone-OTP and "my bookings" are ours and done (codes stored hashed). `.ics` export is still outstanding |
+| 3 | Waitlist auto-reallocation | ~~M~~ **built** | Custom, ~130 lines. Day-level (not slot-level) waitlist, 2-hour exclusive claim window, one live offer per day, expiry cron passing it down the line |
+| 4 | QR queue hardening · floor terminal · SOS | ~~M · M · S~~ **built** | Custom, and the 51-line probe was right — these were cheap. The queue became a Waitwhile-style intake with an invisible staff gate and three warm states; the floor board grew pointer-based drag-and-drop, fitting rooms and paging. SOS rides the same `bus.bus` channel as everything else |
+| 5 | Weekly roster: availability, headcount targets, shortage alerts | ~~L~~ **built (M)** | Smaller than estimated — ~450 lines. Owner-defined shift templates, staff availability, per-role targets, shortage badges, publish-freezes-the-week. `planning` would have bought the grid, not the submission workflow. Does **not** yet feed the booking engine or restrict floor assignment |
 | 5 | Alterations kanban + seamstress capacity | **M** | `repair` buys states/kanban; capacity is ours |
 | 6 | Platform provisioning console + wildcard TLS | **L** | Custom — this is the DB-per-tenant tax made visible |
 | 6 | Arabic full parity | **M** | Core `ar` free; our strings + tenant content are the cost |
+
+---
+
+## What the extended build taught that the first pass did not
+
+1. **Odoo 19 removed things quietly.** `_sql_constraints` is gone — declaring one produces
+   no index and no error, and a duplicate row sails through. `res.groups.category_id`
+   became `privilege_id`. Neither failure announces itself.
+2. **Translatable fields are jsonb, and that is contagious.** A `translate=True` Char
+   cannot carry a uniqueness constraint (whole JSON objects get compared), switching it
+   back does not migrate the column, and every `WHERE name = 'x'` against it fails.
+3. **QWeb translation units include inline markup.** A hand-written msgid never matches;
+   the only reliable source is Odoo's own POT export, which is why
+   `scripts/sync_translations.py` re-keys translations onto exported msgids.
+4. **Catching a ValidationError does not undo the write.** It stops Odoo's handler from
+   rolling the request back, so a rejected value gets committed anyway. Constraint
+   violations you intend to *report* rather than raise need an explicit savepoint.
+5. **Odoo's own drag hook suppresses pointer-events page-wide.** `elementFromPoint`
+   returns `<html>` mid-drag, so hit-testing has to be geometric.
+6. **The test harness lies more often than the code.** A verify check comparing a naive
+   UTC column against psql's local `now()` reported every cron three hours overdue;
+   `create_date` is readonly so an ORM backdate is silently ignored; and anonymous 303s
+   prove the gate, never the page — a 500 for signed-in staff passed every check until
+   the suite learned to sign in.
 
 ---
 
