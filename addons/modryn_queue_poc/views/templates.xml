@@ -40,16 +40,65 @@
         </t>
     </template>
 
-    <template id="checkin_done" name="MODRYN check-in done">
+    <!-- Her private ticket. Three warm states, no numbers, no mechanics:
+         a premium boutique keeps its line invisible. -->
+    <template id="ticket" name="MODRYN walk-in ticket">
         <t t-call="website.layout">
             <div id="wrap" class="oe_structure">
-                <div class="container py-5 text-center" style="max-width: 520px;">
-                    <h1 class="mb-3">You're on the list</h1>
-                    <div class="p-4 mb-3" style="background:#F6F0E6; border-radius:8px;">
-                        <div class="text-muted mb-1">Your place in line</div>
-                        <div style="font-size:3rem; line-height:1;" t-out="position"/>
+                <div class="container py-5 text-center" style="max-width: 520px;"
+                     t-att-data-refresh="'1' if entry.state in ('pending','waiting','called') else None">
+
+                    <t t-if="entry.state == 'called'">
+                        <h1 class="mb-3">We're ready for you</h1>
+                        <p class="text-muted">
+                            <t t-if="stylist"><t t-out="stylist"/> is waiting for you.</t>
+                            <t t-else="">Please come to the desk.</t>
+                        </p>
+                    </t>
+
+                    <t t-elif="is_next">
+                        <h1 class="mb-3">You're next</h1>
+                        <p class="text-muted">We'll be with you in a moment.</p>
+                    </t>
+
+                    <t t-elif="entry.state in ('pending', 'waiting')">
+                        <h1 class="mb-3">We'll be with you soon</h1>
+                        <p class="text-muted">
+                            Make yourself at home — feel free to browse while you wait.
+                            We'll text you when we're ready.
+                        </p>
+                    </t>
+
+                    <t t-elif="entry.state == 'done'">
+                        <h1 class="mb-3">Thank you for visiting</h1>
+                        <p class="text-muted">We hope to see you again soon.</p>
+                    </t>
+
+                    <t t-else="">
+                        <!-- redirected or expired: the same warm exit either way.
+                             She is never told she was held or turned away. -->
+                        <h1 class="mb-3">Today is a busy day</h1>
+                        <p class="text-muted mb-4">
+                            We'd love to give you our full attention — book a fitting
+                            and the boutique is yours.
+                        </p>
+                        <a t-att-href="book_url" class="btn btn-primary btn-lg">Book a fitting</a>
+                    </t>
+
+                    <div t-if="entry.state in ('pending', 'waiting')" class="mt-4">
+                        <a t-att-href="book_url" class="btn btn-link">
+                            Prefer a scheduled visit?
+                        </a>
                     </div>
-                    <p class="text-muted">One of our stylists will be with you shortly</p>
+
+                    <!-- She is holding her phone, not watching a dashboard: a
+                         plain reload every 15s is enough to move her through the
+                         three states, and costs no websocket on a public page.
+                         Only while the ticket is live — a finished page must not
+                         keep polling in her pocket. -->
+                    <script t-if="entry.state in ('pending', 'waiting')" type="text/javascript">
+                        setTimeout(function () { window.location.reload(); }, 15000);
+                    </script>
                 </div>
             </div>
         </t>

@@ -15,9 +15,14 @@ code, which is part of the finding.
 """,
     'category': 'Website',
     'version': '19.0.1.0.0',
-    'depends': ['website', 'bus', 'modryn_theme'],
+        # modryn_portal owns the SMS sender port. Depending on it is safe — portal
+    # reaches website/booking/theme and never the queue, so there is no cycle —
+    # and it is what lets a walk-in be texted when she is next and when it is
+    # her turn.
+    'depends': ['website', 'bus', 'modryn_theme', 'modryn_portal'],
     'data': [
         'security/ir.model.access.csv',
+        'data/ir_cron_data.xml',
         'views/templates.xml',
         'views/queue_views.xml',
     ],

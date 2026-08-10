@@ -42,7 +42,15 @@ class ModrynFloor(http.Controller):
     def _board(self):
         env = request.env
 
-        entries = env['modryn.queue.entry'].sudo().search([('state', '!=', 'done')])
+        pending_entries = env['modryn.queue.entry'].sudo().search([('state', '=', 'pending')])
+        pending = [{
+            'id': e.id,
+            'name': e.name,
+            'phone': e.phone or '',
+            'client_type': e.client_type,
+        } for e in pending_entries]
+
+        entries = env['modryn.queue.entry'].sudo().search([('state', 'in', ('waiting', 'called'))])
         queue = []
         for position, entry in enumerate(entries, start=1):
             queue.append({
@@ -94,6 +102,7 @@ class ModrynFloor(http.Controller):
         } for e in employees]
 
         return {
+            'pending': pending,
             'queue': queue,
             'bookings': bookings,
             'staff': staff,
@@ -162,10 +171,12 @@ class ModrynFloor(http.Controller):
         else:
             values['modryn_helper_ids'] = [(4, employee.id)]
 
-        # Assigning someone to a waiting walk-in IS calling her over.
-        if target == 'queue' and record.state == 'waiting':
-            values['state'] = 'called'
         record.write(values)
+        # Assigning someone to a waiting walk-in IS calling her over — through
+        # modryn_call, so she gets the "we're ready for you" text naming the
+        # stylist rather than a silent state flip.
+        if target == 'queue' and record.state == 'waiting':
+            record.modryn_call(employee=record.modryn_employee_id)
         return self._board()
 
     @http.route('/floor/unassign', type='jsonrpc', auth='user')
@@ -190,6 +201,33 @@ class ModrynFloor(http.Controller):
             })
         else:
             record.write({'modryn_helper_ids': [(3, employee.id)]})
+        return self._board()
+
+    @http.route('/floor/accept', type='jsonrpc', auth='user')
+    def accept(self, entry_id):
+        """Let her into the line.
+
+        Idempotent by state: two managers tapping at once produce one
+        transition, and one 'you're next' text — not two.
+        """
+        if not self._is_manager():
+            return {'error': 'forbidden'}
+        entry = request.env['modryn.queue.entry'].sudo().browse(int(entry_id)).exists()
+        if not entry:
+            return {'error': 'not_found'}
+        entry.modryn_accept()
+        return self._board()
+
+    @http.route('/floor/redirect', type='jsonrpc', auth='user')
+    def redirect_to_booking(self, entry_id):
+        """Too busy — invite her to book instead. She is never told she was
+        turned away; her page simply becomes a warm invitation."""
+        if not self._is_manager():
+            return {'error': 'forbidden'}
+        entry = request.env['modryn.queue.entry'].sudo().browse(int(entry_id)).exists()
+        if not entry:
+            return {'error': 'not_found'}
+        entry.modryn_redirect()
         return self._board()
 
     @http.route('/floor/finish', type='jsonrpc', auth='user')

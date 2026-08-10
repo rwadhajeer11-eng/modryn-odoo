@@ -112,9 +112,14 @@ class ModrynBooking(http.Controller):
 
     # ----------------------------------------------------------------- routes
     @http.route('/book', type='http', auth='public', website=True, sitemap=True)
-    def book_standalone(self, **kw):
-        """Path 2: a slot with no dress attached."""
-        return self._render_form()
+    def book_standalone(self, name=None, phone=None, **kw):
+        """Path 2: a slot with no dress attached.
+
+        name/phone arrive prefilled when a walk-in taps "prefer a scheduled
+        visit" on her ticket — she has already typed them once today.
+        """
+        prefill = {k: v for k, v in (('name', name), ('phone', phone)) if v}
+        return self._render_form(values=prefill)
 
     @http.route('/book/dress/<int:dress_id>',
                 type='http', auth='public', website=True, sitemap=False)

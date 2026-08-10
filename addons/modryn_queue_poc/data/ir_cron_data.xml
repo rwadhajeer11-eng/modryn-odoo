@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Runs after closing. Nobody should still be "waiting" tomorrow
+             morning: an open ticket overnight is a promise the boutique is not
+             keeping, and her page would sit on "we'll be with you soon" forever.
+             Expiring flips it to the warm book-instead message.
+
+             nextcall is pinned to TONIGHT's closing time. Leaving it unset makes
+             Odoo fire the cron immediately on install, which would expire every
+             live ticket on the floor the moment the module is upgraded. -->
+        <record id="ir_cron_expire_tickets" model="ir.cron">
+            <field name="name">MODRYN: close the floor for the day</field>
+            <field name="model_id" ref="model_modryn_queue_entry"/>
+            <field name="state">code</field>
+            <field name="code">model._modryn_expire_open_tickets()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+            <field name="nextcall"
+                   eval="(DateTime.now().replace(hour=16, minute=30, second=0, microsecond=0) + relativedelta(days=1)).strftime('%Y-%m-%d %H:%M:%S')"/>
+            <field name="active" eval="True"/>
+        </record>
+    </data>
+</odoo>

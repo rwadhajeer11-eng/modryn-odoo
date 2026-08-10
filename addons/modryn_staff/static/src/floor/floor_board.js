@@ -17,6 +17,7 @@ export class FloorBoard extends Component {
         this.bus = useService("bus_service");
         this.rootRef = useRef("root");
         this.state = useState({
+            pending: [],
             queue: [],
             bookings: [],
             staff: [],
@@ -109,6 +110,7 @@ export class FloorBoard extends Component {
             return;
         }
         this.state.error = null;
+        this.state.pending = board.pending || [];
         this.state.queue = board.queue;
         this.state.bookings = board.bookings;
         this.state.staff = board.staff;
@@ -185,6 +187,14 @@ export class FloorBoard extends Component {
 
     async finish(entryId) {
         await this.call("/floor/finish", { entry_id: entryId });
+    }
+
+    async acceptPending(entryId) {
+        await this.call("/floor/accept", { entry_id: entryId });
+    }
+
+    async redirectPending(entryId) {
+        await this.call("/floor/redirect", { entry_id: entryId });
     }
 
     // ---------------------------------------------------------- finish modal

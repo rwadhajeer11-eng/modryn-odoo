@@ -559,3 +559,21 @@ msgstr "— בחרי שמלה —"
 #: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
 msgid "— Later —"
 msgstr "— בהמשך —"
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "Add to the line"
+msgstr "הוספה לתור"
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "Invite to book"
+msgstr "הזמנה לקבוע תור"
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "Just arrived"
+msgstr "הגיעו עכשיו"

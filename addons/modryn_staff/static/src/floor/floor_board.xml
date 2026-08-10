@@ -34,6 +34,42 @@
             <div class="modryn_floor_layout">
                 <div class="modryn_floor_main">
 
+                    <!-- ====== arrivals: asked to be seen, not yet in line ======
+                         The gate the customer never sees. Her page says "we'll be
+                         with you soon" from the moment she scans, whichever way
+                         this goes. -->
+                    <section t-if="state.pending.length" class="modryn_panel modryn_pending">
+                        <header class="modryn_panel_head">
+                            <h2>Just arrived</h2>
+                            <span class="modryn_count"><t t-esc="state.pending.length"/></span>
+                        </header>
+                        <table class="table modryn_table align-middle">
+                            <tbody>
+                                <tr t-foreach="state.pending" t-as="p" t-key="p.id">
+                                    <td>
+                                        <div class="modryn_strong"><t t-esc="p.name"/></div>
+                                        <div class="modryn_sub" dir="ltr"><t t-esc="p.phone"/></div>
+                                    </td>
+                                    <td>
+                                        <span class="modryn_badge is_muted">
+                                            <t t-esc="clientTypeLabel(p)"/>
+                                        </span>
+                                    </td>
+                                    <td t-if="state.canAssign" class="text-end">
+                                        <button class="btn btn-sm btn-primary me-2"
+                                                t-on-click="() => this.acceptPending(p.id)">
+                                            Add to the line
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-dark"
+                                                t-on-click="() => this.redirectPending(p.id)">
+                                            Invite to book
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </section>
+
                     <!-- ============ walk-in queue ============ -->
                     <section class="modryn_panel">
                         <header class="modryn_panel_head">

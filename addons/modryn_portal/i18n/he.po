@@ -18,14 +18,39 @@ msgid "%(code)s is your MODRYN code. It expires in %(minutes)s minutes."
 msgstr "%(code)s הוא קוד הכניסה שלך ל-MODRYN. הקוד תקף %(minutes)s דקות."
 
 #. module: modryn_portal
+#: model_terms:ir.ui.view,arch_db:modryn_portal.booking_link
+msgid "<strong>Date:</strong>"
+msgstr "<strong>תאריך:</strong>"
+
+#. module: modryn_portal
+#: model_terms:ir.ui.view,arch_db:modryn_portal.booking_link
+msgid "<strong>Dress:</strong>"
+msgstr "<strong>שמלה:</strong>"
+
+#. module: modryn_portal
+#: model_terms:ir.ui.view,arch_db:modryn_portal.booking_link
+msgid "<strong>Time:</strong>"
+msgstr "<strong>שעה:</strong>"
+
+#. module: modryn_portal
 #: model_terms:ir.ui.view,arch_db:modryn_portal.bookings
 msgid "Book a fitting"
 msgstr "קביעת תור למדידה"
 
 #. module: modryn_portal
+#: model_terms:ir.ui.view,arch_db:modryn_portal.booking_link
+msgid "Book a new fitting"
+msgstr "לקביעת תור חדש"
+
+#. module: modryn_portal
 #: model_terms:ir.ui.view,arch_db:modryn_portal.bookings
 msgid "Cancel"
 msgstr "ביטול"
+
+#. module: modryn_portal
+#: model_terms:ir.ui.view,arch_db:modryn_portal.booking_link
+msgid "Cancel it"
+msgstr "ביטול התור"
 
 #. module: modryn_portal
 #: model_terms:ir.ui.view,arch_db:modryn_portal.cancel_confirm
@@ -59,6 +84,11 @@ msgid "Enter your phone number and we will text you a code."
 msgstr "הזיני את מספר הטלפון שלך ונשלח לך קוד בהודעה."
 
 #. module: modryn_portal
+#: model_terms:ir.ui.view,arch_db:modryn_portal.booking_link
+msgid "I'll be there"
+msgstr "אגיע"
+
+#. module: modryn_portal
 #: model_terms:ir.ui.view,arch_db:modryn_portal.cancel_confirm
 msgid "Keep my appointment"
 msgstr "להשאיר את התור"
@@ -67,6 +97,11 @@ msgstr "להשאיר את התור"
 #: model:ir.actions.server,name:modryn_portal.ir_cron_gc_otp_codes_ir_actions_server
 msgid "MODRYN: purge expired login codes"
 msgstr "MODRYN: ניקוי קודי כניסה שפגו"
+
+#. module: modryn_portal
+#: model:ir.actions.server,name:modryn_portal.ir_cron_booking_reminders_ir_actions_server
+msgid "MODRYN: send 24h fitting reminders"
+msgstr "MODRYN: שליחת תזכורות 24 שעות מראש"
 
 #. module: modryn_portal
 #: model:website.menu,name:modryn_portal.menu_my_appointments
@@ -92,6 +127,16 @@ msgid "Please request a code first."
 msgstr "יש לבקש קוד תחילה."
 
 #. module: modryn_portal
+#. odoo-python
+#: code:addons/modryn_portal/models/booking_comms.py:0
+msgid ""
+"Reminder: your fitting at %(boutique)s is tomorrow, %(date)s at %(time)s. "
+"Confirm or cancel: %(link)s"
+msgstr ""
+"תזכורת: התור שלך ב%(boutique)s מחר, %(date)s בשעה %(time)s. לאישור או ביטול:"
+" %(link)s"
+
+#. module: modryn_portal
 #: model_terms:ir.ui.view,arch_db:modryn_portal.login
 msgid "Send me a code"
 msgstr "שליחת קוד"
@@ -106,6 +151,11 @@ msgstr "יציאה"
 #: code:addons/modryn_portal/controllers/portal.py:0
 msgid "Something went wrong."
 msgstr "משהו השתבש."
+
+#. module: modryn_portal
+#: model_terms:ir.ui.view,arch_db:modryn_portal.booking_link
+msgid "Thank you — see you then"
+msgstr "תודה — נתראה"
 
 #. module: modryn_portal
 #. odoo-python
@@ -124,6 +174,11 @@ msgstr "הקוד אינו נכון."
 #: code:addons/modryn_portal/controllers/portal.py:0
 msgid "That does not look like a valid phone number."
 msgstr "מספר הטלפון אינו תקין."
+
+#. module: modryn_portal
+#: model_terms:ir.ui.view,arch_db:modryn_portal.booking_link
+msgid "This appointment has already passed."
+msgstr "התור כבר עבר."
 
 #. module: modryn_portal
 #. odoo-python
@@ -154,6 +209,11 @@ msgid "We could not send the code. Please try again shortly."
 msgstr "לא הצלחנו לשלוח את הקוד. נא לנסות שוב בקרוב."
 
 #. module: modryn_portal
+#: model_terms:ir.ui.view,arch_db:modryn_portal.booking_link
+msgid "We hope to see you another time."
+msgstr "נשמח לראותך בפעם אחרת."
+
+#. module: modryn_portal
 #: model_terms:ir.ui.view,arch_db:modryn_portal.verify
 msgid "We sent a 6-digit code to"
 msgstr "שלחנו קוד בן 6 ספרות אל"
@@ -167,71 +227,6 @@ msgstr "כן, לבטל"
 #: model_terms:ir.ui.view,arch_db:modryn_portal.bookings
 msgid "You have no upcoming appointments."
 msgstr "אין לך תורים קרובים."
-
-#. module: modryn_portal
-#: model_terms:ir.ui.view,arch_db:modryn_portal.bookings
-msgid "· size"
-msgstr "· מידה"
-
-#. module: modryn_portal
-#: model_terms:ir.ui.view,arch_db:modryn_portal.booking_link
-msgid "<strong>Date:</strong>"
-msgstr "<strong>תאריך:</strong>"
-
-#. module: modryn_portal
-#: model_terms:ir.ui.view,arch_db:modryn_portal.booking_link
-msgid "<strong>Dress:</strong>"
-msgstr "<strong>שמלה:</strong>"
-
-#. module: modryn_portal
-#: model_terms:ir.ui.view,arch_db:modryn_portal.booking_link
-msgid "<strong>Time:</strong>"
-msgstr "<strong>שעה:</strong>"
-
-#. module: modryn_portal
-#: model_terms:ir.ui.view,arch_db:modryn_portal.booking_link
-msgid "Book a new fitting"
-msgstr "לקביעת תור חדש"
-
-#. module: modryn_portal
-#: model_terms:ir.ui.view,arch_db:modryn_portal.booking_link
-msgid "Cancel it"
-msgstr "ביטול התור"
-
-#. module: modryn_portal
-#: model_terms:ir.ui.view,arch_db:modryn_portal.booking_link
-msgid "I'll be there"
-msgstr "אגיע"
-
-#. module: modryn_portal
-#: model:ir.actions.server,name:modryn_portal.ir_cron_booking_reminders_ir_actions_server
-msgid "MODRYN: send 24h fitting reminders"
-msgstr "MODRYN: שליחת תזכורות 24 שעות מראש"
-
-#. module: modryn_portal
-#. odoo-python
-#: code:addons/modryn_portal/models/booking_comms.py:0
-msgid ""
-"Reminder: your fitting at %(boutique)s is tomorrow, %(date)s at %(time)s. "
-"Confirm or cancel: %(link)s"
-msgstr ""
-"תזכורת: התור שלך ב%(boutique)s מחר, %(date)s בשעה %(time)s. לאישור או ביטול:"
-" %(link)s"
-
-#. module: modryn_portal
-#: model_terms:ir.ui.view,arch_db:modryn_portal.booking_link
-msgid "Thank you — see you then"
-msgstr "תודה — נתראה"
-
-#. module: modryn_portal
-#: model_terms:ir.ui.view,arch_db:modryn_portal.booking_link
-msgid "This appointment has already passed."
-msgstr "התור כבר עבר."
-
-#. module: modryn_portal
-#: model_terms:ir.ui.view,arch_db:modryn_portal.booking_link
-msgid "We hope to see you another time."
-msgstr "נשמח לראותך בפעם אחרת."
 
 #. module: modryn_portal
 #: model_terms:ir.ui.view,arch_db:modryn_portal.booking_link
@@ -256,3 +251,8 @@ msgid ""
 " appointment: %(link)s"
 msgstr ""
 "התור שלך ב%(boutique)s נקבע ל-%(date)s בשעה %(time)s. לניהול התור: %(link)s"
+
+#. module: modryn_portal
+#: model_terms:ir.ui.view,arch_db:modryn_portal.bookings
+msgid "· size"
+msgstr "· מידה"

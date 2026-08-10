@@ -397,3 +397,9 @@ $modryn-success: #2E6B4F;
     font-weight: 600;
     font-size: 0.875rem;
 }
+
+// Arrivals waiting on a staff decision. Visually distinct from the line itself
+// so a manager can see at a glance that someone is standing at the desk.
+.modryn_pending {
+    border-inline-start: 3px solid $modryn-gold;
+}

@@ -97,11 +97,6 @@ msgid "No one is waiting right now."
 msgstr "لا توجد عميلات في الطابور حالياً."
 
 #. module: modryn_queue_poc
-#: model_terms:ir.ui.view,arch_db:modryn_queue_poc.checkin_done
-msgid "One of our stylists will be with you shortly"
-msgstr "إحدى مستشارات الأناقة ستكون معك بعد قليل"
-
-#. module: modryn_queue_poc
 #. odoo-javascript
 #: code:addons/modryn_queue_poc/static/src/queue_board/queue_board.xml:0
 #: model:ir.model.fields,field_description:modryn_queue_poc.field_modryn_queue_entry__phone
@@ -159,11 +154,80 @@ msgid "Welcome"
 msgstr "أهلاً وسهلاً"
 
 #. module: modryn_queue_poc
-#: model_terms:ir.ui.view,arch_db:modryn_queue_poc.checkin_done
-msgid "You're on the list"
-msgstr "تم تسجيلك بنجاح"
+#: model_terms:ir.ui.view,arch_db:modryn_queue_poc.ticket
+msgid "Book a fitting"
+msgstr "حجز موعد"
 
 #. module: modryn_queue_poc
-#: model_terms:ir.ui.view,arch_db:modryn_queue_poc.checkin_done
-msgid "Your place in line"
-msgstr "مكانك في الطابور"
+#: model_terms:ir.ui.view,arch_db:modryn_queue_poc.ticket
+msgid "Please come to the desk."
+msgstr "يرجى التوجه إلى المكتب."
+
+#. module: modryn_queue_poc
+#: model_terms:ir.ui.view,arch_db:modryn_queue_poc.ticket
+msgid "Prefer a scheduled visit?"
+msgstr "تفضلين موعدًا محددًا؟"
+
+#. module: modryn_queue_poc
+#: model_terms:ir.ui.view,arch_db:modryn_queue_poc.ticket
+msgid "Thank you for visiting"
+msgstr "شكرًا لزيارتك"
+
+#. module: modryn_queue_poc
+#: model_terms:ir.ui.view,arch_db:modryn_queue_poc.ticket
+msgid "Today is a busy day"
+msgstr "اليوم يوم مزدحم"
+
+#. module: modryn_queue_poc
+#: model_terms:ir.ui.view,arch_db:modryn_queue_poc.ticket
+msgid "We hope to see you again soon."
+msgstr "نتطلع لرؤيتك قريبًا."
+
+#. module: modryn_queue_poc
+#: model_terms:ir.ui.view,arch_db:modryn_queue_poc.ticket
+msgid "We'll be with you in a moment."
+msgstr "سنكون معك بعد لحظات."
+
+#. module: modryn_queue_poc
+#: model_terms:ir.ui.view,arch_db:modryn_queue_poc.ticket
+msgid "We'll be with you soon"
+msgstr "سنكون معك قريبًا"
+
+#. module: modryn_queue_poc
+#. odoo-python
+#: code:addons/modryn_queue_poc/models/queue_entry.py:0
+msgid "We're fully booked today. Book a fitting with us here: %(link)s"
+msgstr "اليوم مكتمل الحجوزات. يمكنك حجز موعد هنا: %(link)s"
+
+#. module: modryn_queue_poc
+#: model_terms:ir.ui.view,arch_db:modryn_queue_poc.ticket
+msgid "We're ready for you"
+msgstr "نحن جاهزون لاستقبالك"
+
+#. module: modryn_queue_poc
+#. odoo-python
+#: code:addons/modryn_queue_poc/models/queue_entry.py:0
+msgid "We're ready for you — %(stylist)s is waiting."
+msgstr "نحن جاهزون لاستقبالك — %(stylist)s بانتظارك."
+
+#. module: modryn_queue_poc
+#. odoo-python
+#: code:addons/modryn_queue_poc/models/queue_entry.py:0
+msgid "We're ready for you — please come to the desk."
+msgstr "نحن جاهزون لاستقبالك — يرجى التوجه إلى المكتب."
+
+#. module: modryn_queue_poc
+#: model_terms:ir.ui.view,arch_db:modryn_queue_poc.ticket
+msgid "You're next"
+msgstr "أنت التالية"
+
+#. module: modryn_queue_poc
+#. odoo-python
+#: code:addons/modryn_queue_poc/models/queue_entry.py:0
+msgid "You're next — we'll be with you in a moment."
+msgstr "أنت التالية — سنكون معك بعد لحظات."
+
+#. module: modryn_queue_poc
+#: model_terms:ir.ui.view,arch_db:modryn_queue_poc.ticket
+msgid "is waiting for you."
+msgstr "بانتظارك."

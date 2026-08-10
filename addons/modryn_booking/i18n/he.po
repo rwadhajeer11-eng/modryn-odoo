@@ -68,15 +68,40 @@ msgid "Book a fitting"
 msgstr "קביעת תור למדידה"
 
 #. module: modryn_booking
+#: model:ir.model.fields,field_description:modryn_booking.field_calendar_event__modryn_booking_type
+msgid "Booking type"
+msgstr "סוג התור"
+
+#. module: modryn_booking
 #: model_terms:ir.ui.view,arch_db:modryn_booking.booking_form
 msgid "Confirm appointment"
 msgstr "אישור התור"
+
+#. module: modryn_booking
+#: model:ir.model.fields.selection,name:modryn_booking.selection__calendar_event__modryn_booking_type__consult
+msgid "Consultation"
+msgstr "פגישת ייעוץ"
 
 #. module: modryn_booking
 #. odoo-python
 #: code:addons/modryn_booking/controllers/main.py:0
 msgid "Consultation: %s"
 msgstr "פגישת ייעוץ: %s"
+
+#. module: modryn_booking
+#: model:ir.model.fields,field_description:modryn_booking.field_calendar_event__modryn_customer_phone
+msgid "Customer phone"
+msgstr "טלפון הלקוחה"
+
+#. module: modryn_booking
+#: model:ir.model.fields,field_description:modryn_booking.field_calendar_event__modryn_variant_id
+msgid "Dress / size"
+msgstr "שמלה / מידה"
+
+#. module: modryn_booking
+#: model:ir.model.fields.selection,name:modryn_booking.selection__calendar_event__modryn_booking_type__dress
+msgid "Dress fitting"
+msgstr "מדידה"
 
 #. module: modryn_booking
 #. odoo-python
@@ -136,6 +161,11 @@ msgid "Size"
 msgstr "מידה"
 
 #. module: modryn_booking
+#: model:ir.model.fields,field_description:modryn_booking.field_calendar_event__modryn_terms_accepted_at
+msgid "Terms accepted at"
+msgstr "תנאים אושרו בתאריך"
+
+#. module: modryn_booking
 #. odoo-python
 #: code:addons/modryn_booking/controllers/main.py:0
 msgid "That time isn't valid"
@@ -154,40 +184,10 @@ msgstr "השמלה תשוריין לפגישה"
 
 #. module: modryn_booking
 #: model_terms:ir.ui.view,arch_db:modryn_booking.booking_confirmed
-msgid "Your appointment is booked"
-msgstr "התור נקבע"
-
-#. module: modryn_booking
-#: model:ir.model.fields,field_description:modryn_booking.field_calendar_event__modryn_booking_type
-msgid "Booking type"
-msgstr "סוג התור"
-
-#. module: modryn_booking
-#: model:ir.model.fields.selection,name:modryn_booking.selection__calendar_event__modryn_booking_type__consult
-msgid "Consultation"
-msgstr "פגישת ייעוץ"
-
-#. module: modryn_booking
-#: model:ir.model.fields,field_description:modryn_booking.field_calendar_event__modryn_customer_phone
-msgid "Customer phone"
-msgstr "טלפון הלקוחה"
-
-#. module: modryn_booking
-#: model:ir.model.fields,field_description:modryn_booking.field_calendar_event__modryn_variant_id
-msgid "Dress / size"
-msgstr "שמלה / מידה"
-
-#. module: modryn_booking
-#: model:ir.model.fields.selection,name:modryn_booking.selection__calendar_event__modryn_booking_type__dress
-msgid "Dress fitting"
-msgstr "מדידה"
-
-#. module: modryn_booking
-#: model:ir.model.fields,field_description:modryn_booking.field_calendar_event__modryn_terms_accepted_at
-msgid "Terms accepted at"
-msgstr "תנאים אושרו בתאריך"
+msgid "We've sent you a confirmation by text"
+msgstr "שלחנו לך אישור בהודעה"
 
 #. module: modryn_booking
 #: model_terms:ir.ui.view,arch_db:modryn_booking.booking_confirmed
-msgid "We've sent you a confirmation by text"
-msgstr "שלחנו לך אישור בהודעה"
+msgid "Your appointment is booked"
+msgstr "התור נקבע"

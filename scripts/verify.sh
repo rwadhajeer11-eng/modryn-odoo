@@ -142,6 +142,24 @@ fetch "$BELLA/en/floor"
 C=$(code "$BELLA/en/floor")
 [ "$C" != "200" ] && ok "/en/floor refuses anonymous ($C)" || bad "/en/floor anonymous" "returned 200"
 
+head_ "10a. authenticated surfaces actually render"
+# Anonymous 303s prove the GATE, not the PAGE. A non-stored field used in a
+# search domain took /floor down with a 500 while every anonymous check still
+# passed — so sign in and look at the real thing.
+JAR=$(mktemp); TOKEN_URL="$BELLA/staff/login"
+CT=$(curl -sg -c "$JAR" "$TOKEN_URL" | grep -oE 'name="csrf_token" value="[^"]*"' | sed 's/.*value="//;s/"//')
+curl -sg -b "$JAR" -c "$JAR" -o /dev/null -X POST "$TOKEN_URL" \
+  --data-urlencode "username=sara" --data-urlencode "password=modryn2026" --data-urlencode "csrf_token=$CT"
+for path in /floor /atelier; do
+  C=$(curl -sg -b "$JAR" -o /dev/null -w "%{http_code}" "$BELLA$path")
+  [ "$C" = "200" ] && ok "$path renders for a manager" || bad "$path for a manager" "got $C"
+done
+BOARD=$(curl -sg -b "$JAR" -H "Content-Type: application/json" \
+  -d '{"jsonrpc":"2.0","method":"call","params":{}}' "$BELLA/floor/data")
+echo "$BOARD" | grep -q '"result"' && ok "/floor/data returns a board" || bad "/floor/data" "no result — server error?"
+echo "$BOARD" | grep -q '"pending"' && ok "board carries the arrivals gate" || bad "board pending panel" "key missing"
+rm -f "$JAR"
+
 head_ "10b. comms engine"
 # The confirmation page promises an SMS; these prove the promise is kept.
 RTBL=$(psql -d bella -tAc "select count(*) from information_schema.columns where table_name='calendar_event' and column_name in ('modryn_reminder_sent_at','modryn_confirmed_at','modryn_lang')")
@@ -153,6 +171,19 @@ CRON=$(psql -d bella -tAc "select count(*) from ir_cron c join ir_act_server a o
 # The submit-time collision guard must agree with the slot list about cancelled
 # bookings, or a freed slot can be offered and then refused.
 grep -q "modryn_cancelled_at" addons/modryn_booking/controllers/main.py && ok "collision guard honours cancellations" || bad "collision guard" "still counts cancelled bookings"
+
+head_ "10c. premium waitlist"
+QCOLS=$(psql -d bella -tAc "select count(*) from information_schema.columns where table_name='modryn_queue_entry' and column_name in ('access_token','next_notified_at','turn_notified_at')")
+[ "$QCOLS" = "3" ] && ok "ticket + notification fields exist" || bad "queue fields" "expected 3, got $QCOLS"
+# Her private page must not be guessable and must not leak on a bad token.
+[ "$(code "$BELLA/q/garbagegarbagegarbage")" = "404" ] && ok "unknown ticket token 404s" || bad "ticket token" "did not 404"
+# The gate is staff-only; a customer must never be able to accept herself.
+ACC=$(curl -sg -H "Content-Type: application/json" -d '{"jsonrpc":"2.0","method":"call","params":{"entry_id":1}}' "$BELLA/floor/accept" | grep -c '"result"')
+[ "$ACC" = "0" ] && ok "/floor/accept refuses anonymous" || bad "/floor/accept anonymous" "returned a result"
+# The closing cron must be scheduled ahead, never "now" — firing on install
+# would expire every live ticket on the floor.
+FUT=$(psql -d bella -tAc "select count(*) from ir_cron c join ir_act_server a on a.id=c.ir_actions_server_id where a.code like '%_modryn_expire_open_tickets%' and c.nextcall > now()")
+[ "${FUT:-0}" = "1" ] && ok "closing cron scheduled in the future" || bad "closing cron" "missing or due immediately"
 
 head_ "11. instance hygiene"
 # Without db_name, Odoo's cron enumerates EVERY database on the server —

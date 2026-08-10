@@ -54,11 +54,21 @@ class HrEmployee(models.Model):
         # booking or a called walk-in. Alteration work deliberately does not
         # count: a seamstress sewing in the back is still callable, and her
         # workshop load shows on the atelier dashboard instead.
+        # Helpers are found through modryn.floor.helper, NOT by putting
+        # modryn_helper_ids in a domain: that field is a non-stored compute over
+        # the through-model, and Odoo cannot turn a non-stored field into SQL —
+        # it raises "Cannot convert ... to SQL because it is not stored" and
+        # takes the whole floor board down with it.
+        Link = self.env['modryn.floor.helper'].sudo()
+        helper_links = Link.search([('employee_id', 'in', self.ids)])
+        helper_event_ids = helper_links.mapped('event_id').ids
+        helper_entry_ids = helper_links.mapped('entry_id').ids
+
         booking_domain = [
             '&', '&', ('modryn_is_booking', '=', True),
             '&', ('start', '<=', now), ('stop', '>=', now),
             '|', ('modryn_employee_id', 'in', self.ids),
-            ('modryn_helper_ids', 'in', self.ids),
+            ('id', 'in', helper_event_ids),
         ]
         # Cancelled bookings occupy nobody. The field ships with modryn_portal,
         # which may not be installed in this database.
@@ -69,7 +79,7 @@ class HrEmployee(models.Model):
         queue = self.env['modryn.queue.entry'].sudo().search([
             '&', ('state', '=', 'called'),
             '|', ('modryn_employee_id', 'in', self.ids),
-            ('modryn_helper_ids', 'in', self.ids),
+            ('id', 'in', helper_entry_ids),
         ])
 
         busy = {}
