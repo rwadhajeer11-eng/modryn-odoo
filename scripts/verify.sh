@@ -122,11 +122,15 @@ TASKS=$(psql -d bella -tAc "select count(*) from modryn_alteration_task" 2>/dev/
 [ "${TASKS:-0}" -ge 1 ] && ok "alteration tasks exist ($TASKS)" || bad "alteration tasks" "none"
 
 head_ "10. dispatch board"
-# The helpers model: one primary + any helpers, on both walk-ins and bookings.
-for tbl in modryn_queue_helper_rel modryn_event_helper_rel; do
-  T=$(psql -d bella -tAc "select count(*) from information_schema.tables where table_name='$tbl'")
-  [ "$T" = "1" ] && ok "$tbl exists" || bad "$tbl" "missing"
-done
+# Helpers live in a through-model, not a bare m2m: join order decides who is
+# promoted when a primary leaves, and an m2m would order by employee NAME.
+T=$(psql -d bella -tAc "select count(*) from information_schema.tables where table_name='modryn_floor_helper'")
+[ "$T" = "1" ] && ok "helper through-model exists" || bad "modryn_floor_helper" "missing"
+OLD=$(psql -d bella -tAc "select count(*) from information_schema.tables where table_name in ('modryn_queue_helper_rel','modryn_event_helper_rel')")
+[ "$OLD" = "0" ] && ok "superseded helper m2m tables dropped" || bad "old helper tables" "$OLD still present"
+# Both card kinds must be linkable, or one of them silently loses its helpers.
+COLS=$(psql -d bella -tAc "select count(*) from information_schema.columns where table_name='modryn_floor_helper' and column_name in ('entry_id','event_id','employee_id')")
+[ "$COLS" = "3" ] && ok "helper links walk-ins and bookings" || bad "helper columns" "expected 3, got $COLS"
 # jsonrpc action routes must refuse a session-less caller (Odoo answers with a
 # SessionExpired error payload, never a result).
 ASSIGN=$(curl -sg -H "Content-Type: application/json" \
@@ -138,7 +142,12 @@ fetch "$BELLA/en/floor"
 C=$(code "$BELLA/en/floor")
 [ "$C" != "200" ] && ok "/en/floor refuses anonymous ($C)" || bad "/en/floor anonymous" "returned 200"
 
-head_ "11. MODRYN repo untouched"
+head_ "11. instance hygiene"
+# Without db_name, Odoo's cron enumerates EVERY database on the server —
+# including MODRYN's f*_test — and errors against each one.
+grep -qE '^db_name *=' odoo.conf && ok "db_name bounds this instance" || bad "db_name" "absent from odoo.conf — crons will roam"
+
+head_ "12. MODRYN repo untouched"
 MOD="/Users/mrwen/Documents/Github/Ryan + rawad + mrwen"
 DIRTY=$(cd "$MOD" && git status --porcelain | grep -v "modryn-storefront.png" | wc -l | tr -d ' ')
 [ "$DIRTY" = "0" ] && ok "MODRYN working tree clean of our changes" || bad "MODRYN untouched" "$DIRTY unexpected entries"

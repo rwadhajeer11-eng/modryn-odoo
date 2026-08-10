@@ -178,12 +178,12 @@ class ModrynFloor(http.Controller):
             return {'error': 'not_found'}
 
         if record.modryn_employee_id == employee:
-            # The card must not go headless while people are still on it: a
-            # helper steps up. ponytail: an m2m reads in the comodel's _order,
-            # so "first" here means first by name, not longest-serving — true
-            # join-order promotion needs a through-model with a joined_at.
-            helpers = record.modryn_helper_ids
-            promoted = helpers[:1]
+            # The card must not go headless while people are still on it: the
+            # LONGEST-SERVING helper steps up. That order comes from the
+            # modryn.floor.helper through-model, because a plain m2m reads in
+            # employee-name order and would promote whoever is alphabetically
+            # first — a fact about the alphabet, not about the floor.
+            promoted = record.modryn_oldest_helper()
             record.write({
                 'modryn_employee_id': promoted.id if promoted else False,
                 'modryn_helper_ids': [(3, promoted.id)] if promoted else [(5,)],

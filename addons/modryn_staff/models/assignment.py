@@ -1,6 +1,82 @@
 from odoo import api, fields, models
 
 
+class ModrynFloorHelper(models.Model):
+    """One helper's stint on one customer card.
+
+    An explicit through-model rather than a bare many2many, because WHEN someone
+    joined is load-bearing: when a primary leaves, the longest-serving helper
+    steps up. A many2many reads in the comodel's _order — by employee name — so
+    promotion silently picked whoever was alphabetically first, which is not a
+    fact about the floor at all.
+    """
+
+    _name = 'modryn.floor.helper'
+    _description = 'Helper assigned to a customer'
+    _order = 'create_date asc, id asc'
+
+    employee_id = fields.Many2one('hr.employee', required=True, ondelete='cascade', index=True)
+    entry_id = fields.Many2one('modryn.queue.entry', ondelete='cascade', index=True)
+    event_id = fields.Many2one('calendar.event', ondelete='cascade', index=True)
+
+    _entry_uniq = models.Constraint(
+        'unique(entry_id, employee_id)', "She is already helping with this walk-in.")
+    _event_uniq = models.Constraint(
+        'unique(event_id, employee_id)', "She is already helping with this appointment.")
+
+
+class ModrynHelperMixin(models.AbstractModel):
+    """Shared helper plumbing for the two kinds of customer card."""
+
+    _name = 'modryn.helper.mixin'
+    _description = 'Customer card with helpers'
+
+    # Compute + inverse keeps every existing caller (board payloads, occupancy,
+    # the (4,)/(3,)/(5,) writes the controllers already do) working unchanged
+    # while join order lives in the through-model underneath.
+    modryn_helper_ids = fields.Many2many(
+        'hr.employee',
+        string="Helpers",
+        compute='_compute_modryn_helper_ids',
+        inverse='_inverse_modryn_helper_ids',
+        store=False,
+    )
+
+    def _helper_field(self):
+        return 'entry_id' if self._name == 'modryn.queue.entry' else 'event_id'
+
+    def _helper_links(self):
+        """This card's helper stints, oldest first."""
+        return self.env['modryn.floor.helper'].sudo().search(
+            [(self._helper_field(), '=', self.id)])
+
+    def _compute_modryn_helper_ids(self):
+        for record in self:
+            links = record._helper_links() if record.id else self.env['modryn.floor.helper']
+            # Preserve join order: browse the ids in the order the links came back.
+            record.modryn_helper_ids = [(6, 0, links.mapped('employee_id').ids)]
+
+    def _inverse_modryn_helper_ids(self):
+        Link = self.env['modryn.floor.helper'].sudo()
+        for record in self:
+            field = record._helper_field()
+            existing = record._helper_links()
+            wanted = set(record.modryn_helper_ids.ids)
+            # Drop departures, keep survivors untouched so their create_date —
+            # and therefore their place in the promotion order — survives.
+            existing.filtered(lambda l: l.employee_id.id not in wanted).unlink()
+            have = set(existing.exists().mapped('employee_id').ids)
+            for employee_id in record.modryn_helper_ids.ids:
+                if employee_id not in have:
+                    Link.create({field: record.id, 'employee_id': employee_id})
+
+    def modryn_oldest_helper(self):
+        """The helper who has been on this card longest, or an empty recordset."""
+        self.ensure_one()
+        link = self._helper_links()[:1]
+        return link.employee_id if link else self.env['hr.employee']
+
+
 class CalendarEvent(models.Model):
     """Who is serving this appointment: one accountable primary, any helpers.
 
@@ -9,7 +85,8 @@ class CalendarEvent(models.Model):
     and go without changing who owns the customer.
     """
 
-    _inherit = 'calendar.event'
+    _name = 'calendar.event'
+    _inherit = ['calendar.event', 'modryn.helper.mixin']
 
     modryn_employee_id = fields.Many2one(
         'hr.employee',
@@ -17,14 +94,6 @@ class CalendarEvent(models.Model):
         index=True,
         ondelete='set null',
     )
-    modryn_helper_ids = fields.Many2many(
-        'hr.employee',
-        'modryn_event_helper_rel',
-        'event_id',
-        'employee_id',
-        string="Helpers",
-    )
-
     ASSIGNMENT_FIELDS = ('modryn_employee_id', 'modryn_helper_ids')
 
     def write(self, vals):
@@ -45,7 +114,8 @@ class CalendarEvent(models.Model):
 class ModrynQueueEntry(models.Model):
     """Who is serving this walk-in: same primary + helpers shape as bookings."""
 
-    _inherit = 'modryn.queue.entry'
+    _name = 'modryn.queue.entry'
+    _inherit = ['modryn.queue.entry', 'modryn.helper.mixin']
 
     modryn_employee_id = fields.Many2one(
         'hr.employee',
@@ -53,14 +123,6 @@ class ModrynQueueEntry(models.Model):
         index=True,
         ondelete='set null',
     )
-    modryn_helper_ids = fields.Many2many(
-        'hr.employee',
-        'modryn_queue_helper_rel',
-        'entry_id',
-        'employee_id',
-        string="Helpers",
-    )
-
     def _payload(self):
         # Extend the existing bus payload so helper changes reach every open
         # board through the push modryn_queue_poc already wired up.
