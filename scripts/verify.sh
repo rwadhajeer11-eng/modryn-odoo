@@ -223,6 +223,28 @@ for route in /floor/sos /floor/sos/ack /floor/sos/resolve /floor/room; do
 done
 [ "$(code "$BELLA/manage/rooms")" != "200" ] && ok "/manage/rooms refuses anonymous" || bad "/manage/rooms anonymous" "returned 200"
 
+head_ "10f. weekly roster"
+TPLS=$(psql -d bella -tAc "select count(*) from modryn_shift_template where active")
+[ "${TPLS:-0}" -ge 5 ] && ok "shift templates seeded ($TPLS)" || bad "shift templates" "only ${TPLS:-0}"
+# Slots are generated on read, so opening the page is what proves it.
+SLOTS=$(psql -d bella -tAc "select count(*) from modryn_shift_slot")
+[ "${SLOTS:-0}" -ge 5 ] && ok "next week materialised ($SLOTS slots)" || bad "shift slots" "only ${SLOTS:-0}"
+# The Israeli week starts Sunday. Python weekday(): Sun=6.
+SUN=$(psql -d bella -tAc "select count(*) from modryn_shift_slot where extract(dow from week_start) <> 0")
+[ "${SUN:-1}" = "0" ] && ok "weeks start on Sunday" || bad "week start" "$SUN slots start mid-week"
+# Hours are snapshots: editing a template must not rewrite a week people agreed to.
+grep -q "'start_hour': template.start_hour" addons/modryn_roster/models/shift_slot.py && ok "slots snapshot their hours" || bad "hour snapshot" "slots read hours from the template"
+DUP=$(psql -d bella -tAc "select count(*) from (select slot_id, employee_id from modryn_availability group by 1,2 having count(*) > 1) x")
+[ "${DUP:-0}" = "0" ] && ok "no duplicate availability rows" || bad "availability duplicates" "$DUP found"
+# Every roster route is staff-only, and publishing is manager-only.
+for route in /roster/available /roster/assign /roster/publish; do
+  R=$(curl -sg -H "Content-Type: application/json" -d '{"jsonrpc":"2.0","method":"call","params":{}}' "$BELLA$route" | grep -c '"result"')
+  [ "$R" = "0" ] && ok "$route refuses anonymous" || bad "$route anonymous" "returned a result"
+done
+for path in /roster /manage/shifts; do
+  [ "$(code "$BELLA$path")" != "200" ] && ok "$path refuses anonymous" || bad "$path anonymous" "returned 200"
+done
+
 head_ "11. instance hygiene"
 # Without db_name, Odoo's cron enumerates EVERY database on the server —
 # including MODRYN's f*_test — and errors against each one.

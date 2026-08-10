@@ -30,17 +30,9 @@ msgstr "<option value=\"\">— בחרי תפקיד —</option>"
 
 #. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manage_layout
+#: model_terms:ir.ui.view,arch_db:modryn_staff.staff_layout
 msgid "<span class=\"modryn_admin_brand\">MODRYN</span>"
 msgstr "MODRYN"
-
-#. module: modryn_staff
-#: model_terms:ir.ui.view,arch_db:modryn_staff.floor_page
-msgid ""
-"<span class=\"modryn_admin_brand\">MODRYN</span>\n"
-"                    <span class=\"modryn_admin_link is_active\">Floor board</span>"
-msgstr ""
-"<span class=\"modryn_admin_brand\">MODRYN</span>\n"
-"                    <span class=\"modryn_admin_link is_active\">מסך משמרת</span>"
 
 #. module: modryn_staff
 #. odoo-python
@@ -253,6 +245,7 @@ msgstr "חדרי מדידה"
 
 #. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manage_layout
+#: model_terms:ir.ui.view,arch_db:modryn_staff.staff_layout
 msgid "Floor board"
 msgstr "מסך משמרת"
 
@@ -311,7 +304,7 @@ msgid "MODRYN: escalate unanswered calls for help"
 msgstr "MODRYN: העברת קריאות עזרה שלא נענו"
 
 #. module: modryn_staff
-#: model_terms:ir.ui.view,arch_db:modryn_staff.floor_page
+#: model_terms:ir.ui.view,arch_db:modryn_staff.staff_layout
 msgid "Manage staff"
 msgstr "ניהול צוות"
 
@@ -544,8 +537,8 @@ msgid "Sign in"
 msgstr "כניסה"
 
 #. module: modryn_staff
-#: model_terms:ir.ui.view,arch_db:modryn_staff.floor_page
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manage_layout
+#: model_terms:ir.ui.view,arch_db:modryn_staff.staff_layout
 msgid "Sign out"
 msgstr "יציאה"
 
@@ -682,8 +675,8 @@ msgid "Who do you need?"
 msgstr "את מי את צריכה?"
 
 #. module: modryn_staff
-#: model_terms:ir.ui.view,arch_db:modryn_staff.floor_page
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manage_layout
+#: model_terms:ir.ui.view,arch_db:modryn_staff.staff_layout
 msgid "Workshop"
 msgstr "סדנה"
 

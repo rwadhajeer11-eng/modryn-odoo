@@ -1,0 +1,63 @@
+// rgba() only — LibSass rejects Color Level 4 and takes the whole frontend
+// bundle down with it, not just the offending rule.
+$modryn-surface: #F6F0E6;
+$modryn-border: #E4DACA;
+$modryn-gold: #C5A059;
+$modryn-ink-muted: #6B5D4F;
+
+.modryn_roster_nav {
+    display: flex;
+    gap: 8px;
+}
+
+.modryn_roster_grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 16px;
+}
+
+.modryn_shift_card {
+    background: #FFFFFF;
+    border: 1px solid $modryn-border;
+    border-radius: 8px;
+    padding: 16px;
+    display: grid;
+    gap: 10px;
+    align-content: start;
+
+    // Short-staffed. The badges say which role and by how many, so the tint is
+    // reinforcement rather than the only signal.
+    &.is_short {
+        border-inline-start: 3px solid $modryn-gold;
+        background: rgba(197, 160, 89, 0.06);
+    }
+
+    &.is_published {
+        background: $modryn-surface;
+    }
+}
+
+.modryn_shift_head {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.modryn_shift_cover {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.modryn_shift_people {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.modryn_shift_assign {
+    border-block-start: 1px solid $modryn-border;
+    padding-block-start: 10px;
+    display: grid;
+    gap: 6px;
+}

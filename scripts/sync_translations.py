@@ -34,6 +34,7 @@ ADDONS = [
     ('modryn_staff', ['he']),
     ('modryn_portal', ['he', 'ar']),
     ('modryn_atelier', ['he']),
+    ('modryn_roster', ['he']),
 ]
 
 TAG_RE = re.compile(r'<[^>]+>')

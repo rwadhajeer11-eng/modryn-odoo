@@ -1,0 +1,7 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_modryn_shift_template_owner,modryn.shift.template.owner,model_modryn_shift_template,modryn_staff.group_boutique_owner,1,1,1,1
+access_modryn_shift_template_internal,modryn.shift.template.internal,model_modryn_shift_template,base.group_user,1,0,0,0
+access_modryn_shift_target_owner,modryn.shift.target.owner,model_modryn_shift_target,modryn_staff.group_boutique_owner,1,1,1,1
+access_modryn_shift_target_internal,modryn.shift.target.internal,model_modryn_shift_target,base.group_user,1,1,1,1
+access_modryn_shift_slot_internal,modryn.shift.slot.internal,model_modryn_shift_slot,base.group_user,1,1,1,1
+access_modryn_availability_internal,modryn.availability.internal,model_modryn_availability,base.group_user,1,1,1,1

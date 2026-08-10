@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <template id="floor_page" name="MODRYN floor terminal">
+    <!-- The chrome every staff-terminal page wears. Extracted so a second page
+         (the roster) does not have to copy the nav and drift out of step with
+         it — the links, the language toggle and the RTL rule live in one place.
+         Callers set `active_tab`. -->
+    <template id="staff_layout" name="MODRYN staff layout">
         <t t-call="web.frontend_layout">
             <t t-set="no_header" t-value="true"/>
             <t t-set="no_footer" t-value="true"/>
@@ -11,7 +15,10 @@
                  class="modryn_admin">
                 <nav class="modryn_admin_nav">
                     <span class="modryn_admin_brand">MODRYN</span>
-                    <span class="modryn_admin_link is_active">Floor board</span>
+                    <a href="/floor"
+                       t-attf-class="modryn_admin_link #{'is_active' if active_tab == 'floor' else ''}">Floor board</a>
+                    <a href="/roster"
+                       t-attf-class="modryn_admin_link #{'is_active' if active_tab == 'roster' else ''}">Roster</a>
                     <a t-if="request.env.user.has_group('modryn_staff.group_shift_manager')"
                        href="/atelier" class="modryn_admin_link">Workshop</a>
                     <a t-if="request.env.user.has_group('modryn_staff.group_boutique_owner')"
@@ -23,15 +30,22 @@
                     <a href="/staff/logout" class="modryn_admin_link modryn_admin_logout">Sign out</a>
                 </nav>
                 <main class="modryn_admin_main">
-                    <!-- The board is an OWL component so it can hold a live bus
-                         subscription. Mounted by web's public_components
-                         interaction, which scans for <owl-component name=...>. -->
-                    <owl-component name="modryn_staff.floor_board"/>
-                    <noscript>
-                        <p class="modryn_empty">The floor board needs JavaScript.</p>
-                    </noscript>
+                    <t t-out="0"/>
                 </main>
             </div>
+        </t>
+    </template>
+
+    <template id="floor_page" name="MODRYN floor terminal">
+        <t t-call="modryn_staff.staff_layout">
+            <t t-set="active_tab" t-value="'floor'"/>
+            <!-- The board is an OWL component so it can hold a live bus
+                 subscription. Mounted by web's public_components interaction,
+                 which scans for <owl-component name=...>. -->
+            <owl-component name="modryn_staff.floor_board"/>
+            <noscript>
+                <p class="modryn_empty">The floor board needs JavaScript.</p>
+            </noscript>
         </t>
     </template>
 

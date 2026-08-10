@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="manage_nav_shifts" inherit_id="modryn_staff.manage_layout">
+        <xpath expr="//a[@href='/manage/rooms']" position="after">
+            <a href="/manage/shifts"
+               t-attf-class="modryn_admin_link #{'is_active' if active_tab == 'shifts' else ''}">Shifts</a>
+        </xpath>
+    </template>
+
+    <!-- ================= next week's rota ================= -->
+    <template id="roster_page" name="Roster">
+        <t t-call="modryn_staff.staff_layout">
+            <t t-set="active_tab" t-value="'roster'"/>
+            <div class="d-flex align-items-baseline justify-content-between mb-1">
+                <h1 class="mb-0">Next week</h1>
+                <span class="modryn_sub">
+                    <t t-esc="week_start.strftime('%d.%m')"/>–<t t-esc="week_end.strftime('%d.%m.%Y')"/>
+                </span>
+            </div>
+            <p class="modryn_sub mb-4">
+                <t t-if="is_manager">
+                    Tick who is working. A shift turns amber when it is short of the roles it needs.
+                </t>
+                <t t-else="">
+                    Tell us which shifts you can work. Your manager builds the rota from this.
+                </t>
+            </p>
+
+            <div class="modryn_roster_nav mb-3">
+                <a t-attf-href="/roster?week=#{week_offset - 1}"
+                   t-if="week_offset &gt; -1" class="btn btn-sm btn-outline-dark">Previous week</a>
+                <a t-attf-href="/roster?week=#{week_offset + 1}"
+                   t-if="week_offset &lt; 1" class="btn btn-sm btn-outline-dark">Following week</a>
+            </div>
+
+            <div class="modryn_roster_grid"
+                 t-att-data-week="week_offset"
+                 t-att-data-manager="'1' if is_manager else '0'">
+                <t t-foreach="slots" t-as="slot">
+                    <div t-attf-class="modryn_shift_card #{'is_short' if slot['short_total'] else ''} #{'is_published' if slot['published'] else ''}"
+                         t-att-data-slot="slot['id']">
+                        <div class="modryn_shift_head">
+                            <span class="modryn_strong"><t t-esc="slot['name']"/></span>
+                            <span class="modryn_sub"><t t-esc="slot['day_label']"/> · <t t-esc="slot['hours']"/></span>
+                        </div>
+
+                        <!-- Coverage. Stated in words as well as colour, so the
+                             amber card is never the only signal. -->
+                        <div class="modryn_shift_cover">
+                            <t t-if="slot['shortages']">
+                                <t t-foreach="slot['shortages']" t-as="s">
+                                    <span t-attf-class="modryn_badge #{'is_busy' if s['short'] else 'is_free'}">
+                                        <t t-esc="s['role']"/>
+                                        <t t-esc="s['have']"/>/<t t-esc="s['required']"/>
+                                    </span>
+                                </t>
+                            </t>
+                            <span t-else="" class="modryn_sub">No targets set</span>
+                        </div>
+
+                        <div t-if="slot['working']" class="modryn_shift_people">
+                            <t t-foreach="slot['working']" t-as="w">
+                                <span class="modryn_chip is_primary"><t t-esc="w['name']"/></span>
+                            </t>
+                        </div>
+                        <p t-else="" class="modryn_sub mb-0">Nobody rostered yet</p>
+
+                        <!-- What staff do here: offer, or withdraw. -->
+                        <div t-if="not slot['published']" class="modryn_shift_actions">
+                            <button type="button"
+                                    t-attf-class="btn btn-sm #{'btn-primary' if slot['i_am_available'] else 'btn-outline-dark'} modryn_avail_btn"
+                                    t-att-data-slot="slot['id']">
+                                <t t-if="slot['i_am_available']">I'm available</t>
+                                <t t-else="">I can work this</t>
+                            </button>
+                        </div>
+                        <p t-else="" class="modryn_sub mb-0">Published</p>
+
+                        <!-- What the manager does here: fill it. -->
+                        <div t-if="is_manager and not slot['published']" class="modryn_shift_assign">
+                            <p class="modryn_sub mb-1">
+                                <t t-if="slot['available']">Offered this shift:</t>
+                                <t t-else="">Nobody has offered yet</t>
+                            </p>
+                            <t t-foreach="slot['available']" t-as="a">
+                                <label class="modryn_piece_check">
+                                    <input type="checkbox" class="modryn_assign_box"
+                                           t-att-data-slot="slot['id']"
+                                           t-att-data-employee="a['id']"
+                                           t-att-checked="'checked' if any(w['id'] == a['id'] for w in slot['working']) else None"/>
+                                    <span>
+                                        <t t-esc="a['name']"/>
+                                        <t t-if="a['role']"> · <t t-esc="a['role']"/></t>
+                                    </span>
+                                </label>
+                            </t>
+                        </div>
+                    </div>
+                </t>
+            </div>
+
+            <div t-if="is_manager" class="mt-4">
+                <button type="button" class="btn btn-primary" id="modryn_publish_week">
+                    Publish this week
+                </button>
+                <span class="modryn_sub ms-2">
+                    Once published, the team can see it and availability stops changing.
+                </span>
+            </div>
+        </t>
+    </template>
+
+    <!-- ================= owner: the shifts this boutique runs ================= -->
+    <template id="manage_shifts" name="Shifts">
+        <t t-call="modryn_staff.manage_layout">
+            <h1 class="mb-2">Shifts</h1>
+            <p class="text-muted mb-4">
+                The shifts this boutique actually runs, and how many of each role each one needs.
+            </p>
+
+            <div t-if="error" class="modryn_field_error mb-3" role="alert" t-out="error"/>
+
+            <form action="/manage/shifts/new" method="post" class="d-flex gap-2 mb-4 flex-wrap"
+                  style="max-width: 720px;">
+                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                <input type="text" name="name" class="form-control" style="max-width: 200px;"
+                       placeholder="Shift name"/>
+                <select name="weekday" class="form-select" style="max-width: 150px;">
+                    <option value="6">Sunday</option>
+                    <option value="0">Monday</option>
+                    <option value="1">Tuesday</option>
+                    <option value="2">Wednesday</option>
+                    <option value="3">Thursday</option>
+                    <option value="4">Friday</option>
+                    <option value="5">Saturday</option>
+                </select>
+                <input type="number" name="start_hour" class="form-control" style="max-width: 100px;"
+                       step="0.5" min="0" max="24" value="10"/>
+                <input type="number" name="end_hour" class="form-control" style="max-width: 100px;"
+                       step="0.5" min="0" max="24" value="18"/>
+                <button type="submit" class="btn btn-primary">Add</button>
+            </form>
+
+            <table class="table modryn_table align-middle" style="max-width: 720px;">
+                <tbody>
+                    <tr t-foreach="templates" t-as="tpl"
+                        t-attf-class="#{'modryn_archived' if not tpl.active else ''}">
+                        <td>
+                            <span class="modryn_strong" t-out="tpl.name"/>
+                            <div class="modryn_sub" t-out="tpl._label()"/>
+                        </td>
+                        <td>
+                            <!-- Targets, one role at a time. Zero removes it. -->
+                            <form action="/manage/shifts/target" method="post"
+                                  class="d-flex gap-1 align-items-center">
+                                <input type="hidden" name="csrf_token"
+                                       t-att-value="request.csrf_token()"/>
+                                <input type="hidden" name="template_id" t-att-value="tpl.id"/>
+                                <select name="role_id" class="form-select form-select-sm w-auto">
+                                    <t t-foreach="roles" t-as="role">
+                                        <option t-att-value="role.id" t-out="role.name"/>
+                                    </t>
+                                </select>
+                                <input type="number" name="required" min="0" value="1"
+                                       class="form-control form-control-sm" style="max-width: 72px;"/>
+                                <button type="submit" class="btn btn-sm btn-outline-dark">Set</button>
+                            </form>
+                            <div class="modryn_sub mt-1">
+                                <t t-if="tpl.target_ids">
+                                    <t t-foreach="tpl.target_ids" t-as="t">
+                                        <span class="modryn_badge is_muted">
+                                            <t t-out="t.role_id.name"/> ×<t t-out="t.required"/>
+                                        </span>
+                                    </t>
+                                </t>
+                                <t t-else="">No targets yet</t>
+                            </div>
+                        </td>
+                        <td class="text-end">
+                            <form t-attf-action="/manage/shifts/archive/#{tpl.id}" method="post"
+                                  class="d-inline">
+                                <input type="hidden" name="csrf_token"
+                                       t-att-value="request.csrf_token()"/>
+                                <button type="submit" class="btn btn-sm btn-outline-dark">
+                                    <t t-if="tpl.active">Archive</t>
+                                    <t t-else="">Restore</t>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </t>
+    </template>
+
+</odoo>
