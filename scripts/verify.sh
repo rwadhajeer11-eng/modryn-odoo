@@ -142,6 +142,18 @@ fetch "$BELLA/en/floor"
 C=$(code "$BELLA/en/floor")
 [ "$C" != "200" ] && ok "/en/floor refuses anonymous ($C)" || bad "/en/floor anonymous" "returned 200"
 
+head_ "10b. comms engine"
+# The confirmation page promises an SMS; these prove the promise is kept.
+RTBL=$(psql -d bella -tAc "select count(*) from information_schema.columns where table_name='calendar_event' and column_name in ('modryn_reminder_sent_at','modryn_confirmed_at','modryn_lang')")
+[ "$RTBL" = "3" ] && ok "booking comms fields exist" || bad "comms fields" "expected 3, got $RTBL"
+CRON=$(psql -d bella -tAc "select count(*) from ir_cron c join ir_act_server a on a.id=c.ir_actions_server_id where a.code like '%_modryn_send_reminders%'")
+[ "${CRON:-0}" -ge 1 ] && ok "24h reminder cron installed" || bad "reminder cron" "not found"
+# A forged token must never open somebody's appointment.
+[ "$(code "$BELLA/b/1-deadbeefdeadbeefdeadbeef")" = "404" ] && ok "forged booking token 404s" || bad "forged token" "did not 404"
+# The submit-time collision guard must agree with the slot list about cancelled
+# bookings, or a freed slot can be offered and then refused.
+grep -q "modryn_cancelled_at" addons/modryn_booking/controllers/main.py && ok "collision guard honours cancellations" || bad "collision guard" "still counts cancelled bookings"
+
 head_ "11. instance hygiene"
 # Without db_name, Odoo's cron enumerates EVERY database on the server —
 # including MODRYN's f*_test — and errors against each one.

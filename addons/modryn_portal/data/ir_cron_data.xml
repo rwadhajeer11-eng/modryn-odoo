@@ -13,5 +13,18 @@
             <field name="interval_type">hours</field>
             <field name="active" eval="True"/>
         </record>
+
+        <!-- Every 15 minutes, claiming a 30-minute window: a restart or a slow
+             run can never skip an appointment, and the reminded-at stamp stops
+             the deliberate overlap from texting anyone twice. -->
+        <record id="ir_cron_booking_reminders" model="ir.cron">
+            <field name="name">MODRYN: send 24h fitting reminders</field>
+            <field name="model_id" ref="calendar.model_calendar_event"/>
+            <field name="state">code</field>
+            <field name="code">model._modryn_send_reminders()</field>
+            <field name="interval_number">15</field>
+            <field name="interval_type">minutes</field>
+            <field name="active" eval="True"/>
+        </record>
     </data>
 </odoo>

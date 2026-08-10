@@ -154,10 +154,40 @@ msgstr "سنحتفظ لكِ بهذا الفستان حتى موعدكِ"
 
 #. module: modryn_booking
 #: model_terms:ir.ui.view,arch_db:modryn_booking.booking_confirmed
-msgid "We'll text you a confirmation"
-msgstr "سنرسل لكِ رسالة تأكيد"
+msgid "Your appointment is booked"
+msgstr "تم تأكيد موعدكِ"
+
+#. module: modryn_booking
+#: model:ir.model.fields,field_description:modryn_booking.field_calendar_event__modryn_booking_type
+msgid "Booking type"
+msgstr "نوع الموعد"
+
+#. module: modryn_booking
+#: model:ir.model.fields.selection,name:modryn_booking.selection__calendar_event__modryn_booking_type__consult
+msgid "Consultation"
+msgstr "جلسة استشارة"
+
+#. module: modryn_booking
+#: model:ir.model.fields,field_description:modryn_booking.field_calendar_event__modryn_customer_phone
+msgid "Customer phone"
+msgstr "هاتف الزبونة"
+
+#. module: modryn_booking
+#: model:ir.model.fields,field_description:modryn_booking.field_calendar_event__modryn_variant_id
+msgid "Dress / size"
+msgstr "الفستان / المقاس"
+
+#. module: modryn_booking
+#: model:ir.model.fields.selection,name:modryn_booking.selection__calendar_event__modryn_booking_type__dress
+msgid "Dress fitting"
+msgstr "قياس"
+
+#. module: modryn_booking
+#: model:ir.model.fields,field_description:modryn_booking.field_calendar_event__modryn_terms_accepted_at
+msgid "Terms accepted at"
+msgstr "تم قبول الشروط في"
 
 #. module: modryn_booking
 #: model_terms:ir.ui.view,arch_db:modryn_booking.booking_confirmed
-msgid "Your appointment is booked"
-msgstr "تم تأكيد موعدكِ"
+msgid "We've sent you a confirmation by text"
+msgstr "أرسلنا لك تأكيدًا برسالة نصية"

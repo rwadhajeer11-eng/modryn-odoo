@@ -33,6 +33,7 @@ msgid "Cancel this appointment?"
 msgstr "לבטל את התור?"
 
 #. module: modryn_portal
+#: model_terms:ir.ui.view,arch_db:modryn_portal.booking_link
 #: model_terms:ir.ui.view,arch_db:modryn_portal.bookings
 msgid "Cancelled"
 msgstr "בוטל"
@@ -171,3 +172,87 @@ msgstr "אין לך תורים קרובים."
 #: model_terms:ir.ui.view,arch_db:modryn_portal.bookings
 msgid "· size"
 msgstr "· מידה"
+
+#. module: modryn_portal
+#: model_terms:ir.ui.view,arch_db:modryn_portal.booking_link
+msgid "<strong>Date:</strong>"
+msgstr "<strong>תאריך:</strong>"
+
+#. module: modryn_portal
+#: model_terms:ir.ui.view,arch_db:modryn_portal.booking_link
+msgid "<strong>Dress:</strong>"
+msgstr "<strong>שמלה:</strong>"
+
+#. module: modryn_portal
+#: model_terms:ir.ui.view,arch_db:modryn_portal.booking_link
+msgid "<strong>Time:</strong>"
+msgstr "<strong>שעה:</strong>"
+
+#. module: modryn_portal
+#: model_terms:ir.ui.view,arch_db:modryn_portal.booking_link
+msgid "Book a new fitting"
+msgstr "לקביעת תור חדש"
+
+#. module: modryn_portal
+#: model_terms:ir.ui.view,arch_db:modryn_portal.booking_link
+msgid "Cancel it"
+msgstr "ביטול התור"
+
+#. module: modryn_portal
+#: model_terms:ir.ui.view,arch_db:modryn_portal.booking_link
+msgid "I'll be there"
+msgstr "אגיע"
+
+#. module: modryn_portal
+#: model:ir.actions.server,name:modryn_portal.ir_cron_booking_reminders_ir_actions_server
+msgid "MODRYN: send 24h fitting reminders"
+msgstr "MODRYN: שליחת תזכורות 24 שעות מראש"
+
+#. module: modryn_portal
+#. odoo-python
+#: code:addons/modryn_portal/models/booking_comms.py:0
+msgid ""
+"Reminder: your fitting at %(boutique)s is tomorrow, %(date)s at %(time)s. "
+"Confirm or cancel: %(link)s"
+msgstr ""
+"תזכורת: התור שלך ב%(boutique)s מחר, %(date)s בשעה %(time)s. לאישור או ביטול:"
+" %(link)s"
+
+#. module: modryn_portal
+#: model_terms:ir.ui.view,arch_db:modryn_portal.booking_link
+msgid "Thank you — see you then"
+msgstr "תודה — נתראה"
+
+#. module: modryn_portal
+#: model_terms:ir.ui.view,arch_db:modryn_portal.booking_link
+msgid "This appointment has already passed."
+msgstr "התור כבר עבר."
+
+#. module: modryn_portal
+#: model_terms:ir.ui.view,arch_db:modryn_portal.booking_link
+msgid "We hope to see you another time."
+msgstr "נשמח לראותך בפעם אחרת."
+
+#. module: modryn_portal
+#: model_terms:ir.ui.view,arch_db:modryn_portal.booking_link
+msgid "Your appointment"
+msgstr "התור שלך"
+
+#. module: modryn_portal
+#: model_terms:ir.ui.view,arch_db:modryn_portal.booking_link
+msgid "Your appointment is cancelled"
+msgstr "התור בוטל"
+
+#. module: modryn_portal
+#: model_terms:ir.ui.view,arch_db:modryn_portal.booking_link
+msgid "Your appointment is confirmed."
+msgstr "התור אושר."
+
+#. module: modryn_portal
+#. odoo-python
+#: code:addons/modryn_portal/models/booking_comms.py:0
+msgid ""
+"Your fitting at %(boutique)s is booked for %(date)s at %(time)s. Manage your"
+" appointment: %(link)s"
+msgstr ""
+"התור שלך ב%(boutique)s נקבע ל-%(date)s בשעה %(time)s. לניהול התור: %(link)s"

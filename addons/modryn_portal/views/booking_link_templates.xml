@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- The page a reminder SMS points at. One screen, two buttons, no login. -->
+    <template id="booking_link" name="Manage your appointment">
+        <t t-call="website.layout">
+            <div id="wrap" class="oe_structure">
+                <div class="container py-5" style="max-width: 520px;">
+
+                    <t t-if="done == 'confirmed'">
+                        <h1 class="mb-3">Thank you — see you then</h1>
+                        <p class="text-muted mb-4">Your appointment is confirmed.</p>
+                    </t>
+                    <t t-elif="done == 'cancelled'">
+                        <h1 class="mb-3">Your appointment is cancelled</h1>
+                        <p class="text-muted mb-4">
+                            We hope to see you another time.
+                            <a href="/book">Book a new fitting</a>.
+                        </p>
+                    </t>
+                    <t t-else="">
+                        <h1 class="mb-3">Your appointment</h1>
+                    </t>
+
+                    <div class="p-4 mb-4" style="background:#F6F0E6; border-radius:8px;">
+                        <div class="mb-2"><strong>Date:</strong> <t t-out="date"/></div>
+                        <div class="mb-2"><strong>Time:</strong> <t t-out="time"/></div>
+                        <div t-if="dress" class="mb-2">
+                            <strong>Dress:</strong> <t t-out="dress"/>
+                            <t t-if="size"> · <t t-out="size"/></t>
+                        </div>
+                        <div t-if="cancelled" class="text-muted">Cancelled</div>
+                    </div>
+
+                    <!-- Buttons only while there is still something to decide. -->
+                    <t t-if="not cancelled and not past and not done">
+                        <div t-if="terms" class="p-3 mb-4 text-muted small"
+                             style="background:#FFFFFF; border:1px solid #E4DACA; border-radius:8px;"
+                             t-out="terms"/>
+                        <div class="d-flex gap-2">
+                            <form t-attf-action="/b/#{token}/confirm" method="post" class="d-inline">
+                                <input type="hidden" name="csrf_token"
+                                       t-att-value="request.csrf_token()"/>
+                                <button type="submit" class="btn btn-primary btn-lg">
+                                    I'll be there
+                                </button>
+                            </form>
+                            <form t-attf-action="/b/#{token}/cancel" method="post" class="d-inline">
+                                <input type="hidden" name="csrf_token"
+                                       t-att-value="request.csrf_token()"/>
+                                <button type="submit" class="btn btn-link">Cancel it</button>
+                            </form>
+                        </div>
+                    </t>
+                    <p t-if="past and not done" class="text-muted">
+                        This appointment has already passed.
+                    </p>
+                </div>
+            </div>
+        </t>
+    </template>
+
+</odoo>

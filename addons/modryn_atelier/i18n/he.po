@@ -33,9 +33,29 @@ msgid "Archive"
 msgstr "ארכיון"
 
 #. module: modryn_atelier
+#: model:ir.model.fields,field_description:modryn_atelier.field_modryn_alteration_task__partner_id
+msgid "Customer"
+msgstr "לקוחה"
+
+#. module: modryn_atelier
+#: model:ir.model.fields,field_description:modryn_atelier.field_modryn_alteration_task__customer_name
+msgid "Customer Name"
+msgstr "שם הלקוחה"
+
+#. module: modryn_atelier
+#: model:ir.model.fields,field_description:modryn_atelier.field_modryn_alteration_task__customer_phone
+msgid "Customer Phone"
+msgstr "טלפון הלקוחה"
+
+#. module: modryn_atelier
 #: model:ir.model.fields.selection,name:modryn_atelier.selection__modryn_alteration_task__state__delivered
 msgid "Delivered"
 msgstr "נמסר"
+
+#. module: modryn_atelier
+#: model:ir.model.fields,field_description:modryn_atelier.field_modryn_alteration_task__delivered_at
+msgid "Delivered At"
+msgstr "נמסר בתאריך"
 
 #. module: modryn_atelier
 #: model:ir.model.fields,field_description:modryn_atelier.field_modryn_alteration_task__variant_id
@@ -72,6 +92,11 @@ msgstr "הוראות"
 #: model:ir.model.fields.selection,name:modryn_atelier.selection__modryn_alteration_task__state__intake
 msgid "Intake"
 msgstr "קליטה"
+
+#. module: modryn_atelier
+#: model:ir.model.fields,field_description:modryn_atelier.field_modryn_alteration_task__is_overdue
+msgid "Is Overdue"
+msgstr "באיחור"
 
 #. module: modryn_atelier
 #: model_terms:ir.ui.view,arch_db:modryn_atelier.manage_pieces
@@ -113,6 +138,11 @@ msgstr "שחזור"
 #: model:ir.model.fields,field_description:modryn_atelier.field_modryn_alteration_task__seamstress_id
 msgid "Seamstress"
 msgstr "תופרת"
+
+#. module: modryn_atelier
+#: model:ir.model.fields,field_description:modryn_atelier.field_modryn_alteration_task__state
+msgid "State"
+msgstr "סטטוס"
 
 #. module: modryn_atelier
 #. odoo-python
@@ -162,33 +192,3 @@ msgstr "פתוחות"
 #: model_terms:ir.ui.view,arch_db:modryn_atelier.dashboard
 msgid "overdue"
 msgstr "באיחור"
-
-#. module: modryn_atelier
-#: model:ir.model.fields,field_description:modryn_atelier.field_modryn_alteration_task__partner_id
-msgid "Customer"
-msgstr "לקוחה"
-
-#. module: modryn_atelier
-#: model:ir.model.fields,field_description:modryn_atelier.field_modryn_alteration_task__customer_name
-msgid "Customer Name"
-msgstr "שם הלקוחה"
-
-#. module: modryn_atelier
-#: model:ir.model.fields,field_description:modryn_atelier.field_modryn_alteration_task__customer_phone
-msgid "Customer Phone"
-msgstr "טלפון הלקוחה"
-
-#. module: modryn_atelier
-#: model:ir.model.fields,field_description:modryn_atelier.field_modryn_alteration_task__delivered_at
-msgid "Delivered At"
-msgstr "נמסר בתאריך"
-
-#. module: modryn_atelier
-#: model:ir.model.fields,field_description:modryn_atelier.field_modryn_alteration_task__is_overdue
-msgid "Is Overdue"
-msgstr "באיחור"
-
-#. module: modryn_atelier
-#: model:ir.model.fields,field_description:modryn_atelier.field_modryn_alteration_task__state
-msgid "State"
-msgstr "סטטוס"

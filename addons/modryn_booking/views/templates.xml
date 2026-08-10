@@ -103,7 +103,7 @@
             <div id="wrap" class="oe_structure">
                 <div class="container py-5 text-center" style="max-width: 640px;">
                     <h1 class="mb-3">Your appointment is booked</h1>
-                    <p class="text-muted mb-4">We'll text you a confirmation</p>
+                    <p class="text-muted mb-4">We've sent you a confirmation by text</p>
 
                     <div class="p-4 mb-4" style="background:#F6F0E6; border-radius:8px;">
                         <div class="mb-2">

@@ -183,9 +183,14 @@ class ModrynBooking(http.Controller):
         if start and not errors:
             # Last-writer-wins is not good enough for a fitting room: re-check
             # the slot at submit time, because the form was rendered minutes ago.
-            if request.env['calendar.event'].sudo().search_count([
-                ('modryn_is_booking', '=', True), ('start', '=', start),
-            ]):
+            taken_domain = [('modryn_is_booking', '=', True), ('start', '=', start)]
+            # A cancelled booking holds nothing. This guard used to disagree with
+            # _slots(): the freed time was offered on the form and then rejected
+            # here as "just taken", so a cancelled slot could never be rebooked
+            # by anyone — which would also have silently broken the waitlist.
+            if 'modryn_cancelled_at' in request.env['calendar.event']._fields:
+                taken_domain.append(('modryn_cancelled_at', '=', False))
+            if request.env['calendar.event'].sudo().search_count(taken_domain):
                 errors['slot'] = _("That time was just taken, please choose another")
 
         if errors:
@@ -214,6 +219,13 @@ class ModrynBooking(http.Controller):
         if organizer:
             vals['user_id'] = organizer.id
         event = request.env['calendar.event'].sudo().create(vals)
+        # Tell her it worked, in the language she booked in. Guarded by a
+        # field check because modryn_portal owns comms and depends on THIS
+        # module — the reverse dependency would be a load cycle.
+        if 'modryn_lang' in event._fields:
+            event.modryn_lang = request.env.lang or 'he_IL'
+            event.modryn_send_confirmation()
+
         return request.redirect('/book/confirmed/%s' % event.id)
 
     @http.route('/book/confirmed/<int:event_id>', type='http', auth='public', website=True,
