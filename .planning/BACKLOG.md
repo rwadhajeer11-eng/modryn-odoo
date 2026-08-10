@@ -1,0 +1,135 @@
+# What to do next
+
+Ranked. Top item first — a fresh session can start at #1 without asking anything, except where
+an item is marked **blocked on you**.
+
+Sizes: **S** ≤ half a day · **M** ≤ 2 days · **L** ≤ a week · **XL** more.
+
+---
+
+## 1. Prove SMS actually reaches a phone — **blocked on you** · S
+
+Everything in the comms engine is written and integrated; nothing has been **delivered**. A live
+Twilio call returned error `21266` ("'To' and 'From' cannot be the same"), which proves the
+credentials, the adapter and the error handling all work — and proves nothing about delivery.
+
+**Needs from you:** a destination mobile number that is **not** the Twilio sender — sending to
+the sender is what produced error 21266. The sender is `TWILIO_FROM_NUMBER` in the gitignored
+`.env`; it is deliberately not repeated here, because git history is forever.
+
+**Then:** book on `bella`, confirm the confirmation SMS arrives, open the `/b/<token>` link from
+it, cancel, and confirm the claim link reaches the next person on that day's waitlist. That one
+run exercises the whole chain.
+
+Until this is done, the scorecard and `STATE.md` must keep saying delivery is unproven. They
+currently do.
+
+---
+
+## 2. Rotate the Twilio credentials — **blocked on you** · S
+
+The API key SID, secret and phone SID were pasted into a chat transcript on 2026-08-10. They
+live in the gitignored `.env` and have never been committed, but a transcript is not a secret
+store.
+
+Rotate in the Twilio console, update `.env`, re-run `scripts/configure_twilio.py`, and confirm
+with a send. Do this whenever the PoC ends, sooner if the transcript is shared.
+
+---
+
+## 3. Fix Odoo's cross-tenant slug fallback · S
+
+Requesting **bella's** product URL against **noga** does not 404. Odoo's slug resolution falls
+back to the same-numbered *local* record, so the visitor silently lands on a different
+boutique's dress.
+
+No data leaks — the record is noga's own — but shared links and SEO both misbehave, and it reads
+as a tenancy bug to anyone who notices. MODRYN 404s correctly here.
+
+**Fix:** validate that the slug's name-part matches the resolved record, else `not_found()`.
+Add a `verify.sh` check. This is the last open item from the tenancy audit and the cheapest
+credibility win on the list.
+
+---
+
+## 4. Reconcile the duplicated design tokens · S
+
+The palette is declared in **three** places:
+`addons/modryn_theme/static/src/scss/primary_variables.scss`,
+`addons/modryn_staff/static/src/floor/floor.scss`, and
+`addons/modryn_roster/static/src/roster.scss` (which redeclares four of them defensively — they
+are already in scope from `floor.scss` in the same `web.assets_frontend` bundle).
+
+They agree today. Nothing makes them agree tomorrow. Extract one `_tokens.scss` and `@import` it.
+See [`../docs/design-system.md`](../docs/design-system.md), which documents the drift rather than
+hiding it.
+
+---
+
+## 5. Make the roster actually mean something · M
+
+Publishing a week currently changes nothing outside the roster page. It does not restrict who can
+be assigned on the floor that day, and it does not feed the booking grid.
+
+That gap is the difference between a rota and a spreadsheet. The smallest honest version: the
+floor board's staff list shows who is rostered today, and assigning someone who is not warns
+rather than blocks — blocking would be wrong on a day when someone covers a sick colleague.
+
+---
+
+## 6. `.ics` export for a booking · S
+
+The one piece of the client portal from PRD §5 that never got built. `calendar.event` already
+holds everything needed; this is a controller returning `text/calendar` plus a link on the
+confirmation page and the reminder.
+
+---
+
+## 7. Availability engine · XL
+
+The booking grid is a fixed Sunday–Thursday, 10:00–18:00 lattice with a one-hour slot and no
+concept of capacity. Real opening hours, per-type durations, holidays, blackout dates and
+per-staff calendars are all missing.
+
+This is the single largest piece of remaining work and the one Odoo Enterprise's `appointment`
+module would most plausibly halve. It is also the thing item 5 should eventually feed.
+
+---
+
+## 8. Israeli payment provider and deposits · M each
+
+No PSP exists in Odoo for Grow, Meshulam or Tranzila — each is a custom `payment.provider`.
+Deferred deliberately: it needs a real merchant account, which is a business decision, not a
+technical one. Per-tenant credentials are free under DB-per-tenant, which is a genuine advantage
+here.
+
+---
+
+## 9. WhatsApp · blocked externally
+
+Odoo's WhatsApp module is Enterprise-only, and the Business API needs Meta verification the
+business has not started. SMS via Twilio is the working channel. Do not start this without the
+verification in hand.
+
+---
+
+## Not doing, on purpose
+
+- **Migrating MODRYN onto Odoo.** The verdict is settled; see
+  [`../.memory/decisions.md`](../.memory/decisions.md).
+- **Anything requiring Enterprise.** Community only.
+- **Visible queue numbers or wait-time estimates.** A researched product decision, not an
+  omission.
+- **A cross-tenant admin console.** Real work (`L`) and the visible cost of DB-per-tenant, but
+  pointless unless the verdict reverses.
+
+---
+
+## Housekeeping worth knowing
+
+- `.memory/` and `.planning/` are **committed**. They existed as untracked scratch earlier and
+  vanished between two commands on the same day.
+- `docs/screenshots/*.yml` and `*.log` are gitignored — Playwright writes several hundred
+  transient dumps per session, and ~300 of them once got swept into a commit.
+- `DON'T_DELETE.md` at the repo root is your own verbatim brief for the dispatch board. It is
+  kept as written, untracked, and should not be tidied.

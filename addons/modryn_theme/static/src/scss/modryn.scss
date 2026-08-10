@@ -9,7 +9,7 @@
 //==============================================================================
 // tokens.md: gold #C5A059 is a SURFACE colour, gold-strong #9E7B36 carries no
 // text at any size, and #7F612B is the ONLY gold permitted as text.
-// Odoo's auto-contrast picks white for text on primary (2.3:1 — fails WCAG AA).
+// Odoo's auto-contrast picks white for text on primary (2.46:1 — fails WCAG AA).
 // MODRYN's real pairing is gold background + ink text = 6.41:1.
 .btn-primary {
     --btn-color: #2B2118;

@@ -26,7 +26,9 @@ class ModrynStaffRole(models.Model):
 
     # A PYTHON constraint, not a SQL one. Two reasons, both learned the hard way:
     #  1. Odoo 19 removed `_sql_constraints` outright — a model still declaring
-    #     it gets no index and no warning, so the rule silently does not exist.
+    #     it gets no index, so the rule does not exist. Odoo does log a warning
+    #     at registry build, but it scrolls past in the boot log with nothing
+    #     tying it to the duplicate you later find in the data.
     #  2. Even the modern models.Constraint('unique(name)') compares whole jsonb
     #     objects on a translatable column, so {"en_US": "x"} and
     #     {"en_US": "x", "he_IL": "x"} are "different" and a visible duplicate

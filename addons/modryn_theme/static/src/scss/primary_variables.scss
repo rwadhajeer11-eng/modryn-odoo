@@ -49,7 +49,7 @@ $o-user-color-palette: (
 // Bootstrap theme colours
 //------------------------------------------------------------------------------
 // Values mirror theme.css exactly. Text colours on these are enforced in
-// modryn.scss — Odoo's auto-contrast would put white on gold (2.3:1, fails AA).
+// modryn.scss — Odoo's auto-contrast would put white on gold (2.46:1, fails AA).
 $o-user-theme-color-palette: (
     'primary': #C5A059,    // --color-gold
     'secondary': #2B2118,  // --color-ink

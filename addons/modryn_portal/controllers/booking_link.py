@@ -39,9 +39,12 @@ class ModrynBookingLink(http.Controller):
         event = request.env['calendar.event']._modryn_from_token(token)
         if not event:
             return request.not_found()
-        # CSRF is an HMAC over session.sid, and Odoo only sends the cookie when
-        # the session is dirty — she arrives here straight from an SMS with no
-        # session at all, so without this the buttons 400.
+        # She arrives here straight from an SMS with no session at all, and
+        # without this the buttons 400. The mechanism is NOT the one previously
+        # claimed here (Odoo does send the cookie to a first-time visitor —
+        # http.py sets it on `is_dirty or cookie_sid != sess.sid`); the real
+        # cause is unconfirmed. See .memory/odoo-traps.md §6. touch() is
+        # harmless and it works.
         request.session.touch()
         return self._render(event)
 
