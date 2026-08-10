@@ -5,12 +5,18 @@
         <t t-call="web.frontend_layout">
             <t t-set="no_header" t-value="true"/>
             <t t-set="no_footer" t-value="true"/>
-            <div id="wrap" dir="rtl" class="modryn_admin">
+            <!-- dir follows the user's language: staff screens are he (rtl) or
+                 en (ltr) by per-user preference. -->
+            <div id="wrap" t-att-dir="'ltr' if (request.env.lang or 'he_IL').startswith('en') else 'rtl'"
+                 class="modryn_admin">
                 <nav class="modryn_admin_nav">
                     <span class="modryn_admin_brand">MODRYN</span>
                     <span class="modryn_admin_link is_active">Floor board</span>
+                    <a t-if="request.env.user.has_group('modryn_staff.group_shift_manager')"
+                       href="/atelier" class="modryn_admin_link">Workshop</a>
                     <a t-if="request.env.user.has_group('modryn_staff.group_boutique_owner')"
                        href="/manage/staff" class="modryn_admin_link">Manage staff</a>
+                    <t t-call="modryn_staff.lang_toggle"/>
                     <span class="modryn_admin_who">
                         <t t-out="request.env.user.name"/>
                     </span>

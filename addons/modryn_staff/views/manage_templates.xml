@@ -1,20 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
+    <!-- The he/en switch. Deliberately shows only the OTHER language: it is a
+         toggle, not a menu — staff screens have exactly two languages by
+         product decision. A form (POST + csrf), not a link: it mutates the
+         user's stored preference. -->
+    <template id="lang_toggle" name="MODRYN staff language toggle">
+        <form action="/staff/lang" method="post" class="d-inline">
+            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+            <input type="hidden" name="redirect" t-att-value="request.httprequest.path"/>
+            <t t-if="(request.env.lang or 'he_IL').startswith('en')">
+                <input type="hidden" name="lang" value="he_IL"/>
+                <button type="submit" class="modryn_admin_link btn btn-link p-0">עברית</button>
+            </t>
+            <t t-else="">
+                <input type="hidden" name="lang" value="en_US"/>
+                <button type="submit" class="modryn_admin_link btn btn-link p-0">English</button>
+            </t>
+        </form>
+    </template>
+
     <!-- Shared owner shell: staff screens get the theme's CSS but none of the
          storefront's header, cart or footer. -->
     <template id="manage_layout" name="MODRYN owner layout">
         <t t-call="web.frontend_layout">
             <t t-set="no_header" t-value="true"/>
             <t t-set="no_footer" t-value="true"/>
-            <div id="wrap" dir="rtl" class="modryn_admin">
+            <!-- dir follows the user's language: staff screens are he (rtl) or
+                 en (ltr) by per-user preference. -->
+            <div id="wrap" t-att-dir="'ltr' if (request.env.lang or 'he_IL').startswith('en') else 'rtl'"
+                 class="modryn_admin">
                 <nav class="modryn_admin_nav">
                     <span class="modryn_admin_brand">MODRYN</span>
                     <a href="/manage/staff"
                        t-attf-class="modryn_admin_link #{'is_active' if active_tab == 'staff' else ''}">Team</a>
                     <a href="/manage/roles"
                        t-attf-class="modryn_admin_link #{'is_active' if active_tab == 'roles' else ''}">Roles</a>
+                    <a href="/manage/pieces"
+                       t-attf-class="modryn_admin_link #{'is_active' if active_tab == 'pieces' else ''}">Pieces</a>
+                    <a href="/atelier" class="modryn_admin_link">Workshop</a>
                     <a href="/floor" class="modryn_admin_link">Floor board</a>
+                    <t t-call="modryn_staff.lang_toggle"/>
                     <a href="/staff/logout" class="modryn_admin_link modryn_admin_logout">Sign out</a>
                 </nav>
                 <main class="modryn_admin_main">

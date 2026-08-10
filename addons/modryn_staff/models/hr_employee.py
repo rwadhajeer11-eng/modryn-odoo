@@ -48,25 +48,35 @@ class HrEmployee(models.Model):
 
     def _compute_modryn_is_occupied(self):
         now = datetime.utcnow()
+        Event = self.env['calendar.event'].sudo()
 
-        # Two ways to be busy: mid-fitting on a booked appointment, or holding a
-        # walk-in you have been dispatched to.
-        bookings = self.env['calendar.event'].sudo().search([
-            ('modryn_employee_id', 'in', self.ids),
-            ('modryn_is_booking', '=', True),
-            ('start', '<=', now),
-            ('stop', '>=', now),
-        ])
+        # Busy means on the FLOOR with a customer — primary or helper on a live
+        # booking or a called walk-in. Alteration work deliberately does not
+        # count: a seamstress sewing in the back is still callable, and her
+        # workshop load shows on the atelier dashboard instead.
+        booking_domain = [
+            '&', '&', ('modryn_is_booking', '=', True),
+            '&', ('start', '<=', now), ('stop', '>=', now),
+            '|', ('modryn_employee_id', 'in', self.ids),
+            ('modryn_helper_ids', 'in', self.ids),
+        ]
+        # Cancelled bookings occupy nobody. The field ships with modryn_portal,
+        # which may not be installed in this database.
+        if 'modryn_cancelled_at' in Event._fields:
+            booking_domain = ['&', ('modryn_cancelled_at', '=', False)] + booking_domain
+        bookings = Event.search(booking_domain)
+
         queue = self.env['modryn.queue.entry'].sudo().search([
-            ('modryn_employee_id', 'in', self.ids),
-            ('state', '=', 'called'),
+            '&', ('state', '=', 'called'),
+            '|', ('modryn_employee_id', 'in', self.ids),
+            ('modryn_helper_ids', 'in', self.ids),
         ])
 
         busy = {}
-        for booking in bookings:
-            busy.setdefault(booking.modryn_employee_id.id, booking.name)
-        for entry in queue:
-            busy.setdefault(entry.modryn_employee_id.id, entry.name)
+        for record in list(bookings) + list(queue):
+            people = record.modryn_employee_id | record.modryn_helper_ids
+            for person in people:
+                busy.setdefault(person.id, record.name)
 
         for employee in self:
             employee.modryn_is_occupied = employee.id in busy

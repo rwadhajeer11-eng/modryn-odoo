@@ -245,6 +245,75 @@ its own dresses, its own people and an empty queue.
 
 ---
 
+## Act 7 — A returning customer manages her own appointment
+
+**7.1 Sign in with a phone number.** Storefront header → **התורים שלי** (or `/my/login`).
+Enter the phone used at booking. *Expect:* "we sent a 6-digit code". With Twilio configured
+the SMS is real; in dev the code appears in the server log
+(`grep modryn.sms /tmp/odoo*.log`).
+
+**7.2 Wrong code first.** *Expect:* a Hebrew error, and after 5 failed tries the code is
+burned. The right code lands you on **My appointments** — upcoming and past, dress and size
+shown. No password was ever created, and no Odoo user account either.
+
+**7.3 Cancel one.** *Expect:* the boutique's cancellation terms shown before you confirm;
+after confirming, the appointment moves to Past marked Cancelled — and its slot is
+**offered again** on `/book`. Verify like a skeptic:
+
+```bash
+psql -d bella -tAc "select id, modryn_cancelled_at, modryn_cancelled_by
+                    from calendar_event where modryn_is_booking"
+```
+
+**7.4 Languages.** The storefront, booking and portal work in **he / ar / en** via the
+header language switcher — English renders left-to-right with the same theme.
+
+## Act 8 — The dispatch board (drag and drop)
+
+Sign in as `sara` → `/floor`. The board is now: customer cards in the middle (walk-ins +
+today's appointments), and the **bench** on the side — every staff member as a chip with
+live פנויה/תפוסה.
+
+**8.1 Assign by dragging.** Drag a chip from the bench onto a customer card.
+*Expect:* first person dropped becomes **ראשית** (primary, gold chip); drop a second onto
+the card body and she joins as a helper (dashed chip); drop someone onto the *primary slot*
+and she swaps in — the old primary becomes a helper, never lost. Drag a chip back to the
+bench to take her off. Every drop is a real server call with the manager check enforced
+server-side; the select dropdown remains as the no-drag fallback.
+
+**8.2 Occupancy is derived.** The moment someone is on a live card — primary *or* helper —
+her bench chip flips to תפוסה, and back the moment the customer finishes. Nobody types a
+status, so the bench cannot lie.
+
+**8.3 It's live everywhere.** Open `/floor` in a second window; assignments made in one
+appear in the other without a refresh (the same websocket the queue already used).
+
+## Act 9 — Fitting done → the workshop
+
+**9.1 Finish with a handoff.** Press **סיום** on a walk-in. *Expect:* a modal — "does the
+gown need work?" Pick the dress, tick the garment pieces (מכפלת, שובל…), write
+instructions, choose a seamstress and a due date — or **Skip** when there's nothing to
+alter. Creating lands the task in **Intake** on the workshop board.
+
+**9.2 The owner runs the pieces list.** `/manage/pieces` — garment pieces are data, like
+roles: add "הינומה" (veil) and it's immediately available in the finish modal.
+
+**9.3 The seamstress drives her own work.** Sign in as `orly` → `/floor` shows
+**התיקונים שלי**: her open tasks with pieces, notes and due dates (overdue in red). She
+presses **התחלה** and later **מוכן** herself — which is exactly what keeps the dashboard
+honest.
+
+**9.4 The manager sees the whole workshop.** As `sara`/`miri` → `/atelier`: every task by
+state, workload per seamstress with overdue counts. Verify against the database, not the
+screen:
+
+```bash
+psql -d bella -tAc "select state, count(*) from modryn_alteration_task group by state"
+```
+
+**9.5 Staff language.** The nav's **English** button flips the staff screens to English
+(LTR) and back via **עברית** — per user, stored, and independent of what customers see.
+
 ## What this walkthrough does **not** cover
 
 Honest gaps, each sized in [`scorecard.md`](scorecard.md):

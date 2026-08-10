@@ -54,6 +54,7 @@ class ModrynFloor(http.Controller):
                 'state': entry.state,
                 'employee_id': entry.modryn_employee_id.id or False,
                 'employee_name': entry.modryn_employee_id.name or '',
+                'helpers': [{'id': h.id, 'name': h.name} for h in entry.modryn_helper_ids],
             })
 
         day_start, day_end = self._today_bounds_utc()
@@ -78,6 +79,7 @@ class ModrynFloor(http.Controller):
                 'size': variant.product_template_attribute_value_ids[:1].name if variant else '',
                 'employee_id': event.modryn_employee_id.id or False,
                 'employee_name': event.modryn_employee_id.name or '',
+                'helpers': [{'id': h.id, 'name': h.name} for h in event.modryn_helper_ids],
             })
 
         employees = env['hr.employee'].sudo().search([
@@ -116,36 +118,108 @@ class ModrynFloor(http.Controller):
         return self._board()
 
     # --------------------------------------------------------------- actions
-    @http.route('/floor/assign/queue', type='jsonrpc', auth='user')
-    def assign_queue(self, entry_id, employee_id):
+    def _resolve_target(self, target, target_id):
+        """The card being acted on: a walk-in or a booking, or None."""
+        if target == 'queue':
+            record = request.env['modryn.queue.entry'].sudo().browse(int(target_id)).exists()
+            return record or None
+        if target == 'booking':
+            record = request.env['calendar.event'].sudo().browse(int(target_id)).exists()
+            return record if (record and record.modryn_is_booking) else None
+        return None
+
+    @http.route('/floor/assign', type='jsonrpc', auth='user')
+    def assign(self, target, target_id, employee_id, as_primary=False):
+        """Put an employee on a customer card.
+
+        The locked rule, encoded once: the first person on a card becomes its
+        primary; anyone after joins as a helper; dropping onto the primary SLOT
+        (as_primary) swaps, demoting the old primary to helper rather than
+        losing her — she is still physically with the customer.
+        """
         if not self._is_manager():
             return {'error': 'forbidden'}
-        entry = request.env['modryn.queue.entry'].sudo().browse(int(entry_id)).exists()
+        record = self._resolve_target(target, target_id)
         employee = request.env['hr.employee'].sudo().browse(int(employee_id)).exists()
-        if not entry or not employee:
+        if not record or not employee:
             return {'error': 'not_found'}
-        entry.modryn_assign(employee)
+
+        current_primary = record.modryn_employee_id
+        if employee == current_primary:
+            return self._board()  # already exactly where she was dropped
+
+        values = {}
+        if as_primary or not current_primary:
+            values['modryn_employee_id'] = employee.id
+            # Never lose the previous primary; never keep the new primary
+            # duplicated in the helper list.
+            helper_ops = [(3, employee.id)]
+            if as_primary and current_primary:
+                helper_ops.append((4, current_primary.id))
+            values['modryn_helper_ids'] = helper_ops
+        elif employee in record.modryn_helper_ids:
+            return self._board()  # no-op: already a helper on this card
+        else:
+            values['modryn_helper_ids'] = [(4, employee.id)]
+
+        # Assigning someone to a waiting walk-in IS calling her over.
+        if target == 'queue' and record.state == 'waiting':
+            values['state'] = 'called'
+        record.write(values)
         return self._board()
 
-    @http.route('/floor/assign/booking', type='jsonrpc', auth='user')
-    def assign_booking(self, event_id, employee_id):
+    @http.route('/floor/unassign', type='jsonrpc', auth='user')
+    def unassign(self, target, target_id, employee_id):
         if not self._is_manager():
             return {'error': 'forbidden'}
-        event = request.env['calendar.event'].sudo().browse(int(event_id)).exists()
+        record = self._resolve_target(target, target_id)
         employee = request.env['hr.employee'].sudo().browse(int(employee_id)).exists()
-        if not event or not event.modryn_is_booking or not employee:
+        if not record or not employee:
             return {'error': 'not_found'}
-        event.modryn_employee_id = employee
+
+        if record.modryn_employee_id == employee:
+            # The card must not go headless while people are still on it: a
+            # helper steps up. ponytail: an m2m reads in the comodel's _order,
+            # so "first" here means first by name, not longest-serving — true
+            # join-order promotion needs a through-model with a joined_at.
+            helpers = record.modryn_helper_ids
+            promoted = helpers[:1]
+            record.write({
+                'modryn_employee_id': promoted.id if promoted else False,
+                'modryn_helper_ids': [(3, promoted.id)] if promoted else [(5,)],
+            })
+        else:
+            record.write({'modryn_helper_ids': [(3, employee.id)]})
         return self._board()
 
-    @http.route('/floor/queue/done', type='jsonrpc', auth='user')
-    def queue_done(self, entry_id):
+    @http.route('/floor/finish', type='jsonrpc', auth='user')
+    def finish(self, entry_id):
+        """Close a walk-in and hand the board what the finish modal needs.
+
+        Freeing the entry frees everyone on it (occupancy is derived), and the
+        response carries the customer + dress list so the manager can open an
+        alteration task without a second round-trip.
+        """
         if not self._is_manager():
             return {'error': 'forbidden'}
         entry = request.env['modryn.queue.entry'].sudo().browse(int(entry_id)).exists()
         if not entry:
             return {'error': 'not_found'}
-        # Freeing the entry also frees whoever was serving it: occupancy is
-        # derived, so nobody has to remember to flip a status back.
         entry.write({'state': 'done'})
-        return self._board()
+
+        variants = request.env['product.product'].sudo().search([
+            ('product_tmpl_id.is_published', '=', True),
+        ])
+        board = self._board()
+        board['finished'] = {
+            'customer': entry.name,
+            'phone': entry.phone or '',
+            'variants': [{
+                'id': v.id,
+                'label': '%s · %s' % (
+                    v.product_tmpl_id.name,
+                    v.product_template_attribute_value_ids[:1].name or v.name,
+                ),
+            } for v in variants],
+        }
+        return board

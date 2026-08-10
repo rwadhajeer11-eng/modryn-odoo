@@ -1,11 +1,40 @@
 from odoo import _, http
 from odoo.http import request
 
+from odoo.addons.modryn_staff.controllers.floor import ModrynFloor
+
 from ..models.alteration_task import OPEN_STATES, STATES
 
 GROUP_STAFF = 'modryn_staff.group_boutique_staff'
 GROUP_MANAGER = 'modryn_staff.group_shift_manager'
 GROUP_OWNER = 'modryn_staff.group_boutique_owner'
+
+
+class ModrynFloorAtelier(ModrynFloor):
+    """Controller inheritance: the floor board learns about the workshop only
+    when this module is installed. modryn_staff itself stays atelier-ignorant,
+    so it keeps working in a database without alterations."""
+
+    def _board(self):
+        board = super()._board()
+
+        # The signed-in employee's own open work — the seamstress panel.
+        user = request.env.user
+        mine = request.env['hr.employee'].sudo().search(
+            [('user_id', '=', user.id)], limit=1) if user and not user._is_public() else None
+        my_tasks = []
+        if mine:
+            tasks = request.env['modryn.alteration.task'].sudo().search([
+                ('seamstress_id', '=', mine.id), ('state', 'in', OPEN_STATES)])
+            my_tasks = [t._row() for t in tasks]
+        board['my_tasks'] = my_tasks
+
+        # What the finish modal needs to build a task without extra round-trips.
+        board['atelier'] = {
+            'pieces': [{'id': p.id, 'name': p.name}
+                       for p in request.env['modryn.garment.piece'].sudo().search([])],
+        }
+        return board
 
 
 class ModrynAtelier(http.Controller):
@@ -107,17 +136,59 @@ class ModrynAtelier(http.Controller):
         task.seamstress_id = employee
         return {'ok': True, 'task': task._row()}
 
+    def _my_open_tasks(self):
+        """The signed-in employee's own open queue. Shared by /atelier/my and
+        the floor board's payload so both views cannot drift apart."""
+        mine = self._my_employee()
+        if not mine:
+            return []
+        tasks = request.env['modryn.alteration.task'].sudo().search([
+            ('seamstress_id', '=', mine.id), ('state', 'in', OPEN_STATES)])
+        return [t._row() for t in tasks]
+
     @http.route('/atelier/my', type='jsonrpc', auth='user')
     def my_tasks(self):
         """A seamstress's own open queue — rendered inside /floor."""
         if not self._is_staff():
             return {'error': 'forbidden'}
-        mine = self._my_employee()
-        if not mine:
-            return {'tasks': []}
-        tasks = request.env['modryn.alteration.task'].sudo().search([
-            ('seamstress_id', '=', mine.id), ('state', 'in', OPEN_STATES)])
-        return {'tasks': [t._row() for t in tasks]}
+        return {'tasks': self._my_open_tasks()}
+
+    @http.route('/atelier/task/create', type='jsonrpc', auth='user')
+    def task_create(self, customer_name, customer_phone=None, variant_id=None,
+                    piece_ids=None, note=None, seamstress_id=None, due_date=None):
+        """The finish-screen handoff: fitting done, alteration work begins.
+
+        Always lands in 'intake' even when a seamstress is chosen — being
+        assigned is not the same as having started, and the workshop dashboard
+        reads intake as "on the pile".
+        """
+        if not self._is_manager():
+            return {'error': 'forbidden'}
+        name = (customer_name or '').strip()
+        if not name:
+            return {'error': 'missing_customer'}
+
+        values = {
+            'customer_name': name,
+            'customer_phone': (customer_phone or '').strip(),
+            'note': (note or '').strip(),
+            'state': 'intake',
+        }
+        if variant_id:
+            variant = request.env['product.product'].sudo().browse(int(variant_id)).exists()
+            values['variant_id'] = variant.id if variant else False
+        if piece_ids:
+            pieces = request.env['modryn.garment.piece'].sudo().browse(
+                [int(p) for p in piece_ids]).exists()
+            values['piece_ids'] = [(6, 0, pieces.ids)]
+        if seamstress_id:
+            employee = request.env['hr.employee'].sudo().browse(int(seamstress_id)).exists()
+            values['seamstress_id'] = employee.id if employee else False
+        if due_date:
+            values['due_date'] = due_date
+
+        task = request.env['modryn.alteration.task'].sudo().create(values)
+        return {'ok': True, 'task': task._row()}
 
     # ------------------------------------------------------- garment pieces
     @http.route('/manage/pieces', type='http', auth='user', website=True, sitemap=False)

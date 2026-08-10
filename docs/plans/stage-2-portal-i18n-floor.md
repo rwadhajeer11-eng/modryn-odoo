@@ -1,6 +1,6 @@
 # Stage 2+ plan — customer portal, tri-language, dispatch board, alterations
 
-**Status:** approved scope (grilled decision-by-decision, 2026-08-09) · building starts on explicit go
+**Status:** SHIPPED 2026-08-10 — all four phases built and verified (verify.sh 44/44); see docs/walkthrough.md Acts 7-9
 **Baseline:** commit `35cbb79` — Stage 1 staff layer complete, `./scripts/verify.sh` 27/27 green
 
 ## Context

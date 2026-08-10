@@ -85,3 +85,38 @@ class ModrynStaffAuth(http.Controller):
         # bounce the user to Odoo's database selector instead of our login page.
         request.session.logout(keep_db=True)
         return request.redirect('/staff/login')
+
+    # Staff screens are Hebrew/English by product decision (customers get Arabic
+    # too, on the storefront switcher). A hard whitelist, not free choice: a
+    # portal user writes her own lang through sudo() here, and sudo plus an
+    # unchecked value would let her set any field-legal language.
+    STAFF_LANGS = {'he_IL', 'en_US'}
+
+    @http.route('/staff/lang', type='http', auth='user', website=True,
+                methods=['POST'], csrf=True, sitemap=False)
+    def staff_lang(self, lang=None, redirect=None, **post):
+        user = request.env.user
+        if user._is_public() or not user.has_group('modryn_staff.group_boutique_staff'):
+            return request.not_found()
+        if lang not in self.STAFF_LANGS:
+            return request.redirect(redirect or '/floor')
+
+        # Two writes, because "the user's language" is two different things:
+        # user.lang is her stored preference, but a WEBSITE page renders in the
+        # URL's language — writing the preference alone changes nothing visible
+        # (verified: the partner switched to en_US and the page stayed Hebrew).
+        # So also route her through the language-prefixed URL and pin the
+        # frontend_lang cookie, which is how the website remembers a visitor.
+        user.sudo().lang = lang
+
+        path = redirect or '/floor'
+        for code in ('/en', '/ar'):
+            if path == code or path.startswith(code + '/'):
+                path = path[len(code):] or '/'
+                break
+        if lang == 'en_US':
+            path = '/en' + (path if path.startswith('/') else '/' + path)
+
+        response = request.redirect(path)
+        response.set_cookie('frontend_lang', lang)
+        return response

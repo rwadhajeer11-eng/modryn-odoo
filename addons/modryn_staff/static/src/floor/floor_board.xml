@@ -1,138 +1,264 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates xml:space="preserve">
 
+    <!-- A customer card's people: the primary slot + helper chips. Chips are
+         draggable (managers only — the hook is disabled otherwise); the primary
+         slot is its own drop zone so dropping there swaps rather than adds. -->
+    <t t-name="modryn_staff.CardPeople">
+        <div class="modryn_card_people">
+            <div class="modryn_primary_slot"
+                 t-att-data-drop-target="kind" t-att-data-drop-id="card.id"
+                 data-drop-primary="1">
+                <span t-if="card.employee_id" class="modryn_chip is_primary"
+                      t-att-data-employee="card.employee_id">
+                    <t t-esc="card.employee_name"/>
+                </span>
+                <span t-else="" class="modryn_slot_empty">Primary</span>
+            </div>
+            <t t-foreach="card.helpers" t-as="h" t-key="h.id">
+                <span class="modryn_chip is_helper" t-att-data-employee="h.id">
+                    <t t-esc="h.name"/>
+                </span>
+            </t>
+        </div>
+    </t>
+
     <t t-name="modryn_staff.FloorBoard">
-        <div class="modryn_floor" dir="rtl">
+        <div class="modryn_floor" t-ref="root"
+             t-att-class="state.dragging ? 'is_dragging' : ''">
 
             <div t-if="state.error" class="modryn_field_error mb-3" role="alert">
                 You don't have access to this board.
             </div>
 
-            <div class="modryn_floor_grid">
+            <div class="modryn_floor_layout">
+                <div class="modryn_floor_main">
 
-                <!-- ============ walk-in queue ============ -->
-                <section class="modryn_panel">
-                    <header class="modryn_panel_head">
-                        <h2>Walk-in queue</h2>
-                        <span class="modryn_count"><t t-esc="waitingCount"/> waiting</span>
-                    </header>
+                    <!-- ============ walk-in queue ============ -->
+                    <section class="modryn_panel">
+                        <header class="modryn_panel_head">
+                            <h2>Walk-in queue</h2>
+                            <span class="modryn_count"><t t-esc="waitingCount"/> waiting</span>
+                        </header>
 
-                    <p t-if="!state.queue.length" class="modryn_empty">No one is waiting.</p>
+                        <p t-if="!state.queue.length" class="modryn_empty">No one is waiting.</p>
 
-                    <table t-else="" class="table modryn_table align-middle">
-                        <tbody>
-                            <tr t-foreach="state.queue" t-as="entry" t-key="entry.id">
-                                <td class="modryn_pos"><t t-esc="entry.position"/></td>
-                                <td>
-                                    <div class="modryn_strong"><t t-esc="entry.name"/></div>
-                                    <div class="modryn_sub" dir="ltr"><t t-esc="entry.phone"/></div>
-                                </td>
-                                <td>
-                                    <span class="modryn_badge is_muted">
+                        <div class="modryn_cards">
+                            <div t-foreach="state.queue" t-as="entry" t-key="entry.id"
+                                 class="modryn_customer_card"
+                                 data-drop-target="queue" t-att-data-drop-id="entry.id">
+                                <div class="modryn_card_top">
+                                    <span class="modryn_pos"><t t-esc="entry.position"/></span>
+                                    <div>
+                                        <div class="modryn_strong"><t t-esc="entry.name"/></div>
+                                        <div class="modryn_sub" dir="ltr"><t t-esc="entry.phone"/></div>
+                                    </div>
+                                    <span class="modryn_badge is_muted ms-auto">
                                         <t t-esc="clientTypeLabel(entry)"/>
                                     </span>
-                                </td>
-                                <td>
                                     <span t-if="entry.state === 'waiting'" class="modryn_badge is_wait">Waiting</span>
-                                    <span t-else="" class="modryn_badge is_busy">
-                                        Serving: <t t-esc="entry.employee_name"/>
-                                    </span>
-                                </td>
-                                <td class="text-end" style="min-width: 14rem;">
-                                    <t t-if="state.canAssign">
-                                        <select class="form-select form-select-sm d-inline-block w-auto"
-                                                t-on-change="(ev) => this.assignQueue(entry.id, ev)">
-                                            <option value="">— Assign —</option>
-                                            <t t-foreach="state.staff" t-as="s" t-key="s.id">
-                                                <option t-att-value="s.id"
-                                                        t-att-selected="s.id === entry.employee_id ? 'selected' : undefined">
-                                                    <t t-esc="s.name"/>
-                                                </option>
-                                            </t>
-                                        </select>
-                                        <button class="btn btn-sm btn-outline-dark ms-1"
-                                                t-on-click="() => this.finish(entry.id)">Done</button>
-                                    </t>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </section>
+                                    <span t-else="" class="modryn_badge is_busy">Being served</span>
+                                </div>
 
-                <!-- ============ today's bookings ============ -->
-                <section class="modryn_panel">
-                    <header class="modryn_panel_head">
-                        <h2>Today's appointments</h2>
-                        <span class="modryn_count"><t t-esc="state.bookings.length"/></span>
-                    </header>
+                                <t t-call="modryn_staff.CardPeople">
+                                    <t t-set="card" t-value="entry"/>
+                                    <t t-set="kind" t-value="'queue'"/>
+                                </t>
 
-                    <p t-if="!state.bookings.length" class="modryn_empty">No appointments today.</p>
+                                <div t-if="state.canAssign" class="modryn_card_actions">
+                                    <!-- Click fallback: dragging is faster, but a
+                                         keyboard or a stubborn tablet still works. -->
+                                    <select class="form-select form-select-sm w-auto"
+                                            t-on-change="(ev) => this.assignFromSelect('queue', entry.id, ev)">
+                                        <option value="">— Assign —</option>
+                                        <t t-foreach="state.staff" t-as="s" t-key="s.id">
+                                            <option t-att-value="s.id"><t t-esc="s.name"/></option>
+                                        </t>
+                                    </select>
+                                    <button class="btn btn-sm btn-primary"
+                                            t-on-click="() => this.finish(entry.id)">Done</button>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
 
-                    <table t-else="" class="table modryn_table align-middle">
-                        <tbody>
-                            <tr t-foreach="state.bookings" t-as="b" t-key="b.id">
-                                <td class="modryn_pos"><t t-esc="b.time"/></td>
-                                <td>
-                                    <div class="modryn_strong"><t t-esc="b.title"/></div>
-                                    <div class="modryn_sub" dir="ltr"><t t-esc="b.phone"/></div>
-                                </td>
-                                <td>
-                                    <t t-if="b.dress">
-                                        <div class="modryn_sub">
-                                            <t t-esc="b.dress"/>
-                                            <t t-if="b.size"> · <t t-esc="b.size"/></t>
+                    <!-- ============ today's appointments ============ -->
+                    <section class="modryn_panel">
+                        <header class="modryn_panel_head">
+                            <h2>Today's appointments</h2>
+                            <span class="modryn_count"><t t-esc="state.bookings.length"/></span>
+                        </header>
+
+                        <p t-if="!state.bookings.length" class="modryn_empty">No appointments today.</p>
+
+                        <div class="modryn_cards">
+                            <div t-foreach="state.bookings" t-as="b" t-key="b.id"
+                                 class="modryn_customer_card"
+                                 data-drop-target="booking" t-att-data-drop-id="b.id">
+                                <div class="modryn_card_top">
+                                    <span class="modryn_pos"><t t-esc="b.time"/></span>
+                                    <div>
+                                        <div class="modryn_strong"><t t-esc="b.title"/></div>
+                                        <div class="modryn_sub" dir="ltr"><t t-esc="b.phone"/></div>
+                                        <div t-if="b.dress" class="modryn_sub">
+                                            <t t-esc="b.dress"/><t t-if="b.size"> · <t t-esc="b.size"/></t>
                                         </div>
-                                    </t>
-                                </td>
-                                <td class="text-end" style="min-width: 12rem;">
-                                    <t t-if="state.canAssign">
-                                        <select class="form-select form-select-sm d-inline-block w-auto"
-                                                t-on-change="(ev) => this.assignBooking(b.id, ev)">
-                                            <option value="">— Assign —</option>
-                                            <t t-foreach="state.staff" t-as="s" t-key="s.id">
-                                                <option t-att-value="s.id"
-                                                        t-att-selected="s.id === b.employee_id ? 'selected' : undefined">
-                                                    <t t-esc="s.name"/>
-                                                </option>
-                                            </t>
-                                        </select>
-                                    </t>
-                                    <span t-elif="b.employee_name" class="modryn_badge is_busy">
-                                        <t t-esc="b.employee_name"/>
-                                    </span>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </section>
+                                    </div>
+                                </div>
 
-                <!-- ============ staff roster ============ -->
-                <section class="modryn_panel">
+                                <t t-call="modryn_staff.CardPeople">
+                                    <t t-set="card" t-value="b"/>
+                                    <t t-set="kind" t-value="'booking'"/>
+                                </t>
+
+                                <div t-if="state.canAssign" class="modryn_card_actions">
+                                    <select class="form-select form-select-sm w-auto"
+                                            t-on-change="(ev) => this.assignFromSelect('booking', b.id, ev)">
+                                        <option value="">— Assign —</option>
+                                        <t t-foreach="state.staff" t-as="s" t-key="s.id">
+                                            <option t-att-value="s.id"><t t-esc="s.name"/></option>
+                                        </t>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- ============ my alterations (seamstress self-view) ============ -->
+                    <section t-if="state.myTasks.length" class="modryn_panel">
+                        <header class="modryn_panel_head">
+                            <h2>My alterations</h2>
+                            <span class="modryn_count"><t t-esc="state.myTasks.length"/></span>
+                        </header>
+                        <table class="table modryn_table align-middle">
+                            <tbody>
+                                <tr t-foreach="state.myTasks" t-as="task" t-key="task.id">
+                                    <td>
+                                        <div class="modryn_strong"><t t-esc="task.customer"/></div>
+                                        <div t-if="task.dress" class="modryn_sub">
+                                            <t t-esc="task.dress"/><t t-if="task.size"> · <t t-esc="task.size"/></t>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span t-foreach="task.pieces" t-as="p" t-key="p"
+                                              class="modryn_badge is_muted me-1"><t t-esc="p"/></span>
+                                        <div t-if="task.note" class="modryn_sub"><t t-esc="task.note"/></div>
+                                    </td>
+                                    <td>
+                                        <span t-attf-class="modryn_badge #{task.overdue ? 'is_busy' : 'is_muted'}">
+                                            <t t-esc="task.due"/>
+                                        </span>
+                                    </td>
+                                    <td class="text-end">
+                                        <button t-if="task.state === 'intake'"
+                                                class="btn btn-sm btn-primary"
+                                                t-on-click="() => this.advanceTask(task.id, 'in_progress')">
+                                            Start
+                                        </button>
+                                        <button t-if="task.state === 'in_progress'"
+                                                class="btn btn-sm btn-primary"
+                                                t-on-click="() => this.advanceTask(task.id, 'ready')">
+                                            Ready
+                                        </button>
+                                        <span t-if="task.state === 'ready'" class="modryn_badge is_free">
+                                            Ready
+                                        </span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </section>
+                </div>
+
+                <!-- ============ the bench: who is on shift, live ============ -->
+                <aside class="modryn_bench" data-drop-target="bench">
                     <header class="modryn_panel_head">
                         <h2>Team on shift</h2>
                         <span class="modryn_count"><t t-esc="freeCount"/> available</span>
                     </header>
-
                     <p t-if="!state.staff.length" class="modryn_empty">No team members have been set up yet.</p>
-
-                    <div class="modryn_staff_cards">
+                    <div class="modryn_bench_list">
                         <div t-foreach="state.staff" t-as="s" t-key="s.id"
-                             t-attf-class="modryn_staff_card #{s.occupied ? 'is_busy' : 'is_free'}">
-                            <div class="modryn_strong"><t t-esc="s.name"/></div>
-                            <div class="modryn_sub"><t t-esc="s.role"/></div>
-                            <!-- Text, not colour alone: status must survive a
-                                 colour-blind reader and a greyscale screen. -->
-                            <div class="modryn_status">
-                                <t t-if="s.occupied">Busy</t>
-                                <t t-else="">Available</t>
-                            </div>
-                            <div t-if="s.occupied and s.occupied_with" class="modryn_sub">
-                                Serving: <t t-esc="s.occupied_with"/>
+                             t-attf-class="modryn_bench_row #{s.occupied ? 'is_busy' : 'is_free'}">
+                            <span class="modryn_chip" t-att-data-employee="s.id">
+                                <t t-esc="s.name"/>
+                            </span>
+                            <div class="modryn_bench_meta">
+                                <span class="modryn_sub" t-esc="s.role"/>
+                                <!-- Text, not colour alone: status must survive a
+                                     colour-blind reader and a greyscale screen. -->
+                                <span class="modryn_status">
+                                    <t t-if="s.occupied">Busy</t>
+                                    <t t-else="">Available</t>
+                                </span>
+                                <span t-if="s.occupied and s.occupied_with" class="modryn_sub">
+                                    · <t t-esc="s.occupied_with"/>
+                                </span>
                             </div>
                         </div>
                     </div>
-                </section>
+                    <p t-if="state.canAssign" class="modryn_sub mt-2 mb-0">
+                        Drag a name onto a customer to assign her.
+                    </p>
+                </aside>
+            </div>
 
+            <!-- ============ finish modal: fitting done -> alteration task ============ -->
+            <div t-if="state.finish" class="modryn_modal_backdrop" t-on-click.self="closeFinish">
+                <div class="modryn_modal" role="dialog" aria-modal="true">
+                    <h2 class="mb-1">Alterations for <t t-esc="state.finish.customer"/>?</h2>
+                    <p class="modryn_sub mb-3">
+                        If the gown needs work, open a task for the workshop. Otherwise just skip.
+                    </p>
+
+                    <div class="mb-3">
+                        <label class="form-label">Dress</label>
+                        <select class="form-select" t-model="state.finish.form.variant_id">
+                            <option value="">— Choose a dress —</option>
+                            <t t-foreach="state.finish.variants" t-as="v" t-key="v.id">
+                                <option t-att-value="v.id"><t t-esc="v.label"/></option>
+                            </t>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Pieces to alter</label>
+                        <div class="modryn_piece_grid">
+                            <label t-foreach="state.atelier.pieces" t-as="p" t-key="p.id"
+                                   class="modryn_piece_check">
+                                <input type="checkbox"
+                                       t-on-change="(ev) => this.togglePiece(p.id, ev)"/>
+                                <span t-esc="p.name"/>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Instructions</label>
+                        <textarea class="form-control" rows="2" t-model="state.finish.form.note"/>
+                    </div>
+
+                    <div class="modryn_modal_row mb-4">
+                        <div>
+                            <label class="form-label">Seamstress</label>
+                            <select class="form-select" t-model="state.finish.form.seamstress_id">
+                                <option value="">— Later —</option>
+                                <t t-foreach="seamstresses" t-as="s" t-key="s.id">
+                                    <option t-att-value="s.id"><t t-esc="s.name"/></option>
+                                </t>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="form-label">Due</label>
+                            <input type="date" class="form-control" t-model="state.finish.form.due_date"/>
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-primary" t-on-click="createTask">Create task</button>
+                        <button class="btn btn-link" t-on-click="closeFinish">Skip</button>
+                    </div>
+                </div>
             </div>
         </div>
     </t>

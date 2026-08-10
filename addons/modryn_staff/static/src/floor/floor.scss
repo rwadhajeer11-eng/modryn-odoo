@@ -151,6 +151,200 @@ $modryn-success: #2E6B4F;
 .modryn_sub { color: $modryn-ink-muted; font-size: 0.875rem; }
 
 // --------------------------------------------------------------------- floor
+.modryn_floor_layout {
+    display: grid;
+    grid-template-columns: 1fr 280px;
+    gap: 24px;
+    align-items: start;
+
+    @media (max-width: 900px) {
+        grid-template-columns: 1fr;
+    }
+}
+
+.modryn_floor_main {
+    display: grid;
+    gap: 24px;
+}
+
+// ------------------------------------------------------------ customer cards
+.modryn_cards {
+    display: grid;
+    gap: 12px;
+}
+
+.modryn_customer_card {
+    border: 1px solid $modryn-border;
+    border-radius: 8px;
+    padding: 14px 16px;
+    background: $modryn-bg;
+    transition: border-color 120ms ease, box-shadow 120ms ease;
+}
+
+.modryn_card_top {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.modryn_card_people {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-block-start: 10px;
+}
+
+.modryn_card_actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-block-start: 10px;
+}
+
+// ------------------------------------------------------------------- chips
+.modryn_chip {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 9999px;
+    background: #FFFFFF;
+    border: 1px solid $modryn-border;
+    font-size: 0.875rem;
+    cursor: grab;
+    user-select: none;
+
+    &.is_primary {
+        border-color: $modryn-gold;
+        background: rgba(197, 160, 89, 0.12);
+        font-weight: 600;
+    }
+
+    &.is_helper {
+        border-style: dashed;
+    }
+}
+
+.modryn_primary_slot {
+    display: inline-flex;
+    min-width: 90px;
+    min-height: 30px;
+    align-items: center;
+    border-radius: 9999px;
+}
+
+.modryn_slot_empty {
+    padding: 4px 12px;
+    border: 1px dashed $modryn-border;
+    border-radius: 9999px;
+    color: $modryn-ink-muted;
+    font-size: 0.8125rem;
+}
+
+// Drop feedback: the hovered zone glows gold; while dragging, every legal zone
+// gets a faint outline so the manager can see where a chip may land.
+.modryn_drop_hover {
+    border-color: $modryn-gold !important;
+    box-shadow: 0 0 0 3px rgba(197, 160, 89, 0.25);
+}
+
+.is_dragging {
+    [data-drop-target] {
+        outline: 1px dashed rgba(197, 160, 89, 0.5);
+        outline-offset: 2px;
+    }
+}
+
+// ------------------------------------------------------------------- bench
+.modryn_bench {
+    background: #FFFFFF;
+    border: 1px solid $modryn-border;
+    border-radius: 8px;
+    padding: 20px;
+    position: sticky;
+    top: 16px;
+}
+
+.modryn_bench_list {
+    display: grid;
+    gap: 10px;
+}
+
+.modryn_bench_row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 8px;
+    border-radius: 8px;
+    background: $modryn-bg;
+    // Status is carried by the text, never colour alone.
+    border-inline-start: 3px solid $modryn-success;
+
+    &.is_busy {
+        border-inline-start-color: $modryn-gold;
+    }
+}
+
+.modryn_bench_meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 4px;
+    font-size: 0.8125rem;
+}
+
+// ------------------------------------------------------------- finish modal
+.modryn_modal_backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(43, 33, 24, 0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1050;
+    padding: 24px;
+}
+
+.modryn_modal {
+    background: #FFFFFF;
+    border-radius: 8px;
+    padding: 28px;
+    width: 100%;
+    max-width: 480px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 24px 64px rgba(43, 33, 24, 0.25);
+}
+
+.modryn_modal_row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.modryn_piece_grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 8px;
+}
+
+.modryn_piece_check {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 10px;
+    border: 1px solid $modryn-border;
+    border-radius: 8px;
+    cursor: pointer;
+    margin: 0;
+    font-size: 0.875rem;
+
+    &:has(input:checked) {
+        border-color: $modryn-gold;
+        background: rgba(197, 160, 89, 0.10);
+    }
+}
+
+// Legacy grid kept for any straggler usage.
 .modryn_floor_grid {
     display: grid;
     gap: 24px;

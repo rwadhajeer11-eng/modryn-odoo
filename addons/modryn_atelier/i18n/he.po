@@ -162,3 +162,33 @@ msgstr "פתוחות"
 #: model_terms:ir.ui.view,arch_db:modryn_atelier.dashboard
 msgid "overdue"
 msgstr "באיחור"
+
+#. module: modryn_atelier
+#: model:ir.model.fields,field_description:modryn_atelier.field_modryn_alteration_task__partner_id
+msgid "Customer"
+msgstr "לקוחה"
+
+#. module: modryn_atelier
+#: model:ir.model.fields,field_description:modryn_atelier.field_modryn_alteration_task__customer_name
+msgid "Customer Name"
+msgstr "שם הלקוחה"
+
+#. module: modryn_atelier
+#: model:ir.model.fields,field_description:modryn_atelier.field_modryn_alteration_task__customer_phone
+msgid "Customer Phone"
+msgstr "טלפון הלקוחה"
+
+#. module: modryn_atelier
+#: model:ir.model.fields,field_description:modryn_atelier.field_modryn_alteration_task__delivered_at
+msgid "Delivered At"
+msgstr "נמסר בתאריך"
+
+#. module: modryn_atelier
+#: model:ir.model.fields,field_description:modryn_atelier.field_modryn_alteration_task__is_overdue
+msgid "Is Overdue"
+msgstr "באיחור"
+
+#. module: modryn_atelier
+#: model:ir.model.fields,field_description:modryn_atelier.field_modryn_alteration_task__state
+msgid "State"
+msgstr "סטטוס"

@@ -68,6 +68,7 @@ msgid "MODRYN: purge expired login codes"
 msgstr "MODRYN: ניקוי קודי כניסה שפגו"
 
 #. module: modryn_portal
+#: model:website.menu,name:modryn_portal.menu_my_appointments
 #: model_terms:ir.ui.view,arch_db:modryn_portal.bookings
 #: model_terms:ir.ui.view,arch_db:modryn_portal.login
 msgid "My appointments"
@@ -84,6 +85,12 @@ msgid "Phone number"
 msgstr "מספר טלפון"
 
 #. module: modryn_portal
+#. odoo-python
+#: code:addons/modryn_portal/controllers/portal.py:0
+msgid "Please request a code first."
+msgstr "יש לבקש קוד תחילה."
+
+#. module: modryn_portal
 #: model_terms:ir.ui.view,arch_db:modryn_portal.login
 msgid "Send me a code"
 msgstr "שליחת קוד"
@@ -92,42 +99,6 @@ msgstr "שליחת קוד"
 #: model_terms:ir.ui.view,arch_db:modryn_portal.bookings
 msgid "Sign out"
 msgstr "יציאה"
-
-#. module: modryn_portal
-#: model_terms:ir.ui.view,arch_db:modryn_portal.bookings
-msgid "Upcoming"
-msgstr "תורים קרובים"
-
-#. module: modryn_portal
-#: model_terms:ir.ui.view,arch_db:modryn_portal.verify
-msgid "Use a different number"
-msgstr "שימוש במספר אחר"
-
-#. module: modryn_portal
-#: model_terms:ir.ui.view,arch_db:modryn_portal.verify
-msgid "We sent a 6-digit code to"
-msgstr "שלחנו קוד בן 6 ספרות אל"
-
-#. module: modryn_portal
-#: model_terms:ir.ui.view,arch_db:modryn_portal.cancel_confirm
-msgid "Yes, cancel it"
-msgstr "כן, לבטל"
-
-#. module: modryn_portal
-#: model_terms:ir.ui.view,arch_db:modryn_portal.bookings
-msgid "You have no upcoming appointments."
-msgstr "אין לך תורים קרובים."
-
-#. module: modryn_portal
-#: model_terms:ir.ui.view,arch_db:modryn_portal.bookings
-msgid "· size"
-msgstr "· מידה"
-
-#. module: modryn_portal
-#. odoo-python
-#: code:addons/modryn_portal/controllers/portal.py:0
-msgid "Please request a code first."
-msgstr "יש לבקש קוד תחילה."
 
 #. module: modryn_portal
 #. odoo-python
@@ -166,7 +137,37 @@ msgid "Too many codes requested. Please try again in an hour."
 msgstr "נשלחו יותר מדי קודים. נא לנסות שוב בעוד שעה."
 
 #. module: modryn_portal
+#: model_terms:ir.ui.view,arch_db:modryn_portal.bookings
+msgid "Upcoming"
+msgstr "תורים קרובים"
+
+#. module: modryn_portal
+#: model_terms:ir.ui.view,arch_db:modryn_portal.verify
+msgid "Use a different number"
+msgstr "שימוש במספר אחר"
+
+#. module: modryn_portal
 #. odoo-python
 #: code:addons/modryn_portal/controllers/portal.py:0
 msgid "We could not send the code. Please try again shortly."
 msgstr "לא הצלחנו לשלוח את הקוד. נא לנסות שוב בקרוב."
+
+#. module: modryn_portal
+#: model_terms:ir.ui.view,arch_db:modryn_portal.verify
+msgid "We sent a 6-digit code to"
+msgstr "שלחנו קוד בן 6 ספרות אל"
+
+#. module: modryn_portal
+#: model_terms:ir.ui.view,arch_db:modryn_portal.cancel_confirm
+msgid "Yes, cancel it"
+msgstr "כן, לבטל"
+
+#. module: modryn_portal
+#: model_terms:ir.ui.view,arch_db:modryn_portal.bookings
+msgid "You have no upcoming appointments."
+msgstr "אין לך תורים קרובים."
+
+#. module: modryn_portal
+#: model_terms:ir.ui.view,arch_db:modryn_portal.bookings
+msgid "· size"
+msgstr "· מידה"
