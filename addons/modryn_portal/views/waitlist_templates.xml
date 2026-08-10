@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="waitlist_joined" name="Joined the waitlist">
+        <t t-call="website.layout">
+            <div id="wrap" class="oe_structure">
+                <div class="container py-5 text-center" style="max-width: 520px;">
+                    <t t-if="status == 'joined'">
+                        <h1 class="mb-3">You're on the list</h1>
+                        <p class="text-muted mb-4">
+                            If a place opens up on <t t-out="day"/>, we'll text you first.
+                        </p>
+                    </t>
+                    <t t-else="">
+                        <h1 class="mb-3">We couldn't add you</h1>
+                        <p class="text-muted mb-4">Please check your phone number and try again.</p>
+                    </t>
+                    <a href="/book" class="btn btn-primary">Back to booking</a>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- Her exclusive window. The slot list is rebuilt at read time, because
+         between the SMS and this click a normal booker may have taken one. -->
+    <template id="claim_form" name="Claim your place">
+        <t t-call="website.layout">
+            <div id="wrap" class="oe_structure">
+                <div class="container py-5" style="max-width: 520px;">
+                    <h1 class="mb-2">A place has opened up</h1>
+                    <p class="text-muted mb-4">
+                        <t t-out="day_label"/> — it's yours if you'd like it.
+                    </p>
+
+                    <div t-if="error" class="modryn_field_error mb-3" role="alert" t-out="error"/>
+
+                    <t t-if="slots">
+                        <form t-attf-action="/claim/#{offer.offer_token}" method="post">
+                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                            <div class="mb-3">
+                                <label class="form-label" for="slot">Time</label>
+                                <select id="slot" name="slot" class="form-select">
+                                    <t t-foreach="slots" t-as="s">
+                                        <option t-att-value="s['value']" t-out="s['label']"/>
+                                    </t>
+                                </select>
+                            </div>
+                            <div class="form-check mb-4">
+                                <input class="form-check-input" type="checkbox" value="1"
+                                       id="terms" name="terms"/>
+                                <label class="form-check-label" for="terms">
+                                    I accept the boutique's cancellation and no-show terms
+                                </label>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                Take this place
+                            </button>
+                        </form>
+                    </t>
+                    <t t-else="">
+                        <p class="text-muted">
+                            That day has filled up again. <a href="/book">See other days</a>.
+                        </p>
+                    </t>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <template id="claim_expired" name="Offer expired">
+        <t t-call="website.layout">
+            <div id="wrap" class="oe_structure">
+                <div class="container py-5 text-center" style="max-width: 520px;">
+                    <h1 class="mb-3">This offer has passed</h1>
+                    <p class="text-muted mb-4">
+                        The place went to the next person waiting — but there are other days.
+                    </p>
+                    <a href="/book" class="btn btn-primary">See available days</a>
+                </div>
+            </div>
+        </t>
+    </template>
+
+</odoo>

@@ -25,6 +25,11 @@ msgstr ""
 "                            </select>"
 
 #. module: modryn_queue_poc
+#: model_terms:ir.ui.view,arch_db:modryn_queue_poc.ticket
+msgid "Book a fitting"
+msgstr "קביעת תור"
+
+#. module: modryn_queue_poc
 #. odoo-javascript
 #: code:addons/modryn_queue_poc/static/src/queue_board/queue_board.xml:0
 #: model:ir.model.fields.selection,name:modryn_queue_poc.selection__modryn_queue_entry__client_type__bride
@@ -68,6 +73,11 @@ msgid "Evening"
 msgstr "ערב"
 
 #. module: modryn_queue_poc
+#: model:ir.model.fields.selection,name:modryn_queue_poc.selection__modryn_queue_entry__state__expired
+msgid "Expired"
+msgstr "פג תוקף"
+
+#. module: modryn_queue_poc
 #: model:ir.model.fields.selection,name:modryn_queue_poc.selection__modryn_queue_entry__state__done
 msgid "Finished"
 msgstr "הסתיימה"
@@ -78,10 +88,28 @@ msgid "Full name"
 msgstr "שם מלא"
 
 #. module: modryn_queue_poc
+#: model:ir.model.fields.selection,name:modryn_queue_poc.selection__modryn_queue_entry__state__redirected
+msgid "Invited to book"
+msgstr "הוזמנה לקבוע תור"
+
+#. module: modryn_queue_poc
 #: model_terms:ir.ui.view,arch_db:modryn_queue_poc.checkin_form
 #: model_terms:ir.ui.view,arch_db:modryn_queue_poc.queue_sign
 msgid "Join the queue"
 msgstr "כניסה לתור"
+
+#. module: modryn_queue_poc
+#: model:ir.actions.server,name:modryn_queue_poc.ir_cron_expire_tickets_ir_actions_server
+msgid "MODRYN: close the floor for the day"
+msgstr "MODRYN: סגירת היום"
+
+#. module: modryn_queue_poc
+#: model_terms:ir.ui.view,arch_db:modryn_queue_poc.ticket
+msgid ""
+"Make yourself at home — feel free to browse while you wait.\n"
+"                            We'll text you when we're ready."
+msgstr ""
+"הרגישי בבית — הסתובבי והתרשמי בזמן ההמתנה. נעדכן אותך בהודעה כשנהיה מוכנות."
 
 #. module: modryn_queue_poc
 #. odoo-javascript
@@ -97,6 +125,11 @@ msgid "No one is waiting right now."
 msgstr "אין לקוחות בתור כרגע."
 
 #. module: modryn_queue_poc
+#: model:ir.model.fields.selection,name:modryn_queue_poc.selection__modryn_queue_entry__state__pending
+msgid "Pending"
+msgstr "ממתינה לאישור"
+
+#. module: modryn_queue_poc
 #. odoo-javascript
 #: code:addons/modryn_queue_poc/static/src/queue_board/queue_board.xml:0
 #: model:ir.model.fields,field_description:modryn_queue_poc.field_modryn_queue_entry__phone
@@ -105,10 +138,26 @@ msgid "Phone"
 msgstr "טלפון"
 
 #. module: modryn_queue_poc
+#: model_terms:ir.ui.view,arch_db:modryn_queue_poc.ticket
+msgid "Please come to the desk."
+msgstr "נא לגשת לדלפק."
+
+#. module: modryn_queue_poc
+#. odoo-python
+#: code:addons/modryn_queue_poc/controllers/main.py:0
+msgid "Please enter a valid phone number"
+msgstr "יש להזין מספר טלפון תקין"
+
+#. module: modryn_queue_poc
 #. odoo-python
 #: code:addons/modryn_queue_poc/controllers/main.py:0
 msgid "Please enter your full name"
 msgstr "נא למלא שם מלא"
+
+#. module: modryn_queue_poc
+#: model_terms:ir.ui.view,arch_db:modryn_queue_poc.ticket
+msgid "Prefer a scheduled visit?"
+msgstr "מעדיפה לקבוע תור מראש?"
 
 #. module: modryn_queue_poc
 #: model_terms:ir.ui.view,arch_db:modryn_queue_poc.queue_sign
@@ -120,6 +169,16 @@ msgstr "סרקי את הקוד כדי להצטרף לתור"
 #: code:addons/modryn_queue_poc/static/src/queue_board/queue_board.xml:0
 msgid "Status"
 msgstr "סטטוס"
+
+#. module: modryn_queue_poc
+#: model_terms:ir.ui.view,arch_db:modryn_queue_poc.ticket
+msgid "Thank you for visiting"
+msgstr "תודה שביקרת"
+
+#. module: modryn_queue_poc
+#: model_terms:ir.ui.view,arch_db:modryn_queue_poc.ticket
+msgid "Today is a busy day"
+msgstr "היום יום עמוס"
 
 #. module: modryn_queue_poc
 #. odoo-javascript
@@ -149,59 +208,16 @@ msgid "Walk-in queue"
 msgstr "תור בכניסה"
 
 #. module: modryn_queue_poc
-#: model_terms:ir.ui.view,arch_db:modryn_queue_poc.checkin_form
-msgid "Welcome"
-msgstr "ברוכה הבאה"
-
-#. module: modryn_queue_poc
-#: model_terms:ir.ui.view,arch_db:modryn_queue_poc.ticket
-msgid "Book a fitting"
-msgstr "קביעת תור"
-
-#. module: modryn_queue_poc
-#: model:ir.model.fields.selection,name:modryn_queue_poc.selection__modryn_queue_entry__state__expired
-msgid "Expired"
-msgstr "פג תוקף"
-
-#. module: modryn_queue_poc
-#: model:ir.model.fields.selection,name:modryn_queue_poc.selection__modryn_queue_entry__state__redirected
-msgid "Invited to book"
-msgstr "הוזמנה לקבוע תור"
-
-#. module: modryn_queue_poc
-#: model:ir.actions.server,name:modryn_queue_poc.ir_cron_expire_tickets_ir_actions_server
-msgid "MODRYN: close the floor for the day"
-msgstr "MODRYN: סגירת היום"
-
-#. module: modryn_queue_poc
-#: model:ir.model.fields.selection,name:modryn_queue_poc.selection__modryn_queue_entry__state__pending
-msgid "Pending"
-msgstr "ממתינה לאישור"
-
-#. module: modryn_queue_poc
-#: model_terms:ir.ui.view,arch_db:modryn_queue_poc.ticket
-msgid "Please come to the desk."
-msgstr "נא לגשת לדלפק."
-
-#. module: modryn_queue_poc
-#: model_terms:ir.ui.view,arch_db:modryn_queue_poc.ticket
-msgid "Prefer a scheduled visit?"
-msgstr "מעדיפה לקבוע תור מראש?"
-
-#. module: modryn_queue_poc
-#: model_terms:ir.ui.view,arch_db:modryn_queue_poc.ticket
-msgid "Thank you for visiting"
-msgstr "תודה שביקרת"
-
-#. module: modryn_queue_poc
-#: model_terms:ir.ui.view,arch_db:modryn_queue_poc.ticket
-msgid "Today is a busy day"
-msgstr "היום יום עמוס"
-
-#. module: modryn_queue_poc
 #: model_terms:ir.ui.view,arch_db:modryn_queue_poc.ticket
 msgid "We hope to see you again soon."
 msgstr "נשמח לראותך שוב בקרוב."
+
+#. module: modryn_queue_poc
+#: model_terms:ir.ui.view,arch_db:modryn_queue_poc.ticket
+msgid ""
+"We'd love to give you our full attention — book a fitting\n"
+"                            and the boutique is yours."
+msgstr "נשמח להקדיש לך את מלוא תשומת הלב — קבעי מדידה והבוטיק כולו שלך."
 
 #. module: modryn_queue_poc
 #: model_terms:ir.ui.view,arch_db:modryn_queue_poc.ticket
@@ -235,6 +251,11 @@ msgstr "אנחנו מוכנים בשבילך — %(stylist)s מחכה לך."
 #: code:addons/modryn_queue_poc/models/queue_entry.py:0
 msgid "We're ready for you — please come to the desk."
 msgstr "אנחנו מוכנים בשבילך — נא לגשת לדלפק."
+
+#. module: modryn_queue_poc
+#: model_terms:ir.ui.view,arch_db:modryn_queue_poc.checkin_form
+msgid "Welcome"
+msgstr "ברוכה הבאה"
 
 #. module: modryn_queue_poc
 #: model_terms:ir.ui.view,arch_db:modryn_queue_poc.ticket

@@ -65,8 +65,10 @@ class ModrynBooking(http.Controller):
                     continue
                 times.append({'value': utc.strftime('%Y-%m-%d %H:%M:%S'),
                               'label': '%02d:00' % hour})
-            if times:
-                days.append({'date': day, 'times': times})
+            # A day with no free hours is still shown — with a waitlist form
+            # instead of a time picker. Hiding it would mean she never learns
+            # she could have been first in line.
+            days.append({'date': day, 'times': times, 'full': not times})
         return days
 
     def _organizer(self):

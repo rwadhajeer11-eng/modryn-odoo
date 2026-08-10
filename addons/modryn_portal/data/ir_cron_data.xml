@@ -26,5 +26,17 @@
             <field name="interval_type">minutes</field>
             <field name="active" eval="True"/>
         </record>
+
+        <!-- An unclaimed offer must not hold a slot hostage: after the window
+             it lapses and the next person in line is texted. -->
+        <record id="ir_cron_expire_offers" model="ir.cron">
+            <field name="name">MODRYN: pass on unclaimed waitlist offers</field>
+            <field name="model_id" ref="model_modryn_day_waitlist"/>
+            <field name="state">code</field>
+            <field name="code">model._modryn_expire_offers()</field>
+            <field name="interval_number">10</field>
+            <field name="interval_type">minutes</field>
+            <field name="active" eval="True"/>
+        </record>
     </data>
 </odoo>

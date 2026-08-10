@@ -122,6 +122,16 @@ msgstr "قرأتُ شروط الإلغاء والتأخير وعدم الحضو�
 
 #. module: modryn_booking
 #: model_terms:ir.ui.view,arch_db:modryn_booking.booking_form
+msgid "Join the waitlist"
+msgstr "انضمي إلى قائمة الانتظار"
+
+#. module: modryn_booking
+#: model_terms:ir.ui.view,arch_db:modryn_booking.booking_form
+msgid "Leave your number and we'll text you first if a place opens up."
+msgstr "اتركي رقمك وسنراسلك أولاً إذا شغر موعد."
+
+#. module: modryn_booking
+#: model_terms:ir.ui.view,arch_db:modryn_booking.booking_form
 msgid "Phone"
 msgstr "رقم الهاتف"
 
@@ -176,6 +186,11 @@ msgstr "الموعد غير صالح"
 #: code:addons/modryn_booking/controllers/main.py:0
 msgid "That time was just taken, please choose another"
 msgstr "تم حجز هذا الموعد للتو، يُرجى اختيار موعد آخر"
+
+#. module: modryn_booking
+#: model_terms:ir.ui.view,arch_db:modryn_booking.booking_form
+msgid "The day you wanted is full?"
+msgstr "اليوم الذي أردتِه محجوز بالكامل؟"
 
 #. module: modryn_booking
 #: model_terms:ir.ui.view,arch_db:modryn_booking.booking_form

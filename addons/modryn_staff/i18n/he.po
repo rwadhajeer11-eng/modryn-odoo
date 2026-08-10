@@ -47,6 +47,12 @@ msgid "Add a team member"
 msgstr "הוספת עובדת"
 
 #. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "Add to the line"
+msgstr "הוספה לתור"
+
+#. module: modryn_staff
 #: model:res.groups,comment:modryn_staff.group_boutique_owner
 msgid "Adds employees, defines roles, and everything a manager can do."
 msgstr "מוסיפה עובדות, מגדירה תפקידים, וכל מה שמנהלת משמרת יכולה."
@@ -212,6 +218,18 @@ msgstr "שם משתמש או סיסמה שגויים"
 #: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
 msgid "Instructions"
 msgstr "הוראות"
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "Invite to book"
+msgstr "הזמנה לקבוע תור"
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "Just arrived"
+msgstr "הגיעו עכשיו"
 
 #. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.staff_login
@@ -559,21 +577,3 @@ msgstr "— בחרי שמלה —"
 #: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
 msgid "— Later —"
 msgstr "— בהמשך —"
-
-#. module: modryn_staff
-#. odoo-javascript
-#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
-msgid "Add to the line"
-msgstr "הוספה לתור"
-
-#. module: modryn_staff
-#. odoo-javascript
-#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
-msgid "Invite to book"
-msgstr "הזמנה לקבוע תור"
-
-#. module: modryn_staff
-#. odoo-javascript
-#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
-msgid "Just arrived"
-msgstr "הגיעו עכשיו"

@@ -25,6 +25,11 @@ msgstr ""
 "                            </select>"
 
 #. module: modryn_queue_poc
+#: model_terms:ir.ui.view,arch_db:modryn_queue_poc.ticket
+msgid "Book a fitting"
+msgstr "حجز موعد"
+
+#. module: modryn_queue_poc
 #. odoo-javascript
 #: code:addons/modryn_queue_poc/static/src/queue_board/queue_board.xml:0
 #: model:ir.model.fields.selection,name:modryn_queue_poc.selection__modryn_queue_entry__client_type__bride
@@ -84,6 +89,14 @@ msgid "Join the queue"
 msgstr "الانضمام إلى الطابور"
 
 #. module: modryn_queue_poc
+#: model_terms:ir.ui.view,arch_db:modryn_queue_poc.ticket
+msgid ""
+"Make yourself at home — feel free to browse while you wait.\n"
+"                            We'll text you when we're ready."
+msgstr ""
+"اعتبري نفسك في بيتك — تجوّلي بحرية بينما تنتظرين. سنراسلك عندما نكون جاهزين."
+
+#. module: modryn_queue_poc
 #. odoo-javascript
 #: code:addons/modryn_queue_poc/static/src/queue_board/queue_board.xml:0
 #: model:ir.model.fields,field_description:modryn_queue_poc.field_modryn_queue_entry__name
@@ -105,10 +118,26 @@ msgid "Phone"
 msgstr "رقم الهاتف"
 
 #. module: modryn_queue_poc
+#: model_terms:ir.ui.view,arch_db:modryn_queue_poc.ticket
+msgid "Please come to the desk."
+msgstr "يرجى التوجه إلى المكتب."
+
+#. module: modryn_queue_poc
+#. odoo-python
+#: code:addons/modryn_queue_poc/controllers/main.py:0
+msgid "Please enter a valid phone number"
+msgstr "يرجى إدخال رقم هاتف صالح"
+
+#. module: modryn_queue_poc
 #. odoo-python
 #: code:addons/modryn_queue_poc/controllers/main.py:0
 msgid "Please enter your full name"
 msgstr "يرجى إدخال الاسم الكامل"
+
+#. module: modryn_queue_poc
+#: model_terms:ir.ui.view,arch_db:modryn_queue_poc.ticket
+msgid "Prefer a scheduled visit?"
+msgstr "تفضلين موعدًا محددًا؟"
 
 #. module: modryn_queue_poc
 #: model_terms:ir.ui.view,arch_db:modryn_queue_poc.queue_sign
@@ -120,6 +149,16 @@ msgstr "امسحي الرمز للانضمام إلى الطابور"
 #: code:addons/modryn_queue_poc/static/src/queue_board/queue_board.xml:0
 msgid "Status"
 msgstr "الحالة"
+
+#. module: modryn_queue_poc
+#: model_terms:ir.ui.view,arch_db:modryn_queue_poc.ticket
+msgid "Thank you for visiting"
+msgstr "شكرًا لزيارتك"
+
+#. module: modryn_queue_poc
+#: model_terms:ir.ui.view,arch_db:modryn_queue_poc.ticket
+msgid "Today is a busy day"
+msgstr "اليوم يوم مزدحم"
 
 #. module: modryn_queue_poc
 #. odoo-javascript
@@ -149,39 +188,16 @@ msgid "Walk-in queue"
 msgstr "طابور الاستقبال"
 
 #. module: modryn_queue_poc
-#: model_terms:ir.ui.view,arch_db:modryn_queue_poc.checkin_form
-msgid "Welcome"
-msgstr "أهلاً وسهلاً"
-
-#. module: modryn_queue_poc
-#: model_terms:ir.ui.view,arch_db:modryn_queue_poc.ticket
-msgid "Book a fitting"
-msgstr "حجز موعد"
-
-#. module: modryn_queue_poc
-#: model_terms:ir.ui.view,arch_db:modryn_queue_poc.ticket
-msgid "Please come to the desk."
-msgstr "يرجى التوجه إلى المكتب."
-
-#. module: modryn_queue_poc
-#: model_terms:ir.ui.view,arch_db:modryn_queue_poc.ticket
-msgid "Prefer a scheduled visit?"
-msgstr "تفضلين موعدًا محددًا؟"
-
-#. module: modryn_queue_poc
-#: model_terms:ir.ui.view,arch_db:modryn_queue_poc.ticket
-msgid "Thank you for visiting"
-msgstr "شكرًا لزيارتك"
-
-#. module: modryn_queue_poc
-#: model_terms:ir.ui.view,arch_db:modryn_queue_poc.ticket
-msgid "Today is a busy day"
-msgstr "اليوم يوم مزدحم"
-
-#. module: modryn_queue_poc
 #: model_terms:ir.ui.view,arch_db:modryn_queue_poc.ticket
 msgid "We hope to see you again soon."
 msgstr "نتطلع لرؤيتك قريبًا."
+
+#. module: modryn_queue_poc
+#: model_terms:ir.ui.view,arch_db:modryn_queue_poc.ticket
+msgid ""
+"We'd love to give you our full attention — book a fitting\n"
+"                            and the boutique is yours."
+msgstr "نودّ أن نمنحك كامل اهتمامنا — احجزي موعد قياس ويكون البوتيك كله لكِ."
 
 #. module: modryn_queue_poc
 #: model_terms:ir.ui.view,arch_db:modryn_queue_poc.ticket
@@ -215,6 +231,11 @@ msgstr "نحن جاهزون لاستقبالك — %(stylist)s بانتظارك.
 #: code:addons/modryn_queue_poc/models/queue_entry.py:0
 msgid "We're ready for you — please come to the desk."
 msgstr "نحن جاهزون لاستقبالك — يرجى التوجه إلى المكتب."
+
+#. module: modryn_queue_poc
+#: model_terms:ir.ui.view,arch_db:modryn_queue_poc.checkin_form
+msgid "Welcome"
+msgstr "أهلاً وسهلاً"
 
 #. module: modryn_queue_poc
 #: model_terms:ir.ui.view,arch_db:modryn_queue_poc.ticket

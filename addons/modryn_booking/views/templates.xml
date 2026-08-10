@@ -66,7 +66,8 @@
                             <select id="slot" name="slot" class="form-select">
                                 <option value="">— Choose a time —</option>
                                 <t t-foreach="days" t-as="day">
-                                    <optgroup t-att-label="day['date'].strftime('%d.%m.%Y')">
+                                    <optgroup t-if="not day.get('full')"
+                                              t-att-label="day['date'].strftime('%d.%m.%Y')">
                                         <t t-foreach="day['times']" t-as="slot">
                                             <option t-att-value="slot['value']"
                                                     t-att-selected="'selected' if values.get('slot') == slot['value'] else None">
@@ -92,6 +93,38 @@
 
                         <button type="submit" class="btn btn-primary btn-lg">Confirm appointment</button>
                     </form>
+
+                    <!-- Fully-booked days. She leaves a number and gets first
+                         refusal the moment somebody cancels. -->
+                    <t t-set="full_days" t-value="[d for d in days if d.get('full')]"/>
+                    <div t-if="full_days" class="modryn_waitlist_box mt-5 p-4">
+                        <h2 class="h5 mb-2">The day you wanted is full?</h2>
+                        <p class="modryn_sub mb-3">
+                            Leave your number and we'll text you first if a place opens up.
+                        </p>
+                        <form action="/waitlist/join" method="post">
+                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                            <div class="mb-2">
+                                <select name="day" class="form-select">
+                                    <t t-foreach="full_days" t-as="d">
+                                        <option t-att-value="d['date'].strftime('%Y-%m-%d')"
+                                                t-out="d['date'].strftime('%d.%m.%Y')"/>
+                                    </t>
+                                </select>
+                            </div>
+                            <div class="mb-2">
+                                <input type="text" name="name" class="form-control"
+                                       placeholder="Full name"/>
+                            </div>
+                            <div class="mb-3">
+                                <input type="tel" name="phone" class="form-control" dir="ltr"
+                                       placeholder="050-1234567"/>
+                            </div>
+                            <button type="submit" class="btn btn-outline-dark">
+                                Join the waitlist
+                            </button>
+                        </form>
+                    </div>
                 </div>
             </div>
         </t>

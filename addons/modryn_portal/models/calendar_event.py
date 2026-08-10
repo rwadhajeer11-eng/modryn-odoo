@@ -1,4 +1,8 @@
+import pytz
+
 from odoo import fields, models
+
+TZ = pytz.timezone('Asia/Jerusalem')
 
 
 class CalendarEvent(models.Model):
@@ -23,4 +27,9 @@ class CalendarEvent(models.Model):
             'modryn_cancelled_at': fields.Datetime.now(),
             'modryn_cancelled_by': by,
         })
+        # The freed hour belongs to whoever asked for this day first. Offering
+        # here — in the one method both the portal and the reminder link call —
+        # means no cancellation path can forget to do it.
+        local_day = pytz.utc.localize(self.start).astimezone(TZ).date()
+        self.env['modryn.day.waitlist'].sudo().modryn_offer_next(local_day)
         return self

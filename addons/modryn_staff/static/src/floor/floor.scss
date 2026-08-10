@@ -403,3 +403,10 @@ $modryn-success: #2E6B4F;
 .modryn_pending {
     border-inline-start: 3px solid $modryn-gold;
 }
+
+// Waitlist invitation on a fully-booked /book page.
+.modryn_waitlist_box {
+    background: $modryn-surface;
+    border: 1px solid $modryn-border;
+    border-radius: 8px;
+}

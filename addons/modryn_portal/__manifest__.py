@@ -25,6 +25,7 @@ configured, otherwise a log-only sender so development and tests never text anyb
         'data/website_menu_data.xml',
         'views/portal_templates.xml',
         'views/booking_link_templates.xml',
+        'views/waitlist_templates.xml',
     ],
     'author': 'MODRYN',
     'license': 'LGPL-3',

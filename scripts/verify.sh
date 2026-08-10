@@ -182,8 +182,26 @@ ACC=$(curl -sg -H "Content-Type: application/json" -d '{"jsonrpc":"2.0","method"
 [ "$ACC" = "0" ] && ok "/floor/accept refuses anonymous" || bad "/floor/accept anonymous" "returned a result"
 # The closing cron must be scheduled ahead, never "now" — firing on install
 # would expire every live ticket on the floor.
-FUT=$(psql -d bella -tAc "select count(*) from ir_cron c join ir_act_server a on a.id=c.ir_actions_server_id where a.code like '%_modryn_expire_open_tickets%' and c.nextcall > now()")
+FUT=$(psql -d bella -tAc "select count(*) from ir_cron c join ir_act_server a on a.id=c.ir_actions_server_id where a.code like '%_modryn_expire_open_tickets%' and c.nextcall > (now() at time zone 'utc')")
 [ "${FUT:-0}" = "1" ] && ok "closing cron scheduled in the future" || bad "closing cron" "missing or due immediately"
+
+head_ "10d. advance refill loop"
+WCOLS=$(psql -d bella -tAc "select count(*) from information_schema.columns where table_name='modryn_day_waitlist' and column_name in ('phone','day','state','offer_token','offer_expires_at','lang')")
+[ "$WCOLS" = "6" ] && ok "day waitlist table shaped" || bad "day waitlist columns" "expected 6, got $WCOLS"
+# One row per phone per day, or a cancellation offers the same woman twice.
+UNIQ=$(psql -d bella -tAc "select count(*) from pg_indexes where tablename='modryn_day_waitlist' and indexdef like '%UNIQUE%phone%day%'")
+[ "${UNIQ:-0}" -ge 1 ] && ok "one waitlist row per phone per day" || bad "phone+day uniqueness" "no unique index"
+OCRON=$(psql -d bella -tAc "select count(*) from ir_cron c join ir_act_server a on a.id=c.ir_actions_server_id where a.code like '%_modryn_expire_offers%' and c.active and c.nextcall > (now() at time zone 'utc')")
+[ "${OCRON:-0}" = "1" ] && ok "offer-expiry cron scheduled ahead" || bad "offer expiry cron" "missing or due immediately"
+# A stale or forged claim link must land on the warm page, never a booking form.
+CL=$(fetch "$BELLA/claim/notarealtoken")
+echo "$CL" | grep -q "Take this place" && bad "forged claim token" "rendered a bookable form" || ok "forged claim link offers nothing"
+# A fully-booked day has to stay visible, otherwise she never learns she could
+# have been first in line.
+grep -q "full_days" addons/modryn_booking/views/templates.xml && ok "/book invites her onto the waitlist" || bad "waitlist form" "absent from /book"
+grep -q "modryn_offer_next" addons/modryn_portal/models/calendar_event.py && ok "every cancellation path offers the slot on" || bad "refill hook" "modryn_cancel does not offer"
+# The offer text is composed by a cron, so her language has to be recorded.
+grep -q "with_context(lang=" addons/modryn_portal/models/day_waitlist.py && ok "offer SMS speaks her language" || bad "offer language" "cron composes in server language"
 
 head_ "11. instance hygiene"
 # Without db_name, Odoo's cron enumerates EVERY database on the server —

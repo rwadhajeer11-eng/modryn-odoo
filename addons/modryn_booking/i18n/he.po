@@ -122,6 +122,16 @@ msgstr "קראתי ואני מאשרת את תנאי הביטול, האיחור 
 
 #. module: modryn_booking
 #: model_terms:ir.ui.view,arch_db:modryn_booking.booking_form
+msgid "Join the waitlist"
+msgstr "הצטרפי לרשימת ההמתנה"
+
+#. module: modryn_booking
+#: model_terms:ir.ui.view,arch_db:modryn_booking.booking_form
+msgid "Leave your number and we'll text you first if a place opens up."
+msgstr "השאירי מספר טלפון ונעדכן אותך ראשונה אם יתפנה מקום."
+
+#. module: modryn_booking
+#: model_terms:ir.ui.view,arch_db:modryn_booking.booking_form
 msgid "Phone"
 msgstr "טלפון"
 
@@ -176,6 +186,11 @@ msgstr "מועד לא תקין"
 #: code:addons/modryn_booking/controllers/main.py:0
 msgid "That time was just taken, please choose another"
 msgstr "המועד נתפס, נא לבחור מועד אחר"
+
+#. module: modryn_booking
+#: model_terms:ir.ui.view,arch_db:modryn_booking.booking_form
+msgid "The day you wanted is full?"
+msgstr "היום שרצית תפוס?"
 
 #. module: modryn_booking
 #: model_terms:ir.ui.view,arch_db:modryn_booking.booking_form
