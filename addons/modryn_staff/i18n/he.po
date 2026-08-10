@@ -1,0 +1,380 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: he\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: \n"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manage_staff_form
+msgid "<option value=\"\">— Choose a role —</option>"
+msgstr "<option value=\"\">— בחרי תפקיד —</option>"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.floor_page
+msgid ""
+"<span class=\"modryn_admin_brand\">MODRYN</span>\n"
+"                    <span class=\"modryn_admin_link is_active\">Floor board</span>"
+msgstr ""
+"<span class=\"modryn_admin_brand\">MODRYN</span>\n"
+"                    <span class=\"modryn_admin_link is_active\">מסך משמרת</span>"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manage_staff_list
+msgid "Actions"
+msgstr "פעולות"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manage_roles
+msgid "Add"
+msgstr "הוספה"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manage_staff_form
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manage_staff_list
+msgid "Add a team member"
+msgstr "הוספת עובדת"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manage_roles
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manage_staff_list
+msgid "Archive"
+msgstr "ארכיון"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manage_staff_list
+msgid "Archived"
+msgstr "בארכיון"
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manage_staff_list
+msgid "Available"
+msgstr "פנויה"
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.js:0
+msgid "Bride"
+msgstr "כלה"
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manage_staff_list
+msgid "Busy"
+msgstr "תפוסה"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manage_staff_form
+msgid "Cancel"
+msgstr "ביטול"
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "Done"
+msgstr "סיום"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manage_staff_list
+msgid "Edit"
+msgstr "עריכה"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manage_staff_form
+msgid "Edit team member"
+msgstr "עריכת עובדת"
+
+#. module: modryn_staff
+#. odoo-python
+#: code:addons/modryn_staff/controllers/auth.py:0
+msgid "Enter your username and password."
+msgstr "יש למלא שם משתמש וסיסמה"
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.js:0
+msgid "Evening"
+msgstr "ערב"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manage_layout
+msgid "Floor board"
+msgstr "מסך משמרת"
+
+#. module: modryn_staff
+#. odoo-python
+#: code:addons/modryn_staff/controllers/auth.py:0
+msgid "Incorrect username or password."
+msgstr "שם משתמש או סיסמה שגויים"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.floor_page
+msgid "Manage staff"
+msgstr "ניהול צוות"
+
+#. module: modryn_staff
+#: model:ir.model.fields,field_description:modryn_staff.field_modryn_staff_role__name
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manage_staff_form
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manage_staff_list
+msgid "Name"
+msgstr "שם"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manage_roles
+msgid "New role name"
+msgstr "שם תפקיד חדש"
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "No appointments today."
+msgstr "אין תורים להיום."
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "No one is waiting."
+msgstr "אין לקוחות בתור."
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "No team members have been set up yet."
+msgstr "אין עובדות מוגדרות."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manage_staff_list
+msgid "No team members yet."
+msgstr "עדיין אין עובדות."
+
+#. module: modryn_staff
+#. odoo-python
+#: code:addons/modryn_staff/controllers/manage.py:0
+#: model:ir.model.fields.selection,name:modryn_staff.selection__hr_employee__modryn_level__owner
+msgid "Owner"
+msgstr "בעלים"
+
+#. module: modryn_staff
+#: model:ir.model.fields,help:modryn_staff.field_hr_employee__modryn_role_id
+msgid "Owner-defined job role, for example Sales or Seamstress."
+msgstr "תפקיד שהבעלים מגדירה, למשל מוכרת או תופרת."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manage_staff_form
+#: model_terms:ir.ui.view,arch_db:modryn_staff.staff_login
+msgid "Password"
+msgstr "סיסמה"
+
+#. module: modryn_staff
+#. odoo-python
+#: code:addons/modryn_staff/controllers/manage.py:0
+msgid "Password must be at least %d characters."
+msgstr "סיסמה חייבת להכיל לפחות %d תווים"
+
+#. module: modryn_staff
+#: model:ir.model.fields,field_description:modryn_staff.field_hr_employee__modryn_level
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manage_staff_form
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manage_staff_list
+msgid "Permission level"
+msgstr "רמת הרשאה"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manage_staff_form
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manage_staff_list
+msgid "Phone"
+msgstr "טלפון"
+
+#. module: modryn_staff
+#. odoo-python
+#: code:addons/modryn_staff/controllers/manage.py:0
+msgid "Please choose a role."
+msgstr "נא לבחור תפקיד"
+
+#. module: modryn_staff
+#. odoo-python
+#: code:addons/modryn_staff/controllers/manage.py:0
+msgid "Please enter a name."
+msgstr "נא למלא שם"
+
+#. module: modryn_staff
+#. odoo-python
+#: code:addons/modryn_staff/controllers/manage.py:0
+msgid "Please enter a role name."
+msgstr "נא למלא שם תפקיד"
+
+#. module: modryn_staff
+#. odoo-python
+#: code:addons/modryn_staff/controllers/manage.py:0
+msgid "Please enter a username."
+msgstr "נא למלא שם משתמש"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manage_roles
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manage_staff_list
+msgid "Restore"
+msgstr "שחזור"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manage_staff_form
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manage_staff_list
+msgid "Role"
+msgstr "תפקיד"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manage_layout
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manage_roles
+msgid "Roles"
+msgstr "תפקידים"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manage_staff_form
+msgid "Save"
+msgstr "שמירה"
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "Serving:"
+msgstr "מטפלת ב:"
+
+#. module: modryn_staff
+#. odoo-python
+#: code:addons/modryn_staff/controllers/manage.py:0
+#: model:ir.model.fields.selection,name:modryn_staff.selection__hr_employee__modryn_level__manager
+#: model:res.groups,name:modryn_staff.group_shift_manager
+msgid "Shift manager"
+msgstr "מנהלת משמרת"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.staff_login
+msgid "Sign in"
+msgstr "כניסה"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.floor_page
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manage_layout
+msgid "Sign out"
+msgstr "יציאה"
+
+#. module: modryn_staff
+#. odoo-python
+#: code:addons/modryn_staff/controllers/manage.py:0
+#: model:ir.model.fields.selection,name:modryn_staff.selection__hr_employee__modryn_level__staff
+#: model:res.groups,name:modryn_staff.group_boutique_staff
+msgid "Staff"
+msgstr "עובדת"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.staff_login
+msgid "Staff sign in"
+msgstr "כניסת צוות"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manage_staff_list
+msgid "Status"
+msgstr "סטטוס"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manage_layout
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manage_staff_list
+msgid "Team"
+msgstr "צוות"
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "Team on shift"
+msgstr "צוות במשמרת"
+
+#. module: modryn_staff
+#. odoo-python
+#: code:addons/modryn_staff/controllers/manage.py:0
+msgid "That permission level isn't valid."
+msgstr "רמת הרשאה לא תקינה"
+
+#. module: modryn_staff
+#. odoo-python
+#: code:addons/modryn_staff/controllers/manage.py:0
+#: code:addons/modryn_staff/models/staff_role.py:0
+msgid "That role already exists."
+msgstr "התפקיד כבר קיים"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.floor_page
+msgid "The floor board needs JavaScript."
+msgstr "מסך המשמרת דורש JavaScript."
+
+#. module: modryn_staff
+#. odoo-python
+#: code:addons/modryn_staff/controllers/auth.py:0
+msgid "This account isn't allowed into the staff system."
+msgstr "החשבון אינו מורשה לכניסה למערכת הצוות"
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "Today's appointments"
+msgstr "תורים להיום"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manage_staff_form
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manage_staff_list
+#: model_terms:ir.ui.view,arch_db:modryn_staff.staff_login
+msgid "Username"
+msgstr "שם משתמש"
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "Waiting"
+msgstr "ממתינה"
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "Walk-in queue"
+msgstr "תור בכניסה"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manage_roles
+msgid "You decide the roles — add whatever the boutique needs."
+msgstr "התפקידים נקבעים על ידך — אפשר להוסיף כל תפקיד שהבוטיק צריך."
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "You don't have access to this board."
+msgstr "אין הרשאה להצגת המסך."
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "available"
+msgstr "פנויות"
+
+#. module: modryn_staff
+#. odoo-python
+#: code:addons/modryn_staff/controllers/manage.py:0
+msgid "staff"
+msgstr "עובדת"
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "waiting"
+msgstr "ממתינות"
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "— Assign —"
+msgstr "— שיוך —"

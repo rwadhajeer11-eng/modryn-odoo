@@ -1,5 +1,5 @@
 import odoo
-from odoo import http
+from odoo import _, http
 from odoo.http import request
 
 # Where each level lands after signing in. The owner configures, everyone else works.
@@ -54,7 +54,8 @@ class ModrynStaffAuth(http.Controller):
         redirect = post.get('redirect') or ''
 
         if not username or not password:
-            return self._render_login(username, "יש למלא שם משתמש וסיסמה", redirect)
+            return self._render_login(
+                username, _("Enter your username and password."), redirect)
 
         credential = {'login': username, 'password': password, 'type': 'password'}
         try:
@@ -63,7 +64,8 @@ class ModrynStaffAuth(http.Controller):
             # One message for both wrong-user and wrong-password: saying which
             # was wrong tells an attacker which usernames exist.
             # The password is never echoed back into the form.
-            return self._render_login(username, "שם משתמש או סיסמה שגויים", redirect)
+            return self._render_login(
+                username, _("Incorrect username or password."), redirect)
 
         # env.user is only refreshed once the environment is rebuilt for the new
         # session, so re-read it rather than trusting the pre-login value.
@@ -72,7 +74,8 @@ class ModrynStaffAuth(http.Controller):
             # A valid Odoo account that is not boutique staff (a portal customer,
             # say) must not land on the floor terminal.
             request.session.logout(keep_db=True)
-            return self._render_login(username, "החשבון אינו מורשה לכניסה למערכת הצוות", redirect)
+            return self._render_login(
+                username, _("This account isn't allowed into the staff system."), redirect)
 
         return request.redirect(redirect or landing_for(user))
 

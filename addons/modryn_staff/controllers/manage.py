@@ -1,16 +1,25 @@
 from psycopg2 import IntegrityError
 
-from odoo import http
+from odoo import _, http
 from odoo.exceptions import ValidationError
 from odoo.http import request
 from odoo.tools import mute_logger
 
 MIN_PASSWORD = 8
-LEVELS = [
-    ('owner', "בעלים"),
-    ('manager', "מנהלת משמרת"),
-    ('staff', "עובדת"),
-]
+
+
+def _levels():
+    """The permission levels, paired with their label.
+
+    Built per request rather than kept as a module constant: _() resolves
+    against the language of the caller, so a constant would freeze the labels
+    in whatever language happened to be active at import time.
+    """
+    return [
+        ('owner', _("Owner")),
+        ('manager', _("Shift manager")),
+        ('staff', _("Staff")),
+    ]
 
 
 class ModrynManage(http.Controller):
@@ -42,7 +51,7 @@ class ModrynManage(http.Controller):
             'name': e.name,
             'phone': e.work_phone or '',
             'role': e.modryn_role_id.name or '',
-            'level': dict(LEVELS).get(e.modryn_level, e.modryn_level or ''),
+            'level': dict(_levels()).get(e.modryn_level, e.modryn_level or ''),
             'level_raw': e.modryn_level or '',
             'login': e.user_id.login or '',
             'active': e.active,
@@ -66,7 +75,7 @@ class ModrynManage(http.Controller):
         if not self._require_owner():
             return request.not_found()
         return request.render('modryn_staff.manage_staff_form', {
-            'roles': self._roles(), 'levels': LEVELS, 'employee': None,
+            'roles': self._roles(), 'levels': _levels(), 'employee': None,
             'errors': {}, 'values': {}, 'active_tab': 'staff',
         })
 
@@ -84,15 +93,15 @@ class ModrynManage(http.Controller):
 
         errors = {}
         if not name:
-            errors['name'] = "נא למלא שם"
+            errors['name'] = _("Please enter a name.")
         if not username:
-            errors['username'] = "נא למלא שם משתמש"
+            errors['username'] = _("Please enter a username.")
         if len(password) < MIN_PASSWORD:
-            errors['password'] = "סיסמה חייבת להכיל לפחות %d תווים" % MIN_PASSWORD
+            errors['password'] = _("Password must be at least %d characters.") % MIN_PASSWORD
         if not role_id:
-            errors['role_id'] = "נא לבחור תפקיד"
-        if level not in dict(LEVELS):
-            errors['level'] = "רמת הרשאה לא תקינה"
+            errors['role_id'] = _("Please choose a role.")
+        if level not in dict(_levels()):
+            errors['level'] = _("That permission level isn't valid.")
 
         if not errors:
             employee = request.env['hr.employee'].sudo().create({
@@ -112,7 +121,7 @@ class ModrynManage(http.Controller):
 
         if errors:
             return request.render('modryn_staff.manage_staff_form', {
-                'roles': self._roles(), 'levels': LEVELS, 'employee': None,
+                'roles': self._roles(), 'levels': _levels(), 'employee': None,
                 'errors': errors, 'values': post, 'active_tab': 'staff',
             })
         return request.redirect('/manage/staff')
@@ -127,7 +136,7 @@ class ModrynManage(http.Controller):
         if not employee:
             return request.not_found()
         return request.render('modryn_staff.manage_staff_form', {
-            'roles': self._roles(), 'levels': LEVELS, 'employee': employee,
+            'roles': self._roles(), 'levels': _levels(), 'employee': employee,
             'errors': {}, 'values': {
                 'name': employee.name,
                 'phone': employee.work_phone or '',
@@ -151,13 +160,13 @@ class ModrynManage(http.Controller):
         level = post.get('level') or employee.modryn_level
         errors = {}
         if not name:
-            errors['name'] = "נא למלא שם"
-        if level not in dict(LEVELS):
-            errors['level'] = "רמת הרשאה לא תקינה"
+            errors['name'] = _("Please enter a name.")
+        if level not in dict(_levels()):
+            errors['level'] = _("That permission level isn't valid.")
 
         if errors:
             return request.render('modryn_staff.manage_staff_form', {
-                'roles': self._roles(), 'levels': LEVELS, 'employee': employee,
+                'roles': self._roles(), 'levels': _levels(), 'employee': employee,
                 'errors': errors, 'values': post, 'active_tab': 'staff',
             })
 
@@ -217,7 +226,7 @@ class ModrynManage(http.Controller):
             return request.not_found()
         name = (post.get('name') or '').strip()
         if not name:
-            return request.redirect('/manage/roles?error=%s' % "נא למלא שם תפקיד")
+            return request.redirect('/manage/roles?error=%s' % _("Please enter a role name."))
         try:
             # Savepoint so a rejected duplicate does not poison the request's
             # transaction. Uniqueness is a Python @api.constrains (see the model
@@ -226,7 +235,7 @@ class ModrynManage(http.Controller):
             with request.env.cr.savepoint(), mute_logger('odoo.sql_db'):
                 request.env['modryn.staff.role'].sudo().create({'name': name})
         except (ValidationError, IntegrityError):
-            return request.redirect('/manage/roles?error=%s' % "התפקיד כבר קיים")
+            return request.redirect('/manage/roles?error=%s' % _("That role already exists."))
         return request.redirect('/manage/roles')
 
     @http.route('/manage/roles/archive/<int:role_id>', type='http', auth='user',

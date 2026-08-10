@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Starting rows only. noupdate so a module upgrade never overwrites what
+         the owner has since renamed, archived or added. -->
+    <data noupdate="1">
+        <record id="piece_hem" model="modryn.garment.piece">
+            <field name="name">מכפלת</field>
+            <field name="sequence">10</field>
+        </record>
+        <record id="piece_bodice" model="modryn.garment.piece">
+            <field name="name">מחוך</field>
+            <field name="sequence">20</field>
+        </record>
+        <record id="piece_sleeves" model="modryn.garment.piece">
+            <field name="name">שרוולים</field>
+            <field name="sequence">30</field>
+        </record>
+        <record id="piece_train" model="modryn.garment.piece">
+            <field name="name">שובל</field>
+            <field name="sequence">40</field>
+        </record>
+        <record id="piece_straps" model="modryn.garment.piece">
+            <field name="name">כתפיות</field>
+            <field name="sequence">50</field>
+        </record>
+    </data>
+</odoo>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- The way back in. Without a link in the header a returning bride has
+             no idea the portal exists. -->
+        <record id="menu_my_appointments" model="website.menu">
+            <field name="name">My appointments</field>
+            <field name="url">/my/bookings</field>
+            <field name="parent_id" ref="website.main_menu"/>
+            <field name="sequence">60</field>
+        </record>
+    </data>
+</odoo>

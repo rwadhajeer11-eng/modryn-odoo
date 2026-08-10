@@ -57,11 +57,14 @@ class ModrynFloor(http.Controller):
             })
 
         day_start, day_end = self._today_bounds_utc()
-        events = env['calendar.event'].sudo().search(
-            [('modryn_is_booking', '=', True),
-             ('start', '>=', day_start),
-             ('start', '<=', day_end)],
-            order='start asc')
+        booking_domain = [('modryn_is_booking', '=', True),
+                          ('start', '>=', day_start),
+                          ('start', '<=', day_end)]
+        # A cancelled appointment is not on today's floor. The field ships with
+        # modryn_portal, which may not be installed.
+        if 'modryn_cancelled_at' in env['calendar.event']._fields:
+            booking_domain.append(('modryn_cancelled_at', '=', False))
+        events = env['calendar.event'].sudo().search(booking_domain, order='start asc')
         bookings = []
         for event in events:
             variant = event.modryn_variant_id

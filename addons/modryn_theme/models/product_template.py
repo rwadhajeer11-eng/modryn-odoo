@@ -15,5 +15,5 @@ class ProductTemplate(models.Model):
     modryn_price_visible = fields.Boolean(
         string="Show price on website",
         default=True,
-        help="When off, the storefront shows 'מחיר בתיאום' instead of the price.",
+        help="When off, the storefront shows 'Price on request' instead of the price.",
     )

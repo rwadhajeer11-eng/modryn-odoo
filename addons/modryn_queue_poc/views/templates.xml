@@ -6,13 +6,13 @@
         <t t-call="website.layout">
             <div id="wrap" class="oe_structure">
                 <div class="container py-5" style="max-width: 520px;">
-                    <h1 class="mb-4">ברוכה הבאה</h1>
+                    <h1 class="mb-4">Welcome</h1>
 
                     <form action="/queue/checkin/submit" method="post">
                         <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
 
                         <div class="mb-3">
-                            <label class="form-label" for="name">שם מלא</label>
+                            <label class="form-label" for="name">Full name</label>
                             <input type="text" id="name" name="name" class="form-control"
                                    t-att-value="values.get('name', '')"/>
                             <div t-if="errors.get('name')" class="text-danger small mt-1"
@@ -20,22 +20,20 @@
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label" for="phone">טלפון</label>
+                            <label class="form-label" for="phone">Phone</label>
                             <input type="tel" id="phone" name="phone" class="form-control" dir="ltr"
                                    placeholder="050-1234567" t-att-value="values.get('phone', '')"/>
                         </div>
 
                         <div class="mb-4">
-                            <label class="form-label" for="client_type">סוג לקוחה</label>
+                            <label class="form-label" for="client_type">Client type</label>
                             <select id="client_type" name="client_type" class="form-select">
-                                <option value="bride">כלה</option>
-                                <option value="evening">ערב</option>
+                                <option value="bride">Bride</option>
+                                <option value="evening">Evening</option>
                             </select>
                         </div>
 
-                        <button type="submit" class="btn btn-primary btn-lg w-100">
-                            כניסה לתור
-                        </button>
+                        <button type="submit" class="btn btn-primary btn-lg w-100">Join the queue</button>
                     </form>
                 </div>
             </div>
@@ -46,12 +44,12 @@
         <t t-call="website.layout">
             <div id="wrap" class="oe_structure">
                 <div class="container py-5 text-center" style="max-width: 520px;">
-                    <h1 class="mb-3">נרשמת בהצלחה</h1>
+                    <h1 class="mb-3">You're on the list</h1>
                     <div class="p-4 mb-3" style="background:#F6F0E6; border-radius:8px;">
-                        <div class="text-muted mb-1">מקומך בתור</div>
+                        <div class="text-muted mb-1">Your place in line</div>
                         <div style="font-size:3rem; line-height:1;" t-out="position"/>
                     </div>
-                    <p class="text-muted">נציגה תיגש אליך בקרוב</p>
+                    <p class="text-muted">One of our stylists will be with you shortly</p>
                 </div>
             </div>
         </t>
@@ -62,8 +60,8 @@
         <t t-call="website.layout">
             <div id="wrap" class="oe_structure">
                 <div class="container py-5 text-center" style="max-width: 520px;">
-                    <h1 class="mb-2">כניסה לתור</h1>
-                    <p class="text-muted mb-4">סרקי את הקוד כדי להצטרף לתור</p>
+                    <h1 class="mb-2">Join the queue</h1>
+                    <p class="text-muted mb-4">Scan the code to join the queue</p>
                     <!-- Trailing slash after /barcode is required: without it the
                          request falls through to the <barcode_type>/<value> form
                          and 500s. Rendering also needs reportlab's raster backend

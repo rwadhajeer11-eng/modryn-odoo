@@ -8,13 +8,13 @@
             <div id="wrap" dir="rtl" class="modryn_admin">
                 <nav class="modryn_admin_nav">
                     <span class="modryn_admin_brand">MODRYN</span>
-                    <span class="modryn_admin_link is_active">מסך משמרת</span>
+                    <span class="modryn_admin_link is_active">Floor board</span>
                     <a t-if="request.env.user.has_group('modryn_staff.group_boutique_owner')"
-                       href="/manage/staff" class="modryn_admin_link">ניהול צוות</a>
+                       href="/manage/staff" class="modryn_admin_link">Manage staff</a>
                     <span class="modryn_admin_who">
                         <t t-out="request.env.user.name"/>
                     </span>
-                    <a href="/staff/logout" class="modryn_admin_link modryn_admin_logout">יציאה</a>
+                    <a href="/staff/logout" class="modryn_admin_link modryn_admin_logout">Sign out</a>
                 </nav>
                 <main class="modryn_admin_main">
                     <!-- The board is an OWL component so it can hold a live bus
@@ -22,7 +22,7 @@
                          interaction, which scans for <owl-component name=...>. -->
                     <owl-component name="modryn_staff.floor_board"/>
                     <noscript>
-                        <p class="modryn_empty">מסך המשמרת דורש JavaScript.</p>
+                        <p class="modryn_empty">The floor board needs JavaScript.</p>
                     </noscript>
                 </main>
             </div>

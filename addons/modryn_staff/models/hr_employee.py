@@ -20,7 +20,7 @@ class HrEmployee(models.Model):
     modryn_role_id = fields.Many2one(
         'modryn.staff.role',
         string="Boutique role",
-        help="Owner-defined job role, e.g. מוכרת or תופרת.",
+        help="Owner-defined job role, for example Sales or Seamstress.",
     )
     modryn_level = fields.Selection(
         selection=[

@@ -14,12 +14,12 @@ class ModrynQueueEntry(models.Model):
     name = fields.Char(required=True)
     phone = fields.Char()
     client_type = fields.Selection(
-        selection=[('bride', 'כלה'), ('evening', 'ערב')],
+        selection=[('bride', 'Bride'), ('evening', 'Evening')],
         default='bride',
         required=True,
     )
     state = fields.Selection(
-        selection=[('waiting', 'ממתינה'), ('called', 'נקראה'), ('done', 'הסתיימה')],
+        selection=[('waiting', 'Waiting'), ('called', 'Called'), ('done', 'Finished')],
         default='waiting',
         required=True,
         index=True,

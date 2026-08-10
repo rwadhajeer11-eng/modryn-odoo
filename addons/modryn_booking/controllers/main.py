@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 
 import pytz
 
-from odoo import http
+from odoo import _, http
 from odoo.http import request
 
 # Israeli retail week: Sunday-Thursday. Python's weekday() is Mon=0..Sun=6.
@@ -33,10 +33,17 @@ class ModrynBooking(http.Controller):
         PoC needs to know.
         """
         now_local = datetime.now(TZ)
-        booked = request.env['calendar.event'].sudo().search([
+        domain = [
             ('modryn_is_booking', '=', True),
             ('start', '>=', datetime.utcnow()),
-        ])
+        ]
+        # A cancelled appointment must hand its slot back, or cancelling would
+        # punish the boutique. The field arrives with modryn_portal, which
+        # DEPENDS on this module — so it legitimately may not exist, and naming
+        # it unconditionally would break a database without the portal.
+        if 'modryn_cancelled_at' in request.env['calendar.event']._fields:
+            domain.append(('modryn_cancelled_at', '=', False))
+        booked = request.env['calendar.event'].sudo().search(domain)
         # A comprehension, NOT recordset.mapped(lambda): on an EMPTY recordset
         # Odoo's mapped() calls the callable once with the recordset itself, so
         # `ev.start` is False and this raises. With zero bookings — i.e. every
@@ -148,22 +155,22 @@ class ModrynBooking(http.Controller):
             dress = request.env['product.template'].sudo().browse(int(dress_id)).exists()
 
         if not name:
-            errors['name'] = "נא למלא שם מלא"
+            errors['name'] = _("Please enter your full name")
         if not PHONE_RE.match(phone):
-            errors['phone'] = "מספר טלפון לא תקין"
+            errors['phone'] = _("Please enter a valid phone number")
         # The terms checkbox is enforced HERE, server-side. A `required` attribute
         # on the input is a UI courtesy, not a control.
         if not post.get('terms'):
-            errors['terms'] = "יש לאשר את תנאי הביטול"
+            errors['terms'] = _("Please accept the cancellation terms")
 
         start = None
         if not slot:
-            errors['slot'] = "נא לבחור מועד"
+            errors['slot'] = _("Please choose a time")
         else:
             try:
                 start = datetime.strptime(slot, '%Y-%m-%d %H:%M:%S')
             except ValueError:
-                errors['slot'] = "מועד לא תקין"
+                errors['slot'] = _("That time isn't valid")
 
         variant = None
         if variant_id:
@@ -171,7 +178,7 @@ class ModrynBooking(http.Controller):
             if dress and variant and variant.product_tmpl_id != dress:
                 variant = None
         if dress and not variant:
-            errors['variant'] = "נא לבחור מידה"
+            errors['variant'] = _("Please choose a size")
 
         if start and not errors:
             # Last-writer-wins is not good enough for a fitting room: re-check
@@ -179,7 +186,7 @@ class ModrynBooking(http.Controller):
             if request.env['calendar.event'].sudo().search_count([
                 ('modryn_is_booking', '=', True), ('start', '=', start),
             ]):
-                errors['slot'] = "המועד נתפס, נא לבחור מועד אחר"
+                errors['slot'] = _("That time was just taken, please choose another")
 
         if errors:
             return self._render_form(dress=dress, variant=variant, errors=errors, values=post)
@@ -190,7 +197,7 @@ class ModrynBooking(http.Controller):
         })
 
         vals = {
-            'name': ("מדידה: %s" % dress.name) if dress else ("פגישת ייעוץ: %s" % name),
+            'name': (_("Fitting: %s") % dress.name) if dress else (_("Consultation: %s") % name),
             'start': start,
             'stop': start + timedelta(minutes=SLOT_MINUTES),
             'partner_ids': [(6, 0, partner.ids)],

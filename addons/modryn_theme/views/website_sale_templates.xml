@@ -6,8 +6,8 @@
 
         Two touch points because Odoo renders the price twice from different
         templates: the shop grid tile and the product detail page. Both swap the
-        number for "מחיר בתיאום" (price on consultation) rather than hiding the
-        row, so the layout does not collapse and the client is told why.
+        number for "Price on request" rather than hiding the row, so the layout
+        does not collapse and the client is told why.
     -->
 
     <!-- Shop grid tile -->
@@ -17,7 +17,7 @@
         <xpath expr="//div[hasclass('product_price')]" position="before">
             <div t-if="not product.modryn_price_visible"
                  class="product_price modryn_price_tbd text-muted">
-                <span>מחיר בתיאום</span>
+                <span>Price on request</span>
             </div>
         </xpath>
         <xpath expr="//div[hasclass('product_price')][last()]" position="attributes">
@@ -32,7 +32,7 @@
         <xpath expr="//div[@name='product_price']" position="before">
             <div t-if="not product.modryn_price_visible"
                  class="modryn_price_tbd h5 mb-0 text-muted">
-                <span>מחיר בתיאום</span>
+                <span>Price on request</span>
             </div>
         </xpath>
         <xpath expr="//div[@name='product_price']" position="attributes">

@@ -63,10 +63,22 @@ head_ "4. booking"
 PUBLIC_OWNED=$(psql -d bella -tAc "select count(*) from calendar_event ce join res_users u on u.id=ce.user_id where ce.modryn_is_booking and u.login='public'")
 [ "$PUBLIC_OWNED" = "0" ] && ok "no booking is organized by the public user" || bad "no booking organized by public user" "$PUBLIC_OWNED still are"
 
-head_ "5. Arabic"
+head_ "5. languages"
+# Hebrew is the DEFAULT and now comes from .po files rather than hardcoded
+# literals. These two are the i18n regression test: if a msgid drifted, the
+# storefront silently falls back to English and these fail.
+fetch "$BELLA/shop"
+grep -q "מחיר בתיאום" "$PAGE" && ok "he: price-on-request translated" || bad "he translation" "Hebrew msgid missing — .po drift?"
+grep -q 'dir="rtl"' "$PAGE" && ok "he: RTL" || bad "he RTL" "no dir=rtl"
+
 fetch "$BELLA/ar/shop"
-grep -q 'lang="ar-001"' "$PAGE" && ok "Arabic storefront serves ar-001" || bad "Arabic storefront" "no lang=ar-001"
-grep -qE "بحث|المنتجات" "$PAGE" && ok "core UI is translated to Arabic" || bad "core Arabic UI" "no Arabic strings found"
+grep -q 'lang="ar-001"' "$PAGE" && ok "ar: storefront serves ar-001" || bad "Arabic storefront" "no lang=ar-001"
+grep -qE "بحث|المنتجات" "$PAGE" && ok "ar: core UI translated" || bad "core Arabic UI" "no Arabic strings found"
+
+fetch "$BELLA/en/shop"
+grep -q 'lang="en-US"' "$PAGE" && ok "en: storefront serves en-US" || bad "English storefront" "no lang=en-US"
+grep -q 'dir="ltr"' "$PAGE" && ok "en: LTR (theme must not assume RTL)" || bad "en LTR" "expected dir=ltr"
+grep -q "Price on request" "$PAGE" && ok "en: source strings render" || bad "en source strings" "English text missing"
 
 head_ "6. walk-in queue"
 [ "$(code "$BELLA/queue/checkin")" = "200" ] && ok "check-in form" || bad "check-in form" "not 200"
@@ -88,7 +100,26 @@ for path in /floor /manage/staff /manage/roles; do
   [ "$C" != "200" ] && ok "$path refuses anonymous access ($C)" || bad "$path refuses anonymous access" "returned 200 while logged out"
 done
 
-head_ "8. MODRYN repo untouched"
+head_ "8. customer portal"
+[ "$(code "$BELLA/my/login")" = "200" ] && ok "portal login page" || bad "portal login" "not 200"
+# Anonymous must never reach someone's bookings.
+C=$(code "$BELLA/my/bookings")
+[ "$C" != "200" ] && ok "my/bookings refuses anonymous ($C)" || bad "my/bookings anonymous" "returned 200"
+OTP_TBL=$(psql -d bella -tAc "select count(*) from information_schema.tables where table_name='modryn_otp_code'")
+[ "$OTP_TBL" = "1" ] && ok "OTP table exists" || bad "OTP table" "missing"
+# Codes must be stored hashed, never in the clear.
+CLEAR=$(psql -d bella -tAc "select count(*) from modryn_otp_code where length(code_hash) < 40" 2>/dev/null || echo 0)
+[ "${CLEAR:-0}" = "0" ] && ok "OTP codes are hashed" || bad "OTP hashing" "$CLEAR rows look unhashed"
+
+head_ "9. atelier"
+PIECES=$(psql -d bella -tAc "select count(*) from modryn_garment_piece where active" 2>/dev/null || echo 0)
+[ "${PIECES:-0}" -ge 5 ] && ok "garment pieces seeded ($PIECES)" || bad "garment pieces" "only ${PIECES:-0}"
+for path in /atelier /manage/pieces; do
+  C=$(code "$BELLA$path")
+  [ "$C" != "200" ] && ok "$path refuses anonymous ($C)" || bad "$path anonymous" "returned 200"
+done
+
+head_ "10. MODRYN repo untouched"
 MOD="/Users/mrwen/Documents/Github/Ryan + rawad + mrwen"
 DIRTY=$(cd "$MOD" && git status --porcelain | grep -v "modryn-storefront.png" | wc -l | tr -d ' ')
 [ "$DIRTY" = "0" ] && ok "MODRYN working tree clean of our changes" || bad "MODRYN untouched" "$DIRTY unexpected entries"

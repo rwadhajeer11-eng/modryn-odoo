@@ -1,0 +1,164 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: he\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: \n"
+
+#. module: modryn_atelier
+#. odoo-python
+#: code:addons/modryn_atelier/models/garment_piece.py:0
+msgid "A garment piece needs a name."
+msgstr "יש להזין שם לחלק הבגד."
+
+#. module: modryn_atelier
+#: model_terms:ir.ui.view,arch_db:modryn_atelier.manage_pieces
+msgid "Add"
+msgstr "הוספה"
+
+#. module: modryn_atelier
+#: model:ir.model,name:modryn_atelier.model_modryn_alteration_task
+msgid "Alteration task"
+msgstr "משימת תיקון"
+
+#. module: modryn_atelier
+#: model_terms:ir.ui.view,arch_db:modryn_atelier.manage_pieces
+msgid "Archive"
+msgstr "ארכיון"
+
+#. module: modryn_atelier
+#: model:ir.model.fields.selection,name:modryn_atelier.selection__modryn_alteration_task__state__delivered
+msgid "Delivered"
+msgstr "נמסר"
+
+#. module: modryn_atelier
+#: model:ir.model.fields,field_description:modryn_atelier.field_modryn_alteration_task__variant_id
+msgid "Dress / size"
+msgstr "שמלה / מידה"
+
+#. module: modryn_atelier
+#: model:ir.model.fields,field_description:modryn_atelier.field_modryn_alteration_task__due_date
+msgid "Due"
+msgstr "תאריך יעד"
+
+#. module: modryn_atelier
+#: model:ir.model,name:modryn_atelier.model_modryn_garment_piece
+msgid "Garment piece"
+msgstr "חלק בגד"
+
+#. module: modryn_atelier
+#: model_terms:ir.ui.view,arch_db:modryn_atelier.dashboard
+#: model_terms:ir.ui.view,arch_db:modryn_atelier.manage_pieces
+msgid "Garment pieces"
+msgstr "חלקי הבגד"
+
+#. module: modryn_atelier
+#: model:ir.model.fields.selection,name:modryn_atelier.selection__modryn_alteration_task__state__in_progress
+msgid "In progress"
+msgstr "בעבודה"
+
+#. module: modryn_atelier
+#: model:ir.model.fields,field_description:modryn_atelier.field_modryn_alteration_task__note
+msgid "Instructions"
+msgstr "הוראות"
+
+#. module: modryn_atelier
+#: model:ir.model.fields.selection,name:modryn_atelier.selection__modryn_alteration_task__state__intake
+msgid "Intake"
+msgstr "קליטה"
+
+#. module: modryn_atelier
+#: model_terms:ir.ui.view,arch_db:modryn_atelier.manage_pieces
+msgid "New piece"
+msgstr "חלק חדש"
+
+#. module: modryn_atelier
+#: model_terms:ir.ui.view,arch_db:modryn_atelier.dashboard
+msgid "No staff to show."
+msgstr "אין עובדות להצגה."
+
+#. module: modryn_atelier
+#: model_terms:ir.ui.view,arch_db:modryn_atelier.dashboard
+msgid "Nothing here."
+msgstr "אין פריטים."
+
+#. module: modryn_atelier
+#: model:ir.model.fields,field_description:modryn_atelier.field_modryn_alteration_task__piece_ids
+msgid "Pieces"
+msgstr "חלקים"
+
+#. module: modryn_atelier
+#. odoo-python
+#: code:addons/modryn_atelier/controllers/atelier.py:0
+msgid "Please enter a name"
+msgstr "נא להזין שם"
+
+#. module: modryn_atelier
+#: model:ir.model.fields.selection,name:modryn_atelier.selection__modryn_alteration_task__state__ready
+msgid "Ready"
+msgstr "מוכן"
+
+#. module: modryn_atelier
+#: model_terms:ir.ui.view,arch_db:modryn_atelier.manage_pieces
+msgid "Restore"
+msgstr "שחזור"
+
+#. module: modryn_atelier
+#: model:ir.model.fields,field_description:modryn_atelier.field_modryn_alteration_task__seamstress_id
+msgid "Seamstress"
+msgstr "תופרת"
+
+#. module: modryn_atelier
+#. odoo-python
+#: code:addons/modryn_atelier/controllers/atelier.py:0
+msgid "That garment piece already exists"
+msgstr "חלק הבגד כבר קיים"
+
+#. module: modryn_atelier
+#: model:ir.model.constraint,message:modryn_atelier.constraint_modryn_garment_piece_name_uniq
+msgid "That garment piece already exists."
+msgstr "חלק הבגד כבר קיים."
+
+#. module: modryn_atelier
+#. odoo-python
+#: code:addons/modryn_atelier/models/alteration_task.py:0
+msgid "That staff member is archived."
+msgstr "העובדת נמצאת בארכיון."
+
+#. module: modryn_atelier
+#: model_terms:ir.ui.view,arch_db:modryn_atelier.manage_pieces
+msgid ""
+"The parts of a garment your workshop alters. Add whatever this boutique "
+"needs."
+msgstr "חלקי הבגד שהסדנה שלך מתקנת. אפשר להוסיף כל חלק שהבוטיק צריך."
+
+#. module: modryn_atelier
+#: model_terms:ir.ui.view,arch_db:modryn_atelier.dashboard
+msgid "Unassigned"
+msgstr "לא משויך"
+
+#. module: modryn_atelier
+#: model_terms:ir.ui.view,arch_db:modryn_atelier.dashboard
+msgid "Workload"
+msgstr "עומס עבודה"
+
+#. module: modryn_atelier
+#: model_terms:ir.ui.view,arch_db:modryn_atelier.dashboard
+msgid "Workshop"
+msgstr "סדנה"
+
+#. module: modryn_atelier
+#: model_terms:ir.ui.view,arch_db:modryn_atelier.dashboard
+msgid "open"
+msgstr "פתוחות"
+
+#. module: modryn_atelier
+#: model_terms:ir.ui.view,arch_db:modryn_atelier.dashboard
+msgid "overdue"
+msgstr "באיחור"

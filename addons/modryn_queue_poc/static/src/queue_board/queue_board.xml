@@ -3,23 +3,23 @@
 
     <t t-name="modryn_queue_poc.QueueBoard">
         <div class="o_modryn_queue_board p-4" dir="rtl">
-            <h2 class="mb-1">תור בכניסה</h2>
+            <h2 class="mb-1">Walk-in queue</h2>
             <p class="text-muted mb-4">
-                ממתינות: <t t-esc="waiting.length"/>
+                Waiting now: <t t-esc="waiting.length"/>
             </p>
 
             <div t-if="!state.entries.length" class="text-muted">
-                אין לקוחות בתור כרגע.
+                No one is waiting right now.
             </div>
 
             <table t-else="" class="table align-middle">
                 <thead>
                     <tr>
                         <th style="width:4rem;">#</th>
-                        <th>שם</th>
-                        <th>טלפון</th>
-                        <th>סוג</th>
-                        <th>סטטוס</th>
+                        <th>Name</th>
+                        <th>Phone</th>
+                        <th>Type</th>
+                        <th>Status</th>
                         <th style="width:14rem;"/>
                     </tr>
                 </thead>
@@ -28,22 +28,22 @@
                         <td t-esc="entry_index + 1"/>
                         <td t-esc="entry.name"/>
                         <td dir="ltr" t-esc="entry.phone"/>
-                        <td t-esc="entry.client_type === 'bride' ? 'כלה' : 'ערב'"/>
+                        <td><t t-if="entry.client_type === 'bride'">Bride</t><t t-else="">Evening</t></td>
                         <td>
                             <span t-if="entry.state === 'waiting'" class="badge text-bg-warning">
-                                ממתינה
+                                Waiting
                             </span>
-                            <span t-else="" class="badge text-bg-success">נקראה</span>
+                            <span t-else="" class="badge text-bg-success">Called</span>
                         </td>
                         <td>
                             <button t-if="entry.state === 'waiting'"
                                     class="btn btn-sm btn-primary me-2"
                                     t-on-click="() => this.call(entry)">
-                                קריאה
+                                Call
                             </button>
                             <button class="btn btn-sm btn-secondary"
                                     t-on-click="() => this.done(entry)">
-                                סיום
+                                Done
                             </button>
                         </td>
                     </tr>

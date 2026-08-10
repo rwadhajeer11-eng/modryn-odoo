@@ -12,7 +12,7 @@
             <div id="wrap" dir="rtl" class="modryn_staff_auth">
                 <div class="modryn_staff_auth_card">
                     <h1 class="mb-1">MODRYN</h1>
-                    <p class="text-muted mb-4">כניסת צוות</p>
+                    <p class="text-muted mb-4">Staff sign in</p>
 
                     <form action="/staff/login" method="post" class="text-start">
                         <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
@@ -23,19 +23,19 @@
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label" for="username">שם משתמש</label>
+                            <label class="form-label" for="username">Username</label>
                             <input type="text" id="username" name="username" class="form-control"
                                    autocomplete="username" autofocus="autofocus"
                                    t-att-value="username"/>
                         </div>
 
                         <div class="mb-4">
-                            <label class="form-label" for="password">סיסמה</label>
+                            <label class="form-label" for="password">Password</label>
                             <input type="password" id="password" name="password" class="form-control"
                                    autocomplete="current-password"/>
                         </div>
 
-                        <button type="submit" class="btn btn-primary btn-lg w-100">כניסה</button>
+                        <button type="submit" class="btn btn-primary btn-lg w-100">Sign in</button>
                     </form>
                 </div>
             </div>

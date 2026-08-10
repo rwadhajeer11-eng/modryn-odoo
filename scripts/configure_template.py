@@ -9,9 +9,13 @@
 Lang = env['res.lang'].with_context(active_test=False)
 he = Lang.search([('code', '=', 'he_IL')], limit=1)
 ar = Lang.search([('code', '=', 'ar_001')], limit=1)
-assert he and ar, 'expected he_IL and ar_001 in res.lang'
+# en_US is the SOURCE language: our addon strings are written in English and
+# he/ar arrive as .po translations. It must be active for the storefront
+# switcher to offer it, even though Hebrew stays the default.
+en = Lang.search([('code', '=', 'en_US')], limit=1)
+assert he and ar and en, 'expected he_IL, ar_001 and en_US in res.lang'
 
-to_install = (he | ar).filtered(lambda lang: not lang.active)
+to_install = (he | ar | en).filtered(lambda lang: not lang.active)
 if to_install:
     # The wizard both flips `active` and loads each installed module's .po terms.
     env['base.language.install'].create({
@@ -36,7 +40,7 @@ env['res.config.settings'].create({'group_product_variant': True}).execute()
 site = env['website'].search([], limit=1)
 site.write({
     'default_lang_id': he.id,
-    'language_ids': [(6, 0, (he | ar).ids)],
+    'language_ids': [(6, 0, (he | ar | en).ids)],
 })
 
 env.cr.commit()

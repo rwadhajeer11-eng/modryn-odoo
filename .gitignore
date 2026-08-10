@@ -16,3 +16,6 @@ __pycache__/
 
 # Spartan AI config (contains API keys)
 .spartan/ai.env
+
+# Local secrets (Twilio etc.) — never committed
+.env

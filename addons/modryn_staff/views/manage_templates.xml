@@ -11,11 +11,11 @@
                 <nav class="modryn_admin_nav">
                     <span class="modryn_admin_brand">MODRYN</span>
                     <a href="/manage/staff"
-                       t-attf-class="modryn_admin_link #{'is_active' if active_tab == 'staff' else ''}">צוות</a>
+                       t-attf-class="modryn_admin_link #{'is_active' if active_tab == 'staff' else ''}">Team</a>
                     <a href="/manage/roles"
-                       t-attf-class="modryn_admin_link #{'is_active' if active_tab == 'roles' else ''}">תפקידים</a>
-                    <a href="/floor" class="modryn_admin_link">מסך משמרת</a>
-                    <a href="/staff/logout" class="modryn_admin_link modryn_admin_logout">יציאה</a>
+                       t-attf-class="modryn_admin_link #{'is_active' if active_tab == 'roles' else ''}">Roles</a>
+                    <a href="/floor" class="modryn_admin_link">Floor board</a>
+                    <a href="/staff/logout" class="modryn_admin_link modryn_admin_logout">Sign out</a>
                 </nav>
                 <main class="modryn_admin_main">
                     <t t-out="0"/>
@@ -28,22 +28,22 @@
     <template id="manage_staff_list" name="MODRYN staff list">
         <t t-call="modryn_staff.manage_layout">
             <div class="d-flex align-items-center justify-content-between mb-4">
-                <h1 class="mb-0">צוות</h1>
-                <a href="/manage/staff/new" class="btn btn-primary">הוספת עובדת</a>
+                <h1 class="mb-0">Team</h1>
+                <a href="/manage/staff/new" class="btn btn-primary">Add a team member</a>
             </div>
 
-            <div t-if="not employees" class="modryn_empty">עדיין אין עובדות.</div>
+            <div t-if="not employees" class="modryn_empty">No team members yet.</div>
 
             <table t-else="" class="table modryn_table align-middle">
                 <thead>
                     <tr>
-                        <th>שם</th>
-                        <th>תפקיד</th>
-                        <th>רמת הרשאה</th>
-                        <th>שם משתמש</th>
-                        <th>טלפון</th>
-                        <th>סטטוס</th>
-                        <th class="text-end">פעולות</th>
+                        <th>Name</th>
+                        <th>Role</th>
+                        <th>Permission level</th>
+                        <th>Username</th>
+                        <th>Phone</th>
+                        <th>Status</th>
+                        <th class="text-end">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -55,22 +55,22 @@
                         <td dir="ltr" t-out="e['login']"/>
                         <td dir="ltr" t-out="e['phone']"/>
                         <td>
-                            <span t-if="not e['active']" class="modryn_badge is_muted">בארכיון</span>
+                            <span t-if="not e['active']" class="modryn_badge is_muted">Archived</span>
                             <span t-elif="e['occupied']" class="modryn_badge is_busy">
-                                תפוסה<t t-if="e['occupied_with']"> · <t t-out="e['occupied_with']"/></t>
+                                Busy<t t-if="e['occupied_with']"> · <t t-out="e['occupied_with']"/></t>
                             </span>
-                            <span t-else="" class="modryn_badge is_free">פנויה</span>
+                            <span t-else="" class="modryn_badge is_free">Available</span>
                         </td>
                         <td class="text-end">
                             <a t-attf-href="/manage/staff/edit/#{e['id']}"
-                               class="btn btn-sm btn-outline-dark">עריכה</a>
+                               class="btn btn-sm btn-outline-dark">Edit</a>
                             <form t-attf-action="/manage/staff/archive/#{e['id']}" method="post"
                                   class="d-inline">
                                 <input type="hidden" name="csrf_token"
                                        t-att-value="request.csrf_token()"/>
                                 <button type="submit" class="btn btn-sm btn-outline-dark">
-                                    <t t-if="e['active']">ארכיון</t>
-                                    <t t-else="">שחזור</t>
+                                    <t t-if="e['active']">Archive</t>
+                                    <t t-else="">Restore</t>
                                 </button>
                             </form>
                         </td>
@@ -84,8 +84,8 @@
     <template id="manage_staff_form" name="MODRYN staff form">
         <t t-call="modryn_staff.manage_layout">
             <h1 class="mb-4">
-                <t t-if="employee">עריכת עובדת</t>
-                <t t-else="">הוספת עובדת</t>
+                <t t-if="employee">Edit team member</t>
+                <t t-else="">Add a team member</t>
             </h1>
 
             <form method="post" class="modryn_form"
@@ -93,22 +93,22 @@
                 <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
 
                 <div class="mb-3">
-                    <label class="form-label" for="name">שם</label>
+                    <label class="form-label" for="name">Name</label>
                     <input type="text" id="name" name="name" class="form-control"
                            t-att-value="values.get('name', '')"/>
                     <div t-if="errors.get('name')" class="modryn_field_error" t-out="errors['name']"/>
                 </div>
 
                 <div class="mb-3">
-                    <label class="form-label" for="phone">טלפון</label>
+                    <label class="form-label" for="phone">Phone</label>
                     <input type="tel" id="phone" name="phone" class="form-control" dir="ltr"
                            t-att-value="values.get('phone', '')"/>
                 </div>
 
                 <div class="mb-3">
-                    <label class="form-label" for="role_id">תפקיד</label>
+                    <label class="form-label" for="role_id">Role</label>
                     <select id="role_id" name="role_id" class="form-select">
-                        <option value="">— בחרי תפקיד —</option>
+                        <option value="">— Choose a role —</option>
                         <t t-foreach="roles" t-as="role">
                             <option t-att-value="role.id"
                                     t-att-selected="'selected' if str(values.get('role_id', '')) == str(role.id) else None"
@@ -119,7 +119,7 @@
                 </div>
 
                 <div class="mb-3">
-                    <label class="form-label" for="level">רמת הרשאה</label>
+                    <label class="form-label" for="level">Permission level</label>
                     <select id="level" name="level" class="form-select">
                         <t t-foreach="levels" t-as="lvl">
                             <option t-att-value="lvl[0]"
@@ -135,14 +135,14 @@
                 <t t-if="not employee">
                     <hr class="my-4"/>
                     <div class="mb-3">
-                        <label class="form-label" for="username">שם משתמש</label>
+                        <label class="form-label" for="username">Username</label>
                         <input type="text" id="username" name="username" class="form-control" dir="ltr"
                                t-att-value="values.get('username', '')"/>
                         <div t-if="errors.get('username')" class="modryn_field_error"
                              t-out="errors['username']"/>
                     </div>
                     <div class="mb-4">
-                        <label class="form-label" for="password">סיסמה</label>
+                        <label class="form-label" for="password">Password</label>
                         <input type="password" id="password" name="password" class="form-control"
                                dir="ltr"/>
                         <div t-if="errors.get('password')" class="modryn_field_error"
@@ -150,8 +150,8 @@
                     </div>
                 </t>
 
-                <button type="submit" class="btn btn-primary btn-lg">שמירה</button>
-                <a href="/manage/staff" class="btn btn-link">ביטול</a>
+                <button type="submit" class="btn btn-primary btn-lg">Save</button>
+                <a href="/manage/staff" class="btn btn-link">Cancel</a>
             </form>
         </t>
     </template>
@@ -159,9 +159,9 @@
     <!-- ============================== roles =============================== -->
     <template id="manage_roles" name="MODRYN roles">
         <t t-call="modryn_staff.manage_layout">
-            <h1 class="mb-2">תפקידים</h1>
+            <h1 class="mb-2">Roles</h1>
             <p class="text-muted mb-4">
-                התפקידים נקבעים על ידך — אפשר להוסיף כל תפקיד שהבוטיק צריך.
+                You decide the roles — add whatever the boutique needs.
             </p>
 
             <div t-if="error" class="modryn_field_error mb-3" role="alert" t-out="error"/>
@@ -169,8 +169,8 @@
             <form action="/manage/roles/new" method="post" class="d-flex gap-2 mb-4"
                   style="max-width: 480px;">
                 <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
-                <input type="text" name="name" class="form-control" placeholder="שם תפקיד חדש"/>
-                <button type="submit" class="btn btn-primary">הוספה</button>
+                <input type="text" name="name" class="form-control" placeholder="New role name"/>
+                <button type="submit" class="btn btn-primary">Add</button>
             </form>
 
             <table class="table modryn_table align-middle" style="max-width: 480px;">
@@ -184,8 +184,8 @@
                                 <input type="hidden" name="csrf_token"
                                        t-att-value="request.csrf_token()"/>
                                 <button type="submit" class="btn btn-sm btn-outline-dark">
-                                    <t t-if="role.active">ארכיון</t>
-                                    <t t-else="">שחזור</t>
+                                    <t t-if="role.active">Archive</t>
+                                    <t t-else="">Restore</t>
                                 </button>
                             </form>
                         </td>

@@ -1,0 +1,27 @@
+{
+    'name': 'MODRYN Atelier',
+    'summary': 'Alteration tasks for seamstresses: which garment piece, for whom, by when.',
+    'description': """
+A bridal gown is almost never sold as it hangs — it is altered. This is the workshop side
+of the boutique:
+
+  * garment pieces (hem, bodice, sleeves, train, straps) the OWNER maintains as data
+  * an alteration task per job: customer, dress and size, pieces, note, seamstress, due date
+  * intake -> in progress -> ready -> delivered
+  * /atelier   manager and owner: every task by state, load per seamstress, overdue flagged
+  * on /floor  each seamstress sees HER OWN tasks and advances them herself
+
+The seamstress advancing her own work is what keeps the dashboard truthful — the same
+reason floor occupancy is derived rather than typed.
+""",
+    'category': 'Website',
+    'version': '19.0.1.0.0',
+    'depends': ['modryn_staff', 'modryn_booking'],
+    'data': [
+        'security/ir.model.access.csv',
+        'data/garment_piece_data.xml',
+        'views/atelier_templates.xml',
+    ],
+    'author': 'MODRYN',
+    'license': 'LGPL-3',
+}

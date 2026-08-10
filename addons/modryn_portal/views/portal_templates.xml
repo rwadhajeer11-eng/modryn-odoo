@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Customer-facing, so website.layout (with the storefront header and
+         language switcher) rather than the bare staff shell. -->
+    <template id="login" name="Customer login">
+        <t t-call="website.layout">
+            <div id="wrap" class="oe_structure">
+                <div class="container py-5" style="max-width: 460px;">
+                    <h1 class="mb-2">My appointments</h1>
+                    <p class="text-muted mb-4">
+                        Enter your phone number and we will text you a code.
+                    </p>
+
+                    <div t-if="error" class="modryn_field_error mb-3" role="alert" t-out="error"/>
+
+                    <form action="/my/login" method="post">
+                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                        <div class="mb-4">
+                            <label class="form-label" for="phone">Phone number</label>
+                            <input type="tel" id="phone" name="phone" class="form-control"
+                                   dir="ltr" placeholder="050-123-4567" autocomplete="tel"
+                                   t-att-value="phone"/>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-lg w-100">
+                            Send me a code
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <template id="verify" name="Customer code verification">
+        <t t-call="website.layout">
+            <div id="wrap" class="oe_structure">
+                <div class="container py-5" style="max-width: 460px;">
+                    <h1 class="mb-2">Enter your code</h1>
+                    <p class="text-muted mb-4">
+                        We sent a 6-digit code to <span dir="ltr" t-out="phone"/>.
+                    </p>
+
+                    <div t-if="error" class="modryn_field_error mb-3" role="alert" t-out="error"/>
+
+                    <form action="/my/verify" method="post">
+                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                        <div class="mb-4">
+                            <label class="form-label" for="code">Code</label>
+                            <!-- inputmode numeric so phones show a keypad; one-time-code
+                                 lets iOS and Android offer the SMS autofill. -->
+                            <input type="text" id="code" name="code" class="form-control"
+                                   dir="ltr" inputmode="numeric" autocomplete="one-time-code"
+                                   maxlength="6" autofocus="autofocus"/>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-lg w-100">Continue</button>
+                    </form>
+
+                    <p class="mt-3 text-center">
+                        <a href="/my/login">Use a different number</a>
+                    </p>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <template id="bookings" name="Customer bookings">
+        <t t-call="website.layout">
+            <div id="wrap" class="oe_structure">
+                <div class="container py-5" style="max-width: 720px;">
+                    <div class="d-flex align-items-center justify-content-between mb-4">
+                        <h1 class="mb-0">My appointments</h1>
+                        <a href="/my/logout" class="btn btn-link">Sign out</a>
+                    </div>
+
+                    <h2 class="h5 mb-3">Upcoming</h2>
+                    <p t-if="not upcoming" class="text-muted mb-4">
+                        You have no upcoming appointments.
+                        <a href="/book">Book a fitting</a>.
+                    </p>
+                    <div t-foreach="upcoming" t-as="b" t-key="b['id']"
+                         class="p-3 mb-3 d-flex justify-content-between align-items-center"
+                         style="background:#F6F0E6; border-radius:8px;">
+                        <div>
+                            <div style="font-weight:600;">
+                                <t t-out="b['date']"/> · <t t-out="b['time']"/>
+                            </div>
+                            <div t-if="b['dress']" class="text-muted small">
+                                <t t-out="b['dress']"/>
+                                <t t-if="b['size']"> · size <t t-out="b['size']"/></t>
+                            </div>
+                        </div>
+                        <a t-attf-href="/my/cancel/#{b['id']}" class="btn btn-sm btn-outline-dark">
+                            Cancel
+                        </a>
+                    </div>
+
+                    <t t-if="past">
+                        <h2 class="h5 mt-5 mb-3">Past</h2>
+                        <div t-foreach="past" t-as="b" t-key="b['id']"
+                             class="p-3 mb-2 text-muted d-flex justify-content-between"
+                             style="border:1px solid #E4DACA; border-radius:8px;">
+                            <span><t t-out="b['date']"/> · <t t-out="b['time']"/></span>
+                            <span t-if="b['cancelled']">Cancelled</span>
+                        </div>
+                    </t>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <template id="cancel_confirm" name="Confirm cancellation">
+        <t t-call="website.layout">
+            <div id="wrap" class="oe_structure">
+                <div class="container py-5" style="max-width: 520px;">
+                    <h1 class="mb-3">Cancel this appointment?</h1>
+                    <p class="mb-4">
+                        <strong><t t-out="date"/> · <t t-out="time"/></strong>
+                    </p>
+
+                    <!-- The boutique's own terms, shown at the moment of cancelling
+                         rather than buried at booking time. -->
+                    <div t-if="terms" class="p-3 mb-4 text-muted small"
+                         style="background:#F6F0E6; border-radius:8px;" t-out="terms"/>
+
+                    <form t-attf-action="/my/cancel/#{event_id}" method="post">
+                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            Yes, cancel it
+                        </button>
+                        <a href="/my/bookings" class="btn btn-link">Keep my appointment</a>
+                    </form>
+                </div>
+            </div>
+        </t>
+    </template>
+
+</odoo>

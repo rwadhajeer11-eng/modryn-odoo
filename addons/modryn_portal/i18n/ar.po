@@ -1,0 +1,173 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: ar\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: \n"
+
+#. module: modryn_portal
+#. odoo-python
+#: code:addons/modryn_portal/models/otp.py:0
+msgid "%(code)s is your MODRYN code. It expires in %(minutes)s minutes."
+msgstr ""
+"%(code)s هو رمز الدخول الخاص بك في MODRYN. ينتهي خلال %(minutes)s دقائق."
+
+#. module: modryn_portal
+#: model_terms:ir.ui.view,arch_db:modryn_portal.bookings
+msgid "Book a fitting"
+msgstr "حجز موعد قياس"
+
+#. module: modryn_portal
+#: model_terms:ir.ui.view,arch_db:modryn_portal.bookings
+msgid "Cancel"
+msgstr "إلغاء"
+
+#. module: modryn_portal
+#: model_terms:ir.ui.view,arch_db:modryn_portal.cancel_confirm
+msgid "Cancel this appointment?"
+msgstr "هل تريدين إلغاء هذا الموعد؟"
+
+#. module: modryn_portal
+#: model_terms:ir.ui.view,arch_db:modryn_portal.bookings
+msgid "Cancelled"
+msgstr "ملغى"
+
+#. module: modryn_portal
+#: model_terms:ir.ui.view,arch_db:modryn_portal.verify
+msgid "Code"
+msgstr "الرمز"
+
+#. module: modryn_portal
+#: model_terms:ir.ui.view,arch_db:modryn_portal.verify
+msgid "Continue"
+msgstr "متابعة"
+
+#. module: modryn_portal
+#: model_terms:ir.ui.view,arch_db:modryn_portal.verify
+msgid "Enter your code"
+msgstr "أدخلي الرمز"
+
+#. module: modryn_portal
+#: model_terms:ir.ui.view,arch_db:modryn_portal.login
+msgid "Enter your phone number and we will text you a code."
+msgstr "أدخلي رقم هاتفك وسنرسل لك رمزًا في رسالة نصية."
+
+#. module: modryn_portal
+#: model_terms:ir.ui.view,arch_db:modryn_portal.cancel_confirm
+msgid "Keep my appointment"
+msgstr "الإبقاء على الموعد"
+
+#. module: modryn_portal
+#: model:ir.actions.server,name:modryn_portal.ir_cron_gc_otp_codes_ir_actions_server
+msgid "MODRYN: purge expired login codes"
+msgstr "MODRYN: حذف رموز الدخول المنتهية"
+
+#. module: modryn_portal
+#: model_terms:ir.ui.view,arch_db:modryn_portal.bookings
+#: model_terms:ir.ui.view,arch_db:modryn_portal.login
+msgid "My appointments"
+msgstr "مواعيدي"
+
+#. module: modryn_portal
+#: model_terms:ir.ui.view,arch_db:modryn_portal.bookings
+msgid "Past"
+msgstr "مواعيد سابقة"
+
+#. module: modryn_portal
+#: model_terms:ir.ui.view,arch_db:modryn_portal.login
+msgid "Phone number"
+msgstr "رقم الهاتف"
+
+#. module: modryn_portal
+#: model_terms:ir.ui.view,arch_db:modryn_portal.login
+msgid "Send me a code"
+msgstr "إرسال الرمز"
+
+#. module: modryn_portal
+#: model_terms:ir.ui.view,arch_db:modryn_portal.bookings
+msgid "Sign out"
+msgstr "تسجيل الخروج"
+
+#. module: modryn_portal
+#: model_terms:ir.ui.view,arch_db:modryn_portal.bookings
+msgid "Upcoming"
+msgstr "المواعيد القادمة"
+
+#. module: modryn_portal
+#: model_terms:ir.ui.view,arch_db:modryn_portal.verify
+msgid "Use a different number"
+msgstr "استخدام رقم آخر"
+
+#. module: modryn_portal
+#: model_terms:ir.ui.view,arch_db:modryn_portal.verify
+msgid "We sent a 6-digit code to"
+msgstr "أرسلنا رمزًا من 6 أرقام إلى"
+
+#. module: modryn_portal
+#: model_terms:ir.ui.view,arch_db:modryn_portal.cancel_confirm
+msgid "Yes, cancel it"
+msgstr "نعم، ألغِ الموعد"
+
+#. module: modryn_portal
+#: model_terms:ir.ui.view,arch_db:modryn_portal.bookings
+msgid "You have no upcoming appointments."
+msgstr "ليس لديك مواعيد قادمة."
+
+#. module: modryn_portal
+#: model_terms:ir.ui.view,arch_db:modryn_portal.bookings
+msgid "· size"
+msgstr "· مقاس"
+
+#. module: modryn_portal
+#. odoo-python
+#: code:addons/modryn_portal/controllers/portal.py:0
+msgid "Please request a code first."
+msgstr "يرجى طلب رمز أولاً."
+
+#. module: modryn_portal
+#. odoo-python
+#: code:addons/modryn_portal/controllers/portal.py:0
+msgid "Something went wrong."
+msgstr "حدث خطأ ما."
+
+#. module: modryn_portal
+#. odoo-python
+#: code:addons/modryn_portal/controllers/portal.py:0
+msgid "That code has expired. Please request a new one."
+msgstr "انتهت صلاحية الرمز. يرجى طلب رمز جديد."
+
+#. module: modryn_portal
+#. odoo-python
+#: code:addons/modryn_portal/controllers/portal.py:0
+msgid "That code is not correct."
+msgstr "الرمز غير صحيح."
+
+#. module: modryn_portal
+#. odoo-python
+#: code:addons/modryn_portal/controllers/portal.py:0
+msgid "That does not look like a valid phone number."
+msgstr "رقم الهاتف غير صالح."
+
+#. module: modryn_portal
+#. odoo-python
+#: code:addons/modryn_portal/controllers/portal.py:0
+msgid "Too many attempts. Please request a new code."
+msgstr "محاولات كثيرة جدًا. يرجى طلب رمز جديد."
+
+#. module: modryn_portal
+#. odoo-python
+#: code:addons/modryn_portal/controllers/portal.py:0
+msgid "Too many codes requested. Please try again in an hour."
+msgstr "تم طلب رموز كثيرة. يرجى المحاولة بعد ساعة."
+
+#. module: modryn_portal
+#. odoo-python
+#: code:addons/modryn_portal/controllers/portal.py:0
+msgid "We could not send the code. Please try again shortly."
+msgstr "تعذّر إرسال الرمز. يرجى المحاولة بعد قليل."

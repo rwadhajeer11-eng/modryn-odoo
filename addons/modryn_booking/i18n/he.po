@@ -1,0 +1,163 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: he\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: \n"
+
+#. module: modryn_booking
+#: model_terms:ir.ui.view,arch_db:modryn_booking.booking_form
+msgid "(out of stock)"
+msgstr "(אזל המלאי)"
+
+#. module: modryn_booking
+#: model_terms:ir.ui.view,arch_db:modryn_booking.booking_form
+msgid "<option value=\"\">— Choose a time —</option>"
+msgstr "<option value=\"\">— בחרי מועד —</option>"
+
+#. module: modryn_booking
+#: model_terms:ir.ui.view,arch_db:modryn_booking.booking_form
+msgid "<option value=\"\">— Choose your size —</option>"
+msgstr "<option value=\"\">— בחרי מידה —</option>"
+
+#. module: modryn_booking
+#: model_terms:ir.ui.view,arch_db:modryn_booking.booking_confirmed
+msgid "<strong>Date:</strong>"
+msgstr "<strong>תאריך:</strong>"
+
+#. module: modryn_booking
+#: model_terms:ir.ui.view,arch_db:modryn_booking.booking_confirmed
+msgid "<strong>Dress:</strong>"
+msgstr "<strong>שמלה:</strong>"
+
+#. module: modryn_booking
+#: model_terms:ir.ui.view,arch_db:modryn_booking.booking_confirmed
+msgid "<strong>Phone:</strong>"
+msgstr "<strong>טלפון:</strong>"
+
+#. module: modryn_booking
+#: model_terms:ir.ui.view,arch_db:modryn_booking.booking_confirmed
+msgid "<strong>Time:</strong>"
+msgstr "<strong>שעה:</strong>"
+
+#. module: modryn_booking
+#: model_terms:ir.ui.view,arch_db:modryn_booking.booking_form
+msgid "Appointment time"
+msgstr "מועד"
+
+#. module: modryn_booking
+#: model_terms:ir.ui.view,arch_db:modryn_booking.booking_confirmed
+msgid "Back to the collection"
+msgstr "חזרה לקטלוג"
+
+#. module: modryn_booking
+#: model_terms:ir.ui.view,arch_db:modryn_booking.booking_form
+msgid "Book a consultation"
+msgstr "קביעת פגישת ייעוץ"
+
+#. module: modryn_booking
+#: model_terms:ir.ui.view,arch_db:modryn_booking.booking_form
+#: model_terms:ir.ui.view,arch_db:modryn_booking.product_book_button
+msgid "Book a fitting"
+msgstr "קביעת תור למדידה"
+
+#. module: modryn_booking
+#: model_terms:ir.ui.view,arch_db:modryn_booking.booking_form
+msgid "Confirm appointment"
+msgstr "אישור התור"
+
+#. module: modryn_booking
+#. odoo-python
+#: code:addons/modryn_booking/controllers/main.py:0
+msgid "Consultation: %s"
+msgstr "פגישת ייעוץ: %s"
+
+#. module: modryn_booking
+#. odoo-python
+#: code:addons/modryn_booking/controllers/main.py:0
+msgid "Fitting: %s"
+msgstr "מדידה: %s"
+
+#. module: modryn_booking
+#: model_terms:ir.ui.view,arch_db:modryn_booking.booking_form
+msgid "Full name"
+msgstr "שם מלא"
+
+#. module: modryn_booking
+#: model_terms:ir.ui.view,arch_db:modryn_booking.booking_form
+msgid ""
+"I've read and accept the boutique's cancellation, lateness and no-show terms"
+msgstr "קראתי ואני מאשרת את תנאי הביטול, האיחור ואי-ההגעה של הבוטיק"
+
+#. module: modryn_booking
+#: model_terms:ir.ui.view,arch_db:modryn_booking.booking_form
+msgid "Phone"
+msgstr "טלפון"
+
+#. module: modryn_booking
+#. odoo-python
+#: code:addons/modryn_booking/controllers/main.py:0
+msgid "Please accept the cancellation terms"
+msgstr "יש לאשר את תנאי הביטול"
+
+#. module: modryn_booking
+#. odoo-python
+#: code:addons/modryn_booking/controllers/main.py:0
+msgid "Please choose a size"
+msgstr "נא לבחור מידה"
+
+#. module: modryn_booking
+#. odoo-python
+#: code:addons/modryn_booking/controllers/main.py:0
+msgid "Please choose a time"
+msgstr "נא לבחור מועד"
+
+#. module: modryn_booking
+#. odoo-python
+#: code:addons/modryn_booking/controllers/main.py:0
+msgid "Please enter a valid phone number"
+msgstr "מספר טלפון לא תקין"
+
+#. module: modryn_booking
+#. odoo-python
+#: code:addons/modryn_booking/controllers/main.py:0
+msgid "Please enter your full name"
+msgstr "נא למלא שם מלא"
+
+#. module: modryn_booking
+#: model_terms:ir.ui.view,arch_db:modryn_booking.booking_form
+msgid "Size"
+msgstr "מידה"
+
+#. module: modryn_booking
+#. odoo-python
+#: code:addons/modryn_booking/controllers/main.py:0
+msgid "That time isn't valid"
+msgstr "מועד לא תקין"
+
+#. module: modryn_booking
+#. odoo-python
+#: code:addons/modryn_booking/controllers/main.py:0
+msgid "That time was just taken, please choose another"
+msgstr "המועד נתפס, נא לבחור מועד אחר"
+
+#. module: modryn_booking
+#: model_terms:ir.ui.view,arch_db:modryn_booking.booking_form
+msgid "We'll hold this dress for your appointment"
+msgstr "השמלה תשוריין לפגישה"
+
+#. module: modryn_booking
+#: model_terms:ir.ui.view,arch_db:modryn_booking.booking_confirmed
+msgid "We'll text you a confirmation"
+msgstr "נשלח לך אישור בהודעה"
+
+#. module: modryn_booking
+#: model_terms:ir.ui.view,arch_db:modryn_booking.booking_confirmed
+msgid "Your appointment is booked"
+msgstr "התור נקבע"

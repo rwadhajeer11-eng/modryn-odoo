@@ -4,13 +4,13 @@
     <!-- The OWL board is a client action: no list/form scaffolding, just the
          component. -->
     <record id="action_queue_board" model="ir.actions.client">
-        <field name="name">תור בכניסה</field>
+        <field name="name">Walk-in queue</field>
         <field name="tag">modryn_queue_board</field>
     </record>
 
     <menuitem id="menu_modryn_queue_root" name="MODRYN" sequence="5"/>
     <menuitem id="menu_modryn_queue_board"
-              name="תור בכניסה"
+              name="Walk-in queue"
               parent="menu_modryn_queue_root"
               action="action_queue_board"
               sequence="10"/>

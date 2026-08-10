@@ -8,8 +8,8 @@
                 <div class="container py-5" style="max-width: 720px;">
 
                     <h1 class="mb-2">
-                        <t t-if="dress">קביעת תור למדידה</t>
-                        <t t-else="">קביעת פגישת ייעוץ</t>
+                        <t t-if="dress">Book a fitting</t>
+                        <t t-else="">Book a consultation</t>
                     </h1>
 
                     <!-- Path 1: the dress rides along, visibly. -->
@@ -19,7 +19,7 @@
                              t-att-alt="dress.name" style="width:64px; height:auto; border-radius:4px;"/>
                         <div>
                             <div style="font-weight:600;" t-out="dress.name"/>
-                            <div class="text-muted small">השמלה תשוריין לפגישה</div>
+                            <div class="text-muted small">We'll hold this dress for your appointment</div>
                         </div>
                     </div>
 
@@ -28,7 +28,7 @@
                         <input t-if="dress" type="hidden" name="dress_id" t-att-value="dress.id"/>
 
                         <div class="mb-3">
-                            <label class="form-label" for="name">שם מלא</label>
+                            <label class="form-label" for="name">Full name</label>
                             <input type="text" id="name" name="name" class="form-control"
                                    t-att-value="values.get('name', '')"/>
                             <div t-if="errors.get('name')" class="text-danger small mt-1"
@@ -36,7 +36,7 @@
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label" for="phone">טלפון</label>
+                            <label class="form-label" for="phone">Phone</label>
                             <input type="tel" id="phone" name="phone" class="form-control"
                                    dir="ltr" placeholder="050-1234567"
                                    t-att-value="values.get('phone', '')"/>
@@ -46,14 +46,14 @@
 
                         <!-- Size picker: only on the dress path. -->
                         <div t-if="dress" class="mb-3">
-                            <label class="form-label" for="variant_id">מידה</label>
+                            <label class="form-label" for="variant_id">Size</label>
                             <select id="variant_id" name="variant_id" class="form-select">
-                                <option value="">— בחרי מידה —</option>
+                                <option value="">— Choose your size —</option>
                                 <t t-foreach="variants" t-as="v">
                                     <option t-att-value="v.id"
                                             t-att-selected="'selected' if variant and v.id == variant.id else None">
                                         <t t-out="v.product_template_attribute_value_ids[:1].name or v.name"/>
-                                        <t t-if="v.qty_available &lt;= 0"> (אזל המלאי)</t>
+                                        <t t-if="v.qty_available &lt;= 0"> (out of stock)</t>
                                     </option>
                                 </t>
                             </select>
@@ -62,9 +62,9 @@
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label" for="slot">מועד</label>
+                            <label class="form-label" for="slot">Appointment time</label>
                             <select id="slot" name="slot" class="form-select">
-                                <option value="">— בחרי מועד —</option>
+                                <option value="">— Choose a time —</option>
                                 <t t-foreach="days" t-as="day">
                                     <optgroup t-att-label="day['date'].strftime('%d.%m.%Y')">
                                         <t t-foreach="day['times']" t-as="slot">
@@ -84,13 +84,13 @@
                             <input class="form-check-input" type="checkbox" value="1"
                                    id="terms" name="terms"/>
                             <label class="form-check-label" for="terms">
-                                קראתי ואני מאשרת את תנאי הביטול, האיחור ואי-ההגעה של הבוטיק
+                                I've read and accept the boutique's cancellation, lateness and no-show terms
                             </label>
                             <div t-if="errors.get('terms')" class="text-danger small mt-1"
                                  t-out="errors['terms']"/>
                         </div>
 
-                        <button type="submit" class="btn btn-primary btn-lg">אישור התור</button>
+                        <button type="submit" class="btn btn-primary btn-lg">Confirm appointment</button>
                     </form>
                 </div>
             </div>
@@ -102,28 +102,28 @@
         <t t-call="website.layout">
             <div id="wrap" class="oe_structure">
                 <div class="container py-5 text-center" style="max-width: 640px;">
-                    <h1 class="mb-3">התור נקבע</h1>
-                    <p class="text-muted mb-4">נשלח לך אישור בהודעה</p>
+                    <h1 class="mb-3">Your appointment is booked</h1>
+                    <p class="text-muted mb-4">We'll text you a confirmation</p>
 
                     <div class="p-4 mb-4" style="background:#F6F0E6; border-radius:8px;">
                         <div class="mb-2">
-                            <strong>תאריך:</strong> <t t-out="local_date"/>
+                            <strong>Date:</strong> <t t-out="local_date"/>
                         </div>
                         <div class="mb-2">
-                            <strong>שעה:</strong> <t t-out="local_time"/>
+                            <strong>Time:</strong> <t t-out="local_time"/>
                         </div>
                         <div t-if="event.modryn_variant_id" class="mb-2">
-                            <strong>שמלה:</strong>
+                            <strong>Dress:</strong>
                             <t t-out="event.modryn_variant_id.product_tmpl_id.name"/>
                             (<t t-out="event.modryn_variant_id.product_template_attribute_value_ids[:1].name"/>)
                         </div>
                         <div>
-                            <strong>טלפון:</strong>
+                            <strong>Phone:</strong>
                             <span dir="ltr" t-out="event.modryn_customer_phone"/>
                         </div>
                     </div>
 
-                    <a href="/shop" class="btn btn-primary">חזרה לקטלוג</a>
+                    <a href="/shop" class="btn btn-primary">Back to the collection</a>
                 </div>
             </div>
         </t>
@@ -136,7 +136,7 @@
         <xpath expr="//div[@id='product_details']" position="inside">
             <a t-att-href="'/book/dress/%s' % product.id"
                class="btn btn-primary btn-lg w-100 mt-3">
-                קביעת תור למדידה
+                Book a fitting
             </a>
         </xpath>
     </template>

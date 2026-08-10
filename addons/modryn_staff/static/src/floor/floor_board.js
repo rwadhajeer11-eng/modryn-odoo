@@ -1,4 +1,5 @@
 import { Component, onWillStart, onWillUnmount, useState } from "@odoo/owl";
+import { _t } from "@web/core/l10n/translation";
 import { registry } from "@web/core/registry";
 import { rpc } from "@web/core/network/rpc";
 import { useService } from "@web/core/utils/hooks";
@@ -75,6 +76,13 @@ export class FloorBoard extends Component {
 
     async finish(entryId) {
         this.apply(await rpc("/floor/queue/done", { entry_id: entryId }));
+    }
+
+    // Chosen here rather than inline in the template: a string literal inside a
+    // t-esc expression is code to the extractor, not a text node, so it would
+    // never reach the .po file.
+    clientTypeLabel(entry) {
+        return entry.client_type === "bride" ? _t("Bride") : _t("Evening");
     }
 
     get waitingCount() {

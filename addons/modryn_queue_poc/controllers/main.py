@@ -1,4 +1,4 @@
-from odoo import http
+from odoo import _, http
 from odoo.http import request
 
 from ..models.queue_entry import QUEUE_CHANNEL
@@ -16,7 +16,7 @@ class ModrynQueue(http.Controller):
         name = (post.get('name') or '').strip()
         if not name:
             return request.render('modryn_queue_poc.checkin_form', {
-                'errors': {'name': 'נא למלא שם מלא'}, 'values': post,
+                'errors': {'name': _("Please enter your full name")}, 'values': post,
             })
 
         entry = request.env['modryn.queue.entry'].sudo().create({

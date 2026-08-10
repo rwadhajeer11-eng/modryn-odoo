@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_garment_piece_owner,modryn.garment.piece.owner,model_modryn_garment_piece,modryn_staff.group_boutique_owner,1,1,1,1
+access_garment_piece_internal,modryn.garment.piece.internal,model_modryn_garment_piece,base.group_user,1,0,0,0
+access_alteration_task_owner,modryn.alteration.task.owner,model_modryn_alteration_task,modryn_staff.group_boutique_owner,1,1,1,1
+access_alteration_task_internal,modryn.alteration.task.internal,model_modryn_alteration_task,base.group_user,1,1,1,0

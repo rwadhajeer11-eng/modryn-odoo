@@ -1,0 +1,169 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: he\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: \n"
+
+#. module: modryn_queue_poc
+#: model_terms:ir.ui.view,arch_db:modryn_queue_poc.checkin_form
+msgid ""
+"<select id=\"client_type\" name=\"client_type\" class=\"form-select\">\n"
+"                                <option value=\"bride\">Bride</option>\n"
+"                                <option value=\"evening\">Evening</option>\n"
+"                            </select>"
+msgstr ""
+"<select id=\"client_type\" name=\"client_type\" class=\"form-select\">\n"
+"                                <option value=\"bride\">כלה</option>\n"
+"                                <option value=\"evening\">ערב</option>\n"
+"                            </select>"
+
+#. module: modryn_queue_poc
+#. odoo-javascript
+#: code:addons/modryn_queue_poc/static/src/queue_board/queue_board.xml:0
+#: model:ir.model.fields.selection,name:modryn_queue_poc.selection__modryn_queue_entry__client_type__bride
+msgid "Bride"
+msgstr "כלה"
+
+#. module: modryn_queue_poc
+#. odoo-javascript
+#: code:addons/modryn_queue_poc/static/src/queue_board/queue_board.xml:0
+msgid "Call"
+msgstr "קריאה"
+
+#. module: modryn_queue_poc
+#. odoo-javascript
+#: code:addons/modryn_queue_poc/static/src/queue_board/queue_board.xml:0
+#: model:ir.model.fields.selection,name:modryn_queue_poc.selection__modryn_queue_entry__state__called
+msgid "Called"
+msgstr "נקראה"
+
+#. module: modryn_queue_poc
+#: model:ir.model.fields,field_description:modryn_queue_poc.field_modryn_queue_entry__client_type
+msgid "Client Type"
+msgstr "סוג לקוחה"
+
+#. module: modryn_queue_poc
+#: model_terms:ir.ui.view,arch_db:modryn_queue_poc.checkin_form
+msgid "Client type"
+msgstr "סוג לקוחה"
+
+#. module: modryn_queue_poc
+#. odoo-javascript
+#: code:addons/modryn_queue_poc/static/src/queue_board/queue_board.xml:0
+msgid "Done"
+msgstr "סיום"
+
+#. module: modryn_queue_poc
+#. odoo-javascript
+#: code:addons/modryn_queue_poc/static/src/queue_board/queue_board.xml:0
+#: model:ir.model.fields.selection,name:modryn_queue_poc.selection__modryn_queue_entry__client_type__evening
+msgid "Evening"
+msgstr "ערב"
+
+#. module: modryn_queue_poc
+#: model:ir.model.fields.selection,name:modryn_queue_poc.selection__modryn_queue_entry__state__done
+msgid "Finished"
+msgstr "הסתיימה"
+
+#. module: modryn_queue_poc
+#: model_terms:ir.ui.view,arch_db:modryn_queue_poc.checkin_form
+msgid "Full name"
+msgstr "שם מלא"
+
+#. module: modryn_queue_poc
+#: model_terms:ir.ui.view,arch_db:modryn_queue_poc.checkin_form
+#: model_terms:ir.ui.view,arch_db:modryn_queue_poc.queue_sign
+msgid "Join the queue"
+msgstr "כניסה לתור"
+
+#. module: modryn_queue_poc
+#. odoo-javascript
+#: code:addons/modryn_queue_poc/static/src/queue_board/queue_board.xml:0
+#: model:ir.model.fields,field_description:modryn_queue_poc.field_modryn_queue_entry__name
+msgid "Name"
+msgstr "שם"
+
+#. module: modryn_queue_poc
+#. odoo-javascript
+#: code:addons/modryn_queue_poc/static/src/queue_board/queue_board.xml:0
+msgid "No one is waiting right now."
+msgstr "אין לקוחות בתור כרגע."
+
+#. module: modryn_queue_poc
+#: model_terms:ir.ui.view,arch_db:modryn_queue_poc.checkin_done
+msgid "One of our stylists will be with you shortly"
+msgstr "נציגה תיגש אליך בקרוב"
+
+#. module: modryn_queue_poc
+#. odoo-javascript
+#: code:addons/modryn_queue_poc/static/src/queue_board/queue_board.xml:0
+#: model:ir.model.fields,field_description:modryn_queue_poc.field_modryn_queue_entry__phone
+#: model_terms:ir.ui.view,arch_db:modryn_queue_poc.checkin_form
+msgid "Phone"
+msgstr "טלפון"
+
+#. module: modryn_queue_poc
+#. odoo-python
+#: code:addons/modryn_queue_poc/controllers/main.py:0
+msgid "Please enter your full name"
+msgstr "נא למלא שם מלא"
+
+#. module: modryn_queue_poc
+#: model_terms:ir.ui.view,arch_db:modryn_queue_poc.queue_sign
+msgid "Scan the code to join the queue"
+msgstr "סרקי את הקוד כדי להצטרף לתור"
+
+#. module: modryn_queue_poc
+#. odoo-javascript
+#: code:addons/modryn_queue_poc/static/src/queue_board/queue_board.xml:0
+msgid "Status"
+msgstr "סטטוס"
+
+#. module: modryn_queue_poc
+#. odoo-javascript
+#: code:addons/modryn_queue_poc/static/src/queue_board/queue_board.xml:0
+msgid "Type"
+msgstr "סוג"
+
+#. module: modryn_queue_poc
+#. odoo-javascript
+#: code:addons/modryn_queue_poc/static/src/queue_board/queue_board.xml:0
+#: model:ir.model.fields.selection,name:modryn_queue_poc.selection__modryn_queue_entry__state__waiting
+msgid "Waiting"
+msgstr "ממתינה"
+
+#. module: modryn_queue_poc
+#. odoo-javascript
+#: code:addons/modryn_queue_poc/static/src/queue_board/queue_board.xml:0
+msgid "Waiting now:"
+msgstr "ממתינות:"
+
+#. module: modryn_queue_poc
+#. odoo-javascript
+#: code:addons/modryn_queue_poc/static/src/queue_board/queue_board.xml:0
+#: model:ir.actions.client,name:modryn_queue_poc.action_queue_board
+#: model:ir.ui.menu,name:modryn_queue_poc.menu_modryn_queue_board
+msgid "Walk-in queue"
+msgstr "תור בכניסה"
+
+#. module: modryn_queue_poc
+#: model_terms:ir.ui.view,arch_db:modryn_queue_poc.checkin_form
+msgid "Welcome"
+msgstr "ברוכה הבאה"
+
+#. module: modryn_queue_poc
+#: model_terms:ir.ui.view,arch_db:modryn_queue_poc.checkin_done
+msgid "You're on the list"
+msgstr "נרשמת בהצלחה"
+
+#. module: modryn_queue_poc
+#: model_terms:ir.ui.view,arch_db:modryn_queue_poc.checkin_done
+msgid "Your place in line"
+msgstr "מקומך בתור"

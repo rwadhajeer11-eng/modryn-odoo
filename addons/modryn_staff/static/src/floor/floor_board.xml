@@ -5,7 +5,7 @@
         <div class="modryn_floor" dir="rtl">
 
             <div t-if="state.error" class="modryn_field_error mb-3" role="alert">
-                אין הרשאה להצגת המסך.
+                You don't have access to this board.
             </div>
 
             <div class="modryn_floor_grid">
@@ -13,11 +13,11 @@
                 <!-- ============ walk-in queue ============ -->
                 <section class="modryn_panel">
                     <header class="modryn_panel_head">
-                        <h2>תור בכניסה</h2>
-                        <span class="modryn_count"><t t-esc="waitingCount"/> ממתינות</span>
+                        <h2>Walk-in queue</h2>
+                        <span class="modryn_count"><t t-esc="waitingCount"/> waiting</span>
                     </header>
 
-                    <p t-if="!state.queue.length" class="modryn_empty">אין לקוחות בתור.</p>
+                    <p t-if="!state.queue.length" class="modryn_empty">No one is waiting.</p>
 
                     <table t-else="" class="table modryn_table align-middle">
                         <tbody>
@@ -29,20 +29,20 @@
                                 </td>
                                 <td>
                                     <span class="modryn_badge is_muted">
-                                        <t t-esc="entry.client_type === 'bride' ? 'כלה' : 'ערב'"/>
+                                        <t t-esc="clientTypeLabel(entry)"/>
                                     </span>
                                 </td>
                                 <td>
-                                    <span t-if="entry.state === 'waiting'" class="modryn_badge is_wait">ממתינה</span>
+                                    <span t-if="entry.state === 'waiting'" class="modryn_badge is_wait">Waiting</span>
                                     <span t-else="" class="modryn_badge is_busy">
-                                        מטפלת ב: <t t-esc="entry.employee_name"/>
+                                        Serving: <t t-esc="entry.employee_name"/>
                                     </span>
                                 </td>
                                 <td class="text-end" style="min-width: 14rem;">
                                     <t t-if="state.canAssign">
                                         <select class="form-select form-select-sm d-inline-block w-auto"
                                                 t-on-change="(ev) => this.assignQueue(entry.id, ev)">
-                                            <option value="">— שיוך —</option>
+                                            <option value="">— Assign —</option>
                                             <t t-foreach="state.staff" t-as="s" t-key="s.id">
                                                 <option t-att-value="s.id"
                                                         t-att-selected="s.id === entry.employee_id ? 'selected' : undefined">
@@ -51,7 +51,7 @@
                                             </t>
                                         </select>
                                         <button class="btn btn-sm btn-outline-dark ms-1"
-                                                t-on-click="() => this.finish(entry.id)">סיום</button>
+                                                t-on-click="() => this.finish(entry.id)">Done</button>
                                     </t>
                                 </td>
                             </tr>
@@ -62,11 +62,11 @@
                 <!-- ============ today's bookings ============ -->
                 <section class="modryn_panel">
                     <header class="modryn_panel_head">
-                        <h2>תורים להיום</h2>
+                        <h2>Today's appointments</h2>
                         <span class="modryn_count"><t t-esc="state.bookings.length"/></span>
                     </header>
 
-                    <p t-if="!state.bookings.length" class="modryn_empty">אין תורים להיום.</p>
+                    <p t-if="!state.bookings.length" class="modryn_empty">No appointments today.</p>
 
                     <table t-else="" class="table modryn_table align-middle">
                         <tbody>
@@ -88,7 +88,7 @@
                                     <t t-if="state.canAssign">
                                         <select class="form-select form-select-sm d-inline-block w-auto"
                                                 t-on-change="(ev) => this.assignBooking(b.id, ev)">
-                                            <option value="">— שיוך —</option>
+                                            <option value="">— Assign —</option>
                                             <t t-foreach="state.staff" t-as="s" t-key="s.id">
                                                 <option t-att-value="s.id"
                                                         t-att-selected="s.id === b.employee_id ? 'selected' : undefined">
@@ -109,11 +109,11 @@
                 <!-- ============ staff roster ============ -->
                 <section class="modryn_panel">
                     <header class="modryn_panel_head">
-                        <h2>צוות במשמרת</h2>
-                        <span class="modryn_count"><t t-esc="freeCount"/> פנויות</span>
+                        <h2>Team on shift</h2>
+                        <span class="modryn_count"><t t-esc="freeCount"/> available</span>
                     </header>
 
-                    <p t-if="!state.staff.length" class="modryn_empty">אין עובדות מוגדרות.</p>
+                    <p t-if="!state.staff.length" class="modryn_empty">No team members have been set up yet.</p>
 
                     <div class="modryn_staff_cards">
                         <div t-foreach="state.staff" t-as="s" t-key="s.id"
@@ -123,11 +123,11 @@
                             <!-- Text, not colour alone: status must survive a
                                  colour-blind reader and a greyscale screen. -->
                             <div class="modryn_status">
-                                <t t-if="s.occupied">תפוסה</t>
-                                <t t-else="">פנויה</t>
+                                <t t-if="s.occupied">Busy</t>
+                                <t t-else="">Available</t>
                             </div>
                             <div t-if="s.occupied and s.occupied_with" class="modryn_sub">
-                                מטפלת ב: <t t-esc="s.occupied_with"/>
+                                Serving: <t t-esc="s.occupied_with"/>
                             </div>
                         </div>
                     </div>
