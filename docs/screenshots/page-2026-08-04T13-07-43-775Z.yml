@@ -1,0 +1,49 @@
+- generic [ref=f3e2]:
+  - link "דלג לתוכן" [ref=f3e3] [cursor=pointer]:
+    - /url: "#content"
+  - generic [ref=f3e4]:
+    - main [active] [ref=f3e5]:
+      - generic [ref=f3e112]:
+        - link "חזרה לשלב הקודם" [ref=f3e261] [cursor=pointer]:
+          - /url: /book/terms/2d9a07dd-2924-47e8-ab96-e309aaa7f24d
+          - text: → חזרה לשלב הקודם
+        - list "שלבי קביעת התור" [ref=f3e114]:
+          - listitem [ref=f3e115]:
+            - generic [ref=f3e116]: ✓
+            - generic [ref=f3e118]: מועד
+          - listitem [ref=f3e119]:
+            - generic [ref=f3e120]: ✓
+            - generic [ref=f3e122]: פרטים
+          - listitem [ref=f3e123]:
+            - generic [ref=f3e124]: ✓
+            - generic [ref=f3e126]: מדיניות ביטולים
+          - listitem [ref=f3e127]:
+            - generic [ref=f3e128]: "4"
+            - generic [ref=f3e130]: אימות טלפון
+        - heading "אימות טלפון" [level=1] [ref=f3e326]
+        - generic [ref=f3e328]:
+          - generic [ref=f3e329]:
+            - generic [ref=f3e330]: טלפון נייד
+            - generic [ref=f3e331]: לשליחת קוד אימות חד-פעמי. אפשר להזין עשר ספרות, למשל 0501234567.
+            - textbox "טלפון נייד" [ref=f3e332]
+          - button "שליחת קוד אימות" [ref=f3e334]
+          - generic [ref=f3e336]:
+            - status
+    - contentinfo [ref=f3e23]:
+      - generic [ref=f3e24]:
+        - link "על הבוטיק" [ref=f3e25] [cursor=pointer]:
+          - /url: /about
+        - generic [ref=f3e26]: ·
+        - link "הצהרת נגישות" [ref=f3e27] [cursor=pointer]:
+          - /url: /accessibility
+        - generic [ref=f3e28]: ·
+        - link "הודעת פרטיות" [ref=f3e29] [cursor=pointer]:
+          - /url: /privacy
+        - generic [ref=f3e30]: ·
+        - link "@modryn.demo" [ref=f3e31] [cursor=pointer]:
+          - /url: https://instagram.com/modryn.demo
+        - generic [ref=f3e33]: ·
+        - link "+972 3 555 1234" [ref=f3e34] [cursor=pointer]:
+          - /url: tel:+972 3 555 1234
+  - button "תפריט נגישות" [ref=f3e36]:
+    - generic [ref=f3e37]: ◑

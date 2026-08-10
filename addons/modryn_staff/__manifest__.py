@@ -22,7 +22,7 @@ reads through sudo(), handing the template only the fields it needs. Portal user
 therefore never touch hr.employee directly.
 """,
     'category': 'Website',
-    'version': '19.0.1.1.0',
+    'version': '19.0.1.2.0',
     'depends': [
         'hr',
         'portal',
@@ -34,6 +34,8 @@ therefore never touch hr.employee directly.
         'security/modryn_groups.xml',
         'security/ir.model.access.csv',
         'data/staff_role_data.xml',
+        'data/fitting_room_data.xml',
+        'data/ir_cron_data.xml',
         'views/auth_templates.xml',
         'views/manage_templates.xml',
         'views/floor_templates.xml',

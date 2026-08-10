@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- A colleague who has not acknowledged in half a minute is not coming.
+             Every minute, unanswered calls become every manager's problem. -->
+        <record id="ir_cron_escalate_sos" model="ir.cron">
+            <field name="name">MODRYN: escalate unanswered calls for help</field>
+            <field name="model_id" ref="model_modryn_sos_call"/>
+            <field name="state">code</field>
+            <field name="code">model._modryn_escalate_unanswered()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">minutes</field>
+            <field name="active" eval="True"/>
+        </record>
+    </data>
+</odoo>

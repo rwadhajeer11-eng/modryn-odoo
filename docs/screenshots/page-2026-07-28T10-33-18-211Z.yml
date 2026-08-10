@@ -1,0 +1,70 @@
+- generic [ref=f1e2]:
+  - link "דלג לתוכן" [ref=f1e3] [cursor=pointer]:
+    - /url: "#content"
+  - generic [ref=f1e4]:
+    - main [active] [ref=f1e5]:
+      - generic [ref=f1e104]:
+        - heading "Bella Bridal" [level=1] [ref=f1e106]
+        - paragraph [ref=f1e107]: שמלות כלה בהתאמה אישית
+        - paragraph [ref=f1e108]:
+          - link "רחוב הרצל 10, תל אביב" [ref=f1e109] [cursor=pointer]:
+            - /url: https://maps.google.com/?q=bella
+            - text: רחוב הרצל 10, תל אביב ↗
+        - heading "הסיפור שלנו" [level=2] [ref=f1e111]
+        - paragraph [ref=f1e112]: סלון כלות מוביל בתל אביב — נבדק אוטומטית
+        - generic [ref=f1e113]:
+          - heading "שעות פעילות" [level=2] [ref=f1e115]
+          - paragraph [ref=f1e116]: "היום: 10:00–16:00"
+          - table [ref=f1e117]:
+            - rowgroup [ref=f1e118]:
+              - row [ref=f1e119]:
+                - rowheader "א׳" [ref=f1e120]
+                - cell "09:00–13:0013:00–18:00" [ref=f1e121]:
+                  - generic [ref=f1e122]: 09:00–13:00
+                  - generic [ref=f1e123]: 13:00–18:00
+              - row [ref=f1e124]:
+                - rowheader "ב׳" [ref=f1e125]
+                - cell "סגור" [ref=f1e126]
+              - row [ref=f1e127]:
+                - rowheader "ג׳" [ref=f1e128]
+                - cell "10:00–16:00" [ref=f1e129]
+              - row [ref=f1e131]:
+                - rowheader "ד׳" [ref=f1e132]
+                - cell "סגור" [ref=f1e133]
+              - row [ref=f1e134]:
+                - rowheader "ה׳" [ref=f1e135]
+                - cell "11:00–15:00" [ref=f1e136]
+              - row [ref=f1e138]:
+                - rowheader "ו׳–שבת" [ref=f1e139]
+                - cell "סגור" [ref=f1e140]
+          - list [ref=f1e141]:
+            - listitem [ref=f1e142]: "◆ שעות מיוחדות: 15.8 סגור · סגור לרגל חופשה"
+        - generic [ref=f1e144]:
+          - link "חיוג" [ref=f1e145] [cursor=pointer]:
+            - /url: tel:03-5551234
+          - link "וואטסאפ" [ref=f1e146] [cursor=pointer]:
+            - /url: https://wa.me/97235551234
+          - link "ניווט ב-Waze" [ref=f1e147] [cursor=pointer]:
+            - /url: https://waze.com/ul?q=%D7%A8%D7%97%D7%95%D7%91%20%D7%94%D7%A8%D7%A6%D7%9C%2010%2C%20%D7%AA%D7%9C%20%D7%90%D7%91%D7%99%D7%91
+          - link "פתיחה ב-Google Maps" [ref=f1e148] [cursor=pointer]:
+            - /url: https://maps.google.com/?q=bella
+          - link "אינסטגרם @bella.bridal" [ref=f1e149] [cursor=pointer]:
+            - /url: https://instagram.com/bella.bridal
+            - generic [ref=f1e150]: אינסטגרם
+            - generic [ref=f1e151]: "@bella.bridal"
+        - button "קביעת תור למדידה" [ref=f1e153]
+    - contentinfo [ref=f1e16]:
+      - generic [ref=f1e17]:
+        - link "על הבוטיק" [ref=f1e18] [cursor=pointer]:
+          - /url: /about
+        - generic [ref=f1e19]: ·
+        - link "הצהרת נגישות" [ref=f1e20] [cursor=pointer]:
+          - /url: /accessibility
+        - generic [ref=f1e67]: ·
+        - link "@bella.bridal" [ref=f1e68] [cursor=pointer]:
+          - /url: https://instagram.com/bella.bridal
+        - generic [ref=f1e70]: ·
+        - link "03-5551234" [ref=f1e71] [cursor=pointer]:
+          - /url: tel:03-5551234
+  - button "תפריט נגישות" [ref=f1e22]:
+    - generic [ref=f1e23]: ◑

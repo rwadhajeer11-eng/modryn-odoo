@@ -410,3 +410,71 @@ $modryn-success: #2E6B4F;
     border: 1px solid $modryn-border;
     border-radius: 8px;
 }
+
+// ------------------------------------------------------------------- SOS
+// A quiet strip for the call I raised myself: informative, never blocking.
+.modryn_sos_mine {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    background: rgba(197, 160, 89, 0.12);
+    border: 1px solid $modryn-gold;
+    font-size: 0.9375rem;
+}
+
+// Someone else's call. Full-screen on purpose — a woman holding a dress with
+// both hands will miss a corner toast, and that is the whole point of paging.
+.modryn_sos_overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1080;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background: rgba(43, 33, 24, 0.72);
+}
+
+.modryn_sos_card {
+    background: #FFFFFF;
+    border-radius: 12px;
+    border-block-start: 6px solid $modryn-danger;
+    padding: 36px 40px;
+    text-align: center;
+    max-width: 460px;
+    width: 100%;
+    box-shadow: 0 24px 64px rgba(43, 33, 24, 0.35);
+}
+
+.modryn_sos_kicker {
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    font-size: 0.8125rem;
+    color: $modryn-danger;
+    margin-block-end: 6px;
+}
+
+.modryn_sos_who {
+    font-size: 1.75rem;
+    margin: 0 0 4px;
+}
+
+.modryn_sos_where {
+    font-size: 1.125rem;
+    color: $modryn-gold-text;
+    margin-block-end: 4px;
+}
+
+.modryn_sos_note {
+    color: $modryn-ink-muted;
+    margin-block-end: 0;
+}
+
+.modryn_sos_actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-block-start: 24px;
+}

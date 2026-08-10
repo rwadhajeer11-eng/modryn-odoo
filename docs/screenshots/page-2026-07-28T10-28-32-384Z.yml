@@ -1,0 +1,104 @@
+- generic [ref=e16]:
+  - link "דלג לתוכן" [ref=e17] [cursor=pointer]:
+    - /url: "#console-main"
+  - banner [ref=e18]:
+    - generic [ref=e19]:
+      - generic [ref=e20]: test@bella.com
+      - button "יציאה" [ref=e21]
+    - navigation [ref=e22]:
+      - list [ref=e23]:
+        - listitem [ref=e24]:
+          - button "פרופיל והגדרות" [ref=e25]
+        - listitem [ref=e26]:
+          - button "שעות פעילות" [ref=e27]
+        - listitem [ref=e28]:
+          - button "סוגי תורים" [ref=e29]
+        - listitem [ref=e30]:
+          - button "מדיניות ביטולים" [ref=e31]
+        - listitem [ref=e32]:
+          - button "שמלות" [ref=e33]
+  - main [ref=e34]:
+    - heading "ניהול הבוטיק" [level=1] [ref=e35]
+    - generic [ref=e385]:
+      - button "חזרה לרשימת השמלות" [ref=e386]
+      - heading "שמלה חדשה" [active] [level=2] [ref=e389]
+      - generic [ref=e391]:
+        - heading "פרטי השמלה" [level=3] [ref=e392]
+        - paragraph [ref=e393]: שדות המסומנים ב-* הם חובה
+        - generic [ref=e394]:
+          - generic [ref=e395]:
+            - generic [ref=e396]: שם השמלה *
+            - textbox "שם השמלה *" [ref=e397]
+          - paragraph [ref=e398]:
+            - generic [ref=e399]: 0/200
+        - generic [ref=e400]:
+          - generic [ref=e401]:
+            - generic [ref=e402]: תיאור
+            - textbox "תיאור" [ref=e403]
+          - paragraph [ref=e404]:
+            - generic [ref=e405]: 0/4000
+        - generic [ref=e406]:
+          - generic [ref=e407]: מחיר (₪)
+          - textbox "מחיר (₪)" [ref=e408]
+        - generic [ref=e409]:
+          - switch "הצגת המחיר באתר כשהאפשרות כבויה, הלקוחות רואות «מחיר בתיאום» במקום הסכום." [checked] [ref=e410]
+          - generic [ref=e411]:
+            - generic [ref=e412]: הצגת המחיר באתר
+            - generic [ref=e413]: כשהאפשרות כבויה, הלקוחות רואות «מחיר בתיאום» במקום הסכום.
+        - paragraph [ref=e414]: "בקטלוג יוצג: מחיר בתיאום"
+        - generic [ref=e415]:
+          - switch "הוזמן סימון ידני, ללא תאריך — יש להסיר ידנית כשהשמלה מתפנה" [ref=e416]
+          - generic [ref=e417]:
+            - generic [ref=e418]: הוזמן
+            - generic [ref=e419]: סימון ידני, ללא תאריך — יש להסיר ידנית כשהשמלה מתפנה
+        - generic [ref=e420]:
+          - generic [ref=e421]:
+            - generic [ref=e422]: סדר בקטלוג
+            - spinbutton "סדר בקטלוג" [ref=e423]: "0"
+          - paragraph [ref=e424]: מספר נמוך = מוצג ראשון
+        - button "יצירת שמלה" [ref=e426]
+      - generic [ref=e428]:
+        - generic [ref=e429]:
+          - heading "מידות ומלאי" [level=3] [ref=e430]
+          - paragraph [ref=e431]: "סה״כ במלאי: 0 יחידות"
+        - paragraph [ref=e432]: יש לשמור את השמלה לפני הוספת מידות ותמונות
+        - group [ref=e433]:
+          - paragraph [ref=e434]: הוספה מהירה (מידות אירופאיות) — יש לשמור את השמלה תחילה
+          - generic [ref=e435]:
+            - button "32" [disabled] [ref=e436]
+            - button "34" [disabled] [ref=e437]
+            - button "36" [disabled] [ref=e438]
+            - button "38" [disabled] [ref=e439]
+            - button "40" [disabled] [ref=e440]
+            - button "42" [disabled] [ref=e441]
+            - button "44" [disabled] [ref=e442]
+            - button "46" [disabled] [ref=e443]
+            - button "48" [disabled] [ref=e444]
+            - button "50" [disabled] [ref=e445]
+            - button "52" [disabled] [ref=e446]
+            - button "54" [disabled] [ref=e447]
+            - button "56" [disabled] [ref=e448]
+            - button "58" [disabled] [ref=e449]
+        - generic [ref=e450]:
+          - generic [ref=e452]:
+            - generic [ref=e453]: מידה מותאמת (יש לשמור את השמלה תחילה)
+            - textbox "מידה מותאמת (יש לשמור את השמלה תחילה)" [disabled] [ref=e454]
+          - button "הוספה" [disabled] [ref=e455]
+        - generic [ref=e457]:
+          - paragraph [ref=e458]: לא הוגדרו מידות לשמלה הזו.
+          - paragraph [ref=e459]: בחרי מידה מהרשימה המהירה, או הוסיפי מידה מותאמת.
+        - button "שמירת מלאי" [disabled] [ref=e461]
+      - generic [ref=e463]:
+        - generic [ref=e464]:
+          - heading "תמונות" [level=3] [ref=e465]
+          - paragraph [ref=e466]: 0 מתוך 12
+        - paragraph [ref=e467]: יש לשמור את השמלה לפני הוספת מידות ותמונות
+        - status:
+          - paragraph
+        - generic [ref=e468]:
+          - generic [ref=e469]: הוספת תמונות (יש לשמור את השמלה תחילה)
+          - generic [ref=e470]: צלמי לאורך (פורטרט). עד 10MB לתמונה · JPG/PNG/WebP · 4–6 תמונות לשמלה מספיקות
+          - button "הוספת תמונות (יש לשמור את השמלה תחילה)" [disabled] [ref=e471]
+        - generic [ref=e472]:
+          - paragraph [ref=e473]: אין עדיין תמונות לשמלה הזו.
+          - paragraph [ref=e474]: התמונה הראשונה תהיה התמונה הראשית בקטלוג.

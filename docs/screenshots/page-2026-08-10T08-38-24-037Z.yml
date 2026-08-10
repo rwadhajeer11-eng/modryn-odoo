@@ -1,0 +1,213 @@
+- generic [ref=f15e2]:
+  - link "Skip to Content" [ref=f15e3] [cursor=pointer]:
+    - /url: "#wrap"
+  - main [ref=f15e4]:
+    - generic [ref=f15e5]:
+      - navigation [ref=f15e6]:
+        - generic [ref=f15e7]: MODRYN
+        - generic [ref=f15e8]: Floor board
+        - button "עברית" [ref=f15e10] [cursor=pointer]
+        - generic [ref=f15e11]: אורלי דוד
+        - link "Sign out" [ref=f15e12] [cursor=pointer]:
+          - /url: /en/staff/logout
+      - main [ref=f15e13]:
+        - generic [ref=f15e16]:
+          - generic [ref=f15e17]:
+            - generic [ref=f15e18]:
+              - generic [ref=f15e19]:
+                - generic [ref=f15e20]:
+                  - heading "Walk-in queue" [level=2] [ref=f15e21]
+                  - generic [ref=f15e22]: 3 waiting
+                - generic [ref=f15e23]:
+                  - generic [ref=f15e24]:
+                    - generic [ref=f15e25]:
+                      - generic [ref=f15e26]: "1"
+                      - generic [ref=f15e27]:
+                        - generic [ref=f15e28]: HTTPRoom A
+                        - generic [ref=f15e29]: "0500000011"
+                      - generic [ref=f15e30]: Bride
+                      - generic [ref=f15e31]: Waiting
+                    - generic [ref=f15e32]: Primary
+                    - generic [ref=f15e35]:
+                      - combobox [ref=f15e36]:
+                        - option "— No room —"
+                        - option "Alterations nook"
+                        - option "Room 1" [selected]
+                        - option "Room 2"
+                        - option "Bridal suite"
+                      - button "Call for help" [ref=f15e37] [cursor=pointer]
+                  - generic [ref=f15e38]:
+                    - generic [ref=f15e39]:
+                      - generic [ref=f15e40]: "2"
+                      - generic [ref=f15e41]:
+                        - generic [ref=f15e42]: HTTPRoom B
+                        - generic [ref=f15e43]: "0500000012"
+                      - generic [ref=f15e44]: Bride
+                      - generic [ref=f15e45]: Waiting
+                    - generic [ref=f15e46]: Primary
+                    - generic [ref=f15e49]:
+                      - combobox [ref=f15e50]:
+                        - option "— No room —"
+                        - option "Alterations nook" [selected]
+                        - option "Room 1"
+                        - option "Room 2"
+                        - option "Bridal suite"
+                      - button "Call for help" [ref=f15e51] [cursor=pointer]
+                  - generic [ref=f15e52]:
+                    - generic [ref=f15e53]:
+                      - generic [ref=f15e54]: "3"
+                      - generic [ref=f15e55]:
+                        - generic [ref=f15e56]: RoomHTTP
+                        - generic [ref=f15e57]: "0500000009"
+                      - generic [ref=f15e58]: Bride
+                      - generic [ref=f15e59]: Waiting
+                    - generic [ref=f15e60]: Primary
+                    - generic [ref=f15e63]:
+                      - combobox [ref=f15e64]:
+                        - option "— No room —" [selected]
+                        - option "Alterations nook"
+                        - option "Room 1"
+                        - option "Room 2"
+                        - option "Bridal suite"
+                      - button "Call for help" [ref=f15e65] [cursor=pointer]
+              - generic [ref=f15e66]:
+                - generic [ref=f15e67]:
+                  - heading "Today's appointments" [level=2] [ref=f15e68]
+                  - generic [ref=f15e69]: "3"
+                - generic [ref=f15e70]:
+                  - generic [ref=f15e71]:
+                    - generic [ref=f15e72]:
+                      - generic [ref=f15e73]: 10:00
+                      - generic [ref=f15e74]:
+                        - generic [ref=f15e75]: "מדידה: שמלת כלה אמילי"
+                        - generic [ref=f15e76]: "0521234567"
+                        - generic [ref=f15e77]: שמלת כלה אמילי · 38
+                    - generic [ref=f15e78]:
+                      - generic [ref=f15e79]: נועה מזרחי
+                      - generic [ref=f15e81]: שרה כהן
+                      - generic [ref=f15e82]: יעל שמש
+                    - generic [ref=f15e83]:
+                      - combobox [ref=f15e84]:
+                        - option "— No room —" [selected]
+                        - option "Alterations nook"
+                        - option "Room 1"
+                        - option "Room 2"
+                        - option "Bridal suite"
+                      - button "Call for help" [ref=f15e85] [cursor=pointer]
+                  - generic [ref=f15e86]:
+                    - generic [ref=f15e87]:
+                      - generic [ref=f15e88]: 11:00
+                      - generic [ref=f15e89]:
+                        - generic [ref=f15e90]: "פגישת ייעוץ: בדיקת מארגן"
+                        - generic [ref=f15e91]: "0581230000"
+                    - generic [ref=f15e92]: Primary
+                    - generic [ref=f15e95]:
+                      - combobox [ref=f15e96]:
+                        - option "— No room —" [selected]
+                        - option "Alterations nook"
+                        - option "Room 1"
+                        - option "Room 2"
+                        - option "Bridal suite"
+                      - button "Call for help" [ref=f15e97] [cursor=pointer]
+                  - generic [ref=f15e98]:
+                    - generic [ref=f15e99]:
+                      - generic [ref=f15e100]: 14:00
+                      - generic [ref=f15e101]:
+                        - generic [ref=f15e102]: "פגישת ייעוץ: מיכל כהן"
+                        - generic [ref=f15e103]: "0549876543"
+                    - generic [ref=f15e104]: Primary
+                    - generic [ref=f15e107]:
+                      - combobox [ref=f15e108]:
+                        - option "— No room —" [selected]
+                        - option "Alterations nook"
+                        - option "Room 1"
+                        - option "Room 2"
+                        - option "Bridal suite"
+                      - button "Call for help" [ref=f15e109] [cursor=pointer]
+              - generic [ref=f15e110]:
+                - generic [ref=f15e111]:
+                  - heading "My alterations" [level=2] [ref=f15e112]
+                  - generic [ref=f15e113]: "4"
+                - table [ref=f15e114]:
+                  - rowgroup [ref=f15e115]:
+                    - row [ref=f15e116]:
+                      - cell "נועה בר שמלת כלה אמילי · 36" [ref=f15e117]:
+                        - generic [ref=f15e118]: נועה בר
+                        - generic [ref=f15e119]: שמלת כלה אמילי · 36
+                      - cell "שובל Shorten the train" [ref=f15e120]:
+                        - generic [ref=f15e121]: שובל
+                        - generic [ref=f15e122]: Shorten the train
+                      - cell "08.08.2026" [ref=f15e123]
+                      - cell [ref=f15e125]:
+                        - button "Ready" [ref=f15e126] [cursor=pointer]
+                    - row [ref=f15e127]:
+                      - cell "שירה לוי שמלת כלה אמילי · 36" [ref=f15e128]:
+                        - generic [ref=f15e129]: שירה לוי
+                        - generic [ref=f15e130]: שמלת כלה אמילי · 36
+                      - cell "מחוך כתפיות Take in the bodice one size" [ref=f15e131]:
+                        - generic [ref=f15e132]: מחוך
+                        - generic [ref=f15e133]: כתפיות
+                        - generic [ref=f15e134]: Take in the bodice one size
+                      - cell "11.08.2026" [ref=f15e135]
+                      - cell [ref=f15e137]:
+                        - button "Ready" [ref=f15e138] [cursor=pointer]
+                    - row [ref=f15e139]:
+                      - cell "רותם כהן שמלת כלה אמילי · 36" [ref=f15e140]:
+                        - generic [ref=f15e141]: רותם כהן
+                        - generic [ref=f15e142]: שמלת כלה אמילי · 36
+                      - cell "מכפלת Raise the hem by 3 cm" [ref=f15e143]:
+                        - generic [ref=f15e144]: מכפלת
+                        - generic [ref=f15e145]: Raise the hem by 3 cm
+                      - cell "13.08.2026" [ref=f15e146]
+                      - cell [ref=f15e148]:
+                        - button "Start" [ref=f15e149] [cursor=pointer]
+                    - row [ref=f15e150]:
+                      - cell "מיכל ברקת שמלת כלה אמילי · 36" [ref=f15e151]:
+                        - generic [ref=f15e152]: מיכל ברקת
+                        - generic [ref=f15e153]: שמלת כלה אמילי · 36
+                      - cell "מכפלת שובל Raise hem 2cm, shorten train" [ref=f15e154]:
+                        - generic [ref=f15e155]: מכפלת
+                        - generic [ref=f15e156]: שובל
+                        - generic [ref=f15e157]: Raise hem 2cm, shorten train
+                      - cell "14.08.2026" [ref=f15e158]
+                      - cell [ref=f15e160]:
+                        - button "Ready" [ref=f15e161] [cursor=pointer]
+            - complementary [ref=f15e162]:
+              - generic [ref=f15e163]:
+                - heading "Team on shift" [level=2] [ref=f15e164]
+                - generic [ref=f15e165]: 5 available
+              - generic [ref=f15e166]:
+                - generic [ref=f15e167]:
+                  - generic [ref=f15e168]: אורלי דוד
+                  - generic [ref=f15e169]:
+                    - generic [ref=f15e170]: תופרת
+                    - generic [ref=f15e171]: Available
+                - generic [ref=f15e172]:
+                  - generic [ref=f15e173]: יעל שמש
+                  - generic [ref=f15e174]:
+                    - generic [ref=f15e175]: מוכרת בכירה
+                    - generic [ref=f15e176]: Available
+                - generic [ref=f15e177]:
+                  - generic [ref=f15e178]: נועה מזרחי
+                  - generic [ref=f15e179]:
+                    - generic [ref=f15e180]: קבלת קהל
+                    - generic [ref=f15e181]: Available
+                - generic [ref=f15e182]:
+                  - generic [ref=f15e183]: רותם אברהם
+                  - generic [ref=f15e184]:
+                    - generic [ref=f15e185]: מוכרת
+                    - generic [ref=f15e186]: Available
+                - generic [ref=f15e187]:
+                  - generic [ref=f15e188]: שרה כהן
+                  - generic [ref=f15e189]:
+                    - generic [ref=f15e190]: מוכרת
+                    - generic [ref=f15e191]: Available
+          - alert [ref=f15e192]:
+            - generic [ref=f15e193]:
+              - paragraph [ref=f15e194]: Someone needs help
+              - heading "רותם אברהם" [level=2] [ref=f15e195]
+              - paragraph [ref=f15e196]: Room 1
+              - paragraph [ref=f15e197]: zip is stuck
+              - generic [ref=f15e198]:
+                - button "On the way" [disabled]
+                - button "Handled" [ref=f15e200] [cursor=pointer]

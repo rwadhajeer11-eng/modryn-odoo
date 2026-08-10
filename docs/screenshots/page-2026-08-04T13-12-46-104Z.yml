@@ -1,0 +1,52 @@
+- generic [ref=f7e2]:
+  - link "דלג לתוכן" [ref=f7e3] [cursor=pointer]:
+    - /url: "#content"
+  - generic [ref=f7e4]:
+    - main [active] [ref=f7e5]:
+      - generic [ref=f7e6]:
+        - link "חזרה לשלב הקודם" [ref=f7e180] [cursor=pointer]:
+          - /url: /book/details/2d9a07dd-2924-47e8-ab96-e309aaa7f24d
+          - text: → חזרה לשלב הקודם
+        - list "שלבי קביעת התור" [ref=f7e8]:
+          - listitem [ref=f7e9]:
+            - generic [ref=f7e10]: ✓
+            - generic [ref=f7e12]: מועד
+          - listitem [ref=f7e13]:
+            - generic [ref=f7e14]: ✓
+            - generic [ref=f7e16]: פרטים
+          - listitem [ref=f7e17]:
+            - generic [ref=f7e18]: "3"
+            - generic [ref=f7e20]: מדיניות ביטולים
+          - listitem [ref=f7e21]:
+            - generic [ref=f7e22]: "4"
+            - generic [ref=f7e24]: אימות טלפון
+        - heading "מדיניות ביטולים" [level=1] [ref=f7e229]
+        - generic [ref=f7e230]:
+          - paragraph [ref=f7e231]: ביטול עד 48 שעות לפני המועד — ללא חיוב.
+          - paragraph [ref=f7e232]:
+            - text: ביטול מאוחר יותר, או אי-הגעה — חיוב של
+            - generic [ref=f7e233]: 100%
+            - text: מהמקדמה.
+          - generic [ref=f7e235]: מדיניות ביטולים ביטול או שינוי מועד עד 48 שעות לפני הפגישה — ללא חיוב. ביטול בטווח של פחות מ-48 שעות, או אי-הגעה לפגישה — הפיקדון אינו מוחזר. הפגישה שמורה על שם הכלה בלבד. איחור של מעל 20 דקות עלול לקצר את זמן המדידה כדי לא לפגוע בכלה שאחריה. כל מדידה מלווה על ידי יועצת אישית. מלוות נוספות — בתיאום מראש.
+          - generic [ref=f7e238] [cursor=pointer]:
+            - checkbox "קראתי את מדיניות הביטולים ואני מסכימה לה." [ref=f7e239]
+            - generic [ref=f7e240]: קראתי את מדיניות הביטולים ואני מסכימה לה.
+        - button "המשך" [ref=f7e242]
+    - contentinfo [ref=f7e40]:
+      - generic [ref=f7e41]:
+        - link "על הבוטיק" [ref=f7e42] [cursor=pointer]:
+          - /url: /about
+        - generic [ref=f7e43]: ·
+        - link "הצהרת נגישות" [ref=f7e44] [cursor=pointer]:
+          - /url: /accessibility
+        - generic [ref=f7e45]: ·
+        - link "הודעת פרטיות" [ref=f7e46] [cursor=pointer]:
+          - /url: /privacy
+        - generic [ref=f7e109]: ·
+        - link "@modryn.demo" [ref=f7e110] [cursor=pointer]:
+          - /url: https://instagram.com/modryn.demo
+        - generic [ref=f7e112]: ·
+        - link "+972 3 555 1234" [ref=f7e113] [cursor=pointer]:
+          - /url: tel:+972 3 555 1234
+  - button "תפריט נגישות" [ref=f7e48]:
+    - generic [ref=f7e49]: ◑

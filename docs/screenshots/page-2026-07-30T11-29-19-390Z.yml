@@ -1,0 +1,12 @@
+- main [ref=e3]:
+  - generic [ref=e4]:
+    - heading "MODRYN — כניסה לניהול הבוטיק" [level=1] [ref=e5]:
+      - generic [ref=e6]: MODRYN
+    - generic [ref=e8]:
+      - generic [ref=e9]:
+        - generic [ref=e10]: אימייל
+        - textbox "אימייל" [ref=e11]
+      - generic [ref=e12]:
+        - generic [ref=e13]: סיסמה
+        - textbox "סיסמה" [ref=e14]
+      - button "כניסה" [ref=e15]

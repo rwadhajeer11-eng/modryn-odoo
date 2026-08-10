@@ -1,0 +1,13 @@
+- generic [ref=f15e2]:
+  - link "Skip to Content" [ref=f15e3] [cursor=pointer]:
+    - /url: "#wrap"
+  - main [ref=f15e4]:
+    - generic [ref=f15e5]:
+      - navigation [ref=f15e6]:
+        - generic [ref=f15e7]: MODRYN
+        - generic [ref=f15e8]: Floor board
+        - button "עברית" [ref=f15e10] [cursor=pointer]
+        - generic [ref=f15e11]: אורלי דוד
+        - link "Sign out" [ref=f15e12] [cursor=pointer]:
+          - /url: /en/staff/logout
+      - main [ref=f15e13]

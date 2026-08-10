@@ -1,0 +1,190 @@
+- generic [ref=e2]:
+  - link "דלג לתוכן" [ref=e3] [cursor=pointer]:
+    - /url: "#wrap"
+  - banner [ref=e4]:
+    - navigation "Main" [ref=e5]:
+      - generic [ref=e6]:
+        - link [ref=e7] [cursor=pointer]:
+          - /url: /
+          - img "Logo of Bella Bridal" [ref=e8]:
+            - img "Bella Bridal" [ref=e9]
+        - menu [ref=e10]:
+          - menuitem "בית" [ref=e11] [cursor=pointer]
+          - menuitem "חנות" [ref=e12] [cursor=pointer]
+          - menuitem "צור קשר" [ref=e13] [cursor=pointer]
+        - list [ref=e14]:
+          - listitem [ref=e15]:
+            - link "eCommerce cart" [ref=e16] [cursor=pointer]:
+              - /url: /shop/cart
+              - generic [ref=e17]: 
+          - text: 
+          - listitem [ref=e19]:
+            - button "" [ref=e20] [cursor=pointer]
+          - listitem [ref=e22]:
+            - link " +1 555-555-5556" [ref=e24] [cursor=pointer]:
+              - /url: tel:+1 555-555-5556
+              - generic [ref=e25]: 
+              - generic [ref=e26]: +1 555-555-5556
+          - listitem [ref=e27]:
+            - button "עברית" [expanded] [ref=e29] [cursor=pointer]
+          - listitem [ref=e30]:
+            - link "התחבר" [ref=e31] [cursor=pointer]:
+              - /url: /web/login
+          - listitem [ref=e32]:
+            - link "צור קשר" [ref=e36] [cursor=pointer]:
+              - /url: /contactus
+    - text:  
+  - main [ref=e37]:
+    - generic [ref=e40]:
+      - complementary [ref=e41]:
+        - generic:
+          - generic:
+            - paragraph
+        - generic [ref=e42]:
+          - generic [ref=e46]:
+            - button "מידה" [ref=e48] [cursor=pointer]
+            - generic [ref=e52]:
+              - checkbox "36 36"
+              - generic [ref=e53] [cursor=pointer]: "36"
+              - checkbox "38 38"
+              - generic [ref=e54] [cursor=pointer]: "38"
+              - checkbox "40 40"
+              - generic [ref=e55] [cursor=pointer]: "40"
+              - checkbox "34 34"
+              - generic [ref=e56] [cursor=pointer]: "34"
+          - button "טווח מחירים" [expanded] [ref=e60] [cursor=pointer]
+          - generic:
+            - generic:
+              - paragraph
+      - generic [ref=e63]:
+        - generic [ref=e64]:
+          - heading "כל המוצרים" [level=1] [ref=e65]
+          - generic [ref=e66]:
+            - search [ref=e69]:
+              - searchbox "חיפוש…" [ref=e70]
+              - button "חיפוש" [ref=e71] [cursor=pointer]:
+                - generic [ref=e72]: 
+            - text: 
+            - 'button "מיין לפי: מומלצים" [ref=e74] [cursor=pointer]':
+              - text: "מיין לפי:"
+              - generic [ref=e75]: מומלצים
+            - text: 
+        - generic [ref=e77]:
+          - article "שמלת כלה אמילי" [ref=e80]:
+            - link [ref=e82] [cursor=pointer]:
+              - /url: /shop/שמלת-כלה-אמילי-2
+              - img "שמלת כלה אמילי (36)" [ref=e84]
+              - img "שמלת כלה אמילי 2" [ref=e86]
+            - generic [ref=e87]:
+              - heading [level=2] [ref=e90]:
+                - link "שמלת כלה אמילי" [ref=e91] [cursor=pointer]:
+                  - /url: /shop/שמלת-כלה-אמילי-2
+              - generic [ref=e92]:
+                - generic "Price information" [ref=e93]:
+                  - generic "Sale price" [ref=e94]: ₪ 8,900.00
+                - generic:
+                  - generic:
+                    - button "הוסף לסל": 
+                  - button ""
+          - article "שמלת ערב ורוניקה" [ref=e97]:
+            - link [ref=e99] [cursor=pointer]:
+              - /url: /shop/שמלת-ערב-ורוניקה-3
+              - img "שמלת ערב ורוניקה (36)" [ref=e101]
+              - img "שמלת ערב ורוניקה 2" [ref=e103]
+            - generic [ref=e104]:
+              - heading [level=2] [ref=e107]:
+                - link "שמלת ערב ורוניקה" [ref=e108] [cursor=pointer]:
+                  - /url: /shop/שמלת-ערב-ורוניקה-3
+              - generic [ref=e109]:
+                - generic "Price information" [ref=e110]:
+                  - generic "Sale price" [ref=e111]: ₪ 4,200.00
+                - generic:
+                  - generic:
+                    - button "הוסף לסל": 
+                  - button ""
+          - article "שמלת כלה קלרה" [ref=e114]:
+            - link [ref=e116] [cursor=pointer]:
+              - /url: /shop/שמלת-כלה-קלרה-4
+              - img "שמלת כלה קלרה (36)" [ref=e118]
+              - img "שמלת כלה קלרה 2" [ref=e120]
+            - generic [ref=e121]:
+              - heading [level=2] [ref=e124]:
+                - link "שמלת כלה קלרה" [ref=e125] [cursor=pointer]:
+                  - /url: /shop/שמלת-כלה-קלרה-4
+              - generic [ref=e126]:
+                - generic [ref=e127]: מחיר בתיאום
+                - generic:
+                  - generic:
+                    - button "הוסף לסל": 
+                  - button ""
+    - text: 
+    - generic: 
+  - contentinfo [ref=e129]:
+    - generic [ref=e133]:
+      - generic [ref=e134]:
+        - heading "קישורים שימושיים" [level=5] [ref=e135]
+        - list [ref=e136]:
+          - listitem [ref=e137]:
+            - link "בית" [ref=e138] [cursor=pointer]:
+              - /url: /
+          - listitem [ref=e139]:
+            - link "עלינו" [ref=e140] [cursor=pointer]:
+              - /url: "#"
+          - listitem [ref=e141]:
+            - link "מוצרים" [ref=e142] [cursor=pointer]:
+              - /url: "#"
+          - listitem [ref=e143]:
+            - link "שירותים" [ref=e144] [cursor=pointer]:
+              - /url: "#"
+          - listitem [ref=e145]:
+            - link "משפטי" [ref=e146] [cursor=pointer]:
+              - /url: "#"
+          - listitem [ref=e147]:
+            - link "צור קשר" [ref=e148] [cursor=pointer]:
+              - /url: /contactus
+      - generic [ref=e149]:
+        - heading "עלינו" [level=5] [ref=e150]
+        - paragraph [ref=e151]: אנחנו צוות של אנשים נלהבים שמטרתם לשפר את החיים של כולם באמצעות מוצרים משנים מציאות. אנו בונים מוצרים מעולים כדי לפתור את הבעיות העסקיות שלך. המוצרים שלנו מיועדים לחברות קטנות עד בינוניות שמעוניינות לייעל את הביצועים שלהן.
+      - generic [ref=e152]:
+        - heading "התחבר אלינו" [level=5] [ref=e153]
+        - list [ref=e154]:
+          - listitem [ref=e155]:
+            - generic [ref=e156]: 
+            - link "צור קשר" [ref=e157] [cursor=pointer]:
+              - /url: /contactus
+          - listitem [ref=e158]:
+            - generic [ref=e159]: 
+            - link "info@yourcompany.example.com" [ref=e160] [cursor=pointer]:
+              - /url: mailto:info@yourcompany.example.com
+          - listitem [ref=e161]:
+            - generic [ref=e162]: 
+            - link "+1 555-555-5556" [ref=e163] [cursor=pointer]:
+              - /url: tel:+1 555-555-5556
+        - generic [ref=e164]:
+          - link "פייסבוק" [ref=e165] [cursor=pointer]:
+            - /url: /website/social/facebook
+            - generic [ref=e166]: 
+          - link "X" [ref=e167] [cursor=pointer]:
+            - /url: /website/social/twitter
+            - generic [ref=e168]: 
+          - link "לינקדאין" [ref=e169] [cursor=pointer]:
+            - /url: /website/social/linkedin
+            - generic [ref=e170]: 
+          - link "דף נוסף" [ref=e171] [cursor=pointer]:
+            - /url: /
+            - generic [ref=e172]: 
+    - generic [ref=e175]:
+      - generic [ref=e176]:
+        - generic [ref=e177]: Copyright © Company name
+        - menu [ref=e179]:
+          - menuitem "الْعَرَبيّة" [ref=e180] [cursor=pointer]
+          - generic [ref=e181]: "|"
+          - menuitem "עברית" [ref=e182] [cursor=pointer]
+      - generic [ref=e184]:
+        - text: מופעל ע"י
+        - link [ref=e185] [cursor=pointer]:
+          - /url: http://www.odoo.com?utm_source=db&utm_medium=website
+          - img "Odoo" [ref=e186]
+        - text: "- המס' 1"
+        - link "מסחר אלקטרוני קוד פתוח" [ref=e187] [cursor=pointer]:
+          - /url: http://www.odoo.com/app/ecommerce?utm_source=db&utm_medium=website

@@ -1,0 +1,36 @@
+- generic [ref=f7e2]:
+  - link "דלג לתוכן" [ref=f7e3] [cursor=pointer]:
+    - /url: "#content"
+  - generic [ref=f7e4]:
+    - main [ref=f7e5]:
+      - generic [ref=f7e6]:
+        - link "חזרה לקולקציה" [ref=f7e7] [cursor=pointer]:
+          - /url: /
+          - text: → חזרה לקולקציה
+        - list "שלבי קביעת התור" [ref=f7e8]:
+          - listitem [ref=f7e9]:
+            - generic [ref=f7e10]: "1"
+            - generic [ref=f7e12]: מועד
+          - listitem [ref=f7e13]:
+            - generic [ref=f7e14]: "2"
+            - generic [ref=f7e16]: פרטים
+          - listitem [ref=f7e17]:
+            - generic [ref=f7e18]: "3"
+            - generic [ref=f7e20]: מדיניות ביטולים
+          - listitem [ref=f7e21]:
+            - generic [ref=f7e22]: "4"
+            - generic [ref=f7e24]: אימות טלפון
+        - heading "מועד" [level=1] [ref=f7e26]
+        - status [ref=f7e30]: טוענות את המועדים
+    - contentinfo [ref=f7e40]:
+      - generic [ref=f7e41]:
+        - link "על הבוטיק" [ref=f7e42] [cursor=pointer]:
+          - /url: /about
+        - generic [ref=f7e43]: ·
+        - link "הצהרת נגישות" [ref=f7e44] [cursor=pointer]:
+          - /url: /accessibility
+        - generic [ref=f7e45]: ·
+        - link "הודעת פרטיות" [ref=f7e46] [cursor=pointer]:
+          - /url: /privacy
+  - button "תפריט נגישות" [ref=f7e48]:
+    - generic [ref=f7e49]: ◑

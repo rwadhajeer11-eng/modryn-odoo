@@ -1,0 +1,11 @@
+- main [ref=f8e64]:
+  - generic [ref=f8e66]:
+    - heading "כניסה לניהול הבוטיק" [level=1] [ref=f8e67]
+    - generic [ref=f8e68]:
+      - generic [ref=f8e69]: אימייל
+      - textbox "אימייל" [ref=f8e70]: test@bella.com
+    - generic [ref=f8e71]:
+      - generic [ref=f8e72]: סיסמה
+      - textbox "סיסמה" [ref=f8e73]: definitely-wrong
+    - alert [ref=f8e76]: אימייל או סיסמה שגויים.
+    - button "כניסה" [ref=f8e74]

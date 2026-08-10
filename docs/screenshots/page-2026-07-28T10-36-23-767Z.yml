@@ -1,0 +1,54 @@
+- generic [ref=f4e17]:
+  - link "דלג לתוכן" [ref=f4e18] [cursor=pointer]:
+    - /url: "#console-main"
+  - banner [ref=f4e19]:
+    - generic [ref=f4e20]:
+      - generic [ref=f4e21]: test@bella.com
+      - button "יציאה" [ref=f4e22]
+    - navigation [ref=f4e23]:
+      - list [ref=f4e24]:
+        - listitem [ref=f4e25]:
+          - button "פרופיל והגדרות" [ref=f4e26]
+        - listitem [ref=f4e27]:
+          - button "שעות פעילות" [ref=f4e28]
+        - listitem [ref=f4e29]:
+          - button "סוגי תורים" [ref=f4e30]
+        - listitem [ref=f4e31]:
+          - button "מדיניות ביטולים" [ref=f4e32]
+        - listitem [ref=f4e33]:
+          - button "שמלות" [ref=f4e34]
+  - main [ref=f4e35]:
+    - heading "ניהול הבוטיק" [level=1] [ref=f4e36]
+    - generic [ref=f4e38]:
+      - heading "פרופיל הבוטיק" [level=2] [ref=f4e40]
+      - paragraph [ref=f4e41]: השדות האלה מופיעים בדף הפומבי של הבוטיק
+      - generic [ref=f4e42]:
+        - generic [ref=f4e43]: משפט פתיחה
+        - textbox "משפט פתיחה" [ref=f4e44]: שמלות כלה בהתאמה אישית
+      - generic [ref=f4e45]:
+        - generic [ref=f4e46]:
+          - generic [ref=f4e47]: טלפון
+          - textbox "טלפון" [ref=f4e48]: 03-5551234
+        - generic [ref=f4e49]:
+          - generic [ref=f4e50]: כתובת
+          - textbox "כתובת" [ref=f4e51]: רחוב הרצל 10, תל אביב
+      - generic [ref=f4e52]:
+        - generic [ref=f4e53]: קישור למפות (http/https)
+        - textbox "קישור למפות (http/https)" [ref=f4e54]: https://maps.google.com/?q=bella
+      - generic [ref=f4e55]:
+        - generic [ref=f4e56]: אינסטגרם
+        - generic [ref=f4e57]: שם המשתמש בלבד, ללא @
+        - textbox "אינסטגרם" [ref=f4e58]: bella.bridal
+      - generic [ref=f4e59]:
+        - generic [ref=f4e60]: תיאור
+        - textbox "תיאור" [ref=f4e61]: סלון כלות מוביל בתל אביב — נבדק אוטומטית
+      - heading "הגדרות" [level=2] [ref=f4e63]
+      - generic [ref=f4e64]:
+        - switch "גביית מקדמות מופעלת" [checked] [ref=f4e65]
+        - generic [ref=f4e66]: גביית מקדמות מופעלת
+      - generic [ref=f4e68]:
+        - switch "בוטיק לכלות בלבד כל סוגי התורים יוצגו לכלות בלבד" [ref=f4e69]
+        - generic [ref=f4e70]:
+          - generic [ref=f4e71]: בוטיק לכלות בלבד
+          - generic [ref=f4e72]: כל סוגי התורים יוצגו לכלות בלבד
+      - button "שמירת פרופיל והגדרות" [ref=f4e74]

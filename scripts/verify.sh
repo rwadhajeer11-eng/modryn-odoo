@@ -203,6 +203,26 @@ grep -q "modryn_offer_next" addons/modryn_portal/models/calendar_event.py && ok 
 # The offer text is composed by a cron, so her language has to be recorded.
 grep -q "with_context(lang=" addons/modryn_portal/models/day_waitlist.py && ok "offer SMS speaks her language" || bad "offer language" "cron composes in server language"
 
+head_ "10e. fitting rooms + calls for help"
+ROOMS=$(psql -d bella -tAc "select count(*) from modryn_fitting_room where active")
+[ "${ROOMS:-0}" -ge 3 ] && ok "fitting rooms seeded ($ROOMS)" || bad "fitting rooms" "only ${ROOMS:-0}"
+RCOLS=$(psql -d bella -tAc "select count(*) from information_schema.columns where table_name in ('modryn_queue_entry','calendar_event') and column_name='modryn_room_id'")
+[ "$RCOLS" = "2" ] && ok "both card kinds can hold a room" || bad "room columns" "expected 2, got $RCOLS"
+# The one thing a room registry must never do: put two women in one room.
+DOUBLE=$(psql -d bella -tAc "select count(*) from (select modryn_room_id from modryn_queue_entry where modryn_room_id is not null and state in ('waiting','called') group by modryn_room_id having count(*) > 1) x")
+[ "${DOUBLE:-0}" = "0" ] && ok "no room holds two live walk-ins" || bad "room collision" "$DOUBLE rooms double-booked"
+# Catching the ValidationError does NOT undo the write it rejected — without a
+# savepoint the board refused the move and committed it anyway.
+grep -q "cr.savepoint()" addons/modryn_staff/controllers/floor.py && ok "rejected room move is rolled back" || bad "room rollback" "no savepoint around the write"
+SCRON=$(psql -d bella -tAc "select count(*) from ir_cron c join ir_act_server a on a.id=c.ir_actions_server_id where a.code like '%_modryn_escalate_unanswered%' and c.active")
+[ "${SCRON:-0}" = "1" ] && ok "escalation cron installed" || bad "escalation cron" "missing or inactive"
+# Every SOS route is staff-only; a customer must never page the floor.
+for route in /floor/sos /floor/sos/ack /floor/sos/resolve /floor/room; do
+  R=$(curl -sg -H "Content-Type: application/json" -d '{"jsonrpc":"2.0","method":"call","params":{}}' "$BELLA$route" | grep -c '"result"')
+  [ "$R" = "0" ] && ok "$route refuses anonymous" || bad "$route anonymous" "returned a result"
+done
+[ "$(code "$BELLA/manage/rooms")" != "200" ] && ok "/manage/rooms refuses anonymous" || bad "/manage/rooms anonymous" "returned 200"
+
 head_ "11. instance hygiene"
 # Without db_name, Odoo's cron enumerates EVERY database on the server —
 # including MODRYN's f*_test — and errors against each one.

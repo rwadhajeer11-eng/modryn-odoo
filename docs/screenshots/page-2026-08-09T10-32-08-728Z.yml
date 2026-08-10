@@ -1,0 +1,122 @@
+- generic [ref=f6e2]:
+  - link "דלג לתוכן" [ref=f6e3] [cursor=pointer]:
+    - /url: "#wrap"
+  - banner [ref=f6e4]:
+    - navigation "Main" [ref=f6e5]:
+      - generic [ref=f6e6]:
+        - link [ref=f6e7] [cursor=pointer]:
+          - /url: /
+          - img "Logo of Bella Bridal" [ref=f6e8]:
+            - img "Bella Bridal" [ref=f6e9]
+        - menu [ref=f6e10]:
+          - menuitem "בית" [ref=f6e11] [cursor=pointer]
+          - menuitem "חנות" [ref=f6e12] [cursor=pointer]
+          - menuitem "צור קשר" [ref=f6e13] [cursor=pointer]
+        - list [ref=f6e14]:
+          - listitem [ref=f6e15]:
+            - link "eCommerce cart" [ref=f6e16] [cursor=pointer]:
+              - /url: /shop/cart
+              - generic [ref=f6e17]: 
+          - text: 
+          - listitem [ref=f6e19]:
+            - button "" [ref=f6e20] [cursor=pointer]
+          - listitem [ref=f6e22]:
+            - link " +1 555-555-5556" [ref=f6e24] [cursor=pointer]:
+              - /url: tel:+1 555-555-5556
+              - generic [ref=f6e25]: 
+              - generic [ref=f6e26]: +1 555-555-5556
+          - listitem [ref=f6e27]:
+            - button "עברית" [expanded] [ref=f6e29] [cursor=pointer]
+          - listitem [ref=f6e30]:
+            - link "התחבר" [ref=f6e31] [cursor=pointer]:
+              - /url: /web/login
+          - listitem [ref=f6e32]:
+            - link "צור קשר" [ref=f6e36] [cursor=pointer]:
+              - /url: /contactus
+    - text:  
+  - main [ref=f6e37]:
+    - generic [ref=f6e39]:
+      - heading "התור נקבע" [level=1] [ref=f6e40]
+      - paragraph [ref=f6e41]: נשלח לך אישור בהודעה
+      - generic [ref=f6e42]:
+        - generic [ref=f6e43]:
+          - strong [ref=f6e44]: "תאריך:"
+          - text: 10.08.2026
+        - generic [ref=f6e45]:
+          - strong [ref=f6e46]: "שעה:"
+          - text: 14:00
+        - generic [ref=f6e47]:
+          - strong [ref=f6e48]: "טלפון:"
+          - text: "0549876543"
+      - link "חזרה לקטלוג" [ref=f6e49] [cursor=pointer]:
+        - /url: /shop
+    - generic: 
+  - contentinfo [ref=f6e50]:
+    - generic [ref=f6e54]:
+      - generic [ref=f6e55]:
+        - heading "קישורים שימושיים" [level=5] [ref=f6e56]
+        - list [ref=f6e57]:
+          - listitem [ref=f6e58]:
+            - link "בית" [ref=f6e59] [cursor=pointer]:
+              - /url: /
+          - listitem [ref=f6e60]:
+            - link "עלינו" [ref=f6e61] [cursor=pointer]:
+              - /url: "#"
+          - listitem [ref=f6e62]:
+            - link "מוצרים" [ref=f6e63] [cursor=pointer]:
+              - /url: "#"
+          - listitem [ref=f6e64]:
+            - link "שירותים" [ref=f6e65] [cursor=pointer]:
+              - /url: "#"
+          - listitem [ref=f6e66]:
+            - link "משפטי" [ref=f6e67] [cursor=pointer]:
+              - /url: "#"
+          - listitem [ref=f6e68]:
+            - link "צור קשר" [ref=f6e69] [cursor=pointer]:
+              - /url: /contactus
+      - generic [ref=f6e70]:
+        - heading "עלינו" [level=5] [ref=f6e71]
+        - paragraph [ref=f6e72]: אנחנו צוות של אנשים נלהבים שמטרתם לשפר את החיים של כולם באמצעות מוצרים משנים מציאות. אנו בונים מוצרים מעולים כדי לפתור את הבעיות העסקיות שלך. המוצרים שלנו מיועדים לחברות קטנות עד בינוניות שמעוניינות לייעל את הביצועים שלהן.
+      - generic [ref=f6e73]:
+        - heading "התחבר אלינו" [level=5] [ref=f6e74]
+        - list [ref=f6e75]:
+          - listitem [ref=f6e76]:
+            - generic [ref=f6e77]: 
+            - link "צור קשר" [ref=f6e78] [cursor=pointer]:
+              - /url: /contactus
+          - listitem [ref=f6e79]:
+            - generic [ref=f6e80]: 
+            - link "info@yourcompany.example.com" [ref=f6e81] [cursor=pointer]:
+              - /url: mailto:info@yourcompany.example.com
+          - listitem [ref=f6e82]:
+            - generic [ref=f6e83]: 
+            - link "+1 555-555-5556" [ref=f6e84] [cursor=pointer]:
+              - /url: tel:+1 555-555-5556
+        - generic [ref=f6e85]:
+          - link "פייסבוק" [ref=f6e86] [cursor=pointer]:
+            - /url: /website/social/facebook
+            - generic [ref=f6e87]: 
+          - link "X" [ref=f6e88] [cursor=pointer]:
+            - /url: /website/social/twitter
+            - generic [ref=f6e89]: 
+          - link "לינקדאין" [ref=f6e90] [cursor=pointer]:
+            - /url: /website/social/linkedin
+            - generic [ref=f6e91]: 
+          - link "דף נוסף" [ref=f6e92] [cursor=pointer]:
+            - /url: /
+            - generic [ref=f6e93]: 
+    - generic [ref=f6e96]:
+      - generic [ref=f6e97]:
+        - generic [ref=f6e98]: Copyright © Company name
+        - menu [ref=f6e100]:
+          - menuitem "الْعَرَبيّة" [ref=f6e101] [cursor=pointer]
+          - generic [ref=f6e102]: "|"
+          - menuitem "עברית" [ref=f6e103] [cursor=pointer]
+      - generic [ref=f6e105]:
+        - text: מופעל ע"י
+        - link [ref=f6e106] [cursor=pointer]:
+          - /url: http://www.odoo.com?utm_source=db&utm_medium=website
+          - img "Odoo" [ref=f6e107]
+        - text: "- המס' 1"
+        - link "מסחר אלקטרוני קוד פתוח" [ref=f6e108] [cursor=pointer]:
+          - /url: http://www.odoo.com/app/ecommerce?utm_source=db&utm_medium=website

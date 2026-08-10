@@ -1,0 +1,220 @@
+- generic [ref=f15e5]:
+  - link "דלג לתוכן" [ref=f15e6] [cursor=pointer]:
+    - /url: "#console-main"
+  - banner [ref=f15e7]:
+    - generic [ref=f15e8]:
+      - generic [ref=f15e9]: owner@demo.example
+      - generic [ref=f15e10]:
+        - button "מדריך" [ref=f15e11]
+        - button "יציאה" [ref=f15e12]
+    - navigation [ref=f15e13]:
+      - list [ref=f15e14]:
+        - listitem [ref=f15e15]:
+          - button "סקירה" [ref=f15e16]
+        - listitem [ref=f15e17]:
+          - button "פרופיל והגדרות" [ref=f15e18]
+        - listitem [ref=f15e19]:
+          - button "שעות פעילות" [ref=f15e20]
+        - listitem [ref=f15e21]:
+          - button "סוגי תורים" [ref=f15e22]
+        - listitem [ref=f15e23]:
+          - button "מדיניות ביטולים" [ref=f15e24]
+        - listitem [ref=f15e25]:
+          - button "שמלות" [ref=f15e26]
+        - listitem [ref=f15e27]:
+          - button "תורים" [ref=f15e28]
+        - listitem [ref=f15e29]:
+          - button "לקוחות" [ref=f15e30]
+        - listitem [ref=f15e31]:
+          - button "לוח היום" [ref=f15e32]
+        - listitem [ref=f15e33]:
+          - button "תפירה" [active] [ref=f15e34]
+        - listitem [ref=f15e35]:
+          - button "קוד סריקה" [ref=f15e36]
+        - listitem [ref=f15e37]:
+          - button "צוות" [ref=f15e38]
+        - listitem [ref=f15e39]:
+          - button "סליקה ותשלומים" [ref=f15e40]
+        - listitem [ref=f15e41]:
+          - button "פרטיות" [ref=f15e42]
+  - main [ref=f15e43]:
+    - heading "MODRYN — ניהול הבוטיק" [level=1] [ref=f15e44]
+    - generic [ref=f15e1786]:
+      - heading "לוח התפירה" [level=2] [ref=f15e1787]
+      - generic [ref=f15e1789]:
+        - button "השהיה — לוח התפירה" [ref=f15e1790]:
+          - generic [ref=f15e1791]: השהיה
+        - generic [ref=f15e1792]: עודכן 17:31
+      - status
+      - region [ref=f15e1793]:
+        - heading "תופרות · 2" [level=3] [ref=f15e1794]
+        - generic [ref=f15e1795]:
+          - list "תופרות" [ref=f15e1796]:
+            - listitem [ref=f15e1797]:
+              - generic [ref=f15e1798]:
+                - generic [ref=f15e1799]: אסתר פרידמן
+                - button "שעות — אסתר פרידמן" [ref=f15e1800]:
+                  - generic [ref=f15e1801]: שעות
+              - paragraph [ref=f15e1803]: 0 שעות עד 11.8.2026 מתוך 30 · ברירת מחדל של הבוטיק
+            - listitem [ref=f15e1804]:
+              - generic [ref=f15e1805]:
+                - generic [ref=f15e1806]: רבקה לוי
+                - button "שעות — רבקה לוי" [ref=f15e1807]:
+                  - generic [ref=f15e1808]: שעות
+              - paragraph [ref=f15e1811]: 1 שעות עד 11.8.2026 מתוך 22
+          - paragraph [ref=f15e1812]: לא משויך · 5 שעות
+          - button "הגדרות — לוח התפירה" [ref=f15e1813]:
+            - generic [ref=f15e1814]: הגדרות
+      - button "כרטיס חדש" [ref=f15e1816]
+      - navigation "מעבר לשלב" [ref=f15e1818]:
+        - list [ref=f15e1819]:
+          - listitem [ref=f15e1820]:
+            - link "התקבל · 3" [ref=f15e1821] [cursor=pointer]:
+              - /url: "#atelier-h-intake"
+              - text: התקבל ·
+              - generic [ref=f15e1822]: "3"
+          - listitem [ref=f15e1823]:
+            - link "בעבודה · 0" [ref=f15e1824] [cursor=pointer]:
+              - /url: "#atelier-h-in_progress"
+              - text: בעבודה ·
+              - generic [ref=f15e1825]: "0"
+          - listitem [ref=f15e1826]:
+            - link "בקרה · 0" [ref=f15e1827] [cursor=pointer]:
+              - /url: "#atelier-h-qc"
+              - text: בקרה ·
+              - generic [ref=f15e1828]: "0"
+          - listitem [ref=f15e1829]:
+            - link "מוכן · 0" [ref=f15e1830] [cursor=pointer]:
+              - /url: "#atelier-h-ready"
+              - text: מוכן ·
+              - generic [ref=f15e1831]: "0"
+          - listitem [ref=f15e1832]:
+            - link "נמסר · 0" [ref=f15e1833] [cursor=pointer]:
+              - /url: "#atelier-h-delivered"
+              - text: נמסר ·
+              - generic [ref=f15e1834]: "0"
+      - generic [ref=f15e1835]:
+        - region [ref=f15e1836]:
+          - heading "התקבל · 3" [level=3] [ref=f15e1837]
+          - list "התקבל" [ref=f15e1838]:
+            - listitem [ref=f15e1839]:
+              - generic [ref=f15e1840]:
+                - generic [ref=f15e1841]: מיכל אברהמי
+                - paragraph [ref=f15e1843]: שמלה של הכלה מבית אחר · 38
+                - paragraph [ref=f15e1844]: יעד 8.8.2026
+                - paragraph [ref=f15e1845]: שעה · רבקה לוי
+                - paragraph [ref=f15e1846]: קיצור מכפלת, הרמת כתפיות.
+                - generic [ref=f15e1847]:
+                  - button "לשלב הבא — מיכל אברהמי" [ref=f15e1849]:
+                    - generic [ref=f15e1850]: לשלב הבא
+                  - generic [ref=f15e1851]:
+                    - generic [ref=f15e1852]:
+                      - generic [ref=f15e1853]: העברה לשלב
+                      - combobox "העברה לשלב — מיכל אברהמי" [ref=f15e1854]:
+                        - option "העברה לשלב" [selected]
+                        - option "בעבודה"
+                        - option "בקרה"
+                        - option "מוכן"
+                        - option "נמסר"
+                    - button "העברה — מיכל אברהמי" [disabled] [ref=f15e1855]:
+                      - generic [ref=f15e1856]: העברה
+                  - generic [ref=f15e1857]:
+                    - generic [ref=f15e1858]:
+                      - generic [ref=f15e1859]: תופרת
+                      - combobox "תופרת — מיכל אברהמי" [ref=f15e1860]:
+                        - option "לא משויך"
+                        - option "אסתר פרידמן · נותרו 30 שעות"
+                        - option "רבקה לוי · נותרו 21 שעות" [selected]
+                    - button "שיוך — מיכל אברהמי" [disabled] [ref=f15e1861]:
+                      - generic [ref=f15e1862]: שיוך
+                  - generic [ref=f15e1863]:
+                    - button "עריכה — מיכל אברהמי" [ref=f15e1864]:
+                      - generic [ref=f15e1865]: עריכה
+                    - button "מחיקה — מיכל אברהמי" [ref=f15e1866]:
+                      - generic [ref=f15e1867]: מחיקה
+            - listitem [ref=f15e1868]:
+              - generic [ref=f15e1869]:
+                - generic [ref=f15e1870]: דנה שרעבי
+                - paragraph [ref=f15e1872]: תמר · 38
+                - paragraph [ref=f15e1873]: יעד 15.8.2026
+                - paragraph [ref=f15e1874]: חצי יום · לא משויך
+                - paragraph [ref=f15e1875]: הצרה במותן, תיקון תחרה בגב.
+                - generic [ref=f15e1876]:
+                  - button "לשלב הבא — דנה שרעבי" [ref=f15e1878]:
+                    - generic [ref=f15e1879]: לשלב הבא
+                  - generic [ref=f15e1880]:
+                    - generic [ref=f15e1881]:
+                      - generic [ref=f15e1882]: העברה לשלב
+                      - combobox "העברה לשלב — דנה שרעבי" [ref=f15e1883]:
+                        - option "העברה לשלב" [selected]
+                        - option "בעבודה"
+                        - option "בקרה"
+                        - option "מוכן"
+                        - option "נמסר"
+                    - button "העברה — דנה שרעבי" [disabled] [ref=f15e1884]:
+                      - generic [ref=f15e1885]: העברה
+                  - generic [ref=f15e1886]:
+                    - generic [ref=f15e1887]:
+                      - generic [ref=f15e1888]: תופרת
+                      - combobox "תופרת — דנה שרעבי" [ref=f15e1889]:
+                        - option "לא משויך" [selected]
+                        - option "אסתר פרידמן · נותרו 30 שעות"
+                        - option "רבקה לוי · נותרו 21 שעות"
+                    - button "שיוך — דנה שרעבי" [disabled] [ref=f15e1890]:
+                      - generic [ref=f15e1891]: שיוך
+                  - generic [ref=f15e1892]:
+                    - button "עריכה — דנה שרעבי" [ref=f15e1893]:
+                      - generic [ref=f15e1894]: עריכה
+                    - button "מחיקה — דנה שרעבי" [ref=f15e1895]:
+                      - generic [ref=f15e1896]: מחיקה
+            - listitem [ref=f15e1897]:
+              - generic [ref=f15e1898]:
+                - generic [ref=f15e1899]: רותם כרמלי
+                - paragraph [ref=f15e1901]: ליאן · 36
+                - paragraph [ref=f15e1902]: יעד 29.8.2026
+                - paragraph [ref=f15e1903]: שעתיים · לא משויך
+                - paragraph [ref=f15e1904]: התאמת חזייה תפורה.
+                - generic [ref=f15e1905]:
+                  - button "לשלב הבא — רותם כרמלי" [ref=f15e1907]:
+                    - generic [ref=f15e1908]: לשלב הבא
+                  - generic [ref=f15e1909]:
+                    - generic [ref=f15e1910]:
+                      - generic [ref=f15e1911]: העברה לשלב
+                      - combobox "העברה לשלב — רותם כרמלי" [ref=f15e1912]:
+                        - option "העברה לשלב" [selected]
+                        - option "בעבודה"
+                        - option "בקרה"
+                        - option "מוכן"
+                        - option "נמסר"
+                    - button "העברה — רותם כרמלי" [disabled] [ref=f15e1913]:
+                      - generic [ref=f15e1914]: העברה
+                  - generic [ref=f15e1915]:
+                    - generic [ref=f15e1916]:
+                      - generic [ref=f15e1917]: תופרת
+                      - combobox "תופרת — רותם כרמלי" [ref=f15e1918]:
+                        - option "לא משויך" [selected]
+                        - option "אסתר פרידמן · נותרו 30 שעות"
+                        - option "רבקה לוי · נותרו 21 שעות"
+                    - button "שיוך — רותם כרמלי" [disabled] [ref=f15e1919]:
+                      - generic [ref=f15e1920]: שיוך
+                  - generic [ref=f15e1921]:
+                    - button "עריכה — רותם כרמלי" [ref=f15e1922]:
+                      - generic [ref=f15e1923]: עריכה
+                    - button "מחיקה — רותם כרמלי" [ref=f15e1924]:
+                      - generic [ref=f15e1925]: מחיקה
+        - region [ref=f15e1926]:
+          - heading "בעבודה · 0" [level=3] [ref=f15e1927]
+          - list "בעבודה"
+          - paragraph [ref=f15e1928]: אין כרטיסים בשלב זה
+        - region [ref=f15e1929]:
+          - heading "בקרה · 0" [level=3] [ref=f15e1930]
+          - list "בקרה"
+          - paragraph [ref=f15e1931]: אין כרטיסים בשלב זה
+        - region [ref=f15e1932]:
+          - heading "מוכן · 0" [level=3] [ref=f15e1933]
+          - list "מוכן"
+          - paragraph [ref=f15e1934]: אין כרטיסים בשלב זה
+        - region [ref=f15e1935]:
+          - heading "נמסר · 0" [level=3] [ref=f15e1936]
+          - list "נמסר"
+          - paragraph [ref=f15e1937]: אין כרטיסים בשלב זה

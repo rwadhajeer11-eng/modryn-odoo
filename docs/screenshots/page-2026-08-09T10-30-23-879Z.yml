@@ -1,0 +1,218 @@
+- generic [ref=f2e2]:
+  - link "דלג לתוכן" [ref=f2e3] [cursor=pointer]:
+    - /url: "#wrap"
+  - banner [ref=f2e4]:
+    - navigation "Main" [ref=f2e5]:
+      - generic [ref=f2e6]:
+        - link [ref=f2e7] [cursor=pointer]:
+          - /url: /
+          - img "Logo of Bella Bridal" [ref=f2e8]:
+            - img "Bella Bridal" [ref=f2e9]
+        - menu [ref=f2e10]:
+          - menuitem "בית" [ref=f2e11] [cursor=pointer]
+          - menuitem "חנות" [ref=f2e12] [cursor=pointer]
+          - menuitem "צור קשר" [ref=f2e13] [cursor=pointer]
+        - list [ref=f2e14]:
+          - listitem [ref=f2e15]:
+            - link "eCommerce cart" [ref=f2e16] [cursor=pointer]:
+              - /url: /shop/cart
+              - generic [ref=f2e17]: 
+          - text: 
+          - listitem [ref=f2e19]:
+            - button "" [ref=f2e20] [cursor=pointer]
+          - listitem [ref=f2e22]:
+            - link " +1 555-555-5556" [ref=f2e24] [cursor=pointer]:
+              - /url: tel:+1 555-555-5556
+              - generic [ref=f2e25]: 
+              - generic [ref=f2e26]: +1 555-555-5556
+          - listitem [ref=f2e27]:
+            - button "עברית" [expanded] [ref=f2e29] [cursor=pointer]
+          - listitem [ref=f2e30]:
+            - link "התחבר" [ref=f2e31] [cursor=pointer]:
+              - /url: /web/login
+          - listitem [ref=f2e32]:
+            - link "צור קשר" [ref=f2e36] [cursor=pointer]:
+              - /url: /contactus
+    - text:  
+  - main [ref=f2e37]:
+    - generic [ref=f2e39]:
+      - heading "קביעת תור למדידה" [level=1] [ref=f2e40]
+      - generic [ref=f2e41]:
+        - img "שמלת כלה אמילי" [ref=f2e42]
+        - generic [ref=f2e43]:
+          - generic [ref=f2e44]: שמלת כלה אמילי
+          - generic [ref=f2e45]: השמלה תשוריין לפגישה
+      - generic [ref=f2e46]:
+        - generic [ref=f2e47]:
+          - generic [ref=f2e48]: שם מלא
+          - textbox "שם מלא" [ref=f2e49]: רותם לוי
+        - generic [ref=f2e50]:
+          - generic [ref=f2e51]: טלפון
+          - textbox "טלפון" [active] [ref=f2e52]:
+            - /placeholder: 050-1234567
+            - text: 052-1234567
+        - generic [ref=f2e53]:
+          - generic [ref=f2e54]: מידה
+          - combobox "מידה" [ref=f2e55]:
+            - option "— בחרי מידה —"
+            - option "36"
+            - option "38" [selected]
+            - option "40 (אזל המלאי)"
+        - generic [ref=f2e56]:
+          - generic [ref=f2e57]: מועד
+          - combobox "מועד" [ref=f2e58]:
+            - option "— בחרי מועד —"
+            - option "10:00" [selected]
+            - option "11:00"
+            - option "12:00"
+            - option "13:00"
+            - option "14:00"
+            - option "15:00"
+            - option "16:00"
+            - option "17:00"
+            - option "10:00"
+            - option "11:00"
+            - option "12:00"
+            - option "13:00"
+            - option "14:00"
+            - option "15:00"
+            - option "16:00"
+            - option "17:00"
+            - option "10:00"
+            - option "11:00"
+            - option "12:00"
+            - option "13:00"
+            - option "14:00"
+            - option "15:00"
+            - option "16:00"
+            - option "17:00"
+            - option "10:00"
+            - option "11:00"
+            - option "12:00"
+            - option "13:00"
+            - option "14:00"
+            - option "15:00"
+            - option "16:00"
+            - option "17:00"
+            - option "10:00"
+            - option "11:00"
+            - option "12:00"
+            - option "13:00"
+            - option "14:00"
+            - option "15:00"
+            - option "16:00"
+            - option "17:00"
+            - option "10:00"
+            - option "11:00"
+            - option "12:00"
+            - option "13:00"
+            - option "14:00"
+            - option "15:00"
+            - option "16:00"
+            - option "17:00"
+            - option "10:00"
+            - option "11:00"
+            - option "12:00"
+            - option "13:00"
+            - option "14:00"
+            - option "15:00"
+            - option "16:00"
+            - option "17:00"
+            - option "10:00"
+            - option "11:00"
+            - option "12:00"
+            - option "13:00"
+            - option "14:00"
+            - option "15:00"
+            - option "16:00"
+            - option "17:00"
+            - option "10:00"
+            - option "11:00"
+            - option "12:00"
+            - option "13:00"
+            - option "14:00"
+            - option "15:00"
+            - option "16:00"
+            - option "17:00"
+            - option "10:00"
+            - option "11:00"
+            - option "12:00"
+            - option "13:00"
+            - option "14:00"
+            - option "15:00"
+            - option "16:00"
+            - option "17:00"
+        - generic [ref=f2e59]:
+          - checkbox "קראתי ואני מאשרת את תנאי הביטול, האיחור ואי-ההגעה של הבוטיק" [ref=f2e60] [cursor=pointer]
+          - generic [ref=f2e61] [cursor=pointer]: קראתי ואני מאשרת את תנאי הביטול, האיחור ואי-ההגעה של הבוטיק
+        - button "אישור התור" [ref=f2e62] [cursor=pointer]
+    - generic: 
+  - contentinfo [ref=f2e63]:
+    - generic [ref=f2e67]:
+      - generic [ref=f2e68]:
+        - heading "קישורים שימושיים" [level=5] [ref=f2e69]
+        - list [ref=f2e70]:
+          - listitem [ref=f2e71]:
+            - link "בית" [ref=f2e72] [cursor=pointer]:
+              - /url: /
+          - listitem [ref=f2e73]:
+            - link "עלינו" [ref=f2e74] [cursor=pointer]:
+              - /url: "#"
+          - listitem [ref=f2e75]:
+            - link "מוצרים" [ref=f2e76] [cursor=pointer]:
+              - /url: "#"
+          - listitem [ref=f2e77]:
+            - link "שירותים" [ref=f2e78] [cursor=pointer]:
+              - /url: "#"
+          - listitem [ref=f2e79]:
+            - link "משפטי" [ref=f2e80] [cursor=pointer]:
+              - /url: "#"
+          - listitem [ref=f2e81]:
+            - link "צור קשר" [ref=f2e82] [cursor=pointer]:
+              - /url: /contactus
+      - generic [ref=f2e83]:
+        - heading "עלינו" [level=5] [ref=f2e84]
+        - paragraph [ref=f2e85]: אנחנו צוות של אנשים נלהבים שמטרתם לשפר את החיים של כולם באמצעות מוצרים משנים מציאות. אנו בונים מוצרים מעולים כדי לפתור את הבעיות העסקיות שלך. המוצרים שלנו מיועדים לחברות קטנות עד בינוניות שמעוניינות לייעל את הביצועים שלהן.
+      - generic [ref=f2e86]:
+        - heading "התחבר אלינו" [level=5] [ref=f2e87]
+        - list [ref=f2e88]:
+          - listitem [ref=f2e89]:
+            - generic [ref=f2e90]: 
+            - link "צור קשר" [ref=f2e91] [cursor=pointer]:
+              - /url: /contactus
+          - listitem [ref=f2e92]:
+            - generic [ref=f2e93]: 
+            - link "info@yourcompany.example.com" [ref=f2e94] [cursor=pointer]:
+              - /url: mailto:info@yourcompany.example.com
+          - listitem [ref=f2e95]:
+            - generic [ref=f2e96]: 
+            - link "+1 555-555-5556" [ref=f2e97] [cursor=pointer]:
+              - /url: tel:+1 555-555-5556
+        - generic [ref=f2e98]:
+          - link "פייסבוק" [ref=f2e99] [cursor=pointer]:
+            - /url: /website/social/facebook
+            - generic [ref=f2e100]: 
+          - link "X" [ref=f2e101] [cursor=pointer]:
+            - /url: /website/social/twitter
+            - generic [ref=f2e102]: 
+          - link "לינקדאין" [ref=f2e103] [cursor=pointer]:
+            - /url: /website/social/linkedin
+            - generic [ref=f2e104]: 
+          - link "דף נוסף" [ref=f2e105] [cursor=pointer]:
+            - /url: /
+            - generic [ref=f2e106]: 
+    - generic [ref=f2e109]:
+      - generic [ref=f2e110]:
+        - generic [ref=f2e111]: Copyright © Company name
+        - menu [ref=f2e113]:
+          - menuitem "الْعَرَبيّة" [ref=f2e114] [cursor=pointer]
+          - generic [ref=f2e115]: "|"
+          - menuitem "עברית" [ref=f2e116] [cursor=pointer]
+      - generic [ref=f2e118]:
+        - text: מופעל ע"י
+        - link [ref=f2e119] [cursor=pointer]:
+          - /url: http://www.odoo.com?utm_source=db&utm_medium=website
+          - img "Odoo" [ref=f2e120]
+        - text: "- המס' 1"
+        - link "מסחר אלקטרוני קוד פתוח" [ref=f2e121] [cursor=pointer]:
+          - /url: http://www.odoo.com/app/ecommerce?utm_source=db&utm_medium=website

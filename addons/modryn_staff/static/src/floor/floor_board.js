@@ -21,6 +21,10 @@ export class FloorBoard extends Component {
             queue: [],
             bookings: [],
             staff: [],
+            rooms: [],
+            me: null,
+            sos: [],
+            sosForm: null,
             myTasks: [],
             atelier: { pieces: [] },
             canAssign: false,
@@ -114,6 +118,9 @@ export class FloorBoard extends Component {
         this.state.queue = board.queue;
         this.state.bookings = board.bookings;
         this.state.staff = board.staff;
+        this.state.rooms = board.rooms || [];
+        this.state.me = board.me || null;
+        this.state.sos = board.sos || [];
         this.state.myTasks = board.my_tasks || [];
         this.state.atelier = board.atelier || { pieces: [] };
         this.state.canAssign = board.can_assign;
@@ -183,6 +190,77 @@ export class FloorBoard extends Component {
             target_id: targetId,
             employee_id: employeeId,
         });
+    }
+
+    // ----------------------------------------------------------- rooms
+    async setRoom(target, targetId, ev) {
+        const roomId = ev.target.value ? parseInt(ev.target.value, 10) : null;
+        const board = await rpc("/floor/room", {
+            target,
+            target_id: targetId,
+            room_id: roomId,
+        });
+        // A room collision comes back with the board intact plus a message, so
+        // the select snaps back to the truth rather than lying about where the
+        // customer is.
+        this.apply(board);
+        if (board && board.error) {
+            this.state.error = board.error;
+        }
+    }
+
+    roomName(roomId) {
+        const room = this.state.rooms.find((r) => r.id === roomId);
+        return room ? room.name : "";
+    }
+
+    // ------------------------------------------------------------- SOS
+    openSos(card, cardId) {
+        this.state.sosForm = { card, card_id: cardId, target_id: "", note: "" };
+    }
+
+    closeSos() {
+        this.state.sosForm = null;
+    }
+
+    async sendSos() {
+        const form = this.state.sosForm;
+        await this.call("/floor/sos", {
+            target: form.target_id ? "employee" : "manager",
+            target_id: form.target_id ? parseInt(form.target_id, 10) : null,
+            card: form.card,
+            card_id: form.card_id,
+            note: form.note,
+        });
+        this.state.sosForm = null;
+    }
+
+    async ackSos(callId) {
+        await this.call("/floor/sos/ack", { call_id: callId });
+    }
+
+    async resolveSos(callId) {
+        await this.call("/floor/sos/resolve", { call_id: callId });
+    }
+
+    get incomingSos() {
+        // The overlay is for calls I must answer. My own call stays visible as a
+        // quiet strip instead, so I can see somebody picked it up.
+        const me = this.state.me;
+        if (!me) {
+            return [];
+        }
+        return this.state.sos.filter((c) => c.caller_id !== me.id);
+    }
+
+    get myOwnSos() {
+        const me = this.state.me;
+        return me ? this.state.sos.filter((c) => c.caller_id === me.id) : [];
+    }
+
+    get colleagues() {
+        const me = this.state.me;
+        return this.state.staff.filter((s) => !me || s.id !== me.id);
     }
 
     async finish(entryId) {

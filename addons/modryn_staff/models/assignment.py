@@ -86,7 +86,7 @@ class CalendarEvent(models.Model):
     """
 
     _name = 'calendar.event'
-    _inherit = ['calendar.event', 'modryn.helper.mixin']
+    _inherit = ['calendar.event', 'modryn.helper.mixin', 'modryn.room.occupant.mixin']
 
     modryn_employee_id = fields.Many2one(
         'hr.employee',
@@ -95,6 +95,15 @@ class CalendarEvent(models.Model):
         ondelete='set null',
     )
     ASSIGNMENT_FIELDS = ('modryn_employee_id', 'modryn_helper_ids')
+
+    def _modryn_is_open(self):
+        self.ensure_one()
+        if not self.modryn_is_booking:
+            return False
+        if 'modryn_cancelled_at' in self._fields and self.modryn_cancelled_at:
+            return False
+        # An appointment holds its room until it is over, not for ever.
+        return bool(self.stop) and self.stop >= fields.Datetime.now()
 
     def write(self, vals):
         result = super().write(vals)
@@ -115,7 +124,7 @@ class ModrynQueueEntry(models.Model):
     """Who is serving this walk-in: same primary + helpers shape as bookings."""
 
     _name = 'modryn.queue.entry'
-    _inherit = ['modryn.queue.entry', 'modryn.helper.mixin']
+    _inherit = ['modryn.queue.entry', 'modryn.helper.mixin', 'modryn.room.occupant.mixin']
 
     modryn_employee_id = fields.Many2one(
         'hr.employee',
@@ -123,6 +132,11 @@ class ModrynQueueEntry(models.Model):
         index=True,
         ondelete='set null',
     )
+
+    def _modryn_is_open(self):
+        self.ensure_one()
+        return self.state in ('waiting', 'called')
+
     def _payload(self):
         # Extend the existing bus payload so helper changes reach every open
         # board through the push modryn_queue_poc already wired up.

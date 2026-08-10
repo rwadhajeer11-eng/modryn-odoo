@@ -3,6 +3,7 @@ from datetime import datetime, time
 import pytz
 
 from odoo import http
+from odoo.exceptions import ValidationError
 from odoo.http import request
 
 TZ = pytz.timezone('Asia/Jerusalem')
@@ -31,6 +32,11 @@ class ModrynFloor(http.Controller):
     def _is_manager(self):
         user = request.env.user
         return bool(user) and not user._is_public() and user.has_group(GROUP_MANAGER)
+
+    def _my_employee(self):
+        """The employee record behind the signed-in user, or an empty one."""
+        return request.env['hr.employee'].sudo().search(
+            [('user_id', '=', request.env.user.id)], limit=1)
 
     def _today_bounds_utc(self):
         """Today in Israel, expressed in the UTC the database stores."""
@@ -63,6 +69,7 @@ class ModrynFloor(http.Controller):
                 'employee_id': entry.modryn_employee_id.id or False,
                 'employee_name': entry.modryn_employee_id.name or '',
                 'helpers': [{'id': h.id, 'name': h.name} for h in entry.modryn_helper_ids],
+                'room_id': entry.modryn_room_id.id or False,
             })
 
         day_start, day_end = self._today_bounds_utc()
@@ -88,6 +95,7 @@ class ModrynFloor(http.Controller):
                 'employee_id': event.modryn_employee_id.id or False,
                 'employee_name': event.modryn_employee_id.name or '',
                 'helpers': [{'id': h.id, 'name': h.name} for h in event.modryn_helper_ids],
+                'room_id': event.modryn_room_id.id or False,
             })
 
         employees = env['hr.employee'].sudo().search([
@@ -101,11 +109,28 @@ class ModrynFloor(http.Controller):
             'occupied_with': e.modryn_occupied_with or '',
         } for e in employees]
 
+        rooms = env['modryn.fitting.room'].sudo().search([])
+        me = self._my_employee()
+
+        # Only calls this board should react to: mine to answer, or mine to
+        # watch because I raised them. A saleswoman must not get an overlay for
+        # a call between two colleagues on the other side of the floor.
+        sos_domain = [('state', 'in', ('open', 'acked'))]
+        calls = env['modryn.sos.call'].sudo().search(sos_domain)
+        mine = calls.filtered(lambda c: (
+            (me and c.caller_id == me)
+            or (me and c.target_id == me)
+            or (not c.target_id and self._is_manager())
+        ))
+
         return {
             'pending': pending,
             'queue': queue,
             'bookings': bookings,
             'staff': staff,
+            'rooms': [{'id': r.id, 'name': r.name} for r in rooms],
+            'me': {'id': me.id, 'name': me.name} if me else None,
+            'sos': [c._row() for c in mine],
             'can_assign': self._is_manager(),
         }
 
@@ -261,3 +286,72 @@ class ModrynFloor(http.Controller):
             } for v in variants],
         }
         return board
+
+    # ------------------------------------------------------------- rooms
+    @http.route('/floor/room', type='jsonrpc', auth='user')
+    def set_room(self, target, target_id, room_id=None):
+        """Put a customer in a fitting room, or take her out of one.
+
+        Staff may do this, not only managers: the woman who walks a customer to
+        a room is whoever is with her, and making her find a manager first is
+        how the registry would end up permanently wrong.
+        """
+        if not self._is_staff():
+            return {'error': 'forbidden'}
+        record = self._resolve_target(target, target_id)
+        if not record:
+            return {'error': 'not_found'}
+        try:
+            # The savepoint is load-bearing, not decoration. Catching the
+            # ValidationError stops Odoo's handler from rolling the request
+            # back, but it does NOT undo the write the constraint rejected — so
+            # without this the board said "Room 1 is taken" and then committed
+            # BOTH customers into Room 1 anyway.
+            with request.env.cr.savepoint():
+                record.write({'modryn_room_id': int(room_id) if room_id else False})
+        except ValidationError as exc:
+            # Two customers in one room is a real collision on the floor, so it
+            # comes back as a message the board can show, not a 500.
+            return dict(self._board(), error=exc.args[0] if exc.args else 'invalid')
+        return self._board()
+
+    # --------------------------------------------------------------- SOS
+    @http.route('/floor/sos', type='jsonrpc', auth='user')
+    def sos(self, target='manager', target_id=None, card=None, card_id=None, note=None):
+        """Ask for help. Any member of staff may, including a manager."""
+        if not self._is_staff():
+            return {'error': 'forbidden'}
+        me = self._my_employee()
+        if not me:
+            return {'error': 'no_employee'}
+
+        colleague = None
+        if target == 'employee' and target_id:
+            colleague = request.env['hr.employee'].sudo().browse(int(target_id)).exists()
+            if not colleague:
+                return {'error': 'not_found'}
+
+        record = self._resolve_target(card, card_id) if card and card_id else None
+        request.env['modryn.sos.call'].sudo().modryn_raise(
+            caller=me, target=colleague, record=record, note=note)
+        return self._board()
+
+    @http.route('/floor/sos/ack', type='jsonrpc', auth='user')
+    def sos_ack(self, call_id):
+        if not self._is_staff():
+            return {'error': 'forbidden'}
+        call = request.env['modryn.sos.call'].sudo().browse(int(call_id)).exists()
+        if not call:
+            return {'error': 'not_found'}
+        call.modryn_ack(self._my_employee())
+        return self._board()
+
+    @http.route('/floor/sos/resolve', type='jsonrpc', auth='user')
+    def sos_resolve(self, call_id):
+        if not self._is_staff():
+            return {'error': 'forbidden'}
+        call = request.env['modryn.sos.call'].sudo().browse(int(call_id)).exists()
+        if not call:
+            return {'error': 'not_found'}
+        call.modryn_resolve()
+        return self._board()

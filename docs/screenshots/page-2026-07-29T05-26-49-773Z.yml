@@ -1,0 +1,42 @@
+- generic [ref=e3]:
+  - banner [ref=e4]:
+    - link "✦ מערכת בוטיק" [ref=e5] [cursor=pointer]:
+      - /url: /
+    - navigation "main" [ref=e6]:
+      - link "משמרת" [ref=e7] [cursor=pointer]:
+        - /url: /floor
+      - link "תופרות" [ref=e8] [cursor=pointer]:
+        - /url: /atelier
+      - link "צ׳ק-אין QR" [ref=e9] [cursor=pointer]:
+        - /url: /qr
+      - link "תור" [ref=e10] [cursor=pointer]:
+        - /url: /queue
+    - button "❓ מדריך" [ref=e11] [cursor=pointer]
+    - generic "מנותק" [ref=e12]
+    - group "language" [ref=e15]:
+      - button "עב" [pressed] [ref=e16] [cursor=pointer]
+      - button "ع" [ref=e17] [cursor=pointer]
+      - button "EN" [ref=e18] [cursor=pointer]
+  - main [ref=e19]:
+    - generic [ref=e20]:
+      - heading "✦ מערכת בוטיק" [level=1] [ref=e21]
+      - generic [ref=e22]:
+        - link "🛎️ משמרת" [ref=e23] [cursor=pointer]:
+          - /url: /floor
+          - generic [ref=e24]: 🛎️
+          - generic [ref=e25]: משמרת
+        - link "🧵 תופרות" [ref=e26] [cursor=pointer]:
+          - /url: /atelier
+          - generic [ref=e27]: 🧵
+          - generic [ref=e28]: תופרות
+        - link "📱 צ׳ק-אין QR" [ref=e29] [cursor=pointer]:
+          - /url: /qr
+          - generic [ref=e30]: 📱
+          - generic [ref=e31]: צ׳ק-אין QR
+        - link "⏳ תור" [ref=e32] [cursor=pointer]:
+          - /url: /queue
+          - generic [ref=e33]: ⏳
+          - generic [ref=e34]: תור
+      - generic [ref=e35]:
+        - heading "מי את/ה?" [level=2] [ref=e37]
+        - paragraph [ref=e38]: בחר/י זהות למכשיר הזה

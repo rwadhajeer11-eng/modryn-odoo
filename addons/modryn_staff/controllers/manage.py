@@ -248,3 +248,42 @@ class ModrynManage(http.Controller):
         if role:
             role.active = not role.active
         return request.redirect('/manage/roles')
+
+    # -------------------------------------------------------- fitting rooms
+    @http.route('/manage/rooms', type='http', auth='user', website=True, sitemap=False)
+    def rooms_list(self, error=None, **kw):
+        if not self._require_owner():
+            return request.not_found()
+        return request.render('modryn_staff.manage_rooms', {
+            'rooms': request.env['modryn.fitting.room'].sudo().with_context(
+                active_test=False).search([]),
+            'error': error,
+            'active_tab': 'rooms',
+        })
+
+    @http.route('/manage/rooms/new', type='http', auth='user', website=True,
+                methods=['POST'], csrf=True, sitemap=False)
+    def rooms_new(self, **post):
+        if not self._require_owner():
+            return request.not_found()
+        name = (post.get('name') or '').strip()
+        if not name:
+            return request.redirect('/manage/rooms?error=%s' % _("Please enter a name"))
+        Room = request.env['modryn.fitting.room'].sudo()
+        if Room.with_context(active_test=False).search_count([('name', '=ilike', name)]):
+            return request.redirect(
+                '/manage/rooms?error=%s' % _("That fitting room already exists"))
+        Room.create({'name': name})
+        return request.redirect('/manage/rooms')
+
+    @http.route('/manage/rooms/archive/<int:room_id>', type='http', auth='user',
+                website=True, methods=['POST'], csrf=True, sitemap=False)
+    def rooms_archive(self, room_id, **post):
+        if not self._require_owner():
+            return request.not_found()
+        room = request.env['modryn.fitting.room'].sudo().with_context(
+            active_test=False).browse(room_id).exists()
+        if room:
+            # Archive, never delete: cards still point at this room.
+            room.active = not room.active
+        return request.redirect('/manage/rooms')

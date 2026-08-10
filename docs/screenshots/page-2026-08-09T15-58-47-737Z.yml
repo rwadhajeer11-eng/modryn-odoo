@@ -1,0 +1,42 @@
+- generic [active] [ref=f24e1]:
+  - text: 
+  - main [ref=f24e3]:
+    - generic [ref=f24e4]:
+      - navigation [ref=f24e5]:
+        - generic [ref=f24e6]: MODRYN
+        - link "צוות" [ref=f24e7] [cursor=pointer]:
+          - /url: /manage/staff
+        - link "תפקידים" [ref=f24e8] [cursor=pointer]:
+          - /url: /manage/roles
+        - link "מסך משמרת" [ref=f24e9] [cursor=pointer]:
+          - /url: /floor
+        - link "יציאה" [ref=f24e10] [cursor=pointer]:
+          - /url: /staff/logout
+      - main [ref=f24e11]:
+        - heading "תפקידים" [level=1] [ref=f24e12]
+        - paragraph [ref=f24e13]: התפקידים נקבעים על ידך — אפשר להוסיף כל תפקיד שהבוטיק צריך.
+        - generic [ref=f24e14]:
+          - textbox "שם תפקיד חדש" [ref=f24e15]
+          - button "הוספה" [ref=f24e16] [cursor=pointer]
+        - table [ref=f24e17]:
+          - rowgroup [ref=f24e18]:
+            - row [ref=f24e19]:
+              - cell "מוכרת" [ref=f24e20]
+              - cell [ref=f24e21]:
+                - button "ארכיון" [ref=f24e23] [cursor=pointer]
+            - row [ref=f24e24]:
+              - cell "מוכרת בכירה" [ref=f24e25]
+              - cell [ref=f24e26]:
+                - button "ארכיון" [ref=f24e28] [cursor=pointer]
+            - row [ref=f24e29]:
+              - cell "מלווה כלות" [ref=f24e30]
+              - cell [ref=f24e31]:
+                - button "ארכיון" [ref=f24e33] [cursor=pointer]
+            - row [ref=f24e34]:
+              - cell "תופרת" [ref=f24e35]
+              - cell [ref=f24e36]:
+                - button "ארכיון" [ref=f24e38] [cursor=pointer]
+            - row [ref=f24e39]:
+              - cell "קבלת קהל" [ref=f24e40]
+              - cell [ref=f24e41]:
+                - button "ארכיון" [ref=f24e43] [cursor=pointer]

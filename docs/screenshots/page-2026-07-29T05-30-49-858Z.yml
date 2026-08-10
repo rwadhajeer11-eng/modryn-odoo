@@ -1,0 +1,36 @@
+- generic [ref=f4e3]:
+  - banner [ref=f4e4]:
+    - link "✦ מערכת בוטיק" [ref=f4e5] [cursor=pointer]:
+      - /url: /
+    - navigation "main" [ref=f4e6]:
+      - link "משמרת" [ref=f4e7] [cursor=pointer]:
+        - /url: /floor
+      - link "תופרות" [ref=f4e8] [cursor=pointer]:
+        - /url: /atelier
+      - link "צ׳ק-אין QR" [ref=f4e9] [cursor=pointer]:
+        - /url: /qr
+      - link "תור" [ref=f4e10] [cursor=pointer]:
+        - /url: /queue
+    - button "❓ מדריך" [ref=f4e11] [cursor=pointer]
+    - generic "מנותק" [ref=f4e12]
+    - group "language" [ref=f4e15]:
+      - button "עב" [pressed] [ref=f4e16] [cursor=pointer]
+      - button "ع" [ref=f4e17] [cursor=pointer]
+      - button "EN" [ref=f4e18] [cursor=pointer]
+  - main [ref=f4e19]:
+    - generic [ref=f4e20]:
+      - generic [ref=f4e21]:
+        - heading "🧵 תופרות" [level=1] [ref=f4e22]
+        - button "+ הוספת תופרת" [ref=f4e23] [cursor=pointer]
+        - button "+ משימת תיקון חדשה" [ref=f4e24] [cursor=pointer]
+      - generic [ref=f4e25]:
+        - heading "עומס שבועי" [level=2] [ref=f4e27]
+        - paragraph [ref=f4e28]: אין תופרות עדיין.
+      - generic [ref=f4e29]:
+        - heading "משימות תיקון" [level=2] [ref=f4e31]
+        - generic [ref=f4e32]:
+          - heading "קליטה · 0" [level=4] [ref=f4e34]
+          - heading "בעבודה · 0" [level=4] [ref=f4e36]
+          - heading "בקרת איכות · 0" [level=4] [ref=f4e38]
+          - heading "מוכן · 0" [level=4] [ref=f4e40]
+          - heading "נמסר · 0" [level=4] [ref=f4e42]

@@ -1,0 +1,77 @@
+- generic [ref=f15e5]:
+  - link "דלג לתוכן" [ref=f15e6] [cursor=pointer]:
+    - /url: "#console-main"
+  - banner [ref=f15e7]:
+    - generic [ref=f15e8]:
+      - generic [ref=f15e9]: owner@demo.example
+      - generic [ref=f15e10]:
+        - button "מדריך" [ref=f15e11]
+        - button "יציאה" [ref=f15e12]
+    - navigation [ref=f15e13]:
+      - list [ref=f15e14]:
+        - listitem [ref=f15e15]:
+          - button "סקירה" [ref=f15e16]
+        - listitem [ref=f15e17]:
+          - button "פרופיל והגדרות" [ref=f15e18]
+        - listitem [ref=f15e19]:
+          - button "שעות פעילות" [ref=f15e20]
+        - listitem [ref=f15e21]:
+          - button "סוגי תורים" [ref=f15e22]
+        - listitem [ref=f15e23]:
+          - button "מדיניות ביטולים" [ref=f15e24]
+        - listitem [ref=f15e25]:
+          - button "שמלות" [ref=f15e26]
+        - listitem [ref=f15e27]:
+          - button "תורים" [ref=f15e28]
+        - listitem [ref=f15e29]:
+          - button "לקוחות" [ref=f15e30]
+        - listitem [ref=f15e31]:
+          - button "לוח היום" [ref=f15e32]
+        - listitem [ref=f15e33]:
+          - button "תפירה" [ref=f15e34]
+        - listitem [ref=f15e35]:
+          - button "קוד סריקה" [ref=f15e36]
+        - listitem [ref=f15e37]:
+          - button "צוות" [ref=f15e38]
+        - listitem [ref=f15e39]:
+          - button "סליקה ותשלומים" [ref=f15e40]
+        - listitem [ref=f15e41]:
+          - button "פרטיות" [ref=f15e42]
+  - main [ref=f15e43]:
+    - heading "MODRYN — ניהול הבוטיק" [level=1] [ref=f15e44]
+    - generic [ref=f15e1096]:
+      - button "חזרה לרשימה" [ref=f15e1097]
+      - heading "QA ג'ורני די" [active] [level=2] [ref=f15e1099]
+      - status
+      - generic [ref=f15e1100]:
+        - generic [ref=f15e1101]:
+          - generic [ref=f15e1102]: טלפון
+          - generic [ref=f15e1103]: "+972501234599"
+        - generic [ref=f15e1104]:
+          - generic [ref=f15e1105]: הסכמה לדיוור
+          - generic [ref=f15e1106]: ניתנה
+        - button "הסרת ההסכמה לדיוור" [ref=f15e1108]
+      - generic [ref=f15e1110]:
+        - generic [ref=f15e1111]:
+          - generic [ref=f15e1112]: הערות
+          - generic [ref=f15e1113]: ההערות נשמרות בכרטיס ונראות לצוות הבוטיק בלבד.
+          - textbox "הערות" [ref=f15e1114]:
+            - /placeholder: מה כדאי לזכור לפעם הבאה
+          - generic [ref=f15e1115]: 0 / 2000
+        - generic [ref=f15e1117]:
+          - paragraph [ref=f15e1118]: תגיות
+          - paragraph [ref=f15e1119]: אין תגיות בכרטיס הזה.
+          - generic [ref=f15e1120]:
+            - generic [ref=f15e1121]:
+              - generic [ref=f15e1122]: תגית חדשה
+              - generic [ref=f15e1123]: עד 10 תגיות, עד 24 תווים לתגית.
+              - textbox "תגית חדשה" [ref=f15e1124]
+            - button "הוספה" [ref=f15e1125]
+        - button "שמירה" [ref=f15e1127]
+      - generic [ref=f15e1129]:
+        - heading "היסטוריית תורים" [level=3] [ref=f15e1130]
+        - paragraph [ref=f15e1131]: אין עדיין תורים בכרטיס הזה.
+      - generic [ref=f15e1132]:
+        - heading "יומן הודעות" [level=3] [ref=f15e1133]
+        - paragraph [ref=f15e1134]: יומן לקריאה בלבד. אי אפשר לערוך או למחוק רשומה.
+        - paragraph [ref=f15e1135]: אין עדיין רשומות ביומן ההודעות.

@@ -38,6 +38,8 @@
                        t-attf-class="modryn_admin_link #{'is_active' if active_tab == 'roles' else ''}">Roles</a>
                     <a href="/manage/pieces"
                        t-attf-class="modryn_admin_link #{'is_active' if active_tab == 'pieces' else ''}">Pieces</a>
+                    <a href="/manage/rooms"
+                       t-attf-class="modryn_admin_link #{'is_active' if active_tab == 'rooms' else ''}">Rooms</a>
                     <a href="/atelier" class="modryn_admin_link">Workshop</a>
                     <a href="/floor" class="modryn_admin_link">Floor board</a>
                     <t t-call="modryn_staff.lang_toggle"/>
@@ -211,6 +213,45 @@
                                        t-att-value="request.csrf_token()"/>
                                 <button type="submit" class="btn btn-sm btn-outline-dark">
                                     <t t-if="role.active">Archive</t>
+                                    <t t-else="">Restore</t>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </t>
+    </template>
+
+    <template id="manage_rooms" name="Fitting rooms">
+        <t t-call="modryn_staff.manage_layout">
+            <h1 class="mb-2">Fitting rooms</h1>
+            <p class="text-muted mb-4">
+                Name your rooms the way your team says them out loud. When someone
+                calls for help, the room is what tells a colleague where to go.
+            </p>
+
+            <div t-if="error" class="modryn_field_error mb-3" role="alert" t-out="error"/>
+
+            <form action="/manage/rooms/new" method="post" class="d-flex gap-2 mb-4"
+                  style="max-width: 480px;">
+                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                <input type="text" name="name" class="form-control" placeholder="New room"/>
+                <button type="submit" class="btn btn-primary">Add</button>
+            </form>
+
+            <table class="table modryn_table align-middle" style="max-width: 480px;">
+                <tbody>
+                    <tr t-foreach="rooms" t-as="room" t-key="room.id"
+                        t-attf-class="#{'modryn_archived' if not room.active else ''}">
+                        <td t-out="room.name"/>
+                        <td class="text-end">
+                            <form t-attf-action="/manage/rooms/archive/#{room.id}" method="post"
+                                  class="d-inline">
+                                <input type="hidden" name="csrf_token"
+                                       t-att-value="request.csrf_token()"/>
+                                <button type="submit" class="btn btn-sm btn-outline-dark">
+                                    <t t-if="room.active">Archive</t>
                                     <t t-else="">Restore</t>
                                 </button>
                             </form>

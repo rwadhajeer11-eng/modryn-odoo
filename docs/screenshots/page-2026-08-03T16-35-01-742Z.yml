@@ -1,0 +1,20 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - generic [ref=e3]:
+      - generic [ref=e4]: סדר תצוגה
+      - spinbutton "סדר תצוגה" [ref=e5]: "0"
+    - generic [ref=e6]:
+      - generic [ref=e7]: שם החדר
+      - textbox "שם החדר" [ref=e8]: חדר 1
+    - generic [ref=e9]:
+      - generic [ref=e10]: בחירת לקוחה
+      - combobox "בחירת לקוחה" [ref=e11]:
+        - option "א" [selected]
+    - generic [ref=e12]:
+      - generic [ref=e13]: בלי מחלקה
+      - combobox "בלי מחלקה" [ref=e14]:
+        - option "א" [selected]
+    - generic [ref=e15]:
+      - generic [ref=e16]: עם התיקון
+      - spinbutton "עם התיקון" [ref=e17]: "0"
+  - generic [ref=e18]: ord h=43.59 w=112.00 lh=25.6px fs=16px pad=8px/8px bw=1px minh=auto bs=border-box lbl h=43.59 w=1200.00 lh=25.6px fs=16px pad=8px/8px bw=1px minh=auto bs=border-box sel h=44.00 w=1200.00 lh=normal fs=16px pad=8px/8px bw=1px minh=44px bs=border-box sel2 h=39.00 w=1200.00 lh=normal fs=16px pad=8px/8px bw=1px minh=auto bs=border-box fix h=44.00 w=112.00 lh=25.6px fs=16px pad=8px/8px bw=1px minh=44px bs=border-box

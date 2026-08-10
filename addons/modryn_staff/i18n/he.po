@@ -12,6 +12,18 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. module: modryn_staff
+#. odoo-python
+#: code:addons/modryn_staff/models/fitting_room.py:0
+msgid "%(room)s is already being used by %(who)s."
+msgstr "%(room)s כבר תפוס על ידי %(who)s."
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "(busy)"
+msgstr "(תפוסה)"
+
+#. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manage_staff_form
 msgid "<option value=\"\">— Choose a role —</option>"
 msgstr "<option value=\"\">— בחרי תפקיד —</option>"
@@ -31,12 +43,19 @@ msgstr ""
 "                    <span class=\"modryn_admin_link is_active\">מסך משמרת</span>"
 
 #. module: modryn_staff
+#. odoo-python
+#: code:addons/modryn_staff/models/fitting_room.py:0
+msgid "A fitting room needs a name."
+msgstr "לחדר מדידה נדרש שם."
+
+#. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manage_staff_list
 msgid "Actions"
 msgstr "פעולות"
 
 #. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manage_roles
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manage_rooms
 msgid "Add"
 msgstr "הוספה"
 
@@ -60,11 +79,24 @@ msgstr "מוסיפה עובדות, מגדירה תפקידים, וכל מה שמ
 #. module: modryn_staff
 #. odoo-javascript
 #: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "All good now"
+msgstr "הסתדר"
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
 msgid "Alterations for"
 msgstr "תיקונים עבור"
 
 #. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "Any manager"
+msgstr "כל אחראית משמרת"
+
+#. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manage_roles
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manage_rooms
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manage_staff_list
 msgid "Archive"
 msgstr "ארכיון"
@@ -127,6 +159,19 @@ msgid "Busy"
 msgstr "תפוסה"
 
 #. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "Call for help"
+msgstr "קריאה לעזרה"
+
+#. module: modryn_staff
+#: model:ir.model,name:modryn_staff.model_modryn_sos_call
+msgid "Call for help on the floor"
+msgstr "קריאה לעזרה על הרצפה"
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manage_staff_form
 msgid "Cancel"
 msgstr "ביטול"
@@ -136,6 +181,11 @@ msgstr "ביטול"
 #: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
 msgid "Create task"
 msgstr "יצירת משימה"
+
+#. module: modryn_staff
+#: model:ir.model,name:modryn_staff.model_modryn_room_occupant_mixin
+msgid "Customer card in a fitting room"
+msgstr "כרטיס לקוחה בחדר מדידה"
 
 #. module: modryn_staff
 #. odoo-javascript
@@ -189,9 +239,28 @@ msgid "Evening"
 msgstr "ערב"
 
 #. module: modryn_staff
+#: model:ir.model,name:modryn_staff.model_modryn_fitting_room
+#: model:ir.model.fields,field_description:modryn_staff.field_calendar_event__modryn_room_id
+#: model:ir.model.fields,field_description:modryn_staff.field_modryn_queue_entry__modryn_room_id
+#: model:ir.model.fields,field_description:modryn_staff.field_modryn_room_occupant_mixin__modryn_room_id
+msgid "Fitting room"
+msgstr "חדר מדידה"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manage_rooms
+msgid "Fitting rooms"
+msgstr "חדרי מדידה"
+
+#. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manage_layout
 msgid "Floor board"
 msgstr "מסך משמרת"
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "Handled"
+msgstr "טופל"
 
 #. module: modryn_staff
 #: model:ir.model.fields,field_description:modryn_staff.field_calendar_event__modryn_helper_ids
@@ -237,6 +306,11 @@ msgid "MODRYN"
 msgstr "MODRYN"
 
 #. module: modryn_staff
+#: model:ir.actions.server,name:modryn_staff.ir_cron_escalate_sos_ir_actions_server
+msgid "MODRYN: escalate unanswered calls for help"
+msgstr "MODRYN: העברת קריאות עזרה שלא נענו"
+
+#. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.floor_page
 msgid "Manage staff"
 msgstr "ניהול צוות"
@@ -248,6 +322,7 @@ msgid "My alterations"
 msgstr "התיקונים שלי"
 
 #. module: modryn_staff
+#: model:ir.model.fields,field_description:modryn_staff.field_modryn_fitting_room__name
 #: model:ir.model.fields,field_description:modryn_staff.field_modryn_staff_role__name
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manage_staff_form
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manage_staff_list
@@ -255,15 +330,35 @@ msgid "Name"
 msgstr "שם"
 
 #. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manage_rooms
+msgid ""
+"Name your rooms the way your team says them out loud. When someone\n"
+"                calls for help, the room is what tells a colleague where to go."
+msgstr ""
+"תני לחדרים את השמות שהצוות באמת אומר בקול. כשמישהי קוראת לעזרה, שם החדר הוא "
+"מה שמכוון את החברה לאן ללכת."
+
+#. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manage_roles
 msgid "New role name"
 msgstr "שם תפקיד חדש"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manage_rooms
+msgid "New room"
+msgstr "חדר חדש"
 
 #. module: modryn_staff
 #. odoo-javascript
 #: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
 msgid "No appointments today."
 msgstr "אין תורים להיום."
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "No one answered"
+msgstr "אף אחת לא ענתה"
 
 #. module: modryn_staff
 #. odoo-javascript
@@ -288,6 +383,19 @@ msgid "Occupied"
 msgstr "תפוסה"
 
 #. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "On my way"
+msgstr "אני בדרך"
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+#: model:ir.model.fields.selection,name:modryn_staff.selection__modryn_sos_call__state__acked
+msgid "On the way"
+msgstr "בדרך"
+
+#. module: modryn_staff
 #. odoo-python
 #: code:addons/modryn_staff/controllers/manage.py:0
 #: model:ir.model.fields.selection,name:modryn_staff.selection__hr_employee__modryn_level__owner
@@ -298,6 +406,12 @@ msgstr "בעלים"
 #: model:ir.model.fields,help:modryn_staff.field_hr_employee__modryn_role_id
 msgid "Owner-defined job role, for example Sales or Seamstress."
 msgstr "תפקיד שהבעלים מגדירה, למשל מוכרת או תופרת."
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "Passed to the managers."
+msgstr "הועבר לאחראיות המשמרת."
 
 #. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manage_staff_form
@@ -373,6 +487,7 @@ msgstr "מוכן"
 
 #. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manage_roles
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manage_rooms
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manage_staff_list
 msgid "Restore"
 msgstr "שחזור"
@@ -388,6 +503,11 @@ msgstr "תפקיד"
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manage_roles
 msgid "Roles"
 msgstr "תפקידים"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manage_layout
+msgid "Rooms"
+msgstr "חדרים"
 
 #. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manage_staff_form
@@ -436,6 +556,18 @@ msgid "Skip"
 msgstr "דילוג"
 
 #. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "Someone is on the way."
+msgstr "מישהי בדרך אלייך."
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "Someone needs help"
+msgstr "מישהי צריכה עזרה"
+
+#. module: modryn_staff
 #. odoo-python
 #: code:addons/modryn_staff/controllers/manage.py:0
 #: model:ir.model.fields.selection,name:modryn_staff.selection__hr_employee__modryn_level__staff
@@ -470,6 +602,17 @@ msgstr "צוות"
 #: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
 msgid "Team on shift"
 msgstr "צוות במשמרת"
+
+#. module: modryn_staff
+#. odoo-python
+#: code:addons/modryn_staff/controllers/manage.py:0
+msgid "That fitting room already exists"
+msgstr "חדר המדידה הזה כבר קיים"
+
+#. module: modryn_staff
+#: model:ir.model.constraint,message:modryn_staff.constraint_modryn_fitting_room_name_uniq
+msgid "That fitting room already exists."
+msgstr "חדר המדידה הזה כבר קיים."
 
 #. module: modryn_staff
 #. odoo-python
@@ -517,8 +660,26 @@ msgstr "ממתינה"
 #. module: modryn_staff
 #. odoo-javascript
 #: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "Waiting for someone to answer…"
+msgstr "ממתינה שמישהי תענה…"
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
 msgid "Walk-in queue"
 msgstr "תור בכניסה"
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "What do you need? (optional)"
+msgstr "מה צריך? (לא חובה)"
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "Who do you need?"
+msgstr "את מי את צריכה?"
 
 #. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.floor_page
@@ -534,14 +695,14 @@ msgstr "התפקידים נקבעים על ידך — אפשר להוסיף כל
 #. module: modryn_staff
 #. odoo-javascript
 #: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
-msgid "You don't have access to this board."
-msgstr "אין הרשאה להצגת המסך."
+msgid "available"
+msgstr "פנויות"
 
 #. module: modryn_staff
 #. odoo-javascript
 #: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
-msgid "available"
-msgstr "פנויות"
+msgid "more waiting."
+msgstr "נוספות ממתינות."
 
 #. module: modryn_staff
 #. odoo-python
@@ -554,6 +715,12 @@ msgstr "עובדת"
 #: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
 msgid "waiting"
 msgstr "ממתינות"
+
+#. module: modryn_staff
+#. odoo-python
+#: code:addons/modryn_staff/models/sos_call.py:0
+msgid "with %s"
+msgstr "עם %s"
 
 #. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.lang_toggle
@@ -577,3 +744,9 @@ msgstr "— בחרי שמלה —"
 #: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
 msgid "— Later —"
 msgstr "— בהמשך —"
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "— No room —"
+msgstr "— ללא חדר —"

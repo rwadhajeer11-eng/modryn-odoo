@@ -1,0 +1,44 @@
+- generic [ref=f85e3]:
+  - link "דלג לתוכן" [ref=f85e4] [cursor=pointer]:
+    - /url: "#console-main"
+  - banner [ref=f85e5]:
+    - generic [ref=f85e6]:
+      - generic [ref=f85e7]: owner@demo.example
+      - generic [ref=f85e8]:
+        - button "מדריך" [ref=f85e9]
+        - button "יציאה" [ref=f85e10]
+    - navigation [ref=f85e11]:
+      - list [ref=f85e12]:
+        - listitem [ref=f85e13]:
+          - button "סקירה" [ref=f85e14]
+        - listitem [ref=f85e15]:
+          - button "פרופיל והגדרות" [ref=f85e16]
+        - listitem [ref=f85e17]:
+          - button "שעות פעילות" [ref=f85e18]
+        - listitem [ref=f85e19]:
+          - button "סוגי תורים" [ref=f85e20]
+        - listitem [ref=f85e21]:
+          - button "מדיניות ביטולים" [ref=f85e22]
+        - listitem [ref=f85e23]:
+          - button "שמלות" [ref=f85e24]
+        - listitem [ref=f85e25]:
+          - button "תורים" [ref=f85e26]
+        - listitem [ref=f85e27]:
+          - button "לקוחות" [ref=f85e28]
+        - listitem [ref=f85e29]:
+          - button "לוח היום" [ref=f85e30]
+        - listitem [ref=f85e31]:
+          - button "תפירה" [ref=f85e32]
+        - listitem [ref=f85e33]:
+          - button "קוד סריקה" [ref=f85e34]
+        - listitem [ref=f85e35]:
+          - button "צוות" [ref=f85e36]
+        - listitem [ref=f85e37]:
+          - button "סליקה ותשלומים" [ref=f85e38]
+        - listitem [ref=f85e39]:
+          - button "פרטיות" [ref=f85e40]
+  - main [ref=f85e41]:
+    - heading "MODRYN — ניהול הבוטיק" [level=1] [ref=f85e42]
+    - generic [ref=f85e43]:
+      - heading "סקירה" [level=2] [ref=f85e45]
+      - status [ref=f85e47]: טוענים את הנתונים.

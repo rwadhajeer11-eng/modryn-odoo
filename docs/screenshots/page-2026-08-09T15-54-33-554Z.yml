@@ -1,0 +1,96 @@
+- generic [active] [ref=f21e1]:
+  - text: 
+  - main [ref=f21e3]:
+    - generic [ref=f21e4]:
+      - navigation [ref=f21e5]:
+        - generic [ref=f21e6]: MODRYN
+        - link "צוות" [ref=f21e7] [cursor=pointer]:
+          - /url: /manage/staff
+        - link "תפקידים" [ref=f21e8] [cursor=pointer]:
+          - /url: /manage/roles
+        - link "מסך משמרת" [ref=f21e9] [cursor=pointer]:
+          - /url: /floor
+        - link "יציאה" [ref=f21e10] [cursor=pointer]:
+          - /url: /staff/logout
+      - main [ref=f21e11]:
+        - generic [ref=f21e12]:
+          - heading "צוות" [level=1] [ref=f21e13]
+          - link "הוספת עובדת" [ref=f21e14] [cursor=pointer]:
+            - /url: /manage/staff/new
+        - table [ref=f21e15]:
+          - rowgroup [ref=f21e16]:
+            - row [ref=f21e17]:
+              - columnheader "שם" [ref=f21e18]
+              - columnheader "תפקיד" [ref=f21e19]
+              - columnheader "רמת הרשאה" [ref=f21e20]
+              - columnheader "שם משתמש" [ref=f21e21]
+              - columnheader "טלפון" [ref=f21e22]
+              - columnheader "סטטוס" [ref=f21e23]
+              - columnheader "פעולות" [ref=f21e24]
+          - rowgroup [ref=f21e25]:
+            - row [ref=f21e26]:
+              - cell "אורלי דוד" [ref=f21e27]
+              - cell "תופרת" [ref=f21e28]
+              - cell "עובדת" [ref=f21e29]
+              - cell "orly" [ref=f21e30]
+              - cell [ref=f21e31]
+              - cell "תפוסה · דנה אברהם" [ref=f21e32]
+              - cell [ref=f21e34]:
+                - link "עריכה" [ref=f21e35] [cursor=pointer]:
+                  - /url: /manage/staff/edit/8
+                - button "ארכיון" [ref=f21e37] [cursor=pointer]
+            - row [ref=f21e38]:
+              - cell "יעל שמש" [ref=f21e39]
+              - cell "מוכרת בכירה" [ref=f21e40]
+              - cell "עובדת" [ref=f21e41]
+              - cell "yaels" [ref=f21e42]
+              - cell [ref=f21e43]
+              - cell "פנויה" [ref=f21e44]
+              - cell [ref=f21e46]:
+                - link "עריכה" [ref=f21e47] [cursor=pointer]:
+                  - /url: /manage/staff/edit/10
+                - button "ארכיון" [ref=f21e49] [cursor=pointer]
+            - row [ref=f21e50]:
+              - cell "מירי לוי" [ref=f21e51]
+              - cell "מוכרת" [ref=f21e52]
+              - cell "בעלים" [ref=f21e53]
+              - cell "miri" [ref=f21e54]
+              - cell "03-5551234" [ref=f21e55]
+              - cell "פנויה" [ref=f21e56]
+              - cell [ref=f21e58]:
+                - link "עריכה" [ref=f21e59] [cursor=pointer]:
+                  - /url: /manage/staff/edit/1
+                - button "ארכיון" [ref=f21e61] [cursor=pointer]
+            - row [ref=f21e62]:
+              - cell "נועה מזרחי" [ref=f21e63]
+              - cell "קבלת קהל" [ref=f21e64]
+              - cell "עובדת" [ref=f21e65]
+              - cell "noa" [ref=f21e66]
+              - cell [ref=f21e67]
+              - cell "פנויה" [ref=f21e68]
+              - cell [ref=f21e70]:
+                - link "עריכה" [ref=f21e71] [cursor=pointer]:
+                  - /url: /manage/staff/edit/9
+                - button "ארכיון" [ref=f21e73] [cursor=pointer]
+            - row [ref=f21e74]:
+              - cell "רותם אברהם" [ref=f21e75]
+              - cell "מוכרת" [ref=f21e76]
+              - cell "עובדת" [ref=f21e77]
+              - cell "rotem" [ref=f21e78]
+              - cell [ref=f21e79]
+              - 'cell "תפוסה · מדידה: הדגמה — שמלת כלה אמילי" [ref=f21e80]'
+              - cell [ref=f21e82]:
+                - link "עריכה" [ref=f21e83] [cursor=pointer]:
+                  - /url: /manage/staff/edit/7
+                - button "ארכיון" [ref=f21e85] [cursor=pointer]
+            - row [ref=f21e86]:
+              - cell "שרה כהן" [ref=f21e87]
+              - cell "מוכרת" [ref=f21e88]
+              - cell "מנהלת משמרת" [ref=f21e89]
+              - cell "sara" [ref=f21e90]
+              - cell [ref=f21e91]
+              - cell "פנויה" [ref=f21e92]
+              - cell [ref=f21e94]:
+                - link "עריכה" [ref=f21e95] [cursor=pointer]:
+                  - /url: /manage/staff/edit/6
+                - button "ארכיון" [ref=f21e97] [cursor=pointer]

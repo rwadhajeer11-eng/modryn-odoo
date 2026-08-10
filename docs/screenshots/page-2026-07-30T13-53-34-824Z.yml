@@ -1,0 +1,196 @@
+- generic [active] [ref=f1e1]:
+  - generic [ref=f1e2]:
+    - generic [ref=f1e3]:
+      - generic [ref=f1e4]: מכשיר
+      - button "375 · טלפון" [pressed] [ref=f1e5] [cursor=pointer]
+      - button "768 · טאבלט" [ref=f1e6] [cursor=pointer]
+      - button "1440 · שולחני" [ref=f1e7] [cursor=pointer]
+      - generic [ref=f1e8]: ‏720px cap — 768 ו-1440 זהים בכוונה
+    - generic [ref=f1e9]:
+      - generic [ref=f1e10]: דופק
+      - button "5 שניות" [pressed] [ref=f1e11] [cursor=pointer]
+      - button "10 שניות" [ref=f1e12] [cursor=pointer]
+      - button "השהיה" [ref=f1e13] [cursor=pointer]
+      - generic [ref=f1e14]: 5.0s
+      - generic [ref=f1e17]:
+        - checkbox "הדגשת שינויים" [ref=f1e18]
+        - text: הדגשת שינויים
+      - generic [ref=f1e19]:
+        - checkbox "תצוגת מצבים (Q-4)" [ref=f1e20]
+        - text: תצוגת מצבים (Q-4)
+    - generic [ref=f1e21]:
+      - generic [ref=f1e22]: תרחיש
+      - button "יום רגיל · 12" [pressed] [ref=f1e23] [cursor=pointer]
+      - button "יום עמוס · 40" [ref=f1e24] [cursor=pointer]
+      - button "תור אחד" [ref=f1e25] [cursor=pointer]
+      - button "יום ריק" [ref=f1e26] [cursor=pointer]
+      - button "שם ארוך" [ref=f1e27] [cursor=pointer]
+      - button "יום קטוע" [ref=f1e28] [cursor=pointer]
+      - button "טעינה" [ref=f1e29] [cursor=pointer]
+      - button "כשל טעינה" [ref=f1e30] [cursor=pointer]
+      - button "לא מתעדכן" [ref=f1e31] [cursor=pointer]
+      - button "חיבור פג" [ref=f1e32] [cursor=pointer]
+      - button "הפעולה הבאה תיכשל" [ref=f1e33] [cursor=pointer]
+  - generic [ref=f1e34]: 14:07 — הלוח חי. הפעימה הראשונה בעוד חמש שניות — רוב הפעימות לא ישנו כלום, וזה הנתון החשוב.
+  - generic [ref=f1e35]:
+    - paragraph [ref=f1e36]: 375 · «לוח היום» · אב-טיפוס · הנתונים מדומים
+    - generic [ref=f1e37]:
+      - link "דלג לתוכן" [ref=f1e38] [cursor=pointer]:
+        - /url: "#console-main"
+      - banner [ref=f1e39]:
+        - generic [ref=f1e40]: בוטיק אלמה
+        - button "יציאה" [ref=f1e41] [cursor=pointer]
+      - navigation "ניווט הקונסולה" [ref=f1e42]:
+        - list [ref=f1e43]:
+          - listitem [ref=f1e44]:
+            - button "פרופיל והגדרות" [ref=f1e45] [cursor=pointer]
+          - listitem [ref=f1e46]:
+            - button "שעות פעילות" [ref=f1e47] [cursor=pointer]
+          - listitem [ref=f1e48]:
+            - button "סוגי תורים" [ref=f1e49] [cursor=pointer]
+          - listitem [ref=f1e50]:
+            - button "מדיניות ביטולים" [ref=f1e51] [cursor=pointer]
+          - listitem [ref=f1e52]:
+            - button "שמלות" [ref=f1e53] [cursor=pointer]
+          - listitem [ref=f1e54]:
+            - button "תורים" [ref=f1e55] [cursor=pointer]
+          - listitem [ref=f1e56]:
+            - button "לוח היום" [ref=f1e57] [cursor=pointer]
+      - main [ref=f1e58]:
+        - heading "MODRYN — ניהול הבוטיק" [level=1] [ref=f1e59]
+        - generic [ref=f1e60]:
+          - heading "לוח היום" [level=2] [ref=f1e61]
+          - paragraph [ref=f1e62]: היום · 2.8.2026
+        - generic [ref=f1e64]:
+          - generic [ref=f1e65]: הגיעו 7/12
+          - generic [ref=f1e66]: עודכן 14:07
+        - status [ref=f1e67]
+        - list [ref=f1e70]:
+          - listitem [ref=f1e71]:
+            - generic [ref=f1e72]:
+              - generic [ref=f1e73]: 09:00
+              - generic [ref=f1e74]:
+                - generic [ref=f1e75]:
+                  - generic [ref=f1e76]: מיכל לוי
+                  - generic [ref=f1e77]: התקיים
+                - generic [ref=f1e78]: מדידה ראשונה · אישרה הגעה · שמלת אלמה
+                - generic [ref=f1e79]: נרשמה הגעה · 08:54
+            - button "ביטול הרישום — מיכל לוי, 09:00" [ref=f1e81] [cursor=pointer]:
+              - generic [ref=f1e82]: ביטול הרישום
+          - listitem [ref=f1e83]:
+            - generic [ref=f1e84]:
+              - generic [ref=f1e85]: 09:40
+              - generic [ref=f1e86]:
+                - generic [ref=f1e87]:
+                  - generic [ref=f1e88]: נועה כהן
+                  - generic [ref=f1e89]: מאושר
+                - generic [ref=f1e90]: מדידה שנייה · שמלת ורד
+                - generic [ref=f1e91]: נרשמה הגעה · 09:34
+            - button "ביטול הרישום — נועה כהן, 09:40" [ref=f1e93] [cursor=pointer]:
+              - generic [ref=f1e94]: ביטול הרישום
+          - listitem [ref=f1e95]:
+            - generic [ref=f1e96]:
+              - generic [ref=f1e97]: 10:20
+              - generic [ref=f1e98]:
+                - generic [ref=f1e99]:
+                  - generic [ref=f1e100]: שיר אברהם
+                  - generic [ref=f1e101]: בוטל
+                - generic [ref=f1e102]: התאמות אחרונות · Aurora
+          - listitem [ref=f1e103]:
+            - generic [ref=f1e104]:
+              - generic [ref=f1e105]: 11:00
+              - generic [ref=f1e106]:
+                - generic [ref=f1e107]:
+                  - generic [ref=f1e108]: טל בן-דוד
+                  - generic [ref=f1e109]: מאושר
+                - generic [ref=f1e110]: פגישת ייעוץ · אישרה הגעה · שמלת ליבי
+                - generic [ref=f1e111]: נרשמה הגעה · 10:54
+            - button "ביטול הרישום — טל בן-דוד, 11:00" [ref=f1e113] [cursor=pointer]:
+              - generic [ref=f1e114]: ביטול הרישום
+          - listitem [ref=f1e115]:
+            - generic [ref=f1e116]:
+              - generic [ref=f1e117]: 11:40
+              - generic [ref=f1e118]:
+                - generic [ref=f1e119]:
+                  - generic [ref=f1e120]: יעל מזרחי
+                  - generic [ref=f1e121]: מאושר
+                - generic [ref=f1e122]: איסוף שמלה
+                - generic [ref=f1e123]: נרשמה הגעה · 11:34
+            - button "ביטול הרישום — יעל מזרחי, 11:40" [ref=f1e125] [cursor=pointer]:
+              - generic [ref=f1e126]: ביטול הרישום
+          - listitem [ref=f1e127]:
+            - generic [ref=f1e128]:
+              - generic [ref=f1e129]: 12:20
+              - generic [ref=f1e130]:
+                - generic [ref=f1e131]:
+                  - generic [ref=f1e132]: רוני פרץ
+                  - generic [ref=f1e133]: מאושר
+                - generic [ref=f1e134]: מדידה ראשונה
+                - generic [ref=f1e135]: נרשמה הגעה · 12:14
+            - button "ביטול הרישום — רוני פרץ, 12:20" [ref=f1e137] [cursor=pointer]:
+              - generic [ref=f1e138]: ביטול הרישום
+          - listitem [ref=f1e139]:
+            - generic [ref=f1e140]:
+              - generic [ref=f1e141]: 13:00
+              - generic [ref=f1e142]:
+                - generic [ref=f1e143]:
+                  - generic [ref=f1e144]: אור דהן
+                  - generic [ref=f1e145]: מאושר
+                - generic [ref=f1e146]: מדידה שנייה · אישרה הגעה · שמלת אלמה
+                - generic [ref=f1e147]: נרשמה הגעה · 12:56
+            - button "ביטול הרישום — אור דהן, 13:00" [ref=f1e149] [cursor=pointer]:
+              - generic [ref=f1e150]: ביטול הרישום
+          - listitem [ref=f1e151]:
+            - generic [ref=f1e152]:
+              - generic [ref=f1e153]: 13:40
+              - generic [ref=f1e154]:
+                - generic [ref=f1e155]:
+                  - generic [ref=f1e156]: ליהי שמש
+                  - generic [ref=f1e157]: מאושר
+                - generic [ref=f1e158]: התאמות אחרונות · שמלת ורד
+                - generic [ref=f1e159]: נרשמה הגעה · 13:36
+            - button "ביטול הרישום — ליהי שמש, 13:40" [ref=f1e161] [cursor=pointer]:
+              - generic [ref=f1e162]: ביטול הרישום
+          - listitem [ref=f1e163]:
+            - text: עכשיו
+            - generic [ref=f1e164]: 14:07
+          - listitem [ref=f1e165]:
+            - generic [ref=f1e166]:
+              - generic [ref=f1e167]: 14:20
+              - generic [ref=f1e168]:
+                - generic [ref=f1e169]:
+                  - generic [ref=f1e170]: אדל חדד
+                  - generic [ref=f1e171]: מאושר
+                - generic [ref=f1e172]: פגישת ייעוץ · Aurora
+            - button "הגיעה — אדל חדד, 14:20" [ref=f1e174] [cursor=pointer]:
+              - generic [ref=f1e175]: הגיעה
+          - listitem [ref=f1e176]:
+            - generic [ref=f1e177]:
+              - generic [ref=f1e178]: 15:00
+              - generic [ref=f1e179]:
+                - generic [ref=f1e180]:
+                  - generic [ref=f1e181]: מאיה גולן
+                  - generic [ref=f1e182]: מאושר
+                - generic [ref=f1e183]: איסוף שמלה · אישרה הגעה · שמלת ליבי
+            - button "הגיעה — מאיה גולן, 15:00" [ref=f1e185] [cursor=pointer]:
+              - generic [ref=f1e186]: הגיעה
+          - listitem [ref=f1e187]:
+            - generic [ref=f1e188]:
+              - generic [ref=f1e189]: 15:40
+              - generic [ref=f1e190]:
+                - generic [ref=f1e191]:
+                  - generic [ref=f1e192]: הודיה אזולאי
+                  - generic [ref=f1e193]: מאושר
+                - generic [ref=f1e194]: מדידה ראשונה
+            - button "הגיעה — הודיה אזולאי, 15:40" [ref=f1e196] [cursor=pointer]:
+              - generic [ref=f1e197]: הגיעה
+          - listitem [ref=f1e198]:
+            - generic [ref=f1e199]:
+              - generic [ref=f1e200]: 16:20
+              - generic [ref=f1e201]:
+                - generic [ref=f1e202]:
+                  - generic [ref=f1e203]: אביגיל רוזנברג
+                  - generic [ref=f1e204]: מאושר
+                - generic [ref=f1e205]: מדידה שנייה
+            - button "הגיעה — אביגיל רוזנברג, 16:20" [ref=f1e207] [cursor=pointer]:
+              - generic [ref=f1e208]: הגיעה

@@ -1,0 +1,48 @@
+- generic [ref=f84e2]:
+  - link "דלג לתוכן" [ref=f84e3] [cursor=pointer]:
+    - /url: "#content"
+  - generic [ref=f84e4]:
+    - main [ref=f84e5]:
+      - generic [ref=f84e6]:
+        - heading "רישום לתור" [level=1] [ref=f84e8]
+        - button "מה קורה אחרי הרישום?" [ref=f84e11]
+        - generic [ref=f84e13]:
+          - generic [ref=f84e14]: שם מלא
+          - textbox "שם מלא" [ref=f84e15]
+        - generic [ref=f84e16]:
+          - generic [ref=f84e17]: טלפון נייד
+          - generic [ref=f84e18]: כדי שנוכל לקרוא לך כשיגיע תורך. אפשר להזין עשר ספרות, למשל 0501234567.
+          - textbox "טלפון נייד" [ref=f84e19]
+        - group "סוג הביקור" [ref=f84e20]:
+          - generic [ref=f84e22]:
+            - generic [ref=f84e23] [cursor=pointer]:
+              - radio "מדידת כלה" [ref=f84e24]
+              - text: מדידת כלה
+            - generic [ref=f84e25] [cursor=pointer]:
+              - radio "שמלת ערב" [ref=f84e26]
+              - text: שמלת ערב
+        - paragraph [ref=f84e27]: הפרטים שאת מוסרת כאן נשמרים אצל בוטיק מודרין לצורך ניהול התור בלבד — לשמור את מקומך ולקרוא לך כשיגיע תורך. מסירתם היא מרצון; בלי שם ובלי מספר נייד לא נוכל לרשום אותך לתור, ותמיד אפשר לפנות לאחת מאיתנו כאן. מקומך בתור והמילה הראשונה בשם שהזנת מוצגים בלוח התור של הבוטיק — עמוד אינטרנט ציבורי שכל מי שיודע את כתובת האתר של הבוטיק יכול לפתוח, ולא רק מסך שנמצא בתוך החנות. מספר הטלפון שלך לא מוצג שם. הפרטים לא ישמשו לפניות שיווקיות אלא אם סימנת את התיבה שלמטה, ואפשר לבקש מאיתנו להסיר את ההסכמה בכל עת. את הפרטים אנחנו שומרות רק כל עוד הם דרושים לניהול התור, ואפשר לבקש מאיתנו לעיין במידע שנשמר עלייך, לתקן אותו או למחוק אותו. פירוט מלא בעמוד הפרטיות של האתר.
+        - generic [ref=f84e29] [cursor=pointer]:
+          - checkbox "אני מאשרת קבלת הודעות SMS מבוטיק מודרין על מבצעים, קולקציות חדשות ואירועים. אפשר לבקש מאיתנו להסיר את ההסכמה בכל עת." [ref=f84e30]
+          - generic [ref=f84e31]: אני מאשרת קבלת הודעות SMS מבוטיק מודרין על מבצעים, קולקציות חדשות ואירועים. אפשר לבקש מאיתנו להסיר את ההסכמה בכל עת.
+        - button "הצטרפות לתור" [ref=f84e33]
+        - generic [ref=f84e35]:
+          - status
+    - contentinfo [ref=f84e36]:
+      - generic [ref=f84e37]:
+        - link "על הבוטיק" [ref=f84e38] [cursor=pointer]:
+          - /url: /about
+        - generic [ref=f84e39]: ·
+        - link "הצהרת נגישות" [ref=f84e40] [cursor=pointer]:
+          - /url: /accessibility
+        - generic [ref=f84e41]: ·
+        - link "הודעת פרטיות" [ref=f84e42] [cursor=pointer]:
+          - /url: /privacy
+        - generic [ref=f84e43]: ·
+        - link "@modryn.demo" [ref=f84e44] [cursor=pointer]:
+          - /url: https://instagram.com/modryn.demo
+        - generic [ref=f84e46]: ·
+        - link "+972 3 555 1234" [ref=f84e47] [cursor=pointer]:
+          - /url: tel:+972 3 555 1234
+  - button "תפריט נגישות" [ref=f84e49]:
+    - generic [ref=f84e50]: ◑

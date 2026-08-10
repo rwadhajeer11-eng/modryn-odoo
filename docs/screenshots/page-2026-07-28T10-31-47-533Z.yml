@@ -1,0 +1,57 @@
+- generic [ref=e16]:
+  - link "דלג לתוכן" [ref=e17] [cursor=pointer]:
+    - /url: "#console-main"
+  - banner [ref=e18]:
+    - generic [ref=e19]:
+      - generic [ref=e20]: test@bella.com
+      - button "יציאה" [ref=e21]
+    - navigation [ref=e22]:
+      - list [ref=e23]:
+        - listitem [ref=e24]:
+          - button "פרופיל והגדרות" [ref=e25]
+        - listitem [ref=e26]:
+          - button "שעות פעילות" [ref=e27]
+        - listitem [ref=e28]:
+          - button "סוגי תורים" [ref=e29]
+        - listitem [ref=e30]:
+          - button "מדיניות ביטולים" [ref=e31]
+        - listitem [ref=e32]:
+          - button "שמלות" [ref=e33]
+  - main [ref=e34]:
+    - heading "ניהול הבוטיק" [level=1] [ref=e35]
+    - generic [ref=e663]:
+      - heading "שמלות" [level=2] [ref=e664]
+      - generic [ref=e665]:
+        - generic [ref=e666]:
+          - generic [ref=e668]:
+            - generic [ref=e669]: חיפוש שמלה
+            - textbox "חיפוש שמלה" [ref=e670]
+          - button "שמלה חדשה" [ref=e671]
+        - generic [ref=e673]:
+          - switch "ארכיון" [checked] [active] [ref=e674]
+          - generic [ref=e675]: ארכיון
+      - status [ref=e677]: מציג 1–2 מתוך 2
+      - list [ref=e679]:
+        - listitem [ref=e718]:
+          - button "שמלת קלרה QA בארכיון לא הוגדרו מידות 7,590.90 ₪ אין תמונות" [ref=e719]:
+            - generic [ref=e721]:
+              - generic [ref=e722]: שמלת קלרה QA
+              - generic [ref=e723]:
+                - generic [ref=e724]: בארכיון
+                - generic [ref=e725]: לא הוגדרו מידות
+              - generic [ref=e726]:
+                - generic [ref=e727]: 7,590.90 ₪
+                - generic [ref=e728]: אין תמונות
+        - listitem [ref=e729]:
+          - button "שמלה למחיקה בארכיון לא הוגדרו מידות מחיר בתיאום אין תמונות" [ref=e730]:
+            - generic [ref=e732]:
+              - generic [ref=e733]: שמלה למחיקה
+              - generic [ref=e734]:
+                - generic [ref=e735]: בארכיון
+                - generic [ref=e736]: לא הוגדרו מידות
+              - generic [ref=e737]:
+                - generic [ref=e738]: מחיר בתיאום
+                - generic [ref=e739]: אין תמונות
+      - generic [ref=e713]:
+        - button "הקודם" [disabled] [ref=e714]
+        - button "הבא" [disabled] [ref=e716]

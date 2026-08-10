@@ -1,0 +1,67 @@
+- generic [ref=f23e2]:
+  - link "דלג לתוכן" [ref=f23e3] [cursor=pointer]:
+    - /url: "#content"
+  - generic [ref=f23e4]:
+    - main [ref=f23e5]:
+      - generic [ref=f23e6]:
+        - generic [ref=f23e7]:
+          - generic [ref=f23e8]:
+            - heading "בוטיק מודרין" [level=1] [ref=f23e9]
+            - paragraph [ref=f23e10]: שמלות כלה בעבודת יד, בהתאמה אישית מלאה
+            - paragraph [ref=f23e11]: "היום: 10:00–19:00"
+            - link "רחוב שינקין 24, תל אביב" [ref=f23e12] [cursor=pointer]:
+              - /url: https://maps.google.com/?q=Sheinkin+24+Tel+Aviv
+              - text: רחוב שינקין 24, תל אביב ↗
+          - link "קביעת תור למדידה" [ref=f23e14] [cursor=pointer]:
+            - /url: /book/slot
+        - generic [ref=f23e17]:
+          - link "תמר 12,900 ₪" [ref=f23e18] [cursor=pointer]:
+            - /url: /dress/2d9a07dd-2924-47e8-ab96-e309aaa7f24d
+            - generic [ref=f23e19]: ת
+            - generic [ref=f23e23]:
+              - generic [ref=f23e24]: תמר
+              - generic [ref=f23e25]: 12,900 ₪
+          - link "ליאן 15,900 ₪" [ref=f23e26] [cursor=pointer]:
+            - /url: /dress/c3b4df8b-08fd-472d-8309-7d4987f476c7
+            - generic [ref=f23e27]: ל
+            - generic [ref=f23e31]:
+              - generic [ref=f23e32]: ליאן
+              - generic [ref=f23e33]: 15,900 ₪
+          - link "שירה מחיר בתיאום" [ref=f23e34] [cursor=pointer]:
+            - /url: /dress/76a476f5-684f-459b-8408-d92e83f48285
+            - generic [ref=f23e35]: ש
+            - generic [ref=f23e39]:
+              - generic [ref=f23e40]: שירה
+              - generic [ref=f23e41]: מחיר בתיאום
+          - link "הוזמן נועם 11,500 ₪" [ref=f23e42] [cursor=pointer]:
+            - /url: /dress/ebcecc9f-742e-42d1-a7d3-fd2275e89da9
+            - generic [ref=f23e43]:
+              - generic [ref=f23e44]: נ
+              - generic [ref=f23e46]: הוזמן
+            - generic [ref=f23e48]:
+              - generic [ref=f23e49]: נועם
+              - generic [ref=f23e50]: 11,500 ₪
+          - link "אביגיל 7,400 ₪" [ref=f23e51] [cursor=pointer]:
+            - /url: /dress/8aa599cd-8ba8-4b91-8a97-c1bdb1ca80b2
+            - generic [ref=f23e52]: א
+            - generic [ref=f23e56]:
+              - generic [ref=f23e57]: אביגיל
+              - generic [ref=f23e58]: 7,400 ₪
+    - contentinfo [ref=f23e59]:
+      - generic [ref=f23e60]:
+        - link "על הבוטיק" [ref=f23e61] [cursor=pointer]:
+          - /url: /about
+        - generic [ref=f23e62]: ·
+        - link "הצהרת נגישות" [ref=f23e63] [cursor=pointer]:
+          - /url: /accessibility
+        - generic [ref=f23e64]: ·
+        - link "הודעת פרטיות" [ref=f23e65] [cursor=pointer]:
+          - /url: /privacy
+        - generic [ref=f23e66]: ·
+        - link "@modryn.demo" [ref=f23e67] [cursor=pointer]:
+          - /url: https://instagram.com/modryn.demo
+        - generic [ref=f23e69]: ·
+        - link "+972 3 555 1234" [ref=f23e70] [cursor=pointer]:
+          - /url: tel:+972 3 555 1234
+  - button "תפריט נגישות" [ref=f23e72]:
+    - generic [ref=f23e73]: ◑

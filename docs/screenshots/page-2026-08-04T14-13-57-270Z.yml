@@ -1,0 +1,96 @@
+- generic [ref=f15e5]:
+  - link "דלג לתוכן" [ref=f15e6] [cursor=pointer]:
+    - /url: "#console-main"
+  - banner [ref=f15e7]:
+    - generic [ref=f15e8]:
+      - generic [ref=f15e9]: owner@demo.example
+      - generic [ref=f15e10]:
+        - button "מדריך" [ref=f15e11]
+        - button "יציאה" [ref=f15e12]
+    - navigation [ref=f15e13]:
+      - list [ref=f15e14]:
+        - listitem [ref=f15e15]:
+          - button "סקירה" [ref=f15e16]
+        - listitem [ref=f15e17]:
+          - button "פרופיל והגדרות" [ref=f15e18]
+        - listitem [ref=f15e19]:
+          - button "שעות פעילות" [ref=f15e20]
+        - listitem [ref=f15e21]:
+          - button "סוגי תורים" [ref=f15e22]
+        - listitem [ref=f15e23]:
+          - button "מדיניות ביטולים" [ref=f15e24]
+        - listitem [ref=f15e25]:
+          - button "שמלות" [ref=f15e26]
+        - listitem [ref=f15e27]:
+          - button "תורים" [ref=f15e28]
+        - listitem [ref=f15e29]:
+          - button "לקוחות" [ref=f15e30]
+        - listitem [ref=f15e31]:
+          - button "לוח היום" [ref=f15e32]
+        - listitem [ref=f15e33]:
+          - button "תפירה" [ref=f15e34]
+        - listitem [ref=f15e35]:
+          - button "קוד סריקה" [ref=f15e36]
+        - listitem [ref=f15e37]:
+          - button "צוות" [ref=f15e38]
+        - listitem [ref=f15e39]:
+          - button "סליקה ותשלומים" [ref=f15e40]
+        - listitem [ref=f15e41]:
+          - button "פרטיות" [ref=f15e42]
+  - main [ref=f15e43]:
+    - heading "MODRYN — ניהול הבוטיק" [level=1] [ref=f15e44]
+    - generic [ref=f15e852]:
+      - button "חזרה לרשימה" [ref=f15e853]
+      - heading "QA ג׳ורני סי" [active] [level=2] [ref=f15e855]
+      - status
+      - generic [ref=f15e856]:
+        - generic [ref=f15e857]:
+          - generic [ref=f15e858]: טלפון
+          - generic [ref=f15e859]: "+972521110001"
+        - generic [ref=f15e860]:
+          - generic [ref=f15e861]: הסכמה לדיוור
+          - generic [ref=f15e862]: לא ניתנה
+      - generic [ref=f15e864]:
+        - generic [ref=f15e865]:
+          - generic [ref=f15e866]: הערות
+          - generic [ref=f15e867]: ההערות נשמרות בכרטיס ונראות לצוות הבוטיק בלבד.
+          - textbox "הערות" [ref=f15e868]:
+            - /placeholder: מה כדאי לזכור לפעם הבאה
+          - generic [ref=f15e869]: 0 / 2000
+        - generic [ref=f15e871]:
+          - paragraph [ref=f15e872]: תגיות
+          - paragraph [ref=f15e873]: אין תגיות בכרטיס הזה.
+          - generic [ref=f15e874]:
+            - generic [ref=f15e875]:
+              - generic [ref=f15e876]: תגית חדשה
+              - generic [ref=f15e877]: עד 10 תגיות, עד 24 תווים לתגית.
+              - textbox "תגית חדשה" [ref=f15e878]
+            - button "הוספה" [ref=f15e879]
+        - button "שמירה" [ref=f15e881]
+      - generic [ref=f15e883]:
+        - heading "היסטוריית תורים" [level=3] [ref=f15e884]
+        - list [ref=f15e885]:
+          - listitem [ref=f15e886]:
+            - generic [ref=f15e887]: 4.8.2026 · 17:00
+            - generic [ref=f15e888]: פגישת ייעוץ
+            - generic [ref=f15e889]: מאושר
+          - listitem [ref=f15e890]:
+            - generic [ref=f15e891]: 4.8.2026 · 14:00
+            - generic [ref=f15e892]: פגישת ייעוץ
+            - generic [ref=f15e893]: מאושר
+      - generic [ref=f15e894]:
+        - heading "יומן הודעות" [level=3] [ref=f15e895]
+        - paragraph [ref=f15e896]: יומן לקריאה בלבד. אי אפשר לערוך או למחוק רשומה.
+        - list [ref=f15e897]:
+          - listitem [ref=f15e898]:
+            - generic [ref=f15e899]:
+              - generic [ref=f15e900]: 4.8.2026 · 16:35
+              - generic [ref=f15e901]: אישור תור
+              - generic [ref=f15e902]: הועברה לספק
+            - paragraph [ref=f15e903]: "בוטיק מודרין: התור נקבע ליום שלישי, 4.8.2026 בשעה 17:00. לצפייה, אישור הגעה או ביטול: https://demo.localtest.me/b/●●●"
+          - listitem [ref=f15e904]:
+            - generic [ref=f15e905]:
+              - generic [ref=f15e906]: 4.8.2026 · 16:35
+              - generic [ref=f15e907]: קוד אימות
+              - generic [ref=f15e908]: הועברה לספק
+            - paragraph [ref=f15e909]: "קוד האימות שלך: ●●●●●●"

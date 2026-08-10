@@ -1,0 +1,42 @@
+- generic [active] [ref=f15e1]:
+  - generic [ref=f15e5]:
+    - link "" [ref=f15e6] [cursor=pointer]:
+      - /url: "#"
+    - link "עורך" [ref=f15e7] [cursor=pointer]:
+      - /url: http://bella.localtest.me:8069/@/manage/roles
+  - main [ref=f15e9]:
+    - generic [ref=f15e10]:
+      - navigation [ref=f15e11]:
+        - generic [ref=f15e12]: MODRYN
+        - link "צוות" [ref=f15e13] [cursor=pointer]:
+          - /url: /manage/staff
+        - link "תפקידים" [ref=f15e14] [cursor=pointer]:
+          - /url: /manage/roles
+        - link "מסך משמרת" [ref=f15e15] [cursor=pointer]:
+          - /url: /floor
+        - link "יציאה" [ref=f15e16] [cursor=pointer]:
+          - /url: /staff/logout
+      - main [ref=f15e17]:
+        - heading "תפקידים" [level=1] [ref=f15e18]
+        - paragraph [ref=f15e19]: התפקידים נקבעים על ידך — אפשר להוסיף כל תפקיד שהבוטיק צריך.
+        - generic [ref=f15e20]:
+          - textbox "שם תפקיד חדש" [ref=f15e21]
+          - button "הוספה" [ref=f15e22] [cursor=pointer]
+        - table [ref=f15e23]:
+          - rowgroup [ref=f15e24]:
+            - row [ref=f15e25]:
+              - cell "מוכרת" [ref=f15e26]
+              - cell [ref=f15e27]:
+                - button "ארכיון" [ref=f15e29] [cursor=pointer]
+            - row [ref=f15e30]:
+              - cell "מוכרת בכירה" [ref=f15e31]
+              - cell [ref=f15e32]:
+                - button "ארכיון" [ref=f15e34] [cursor=pointer]
+            - row [ref=f15e35]:
+              - cell "תופרת" [ref=f15e36]
+              - cell [ref=f15e37]:
+                - button "ארכיון" [ref=f15e39] [cursor=pointer]
+            - row [ref=f15e40]:
+              - cell "קבלת קהל" [ref=f15e41]
+              - cell [ref=f15e42]:
+                - button "ארכיון" [ref=f15e44] [cursor=pointer]

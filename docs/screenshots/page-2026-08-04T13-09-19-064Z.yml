@@ -1,0 +1,20 @@
+- generic [ref=f4e2]:
+  - link "דלג לתוכן" [ref=f4e3] [cursor=pointer]:
+    - /url: "#content"
+  - generic [ref=f4e4]:
+    - main [ref=f4e5]:
+      - generic [ref=f4e6]:
+        - heading "התור שלך" [level=1] [ref=f4e8]
+        - status [ref=f4e11]: טוענות את פרטי התור
+    - contentinfo [ref=f4e19]:
+      - generic [ref=f4e20]:
+        - link "על הבוטיק" [ref=f4e21] [cursor=pointer]:
+          - /url: /about
+        - generic [ref=f4e22]: ·
+        - link "הצהרת נגישות" [ref=f4e23] [cursor=pointer]:
+          - /url: /accessibility
+        - generic [ref=f4e24]: ·
+        - link "הודעת פרטיות" [ref=f4e25] [cursor=pointer]:
+          - /url: /privacy
+  - button "תפריט נגישות" [ref=f4e27]:
+    - generic [ref=f4e28]: ◑

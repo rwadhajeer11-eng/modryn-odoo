@@ -1,0 +1,100 @@
+- generic [active] [ref=f17e1]:
+  - generic [ref=f17e5]:
+    - link "" [ref=f17e6] [cursor=pointer]:
+      - /url: "#"
+    - link "עורך" [ref=f17e7] [cursor=pointer]:
+      - /url: http://bella.localtest.me:8069/@/manage/staff
+  - main [ref=f17e9]:
+    - generic [ref=f17e10]:
+      - navigation [ref=f17e11]:
+        - generic [ref=f17e12]: MODRYN
+        - link "צוות" [ref=f17e13] [cursor=pointer]:
+          - /url: /manage/staff
+        - link "תפקידים" [ref=f17e14] [cursor=pointer]:
+          - /url: /manage/roles
+        - link "מסך משמרת" [ref=f17e15] [cursor=pointer]:
+          - /url: /floor
+        - link "יציאה" [ref=f17e16] [cursor=pointer]:
+          - /url: /staff/logout
+      - main [ref=f17e17]:
+        - generic [ref=f17e18]:
+          - heading "צוות" [level=1] [ref=f17e19]
+          - link "הוספת עובדת" [ref=f17e20] [cursor=pointer]:
+            - /url: /manage/staff/new
+        - table [ref=f17e21]:
+          - rowgroup [ref=f17e22]:
+            - row [ref=f17e23]:
+              - columnheader "שם" [ref=f17e24]
+              - columnheader "תפקיד" [ref=f17e25]
+              - columnheader "רמת הרשאה" [ref=f17e26]
+              - columnheader "שם משתמש" [ref=f17e27]
+              - columnheader "טלפון" [ref=f17e28]
+              - columnheader "סטטוס" [ref=f17e29]
+              - columnheader "פעולות" [ref=f17e30]
+          - rowgroup [ref=f17e31]:
+            - row [ref=f17e32]:
+              - cell "אורלי דוד" [ref=f17e33]
+              - cell "תופרת" [ref=f17e34]
+              - cell "עובדת" [ref=f17e35]
+              - cell "orly" [ref=f17e36]
+              - cell [ref=f17e37]
+              - cell "פנויה" [ref=f17e38]
+              - cell [ref=f17e40]:
+                - link "עריכה" [ref=f17e41] [cursor=pointer]:
+                  - /url: /manage/staff/edit/8
+                - button "ארכיון" [ref=f17e43] [cursor=pointer]
+            - row [ref=f17e44]:
+              - cell "יעל שמש" [ref=f17e45]
+              - cell "מוכרת בכירה" [ref=f17e46]
+              - cell "עובדת" [ref=f17e47]
+              - cell "yaels" [ref=f17e48]
+              - cell [ref=f17e49]
+              - cell "פנויה" [ref=f17e50]
+              - cell [ref=f17e52]:
+                - link "עריכה" [ref=f17e53] [cursor=pointer]:
+                  - /url: /manage/staff/edit/10
+                - button "ארכיון" [ref=f17e55] [cursor=pointer]
+            - row [ref=f17e56]:
+              - cell "מירי לוי" [ref=f17e57]
+              - cell "מוכרת" [ref=f17e58]
+              - cell "בעלים" [ref=f17e59]
+              - cell "miri" [ref=f17e60]
+              - cell "03-5551234" [ref=f17e61]
+              - cell "פנויה" [ref=f17e62]
+              - cell [ref=f17e64]:
+                - link "עריכה" [ref=f17e65] [cursor=pointer]:
+                  - /url: /manage/staff/edit/1
+                - button "ארכיון" [ref=f17e67] [cursor=pointer]
+            - row [ref=f17e68]:
+              - cell "נועה מזרחי" [ref=f17e69]
+              - cell "קבלת קהל" [ref=f17e70]
+              - cell "עובדת" [ref=f17e71]
+              - cell "noa" [ref=f17e72]
+              - cell [ref=f17e73]
+              - cell "פנויה" [ref=f17e74]
+              - cell [ref=f17e76]:
+                - link "עריכה" [ref=f17e77] [cursor=pointer]:
+                  - /url: /manage/staff/edit/9
+                - button "ארכיון" [ref=f17e79] [cursor=pointer]
+            - row [ref=f17e80]:
+              - cell "רותם אברהם" [ref=f17e81]
+              - cell "מוכרת" [ref=f17e82]
+              - cell "עובדת" [ref=f17e83]
+              - cell "rotem" [ref=f17e84]
+              - cell [ref=f17e85]
+              - cell "פנויה" [ref=f17e86]
+              - cell [ref=f17e88]:
+                - link "עריכה" [ref=f17e89] [cursor=pointer]:
+                  - /url: /manage/staff/edit/7
+                - button "ארכיון" [ref=f17e91] [cursor=pointer]
+            - row [ref=f17e92]:
+              - cell "שרה כהן" [ref=f17e93]
+              - cell "מוכרת" [ref=f17e94]
+              - cell "מנהלת משמרת" [ref=f17e95]
+              - cell "sara" [ref=f17e96]
+              - cell [ref=f17e97]
+              - cell "פנויה" [ref=f17e98]
+              - cell [ref=f17e100]:
+                - link "עריכה" [ref=f17e101] [cursor=pointer]:
+                  - /url: /manage/staff/edit/6
+                - button "ארכיון" [ref=f17e103] [cursor=pointer]

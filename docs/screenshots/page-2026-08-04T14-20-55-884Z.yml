@@ -1,0 +1,108 @@
+- generic [ref=f15e5]:
+  - link "דלג לתוכן" [ref=f15e6] [cursor=pointer]:
+    - /url: "#console-main"
+  - banner [ref=f15e7]:
+    - generic [ref=f15e8]:
+      - generic [ref=f15e9]: owner@demo.example
+      - generic [ref=f15e10]:
+        - button "מדריך" [ref=f15e11]
+        - button "יציאה" [ref=f15e12]
+    - navigation [ref=f15e13]:
+      - list [ref=f15e14]:
+        - listitem [ref=f15e15]:
+          - button "סקירה" [ref=f15e16]
+        - listitem [ref=f15e17]:
+          - button "פרופיל והגדרות" [ref=f15e18]
+        - listitem [ref=f15e19]:
+          - button "שעות פעילות" [ref=f15e20]
+        - listitem [ref=f15e21]:
+          - button "סוגי תורים" [ref=f15e22]
+        - listitem [ref=f15e23]:
+          - button "מדיניות ביטולים" [ref=f15e24]
+        - listitem [ref=f15e25]:
+          - button "שמלות" [ref=f15e26]
+        - listitem [ref=f15e27]:
+          - button "תורים" [ref=f15e28]
+        - listitem [ref=f15e29]:
+          - button "לקוחות" [ref=f15e30]
+        - listitem [ref=f15e31]:
+          - button "לוח היום" [ref=f15e32]
+        - listitem [ref=f15e33]:
+          - button "תפירה" [ref=f15e34]
+        - listitem [ref=f15e35]:
+          - button "קוד סריקה" [ref=f15e36]
+        - listitem [ref=f15e37]:
+          - button "צוות" [ref=f15e38]
+        - listitem [ref=f15e39]:
+          - button "סליקה ותשלומים" [ref=f15e40]
+        - listitem [ref=f15e41]:
+          - button "פרטיות" [ref=f15e42]
+  - main [ref=f15e43]:
+    - heading "MODRYN — ניהול הבוטיק" [level=1] [ref=f15e44]
+    - generic [ref=f15e1217]:
+      - heading "צוות" [level=2] [ref=f15e1218]
+      - list [ref=f15e1220]:
+        - listitem [ref=f15e1221]:
+          - generic [ref=f15e1222]: owner@demo.example
+          - generic [ref=f15e1223]: owner@demo.example
+          - generic [ref=f15e1224]: בעלת הבוטיק
+          - generic [ref=f15e1225]: זו את
+          - button "עריכה" [ref=f15e1227]
+        - listitem [ref=f15e1229]:
+          - generic [ref=f15e1230]: נועה ברזילי
+          - generic [ref=f15e1231]: noa@demo.example
+          - generic [ref=f15e1232]: אחראית משמרת
+          - generic [ref=f15e1233]:
+            - button "עריכה" [ref=f15e1234]
+            - button "השבתה" [ref=f15e1236]
+        - listitem [ref=f15e1238]:
+          - generic [ref=f15e1239]: שירן כהן
+          - generic [ref=f15e1240]: shiran@demo.example
+          - generic [ref=f15e1241]: קבלה
+          - generic [ref=f15e1242]:
+            - button "עריכה" [ref=f15e1243]
+            - button "השבתה" [ref=f15e1245]
+        - listitem [ref=f15e1247]:
+          - generic [ref=f15e1248]: יעל מזרחי
+          - generic [ref=f15e1249]: yael@demo.example
+          - generic [ref=f15e1250]: יועצת מכירות
+          - generic [ref=f15e1251]:
+            - button "עריכה" [ref=f15e1252]
+            - button "השבתה" [ref=f15e1254]
+        - listitem [ref=f15e1256]:
+          - generic [ref=f15e1257]: רבקה לוי
+          - generic [ref=f15e1258]: rivka@demo.example
+          - generic [ref=f15e1259]: תופרת
+          - generic [ref=f15e1260]:
+            - button "עריכה" [ref=f15e1261]
+            - button "השבתה" [ref=f15e1263]
+        - listitem [ref=f15e1265]:
+          - generic [ref=f15e1266]: אסתר פרידמן
+          - generic [ref=f15e1267]: esther@demo.example
+          - generic [ref=f15e1268]: תופרת
+          - generic [ref=f15e1269]:
+            - button "עריכה" [ref=f15e1270]
+            - button "השבתה" [ref=f15e1272]
+      - generic [ref=f15e1275]:
+        - heading "הוספת אשת צוות" [level=3] [ref=f15e1276]
+        - generic [ref=f15e1277]:
+          - generic [ref=f15e1279]:
+            - generic [ref=f15e1280]: אימייל
+            - textbox "אימייל" [ref=f15e1281]: qa-journey-d@demo.example
+          - generic [ref=f15e1283]:
+            - generic [ref=f15e1284]: שם לתצוגה
+            - textbox "שם לתצוגה" [ref=f15e1285]: QA בדיקת צוות
+          - generic [ref=f15e1286]:
+            - generic [ref=f15e1287]: תפקיד
+            - combobox "תפקיד" [ref=f15e1288]:
+              - option "בעלת הבוטיק"
+              - option "אחראית משמרת"
+              - option "קבלה" [selected]
+              - option "יועצת מכירות"
+              - option "תופרת"
+          - generic [ref=f15e1289]:
+            - generic [ref=f15e1290]: סיסמה
+            - textbox "סיסמה" [active] [ref=f15e1291]: modryn-demo-2026
+        - paragraph [ref=f15e1292]: יש למסור את הסיסמה לעובדת בעצמך. המערכת אינה מעבירה אותה לאיש.
+        - alert [ref=f15e1295]: כתובת האימייל הזו כבר משויכת לאשת צוות פעילה.
+        - button "הוספה לצוות" [ref=f15e1293]

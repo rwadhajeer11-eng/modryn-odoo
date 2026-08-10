@@ -1,0 +1,16 @@
+- generic [ref=e2]:
+  - link "דלג לתוכן" [ref=e3] [cursor=pointer]:
+    - /url: "#content"
+  - generic [ref=e4]:
+    - main [ref=e5]:
+      - link "קביעת תור למדידה" [ref=e9] [cursor=pointer]:
+        - /url: /book/slot
+    - contentinfo [ref=e18]:
+      - generic [ref=e19]:
+        - link "על הבוטיק" [ref=e20] [cursor=pointer]:
+          - /url: /about
+        - generic [ref=e21]: ·
+        - link "הצהרת נגישות" [ref=e22] [cursor=pointer]:
+          - /url: /accessibility
+  - button "תפריט נגישות" [ref=e24]:
+    - generic [ref=e25]: ◑

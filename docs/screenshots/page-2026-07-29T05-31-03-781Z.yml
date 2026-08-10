@@ -1,0 +1,68 @@
+- generic [ref=f4e3]:
+  - banner [ref=f4e4]:
+    - link "✦ מערכת בוטיק" [ref=f4e5] [cursor=pointer]:
+      - /url: /
+    - navigation "main" [ref=f4e6]:
+      - link "משמרת" [ref=f4e7] [cursor=pointer]:
+        - /url: /floor
+      - link "תופרות" [ref=f4e8] [cursor=pointer]:
+        - /url: /atelier
+      - link "צ׳ק-אין QR" [ref=f4e9] [cursor=pointer]:
+        - /url: /qr
+      - link "תור" [ref=f4e10] [cursor=pointer]:
+        - /url: /queue
+    - button "❓ מדריך" [ref=f4e11] [cursor=pointer]
+    - generic "חי" [ref=f4e43]
+    - group "language" [ref=f4e15]:
+      - button "עב" [pressed] [ref=f4e16] [cursor=pointer]
+      - button "ع" [ref=f4e17] [cursor=pointer]
+      - button "EN" [ref=f4e18] [cursor=pointer]
+  - main [ref=f4e19]:
+    - generic [ref=f4e20]:
+      - generic [ref=f4e21]:
+        - heading "🧵 תופרות" [level=1] [ref=f4e22]
+        - button "+ הוספת תופרת" [ref=f4e23] [cursor=pointer]
+        - button "+ משימת תיקון חדשה" [ref=f4e24] [cursor=pointer]
+      - generic [ref=f4e25]:
+        - heading "עומס שבועי" [level=2] [ref=f4e27]
+        - generic [ref=f4e44]:
+          - generic [ref=f4e45]:
+            - generic [ref=f4e46]:
+              - strong [ref=f4e47]: מנאל
+              - button "עריכה" [ref=f4e48] [cursor=pointer]: ✏️
+              - button "מחיקה" [ref=f4e49] [cursor=pointer]: 🗑️
+            - generic [ref=f4e50]: 0 / 36 שעות
+          - generic [ref=f4e53]:
+            - generic [ref=f4e54]:
+              - strong [ref=f4e55]: תמאם
+              - button "עריכה" [ref=f4e56] [cursor=pointer]: ✏️
+              - button "מחיקה" [ref=f4e57] [cursor=pointer]: 🗑️
+            - generic [ref=f4e58]: 0 / 36 שעות
+          - generic [ref=f4e61]:
+            - generic [ref=f4e62]:
+              - strong [ref=f4e63]: סוגוד
+              - button "עריכה" [ref=f4e64] [cursor=pointer]: ✏️
+              - button "מחיקה" [ref=f4e65] [cursor=pointer]: 🗑️
+            - generic [ref=f4e66]: 0 / 36 שעות
+      - generic [ref=f4e29]:
+        - heading "משימות תיקון" [level=2] [ref=f4e31]
+        - generic [ref=f4e32]:
+          - heading "קליטה · 0" [level=4] [ref=f4e34]
+          - heading "בעבודה · 0" [level=4] [ref=f4e36]
+          - heading "בקרת איכות · 0" [level=4] [ref=f4e38]
+          - heading "מוכן · 0" [level=4] [ref=f4e40]
+          - heading "נמסר · 0" [level=4] [ref=f4e42]
+      - dialog "הוספת תופרת" [ref=f4e70]:
+        - heading "הוספת תופרת" [level=3] [ref=f4e71]
+        - generic [ref=f4e72]:
+          - generic [ref=f4e73]: שם
+          - textbox [active] [ref=f4e74]
+        - generic [ref=f4e75]:
+          - generic [ref=f4e76]: טלפון
+          - textbox [ref=f4e77]
+        - generic [ref=f4e78]:
+          - generic [ref=f4e79]: עומס שבועי (שעות)
+          - spinbutton [ref=f4e80]: "40"
+        - generic [ref=f4e81]:
+          - button "ביטול" [ref=f4e82] [cursor=pointer]
+          - button "שמירה" [ref=f4e83] [cursor=pointer]

@@ -1,0 +1,826 @@
+- generic [active] [ref=e1]:
+  - navigation "ניווט אב-טיפוס" [ref=e2]:
+    - button "הכול (מוצג כברירת מחדל)" [pressed] [ref=e3] [cursor=pointer]
+    - button "שלב 1 — מועד" [ref=e4] [cursor=pointer]
+    - button "שלב 2 — פרטים" [ref=e5] [cursor=pointer]
+    - button "שלב 3 — מדיניות" [ref=e6] [cursor=pointer]
+    - button "שלב 4 — אימות" [ref=e7] [cursor=pointer]
+    - button "אישור" [ref=e8] [cursor=pointer]
+    - button "כניסה ומצבי קצה" [ref=e9] [cursor=pointer]
+    - button "רוחב ‎≥768" [ref=e10] [cursor=pointer]
+  - paragraph [ref=e11]:
+    - text: אב-טיפוס עצמאי, ללא בקשות רשת. הגופנים נטענים מהמערכת המקומית — בייצור הם מוגשים עצמאית דרך @fontsource. העמודים מוצגים במסגרות ברוחב 375 (ראשי) ובמסגרת אחת ברוחב 900 להדגמת ‎≥768. הכול גלוי כברירת מחדל — הסינון למעלה הוא תוספת של JavaScript בלבד.
+    - generic [ref=e12]: "⚠ ארבע מחרוזות באב-הטיפוס אינן קיימות ב-copy.md ונכתבו כמציין מקום של הבונה:"
+    - text: booking.continueStep · booking.pickTime · booking.forDress · booking.sizeRequired. כל היתר מועתק מילה במילה מטיוטת copy.md, שכולה טרם אושרה.
+  - generic [ref=e13]: "שלב 1 — מועד · /book/slot[/{dressId}]"
+  - generic [ref=e14]:
+    - paragraph [ref=e15]: "/book/slot/{dressId} · ברירת מחדל, מסלול מבוסס-פריט (שמלה קשורה) · 375 — ⚠ שם השלב הוא ה-h1 (§9.1), לא שם הבוטיק (§2.7 של סעיף א' קבע אחרת — סתירה לשער)"
+    - generic [ref=e16]:
+      - generic [ref=e17]:
+        - link "חזרה לקולקציה" [ref=e18] [cursor=pointer]:
+          - /url: /
+          - generic [ref=e19]: →
+          - text: חזרה לקולקציה
+        - list "שלבי קביעת התור" [ref=e20]:
+          - listitem [ref=e21]:
+            - generic [ref=e22]: "1"
+            - generic [ref=e23]: מועד
+          - listitem [ref=e24]:
+            - generic [ref=e25]: "2"
+            - generic [ref=e26]: פרטים
+          - listitem [ref=e27]:
+            - generic [ref=e28]: "3"
+            - generic [ref=e29]: מדיניות ביטולים
+          - listitem [ref=e30]:
+            - generic [ref=e31]: "4"
+            - generic [ref=e32]: אימות טלפון
+        - heading "מועד" [level=1] [ref=e34]
+        - generic [ref=e36]:
+          - paragraph [ref=e37]:
+            - generic [ref=e38]: "עבור: עלמה"
+          - group "סוג הפגישה" [ref=e39]:
+            - generic [ref=e41]:
+              - generic [ref=e42] [cursor=pointer]:
+                - radio "מדידה ראשונה 45 דקות" [checked] [ref=e43]
+                - generic [ref=e44]:
+                  - generic [ref=e45]: מדידה ראשונה
+                  - generic [ref=e46]: 45 דקות
+              - generic [ref=e47] [cursor=pointer]:
+                - radio "מדידה עם מלווים 90 דקות לכלות בלבד" [ref=e48]
+                - generic [ref=e49]:
+                  - generic [ref=e50]: מדידה עם מלווים
+                  - generic [ref=e51]: 90 דקות
+                  - generic [ref=e52]: לכלות בלבד
+              - generic [ref=e54] [cursor=pointer]:
+                - radio "חבילת כלה 120 דקות" [ref=e55]
+                - generic [ref=e56]:
+                  - generic [ref=e57]: חבילת כלה
+                  - generic [ref=e58]: 120 דקות
+          - generic [ref=e59]:
+            - generic [ref=e60]: תאריך
+            - textbox "תאריך" [ref=e61]: 2026-08-04
+          - group "שעה" [ref=e62]:
+            - generic [ref=e64]:
+              - generic [ref=e65] [cursor=pointer]:
+                - radio "10:00" [ref=e66]
+                - generic [ref=e67]: 10:00
+              - generic [ref=e68] [cursor=pointer]:
+                - radio "10:45" [ref=e69]
+                - generic [ref=e70]: 10:45
+              - generic [ref=e71] [cursor=pointer]:
+                - radio "11:30" [checked] [ref=e72]
+                - generic [ref=e73]: 11:30
+              - generic [ref=e74] [cursor=pointer]:
+                - radio "12:15" [ref=e75]
+                - generic [ref=e76]: 12:15
+              - generic [ref=e77] [cursor=pointer]:
+                - radio "13:00" [ref=e78]
+                - generic [ref=e79]: 13:00
+              - generic [ref=e80] [cursor=pointer]:
+                - radio "13:45" [ref=e81]
+                - generic [ref=e82]: 13:45
+              - generic [ref=e83] [cursor=pointer]:
+                - radio "14:30" [ref=e84]
+                - generic [ref=e85]: 14:30
+              - generic [ref=e86] [cursor=pointer]:
+                - radio "15:15" [ref=e87]
+                - generic [ref=e88]: 15:15
+          - button "להמשך" [ref=e90] [cursor=pointer]
+      - generic [ref=e91]: ◑
+  - generic [ref=e92]:
+    - paragraph [ref=e93]: "/book/slot/{dressId} · D3 — שורה עם מקדמה נבחרה. הענף הוא לכל שורה: האחיות נשארות ניתנות לבחירה, התאריך והשעות נשארים פעילים, וכפתור ההמשך בלבד מושבת. ⚠ §3.5 מציב את ‎<Price>‎ כסיומת הפסקה של booking.depositByPhone; טיוטת copy.md מסתיימת ב«זה לוקח רגע.» והמחיר נקרא כיתום — נדרשת הכרעה בשער"
+    - generic [ref=e94]:
+      - generic [ref=e95]:
+        - link "חזרה לקולקציה" [ref=e96] [cursor=pointer]:
+          - /url: /
+          - generic [ref=e97]: →
+          - text: חזרה לקולקציה
+        - list "שלבי קביעת התור" [ref=e98]:
+          - listitem [ref=e99]:
+            - generic [ref=e100]: "1"
+            - generic [ref=e101]: מועד
+          - listitem [ref=e102]:
+            - generic [ref=e103]: "2"
+            - generic [ref=e104]: פרטים
+          - listitem [ref=e105]:
+            - generic [ref=e106]: "3"
+            - generic [ref=e107]: מדיניות ביטולים
+          - listitem [ref=e108]:
+            - generic [ref=e109]: "4"
+            - generic [ref=e110]: אימות טלפון
+        - heading "מועד" [level=1] [ref=e112]
+        - generic [ref=e114]:
+          - paragraph [ref=e115]:
+            - generic [ref=e116]: "עבור: עלמה"
+          - group "סוג הפגישה" [ref=e117]:
+            - generic [ref=e119]:
+              - generic [ref=e120] [cursor=pointer]:
+                - radio "מדידה ראשונה 45 דקות" [ref=e121]
+                - generic [ref=e122]:
+                  - generic [ref=e123]: מדידה ראשונה
+                  - generic [ref=e124]: 45 דקות
+              - generic [ref=e125]:
+                - generic [ref=e126] [cursor=pointer]:
+                  - radio "חבילת כלה 120 דקות" [checked] [ref=e127]
+                  - generic [ref=e128]:
+                    - generic [ref=e129]: חבילת כלה
+                    - generic [ref=e130]: 120 דקות
+                - generic [ref=e131]:
+                  - paragraph [ref=e132]: את הפגישה הזאת אנחנו קובעות בטלפון, כדי לסגור יחד גם את המקדמה. נשמח שתתקשרי — זה לוקח רגע. 1,500 ₪
+                  - generic [ref=e133]:
+                    - link "חיוג 03-555-1234" [ref=e134] [cursor=pointer]:
+                      - /url: tel:+97235551234
+                      - text: חיוג
+                      - generic [ref=e135]: 03-555-1234
+                    - link "וואטסאפ" [ref=e136] [cursor=pointer]:
+                      - /url: https://wa.me/972501234567
+                    - link "ניווט ב-Waze" [ref=e137] [cursor=pointer]:
+                      - /url: https://waze.com/ul?q=בלה
+                    - link "פתיחה ב-Google Maps" [ref=e138] [cursor=pointer]:
+                      - /url: https://maps.google.com/?q=בלה
+                    - link "אינסטגרם" [ref=e139] [cursor=pointer]:
+                      - /url: https://instagram.com/bella
+              - generic [ref=e140] [cursor=pointer]:
+                - radio "מדידה עם מלווים 90 דקות לכלות בלבד" [ref=e141]
+                - generic [ref=e142]:
+                  - generic [ref=e143]: מדידה עם מלווים
+                  - generic [ref=e144]: 90 דקות
+                  - generic [ref=e145]: לכלות בלבד
+          - generic [ref=e147]:
+            - generic [ref=e148]: תאריך
+            - textbox "תאריך" [ref=e149]: 2026-08-04
+          - group "שעה" [ref=e150]:
+            - generic [ref=e152]:
+              - generic [ref=e153] [cursor=pointer]:
+                - radio "10:00" [ref=e154]
+                - generic [ref=e155]: 10:00
+              - generic [ref=e156] [cursor=pointer]:
+                - radio "10:45" [checked] [ref=e157]
+                - generic [ref=e158]: 10:45
+              - generic [ref=e159] [cursor=pointer]:
+                - radio "11:30" [ref=e160]
+                - generic [ref=e161]: 11:30
+              - generic [ref=e162] [cursor=pointer]:
+                - radio "12:15" [ref=e163]
+                - generic [ref=e164]: 12:15
+              - generic [ref=e165] [cursor=pointer]:
+                - radio "13:00" [ref=e166]
+                - generic [ref=e167]: 13:00
+              - generic [ref=e168] [cursor=pointer]:
+                - radio "13:45" [ref=e169]
+                - generic [ref=e170]: 13:45
+          - button "להמשך" [disabled] [ref=e172]
+      - generic [ref=e173]: ◑
+  - generic [ref=e174]:
+    - paragraph [ref=e175]: "/book/slot · אין מועדים פנויים (booking.noSlots) — המצב שבו כל בוטיק חדש נכנס לאוויר. עובדה, לא תקלה: בלי אייקון, בלי מסגרת, בלי צבע סכנה, ובלי כפתור «נסי שוב»."
+    - generic [ref=e176]:
+      - generic [ref=e177]:
+        - link "חזרה לקולקציה" [ref=e178] [cursor=pointer]:
+          - /url: /
+          - generic [ref=e179]: →
+          - text: חזרה לקולקציה
+        - list "שלבי קביעת התור" [ref=e180]:
+          - listitem [ref=e181]:
+            - generic [ref=e182]: "1"
+            - generic [ref=e183]: מועד
+          - listitem [ref=e184]:
+            - generic [ref=e185]: "2"
+            - generic [ref=e186]: פרטים
+          - listitem [ref=e187]:
+            - generic [ref=e188]: "3"
+            - generic [ref=e189]: מדיניות ביטולים
+          - listitem [ref=e190]:
+            - generic [ref=e191]: "4"
+            - generic [ref=e192]: אימות טלפון
+        - heading "מועד" [level=1] [ref=e194]
+        - generic [ref=e196]:
+          - group "סוג הפגישה" [ref=e197]:
+            - generic [ref=e199]:
+              - generic [ref=e200] [cursor=pointer]:
+                - radio "מדידה ראשונה 45 דקות" [checked] [ref=e201]
+                - generic [ref=e202]:
+                  - generic [ref=e203]: מדידה ראשונה
+                  - generic [ref=e204]: 45 דקות
+              - generic [ref=e205] [cursor=pointer]:
+                - radio "חבילת כלה 120 דקות" [ref=e206]
+                - generic [ref=e207]:
+                  - generic [ref=e208]: חבילת כלה
+                  - generic [ref=e209]: 120 דקות
+          - generic [ref=e210]:
+            - generic [ref=e211]: תאריך
+            - textbox "תאריך" [ref=e212]: 2026-08-06
+          - group "שעה" [ref=e213]:
+            - paragraph [ref=e215]: אין מועדים פנויים בתאריך הזה. אפשר לבחור תאריך אחר, ואפשר גם להתקשר ונמצא לך מועד.
+          - button "להמשך" [disabled] [ref=e217]
+      - generic [ref=e218]: ◑
+  - generic [ref=e219]:
+    - paragraph [ref=e220]: /book/slot · טעינה — שלד, לעולם לא ספינר. המדרגות נטענות חיות (תוכן ידוע מראש; שלד שם היה מתיימר לחוסר ודאות שאינו קיים). תחת prefers-reduced-motion הפעימה סטטית.
+    - generic [ref=e221]:
+      - generic [ref=e222]:
+        - link "חזרה לקולקציה" [ref=e223] [cursor=pointer]:
+          - /url: /
+          - generic [ref=e224]: →
+          - text: חזרה לקולקציה
+        - list "שלבי קביעת התור" [ref=e225]:
+          - listitem [ref=e226]:
+            - generic [ref=e227]: "1"
+            - generic [ref=e228]: מועד
+          - listitem [ref=e229]:
+            - generic [ref=e230]: "2"
+            - generic [ref=e231]: פרטים
+          - listitem [ref=e232]:
+            - generic [ref=e233]: "3"
+            - generic [ref=e234]: מדיניות ביטולים
+          - listitem [ref=e235]:
+            - generic [ref=e236]: "4"
+            - generic [ref=e237]: אימות טלפון
+        - heading "מועד" [level=1] [ref=e239]
+      - generic [ref=e259]: ◑
+  - generic [ref=e260]:
+    - paragraph [ref=e261]: /book/slot · חזרה מהשליחה עם 409 SLOT_UNAVAILABLE. הסוג והתאריך שורדים, השעות נטענות מחדש והבחירה מתאפסת. ההודעה היא role="alert" ב---color-danger — התנגשות שהיא צריכה לפעול לגביה, לא תקלה. היא הגיעה עם ניווט, כך שה-Router כבר העביר מיקוד ל-<main> מעליה; המסך אינו מוסיף מיקוד משלו.
+    - generic [ref=e262]:
+      - generic [ref=e263]:
+        - link "חזרה לקולקציה" [ref=e264] [cursor=pointer]:
+          - /url: /
+          - generic [ref=e265]: →
+          - text: חזרה לקולקציה
+        - list "שלבי קביעת התור" [ref=e266]:
+          - listitem [ref=e267]:
+            - generic [ref=e268]: "1"
+            - generic [ref=e269]: מועד
+          - listitem [ref=e270]:
+            - generic [ref=e271]: "2"
+            - generic [ref=e272]: פרטים
+          - listitem [ref=e273]:
+            - generic [ref=e274]: "3"
+            - generic [ref=e275]: מדיניות ביטולים
+          - listitem [ref=e276]:
+            - generic [ref=e277]: "4"
+            - generic [ref=e278]: אימות טלפון
+        - heading "מועד" [level=1] [ref=e280]
+        - generic [ref=e282]:
+          - group "סוג הפגישה" [ref=e283]:
+            - generic [ref=e285]:
+              - generic [ref=e286] [cursor=pointer]:
+                - radio "מדידה ראשונה 45 דקות" [checked] [ref=e287]
+                - generic [ref=e288]:
+                  - generic [ref=e289]: מדידה ראשונה
+                  - generic [ref=e290]: 45 דקות
+              - generic [ref=e291] [cursor=pointer]:
+                - radio "חבילת כלה 120 דקות" [ref=e292]
+                - generic [ref=e293]:
+                  - generic [ref=e294]: חבילת כלה
+                  - generic [ref=e295]: 120 דקות
+          - generic [ref=e296]:
+            - generic [ref=e297]: תאריך
+            - textbox "תאריך" [ref=e298]: 2026-08-04
+          - alert [ref=e299]: המועד הזה נתפס בינתיים. אלה המועדים הפנויים המעודכנים — אפשר לבחור מועד אחר.
+          - group "שעה" [ref=e300]:
+            - generic [ref=e302]:
+              - generic [ref=e303] [cursor=pointer]:
+                - radio "10:00" [ref=e304]
+                - generic [ref=e305]: 10:00
+              - generic [ref=e306] [cursor=pointer]:
+                - radio "11:30" [ref=e307]
+                - generic [ref=e308]: 11:30
+              - generic [ref=e309] [cursor=pointer]:
+                - radio "13:00" [ref=e310]
+                - generic [ref=e311]: 13:00
+              - generic [ref=e312] [cursor=pointer]:
+                - radio "14:30" [ref=e313]
+                - generic [ref=e314]: 14:30
+          - button "להמשך" [disabled] [ref=e316]
+      - generic [ref=e317]: ◑
+  - generic [ref=e318]: "שלב 2 — פרטים · /book/details[/{dressId}]"
+  - generic [ref=e319]:
+    - paragraph [ref=e320]: /book/details · מסלול כללי (ללא שמלה קשורה). מונה התווים אינו אזור חי — הוא נאמר פעם אחת כשהמיקוד מגיע לשדה, ואף פעם לא לכל הקשה.
+    - generic [ref=e321]:
+      - generic [ref=e322]:
+        - link "חזרה לשלב הקודם" [ref=e323] [cursor=pointer]:
+          - /url: /book/slot
+          - generic [ref=e324]: →
+          - text: חזרה לשלב הקודם
+        - list "שלבי קביעת התור" [ref=e325]:
+          - listitem [ref=e326]:
+            - generic [ref=e327]: ✓
+            - generic [ref=e328]: מועד
+          - listitem [ref=e329]:
+            - generic [ref=e330]: "2"
+            - generic [ref=e331]: פרטים
+          - listitem [ref=e332]:
+            - generic [ref=e333]: "3"
+            - generic [ref=e334]: מדיניות ביטולים
+          - listitem [ref=e335]:
+            - generic [ref=e336]: "4"
+            - generic [ref=e337]: אימות טלפון
+        - heading "פרטים" [level=1] [ref=e339]
+        - generic [ref=e341]:
+          - generic [ref=e342]:
+            - generic [ref=e343]: שם מלא
+            - textbox "שם מלא" [ref=e344]
+          - generic [ref=e345]:
+            - generic [ref=e346]: משהו שנשמח לדעת מראש
+            - paragraph [ref=e347]: "לא חובה. למשל: מגיעה עם אמא, צריך שולחן נגיש, או דגם שראית ואהבת."
+            - textbox "משהו שנשמח לדעת מראש" [ref=e348]
+            - generic [ref=e349]: 0 / 500
+          - button "להמשך" [ref=e351] [cursor=pointer]
+      - generic [ref=e352]: ◑
+  - generic [ref=e353]:
+    - paragraph [ref=e354]:
+      - text: "/book/details/{dressId} · מסלול מבוסס-פריט, מידה שאינה במלאי נבחרה (D4). השבב זהה בכל אסימון לשבב זמין — ללא עמעום, ללא קו חוצה, ללא תג מלאי. הסימון הוא מילה בלבד."
+      - generic [ref=e355]: "⚠ סתירה לשער: סעיף ב' §4.5b/P9 דורש ביטוי של ‎≤24 תווים בתוך כל שבב; copy.md מציב את המשפט המלא מתחת לשבבים בעת בחירה. אב-הטיפוס מציג את נוסח copy.md כמצוין במשימה"
+    - generic [ref=e356]:
+      - generic [ref=e357]:
+        - link "חזרה לשלב הקודם" [ref=e358] [cursor=pointer]:
+          - /url: /book/slot/almah
+          - generic [ref=e359]: →
+          - text: חזרה לשלב הקודם
+        - list "שלבי קביעת התור" [ref=e360]:
+          - listitem [ref=e361]:
+            - generic [ref=e362]: ✓
+            - generic [ref=e363]: מועד
+          - listitem [ref=e364]:
+            - generic [ref=e365]: "2"
+            - generic [ref=e366]: פרטים
+          - listitem [ref=e367]:
+            - generic [ref=e368]: "3"
+            - generic [ref=e369]: מדיניות ביטולים
+          - listitem [ref=e370]:
+            - generic [ref=e371]: "4"
+            - generic [ref=e372]: אימות טלפון
+        - heading "פרטים" [level=1] [ref=e374]
+        - generic [ref=e376]:
+          - generic [ref=e377]: עלמה
+          - separator [ref=e382]
+          - generic [ref=e383]:
+            - generic [ref=e384]: שם מלא
+            - textbox "שם מלא" [ref=e385]: נועה כהן
+          - group "מידות" [ref=e386]:
+            - generic [ref=e388]:
+              - generic [ref=e389] [cursor=pointer]:
+                - radio "36" [ref=e390]
+                - generic [ref=e391]: "36"
+              - generic [ref=e392] [cursor=pointer]:
+                - radio "38" [ref=e393]
+                - generic [ref=e394]: "38"
+              - generic [ref=e395] [cursor=pointer]:
+                - radio "40" [ref=e396]
+                - generic [ref=e397]: "40"
+              - generic [ref=e398] [cursor=pointer]:
+                - radio "42" [checked] [ref=e399]
+                - generic [ref=e400]: "42"
+              - generic [ref=e401] [cursor=pointer]:
+                - radio "44" [ref=e402]
+                - generic [ref=e403]: "44"
+            - status [ref=e404]: אפשר לבחור את המידה הזאת גם עכשיו — היא לא נמצאת אצלנו כרגע, ואפשר להזמין אותה במיוחד למדידה.
+          - generic [ref=e405]:
+            - generic [ref=e406]: משהו שנשמח לדעת מראש
+            - paragraph [ref=e407]: "לא חובה. למשל: מגיעה עם אמא, צריך שולחן נגיש, או דגם שראית ואהבת."
+            - textbox "משהו שנשמח לדעת מראש" [ref=e408]: מגיעה עם אמא ועם אחותי.
+            - generic [ref=e409]: 23 / 500
+          - button "להמשך" [ref=e411] [cursor=pointer]
+      - generic [ref=e412]: ◑
+  - generic [ref=e413]:
+    - paragraph [ref=e414]: "/book/details/{dressId} · שגיאות אימות לקוח. השגיאות עולות בשליחה בלבד — לא ב-blur ולא בהקלדה. כפתור ההמשך לעולם אינו מושבת בגלל מצב אימות (§4.4d): הוא נלחץ, נכשל בגלוי, והמיקוד עובר לשדה הפגום הראשון."
+    - generic [ref=e415]:
+      - generic [ref=e416]:
+        - link "חזרה לשלב הקודם" [ref=e417] [cursor=pointer]:
+          - /url: /book/slot/almah
+          - generic [ref=e418]: →
+          - text: חזרה לשלב הקודם
+        - list "שלבי קביעת התור" [ref=e419]:
+          - listitem [ref=e420]:
+            - generic [ref=e421]: ✓
+            - generic [ref=e422]: מועד
+          - listitem [ref=e423]:
+            - generic [ref=e424]: "2"
+            - generic [ref=e425]: פרטים
+          - listitem [ref=e426]:
+            - generic [ref=e427]: "3"
+            - generic [ref=e428]: מדיניות ביטולים
+          - listitem [ref=e429]:
+            - generic [ref=e430]: "4"
+            - generic [ref=e431]: אימות טלפון
+        - heading "פרטים" [level=1] [ref=e433]
+        - generic [ref=e435]:
+          - generic [ref=e436]:
+            - generic [ref=e437]: שם מלא
+            - textbox "שם מלא" [invalid] [ref=e438]
+            - alert [ref=e439]: צריך למלא שם כדי שנוכל לרשום את התור.
+          - group "מידות" [ref=e440]:
+            - generic [ref=e442]:
+              - generic [ref=e443] [cursor=pointer]:
+                - radio "36" [ref=e444]
+                - generic [ref=e445]: "36"
+              - generic [ref=e446] [cursor=pointer]:
+                - radio "38" [ref=e447]
+                - generic [ref=e448]: "38"
+              - generic [ref=e449] [cursor=pointer]:
+                - radio "40" [ref=e450]
+                - generic [ref=e451]: "40"
+            - alert [ref=e452]: צריך לבחור מידה כדי להמשיך.
+          - generic [ref=e453]:
+            - generic [ref=e454]: משהו שנשמח לדעת מראש
+            - paragraph [ref=e455]: "לא חובה. למשל: מגיעה עם אמא, צריך שולחן נגיש, או דגם שראית ואהבת."
+            - textbox "משהו שנשמח לדעת מראש" [invalid] [ref=e456]: …
+            - generic [ref=e457]: 500 / 500
+            - alert [ref=e458]: ההערה ארוכה מדי. עד 500 תווים.
+          - button "להמשך" [ref=e460] [cursor=pointer]
+      - generic [ref=e461]: ◑
+  - generic [ref=e462]: "שלב 3 — מדיניות ביטולים · /book/terms[/{dressId}]"
+  - generic [ref=e463]:
+    - paragraph [ref=e464]: "/book/terms/{dressId} · ברירת מחדל, טקסט מדיניות ארוך ואמיתי שכתבה בעלת הבוטיק. ללא תיבת גלילה פנימית, ללא clamp, ללא «קרא עוד», ללא כפתור צף. העמוד גדל והתיבה נשארת השורה האחרונה בזרימה. שני המספרים מעל הפרוזה, כי שם הם מתחבאים."
+    - generic [ref=e465]:
+      - generic [ref=e466]:
+        - link "חזרה לשלב הקודם" [ref=e467] [cursor=pointer]:
+          - /url: /book/details/almah
+          - generic [ref=e468]: →
+          - text: חזרה לשלב הקודם
+        - list "שלבי קביעת התור" [ref=e469]:
+          - listitem [ref=e470]:
+            - generic [ref=e471]: ✓
+            - generic [ref=e472]: מועד
+          - listitem [ref=e473]:
+            - generic [ref=e474]: ✓
+            - generic [ref=e475]: פרטים
+          - listitem [ref=e476]:
+            - generic [ref=e477]: "3"
+            - generic [ref=e478]: מדיניות ביטולים
+          - listitem [ref=e479]:
+            - generic [ref=e480]: "4"
+            - generic [ref=e481]: אימות טלפון
+        - heading "מדיניות ביטולים" [level=1] [ref=e483]
+        - generic [ref=e485]:
+          - generic [ref=e486]:
+            - paragraph [ref=e487]: ביטול עד 48 שעות לפני המועד — ללא חיוב.
+            - paragraph [ref=e488]: ביטול מאוחר יותר, או אי-הגעה — חיוב של 50% מהמקדמה.
+          - separator [ref=e489]
+          - generic [ref=e490]: ביטול או שינוי מועד עד 48 שעות לפני הפגישה — ללא חיוב, ואפשר לקבוע מועד חדש בטלפון או דרך האתר. ביטול בתוך 48 השעות שלפני המועד, וכן אי-הגעה לפגישה ללא הודעה מראש, מחייבים בתשלום של 50% מן המקדמה ששולמה. הסכום נגבה מאמצעי התשלום שנמסר בעת קביעת התור. איחור של יותר מ-20 דקות עשוי לקצר את זמן המדידה, כדי שלא לפגוע בכלה שאחרייך. אם האיחור צפוי, נשמח לעדכון טלפוני מוקדם ככל האפשר, ונשתדל להתאים את הלוח. הפגישה מיועדת לכלה ולעד שני מלווים. אפשר להגיע עם מלווים נוספים בתיאום מראש ובכפוף למקום באולם המדידות. צילום בתוך אולם המדידות מותר לשימוש אישי בלבד. פרסום צילומים מן הבוטיק ברשתות חברתיות טעון אישור מראש. במקרה של כוח עליון, סגר, או מחלה עם אישור רפואי — המקדמה נשמרת לזכותך לשנים-עשר חודשים ואינה מתבטלת.
+          - separator [ref=e491]
+          - generic [ref=e492] [cursor=pointer]:
+            - checkbox "קראתי את מדיניות הביטולים ואני מסכימה לה." [ref=e493]
+            - generic [ref=e494]: קראתי את מדיניות הביטולים ואני מסכימה לה.
+          - button "להמשך" [ref=e496] [cursor=pointer]
+      - generic [ref=e497]: ◑
+  - generic [ref=e498]:
+    - paragraph [ref=e499]: "/book/terms/{dressId} · חזרה מהשליחה עם 409 TERMS_STALE. ההודעה ב---color-warning-text — אזהרה, לא סכנה: שום דבר שהיא עשתה לא נכשל. הגרסה החדשה מוצגת, ותיבת הסימון מתאפסת ללא תנאי — הסכמה היא הסכמה לגרסה."
+    - generic [ref=e500]:
+      - generic [ref=e501]:
+        - link "חזרה לשלב הקודם" [ref=e502] [cursor=pointer]:
+          - /url: /book/details/almah
+          - generic [ref=e503]: →
+          - text: חזרה לשלב הקודם
+        - list "שלבי קביעת התור" [ref=e504]:
+          - listitem [ref=e505]:
+            - generic [ref=e506]: ✓
+            - generic [ref=e507]: מועד
+          - listitem [ref=e508]:
+            - generic [ref=e509]: ✓
+            - generic [ref=e510]: פרטים
+          - listitem [ref=e511]:
+            - generic [ref=e512]: "3"
+            - generic [ref=e513]: מדיניות ביטולים
+          - listitem [ref=e514]:
+            - generic [ref=e515]: "4"
+            - generic [ref=e516]: אימות טלפון
+        - alert [ref=e517]: מדיניות הביטולים התעדכנה בזמן שמילאת את הפרטים. זו הגרסה המעודכנת — נשמח שתקראי ותאשרי אותה שוב.
+        - heading "מדיניות ביטולים" [level=1] [ref=e519]
+        - generic [ref=e521]:
+          - generic [ref=e522]:
+            - paragraph [ref=e523]: ביטול עד 72 שעות לפני המועד — ללא חיוב.
+            - paragraph [ref=e524]: ביטול מאוחר יותר, או אי-הגעה — חיוב של 100% מהמקדמה.
+          - separator [ref=e525]
+          - generic [ref=e526]: ביטול או שינוי מועד עד 72 שעות לפני הפגישה — ללא חיוב. ביטול בתוך 72 השעות שלפני המועד, וכן אי-הגעה לפגישה ללא הודעה מראש, מחייבים בתשלום מלוא המקדמה ששולמה. הפגישה מיועדת לכלה ולעד שני מלווים, בתיאום מראש.
+          - separator [ref=e527]
+          - generic [ref=e528] [cursor=pointer]:
+            - checkbox "קראתי את מדיניות הביטולים ואני מסכימה לה." [ref=e529]
+            - generic [ref=e530]: קראתי את מדיניות הביטולים ואני מסכימה לה.
+          - button "להמשך" [ref=e532] [cursor=pointer]
+      - generic [ref=e533]: ◑
+  - generic [ref=e534]: "שלב 4 — אימות טלפון · /book/verify[/{dressId}]"
+  - generic [ref=e535]:
+    - paragraph [ref=e536]: "/book/verify/{dressId} · תת-מצב א' — הזנת טלפון. שדה יחיד, אי-פעם לא שישה תאים. dir=\"ltr\" על ה-<input> בלבד: התווית נשארת בזרימת ה-RTL בקצה הפנימי, והערך רץ שמאלה-לימינה בקצה הפיזי השמאלי — מה שכל שדה טלפון ישראלי עושה. אין placeholder (חוק שימוש 3)."
+    - generic [ref=e537]:
+      - generic [ref=e538]:
+        - link "חזרה לשלב הקודם" [ref=e539] [cursor=pointer]:
+          - /url: /book/terms/almah
+          - generic [ref=e540]: →
+          - text: חזרה לשלב הקודם
+        - list "שלבי קביעת התור" [ref=e541]:
+          - listitem [ref=e542]:
+            - generic [ref=e543]: ✓
+            - generic [ref=e544]: מועד
+          - listitem [ref=e545]:
+            - generic [ref=e546]: ✓
+            - generic [ref=e547]: פרטים
+          - listitem [ref=e548]:
+            - generic [ref=e549]: ✓
+            - generic [ref=e550]: מדיניות ביטולים
+          - listitem [ref=e551]:
+            - generic [ref=e552]: "4"
+            - generic [ref=e553]: אימות טלפון
+        - heading "אימות טלפון" [level=1] [ref=e555]
+        - generic [ref=e557]:
+          - generic [ref=e558]:
+            - generic [ref=e559]: טלפון נייד
+            - paragraph [ref=e560]: לשליחת קוד אימות חד-פעמי. אפשר להזין עשר ספרות, למשל 0501234567.
+            - textbox "טלפון נייד" [ref=e561]: 050-1234567
+          - button "שליחת קוד חדש" [ref=e563] [cursor=pointer]
+      - generic [ref=e564]: ◑
+  - generic [ref=e565]:
+    - paragraph [ref=e566]:
+      - text: "/book/verify/{dressId} · תת-מצב ב' — הטופס גדל, לא מתחלף: שדה הטלפון לעולם אינו עוזב את ה-DOM, כי הכשל הנפוץ ביותר הוא ספרה שגויה שאפשר לראות רק אם המספר עדיין על המסך. booking.otpSent הוא ה-help של שדה הקוד — נאמר בדיוק כשהמיקוד מגיע אליו. כפתור השליחה יורד ל-secondary כי תפקידו השתנה מ«הדרך קדימה» ל«תרופה»."
+      - generic [ref=e567]: "⚠ סתירה: סעיף ג' §6.9 קבע ללא ספרות בהמתנה; copy.md ו-§10 מציגים {{seconds}}. כאן מוצג נוסח copy.md מילה במילה, ‎<bdi dir=\"ltr\">‎ סביב המספר, ללא סרגל, ללא צבע, ללא תנועה"
+    - generic [ref=e568]:
+      - generic [ref=e569]:
+        - link "חזרה לשלב הקודם" [ref=e570] [cursor=pointer]:
+          - /url: /book/terms/almah
+          - generic [ref=e571]: →
+          - text: חזרה לשלב הקודם
+        - list "שלבי קביעת התור" [ref=e572]:
+          - listitem [ref=e573]:
+            - generic [ref=e574]: ✓
+            - generic [ref=e575]: מועד
+          - listitem [ref=e576]:
+            - generic [ref=e577]: ✓
+            - generic [ref=e578]: פרטים
+          - listitem [ref=e579]:
+            - generic [ref=e580]: ✓
+            - generic [ref=e581]: מדיניות ביטולים
+          - listitem [ref=e582]:
+            - generic [ref=e583]: "4"
+            - generic [ref=e584]: אימות טלפון
+        - heading "אימות טלפון" [level=1] [ref=e586]
+        - generic [ref=e588]:
+          - generic [ref=e589]:
+            - generic [ref=e590]: טלפון נייד
+            - paragraph [ref=e591]: לשליחת קוד אימות חד-פעמי. אפשר להזין עשר ספרות, למשל 0501234567.
+            - textbox "טלפון נייד" [ref=e592]: 050-1234567
+          - separator [ref=e593]
+          - generic [ref=e594]:
+            - generic [ref=e595]: קוד האימות
+            - paragraph [ref=e596]: שלחנו קוד בן שש ספרות למספר שמסרת.
+            - textbox "קוד האימות" [ref=e597]: "123456"
+          - generic [ref=e598]:
+            - button "אישור וקביעת התור" [ref=e599] [cursor=pointer]
+            - button "אפשר לבקש קוד חדש בעוד 42 שניות" [disabled] [ref=e600]
+          - status [ref=e601]
+      - generic [ref=e602]: ◑
+  - generic [ref=e603]:
+    - paragraph [ref=e604]: "/book/verify/{dressId} · 400 OTP_INVALID, שגיאה בשדה. כפתור שליחת הקוד החדש נשאר גלוי ונגיש ישירות מתחת לשדה (F-C3): אחרי חמישה ניסיונות כל אימות עונה OTP_INVALID גם לקוד הנכון, כך שהקלדה חוזרת לבדה היא מבוי סתום. הערך נשאר ונבחר, לא נמחק."
+    - generic [ref=e605]:
+      - generic [ref=e606]:
+        - link "חזרה לשלב הקודם" [ref=e607] [cursor=pointer]:
+          - /url: /book/terms/almah
+          - generic [ref=e608]: →
+          - text: חזרה לשלב הקודם
+        - list "שלבי קביעת התור" [ref=e609]:
+          - listitem [ref=e610]:
+            - generic [ref=e611]: ✓
+            - generic [ref=e612]: מועד
+          - listitem [ref=e613]:
+            - generic [ref=e614]: ✓
+            - generic [ref=e615]: פרטים
+          - listitem [ref=e616]:
+            - generic [ref=e617]: ✓
+            - generic [ref=e618]: מדיניות ביטולים
+          - listitem [ref=e619]:
+            - generic [ref=e620]: "4"
+            - generic [ref=e621]: אימות טלפון
+        - heading "אימות טלפון" [level=1] [ref=e623]
+        - generic [ref=e625]:
+          - generic [ref=e626]:
+            - generic [ref=e627]: טלפון נייד
+            - paragraph [ref=e628]: לשליחת קוד אימות חד-פעמי. אפשר להזין עשר ספרות, למשל 0501234567.
+            - textbox "טלפון נייד" [ref=e629]: 050-1234567
+          - separator [ref=e630]
+          - generic [ref=e631]:
+            - generic [ref=e632]: קוד האימות
+            - paragraph [ref=e633]: שלחנו קוד בן שש ספרות למספר שמסרת.
+            - textbox "קוד האימות" [invalid] [ref=e634]: "123457"
+            - alert [ref=e635]: הקוד שהוזן אינו נכון. אפשר להקליד אותו שוב, או לבקש קוד חדש.
+          - generic [ref=e636]:
+            - button "אישור וקביעת התור" [ref=e637] [cursor=pointer]
+            - button "שליחת קוד חדש" [ref=e638] [cursor=pointer]
+      - generic [ref=e639]: ◑
+  - generic [ref=e640]:
+    - paragraph [ref=e641]: "/book/verify/{dressId} · 503 SMS_NOT_CONFIGURED / SMS_UNAVAILABLE — המצב היחיד בזרימה שאין ממנו דרך קדימה. אין כפתור «נסי שוב» שייכשל שוב. ה-h1, המדרגות וקישור החזרה נשארים, כדי שלא תהיה לכודה. הבלוק הוא <div tabindex=\"-1\"> ויעד מיקוד — ולכן אינו role=\"alert\". הצבע --color-ink-muted, לא danger: תשתית שנפלה אינה אשמת הבוטיק ובוודאי לא שלה."
+    - generic [ref=e642]:
+      - generic [ref=e643]:
+        - link "חזרה לשלב הקודם" [ref=e644] [cursor=pointer]:
+          - /url: /book/terms/almah
+          - generic [ref=e645]: →
+          - text: חזרה לשלב הקודם
+        - list "שלבי קביעת התור" [ref=e646]:
+          - listitem [ref=e647]:
+            - generic [ref=e648]: ✓
+            - generic [ref=e649]: מועד
+          - listitem [ref=e650]:
+            - generic [ref=e651]: ✓
+            - generic [ref=e652]: פרטים
+          - listitem [ref=e653]:
+            - generic [ref=e654]: ✓
+            - generic [ref=e655]: מדיניות ביטולים
+          - listitem [ref=e656]:
+            - generic [ref=e657]: "4"
+            - generic [ref=e658]: אימות טלפון
+        - heading "אימות טלפון" [level=1] [ref=e660]
+        - paragraph [ref=e663]: אימות הטלפון אינו זמין כרגע, ולכן אי אפשר להשלים כאן את קביעת התור. נשמח שתתקשרי אלינו ונקבע יחד מועד.
+        - generic [ref=e665]:
+          - link "חיוג 03-555-1234" [ref=e666] [cursor=pointer]:
+            - /url: tel:+97235551234
+            - text: חיוג
+            - generic [ref=e667]: 03-555-1234
+          - link "וואטסאפ" [ref=e668] [cursor=pointer]:
+            - /url: https://wa.me/972501234567
+          - link "ניווט ב-Waze" [ref=e669] [cursor=pointer]:
+            - /url: https://waze.com/ul?q=בלה
+          - link "פתיחה ב-Google Maps" [ref=e670] [cursor=pointer]:
+            - /url: https://maps.google.com/?q=בלה
+          - link "אינסטגרם" [ref=e671] [cursor=pointer]:
+            - /url: https://instagram.com/bella
+      - generic [ref=e672]: ◑
+  - generic [ref=e673]: "אישור — מחוץ למדרגות · /book/confirm[/{dressId}]"
+  - generic [ref=e674]:
+    - paragraph [ref=e675]:
+      - text: "/book/confirm/{dressId} · אישור מלא (ה-201 בזיכרון)."
+      - generic [ref=e676]: ללא מדרגות, ללא «חזרה לשלב הקודם», ללא --color-success בשום מקום
+      - text: "— הסימן הוא המילים, והעובדה שהמסך מסוגל להדפיס את היום, השעה וסוג הפגישה. D6: שום מחרוזת כאן אינה מבטיחה מסרון."
+      - generic [ref=e677]: "⚠ סתירה: סעיף ג' F-C10 קבע ש-confirmWhen/confirmWhat הן תוויות; copy.md כותב אותן כמשפטים עם ‎{{date}}/{{type}}‎. כאן מוצג נוסח copy.md"
+    - generic [ref=e678]:
+      - generic [ref=e679]:
+        - heading "התור נקבע" [level=1] [ref=e681]
+        - generic [ref=e683]:
+          - paragraph [ref=e685]: יום שלישי, 4.8.2026 בשעה 16:30
+          - separator [ref=e686]
+          - generic [ref=e687]:
+            - paragraph [ref=e688]: מדידה ראשונה · 45 דקות
+            - paragraph [ref=e689]: עלמה · מידה 42
+        - paragraph [ref=e690]: זה האישור היחיד שלך — כדאי לצלם את המסך או לשמור אותו. אנחנו נחכה לך.
+        - link "חזרה לקולקציה" [ref=e691] [cursor=pointer]:
+          - /url: /
+          - generic [ref=e692]: →
+          - text: חזרה לקולקציה
+      - generic [ref=e693]: ◑
+  - generic [ref=e694]:
+    - paragraph [ref=e695]:
+      - text: /book/confirm · אישור קר — רענון, או סיבוב הצילום-והחזרה של iOS. אין נקודת קצה ציבורית לקריאת הזמנה לפי מזהה, ולכן אין דרך כנה להציג את הפרטים שוב. אין Card (תפקידו להחזיק עובדות; בלעדיהן הוא ממסגר היעדר) ו
+      - generic [ref=e696]: אין booking.confirmKeepScreen
+      - text: — «שמרי את המסך הזה» מעל מסך שאינו מחזיק את התור מורה לה לשמר היעדר. לעולם לא מקפיץ אותה לשלב אחת.
+    - generic [ref=e697]:
+      - generic [ref=e698]:
+        - heading "התור נקבע" [level=1] [ref=e700]
+        - paragraph [ref=e702]: התור שלך נקבע. את הפרטים המלאים הצגנו במסך האישור, ואין לנו דרך להציג אותם כאן שוב — אם לא הספקת לשמור אותם, אפשר להתקשר ונאשר לך הכול.
+        - generic [ref=e704]:
+          - link "חיוג 03-555-1234" [ref=e705] [cursor=pointer]:
+            - /url: tel:+97235551234
+            - text: חיוג
+            - generic [ref=e706]: 03-555-1234
+          - link "וואטסאפ" [ref=e707] [cursor=pointer]:
+            - /url: https://wa.me/972501234567
+          - link "ניווט ב-Waze" [ref=e708] [cursor=pointer]:
+            - /url: https://waze.com/ul?q=בלה
+          - link "פתיחה ב-Google Maps" [ref=e709] [cursor=pointer]:
+            - /url: https://maps.google.com/?q=בלה
+          - link "אינסטגרם" [ref=e710] [cursor=pointer]:
+            - /url: https://instagram.com/bella
+        - link "חזרה לקולקציה" [ref=e711] [cursor=pointer]:
+          - /url: /
+          - generic [ref=e712]: →
+          - text: חזרה לקולקציה
+      - generic [ref=e713]: ◑
+  - generic [ref=e714]: כניסה ומצבי קצה · D5 ו-D12
+  - generic [ref=e715]:
+    - paragraph [ref=e716]: "/book/slot · D5 — לבוטיק אין מדיניות ביטולים מפורסמת. ה-terms נטען בכניסה לזרימה, במקביל לסוגי הפגישות ולמועדים, כי 404 כאן הוא החלטה ברמת הכניסה — לטעון אותו בשלב 3 היה מאפשר לה למלא שני שלבים לפני מבוי סתום. אין מדרגות (אין זרימה להיות שלב שלה), אין Card של פקדים, אין כפתור המשך. זו אינה הודעת תקלה: ההודעה ב---color-ink, קול העמוד הרגיל."
+    - generic [ref=e717]:
+      - generic [ref=e718]:
+        - heading "מועד" [level=1] [ref=e720]
+        - paragraph [ref=e722]: קביעת תור מקוונת תיפתח כאן בקרוב. בינתיים נשמח שתתקשרי אלינו ונקבע יחד מועד.
+        - generic [ref=e724]:
+          - link "חיוג 03-555-1234" [ref=e725] [cursor=pointer]:
+            - /url: tel:+97235551234
+            - text: חיוג
+            - generic [ref=e726]: 03-555-1234
+          - link "וואטסאפ" [ref=e727] [cursor=pointer]:
+            - /url: https://wa.me/972501234567
+          - link "ניווט ב-Waze" [ref=e728] [cursor=pointer]:
+            - /url: https://waze.com/ul?q=בלה
+          - link "פתיחה ב-Google Maps" [ref=e729] [cursor=pointer]:
+            - /url: https://maps.google.com/?q=בלה
+          - link "אינסטגרם" [ref=e730] [cursor=pointer]:
+            - /url: https://instagram.com/bella
+        - link "חזרה לקולקציה" [ref=e731] [cursor=pointer]:
+          - /url: /
+          - generic [ref=e732]: →
+          - text: חזרה לקולקציה
+      - generic [ref=e733]: ◑
+  - generic [ref=e734]:
+    - paragraph [ref=e735]: "/book/confirm · הידרדרות D12 — אין נתוני בוטיק. ContactPanel מגן על כל שורה בבדיקת אמת, כך שכשכל חמשת הערוצים חסרים הוא מרנדר <div> ריק לחלוטין — ולכן ההידרדרות אינה יכולה להיות prop על הפאנל, אלא ענף באתר הקריאה. התקדים שנשלח: AboutPage.tsx:106-130 משמיט את כרטיס הקשר לגמרי במקום להדפיס שורות ריקות. booking.contactUnavailable (P5) חייבת להיות חסרת שם — הבקשה שהייתה נושאת את השם היא זו שנכשלה. ה-h1 שורד ללא צורך בנפילה חזרה, כי הוא מחרוזת i18n סטטית ולא נתון שנטען."
+    - generic [ref=e736]:
+      - generic [ref=e737]:
+        - heading "התור נקבע" [level=1] [ref=e739]
+        - paragraph [ref=e741]: התור שלך נקבע. את הפרטים המלאים הצגנו במסך האישור, ואין לנו דרך להציג אותם כאן שוב — אם לא הספקת לשמור אותם, אפשר להתקשר ונאשר לך הכול.
+        - paragraph [ref=e742]: לא הצלחנו לטעון כאן את פרטי הקשר של הבוטיק. אפשר לנסות לרענן את העמוד בעוד רגע.
+        - link "חזרה לקולקציה" [ref=e743] [cursor=pointer]:
+          - /url: /
+          - generic [ref=e744]: →
+          - text: חזרה לקולקציה
+      - generic [ref=e745]: ◑
+  - generic [ref=e746]: רוחב ‎≥768 — מסגרת 900, עמודה נשארת 640
+  - generic [ref=e747]:
+    - paragraph [ref=e748]: "/book/slot/{dressId} · ‎≥768. ההפרשים היחידים: שולי עמוד --space-4 → --space-6 · ריפוד ה-Card --space-4 → --space-6 · רשת המועדים עוברת מ-3 ל-5 עמודות בכלל auto-fill אחד, ללא נקודת שבירה ייעודית · שם הסוג ומשך הזמן עולים לשורה אחת · כפתור ההמשך חוזר לרוחב טבעי ויושב בקצה הפנימי. 1440 זהה ל-768 — העמודה נעצרת ב-640 ורק השוליים גדלים. אין פס CTA בשום רוחב."
+    - generic [ref=e749]:
+      - generic [ref=e750]:
+        - link "חזרה לקולקציה" [ref=e751] [cursor=pointer]:
+          - /url: /
+          - generic [ref=e752]: →
+          - text: חזרה לקולקציה
+        - list "שלבי קביעת התור" [ref=e753]:
+          - listitem [ref=e754]:
+            - generic [ref=e755]: "1"
+            - generic [ref=e756]: מועד
+          - listitem [ref=e757]:
+            - generic [ref=e758]: "2"
+            - generic [ref=e759]: פרטים
+          - listitem [ref=e760]:
+            - generic [ref=e761]: "3"
+            - generic [ref=e762]: מדיניות ביטולים
+          - listitem [ref=e763]:
+            - generic [ref=e764]: "4"
+            - generic [ref=e765]: אימות טלפון
+        - heading "מועד" [level=1] [ref=e767]
+        - generic [ref=e769]:
+          - paragraph [ref=e770]:
+            - generic [ref=e771]: "עבור: עלמה"
+          - group "סוג הפגישה" [ref=e772]:
+            - generic [ref=e774]:
+              - generic [ref=e775] [cursor=pointer]:
+                - radio "מדידה ראשונה 45 דקות" [checked] [ref=e776]
+                - generic [ref=e777]:
+                  - generic [ref=e778]: מדידה ראשונה
+                  - generic [ref=e779]: 45 דקות
+              - generic [ref=e780] [cursor=pointer]:
+                - radio "מדידה עם מלווים 90 דקות לכלות בלבד" [ref=e781]
+                - generic [ref=e782]:
+                  - generic [ref=e783]: מדידה עם מלווים
+                  - generic [ref=e784]: 90 דקות
+                  - generic [ref=e785]: לכלות בלבד
+              - generic [ref=e787] [cursor=pointer]:
+                - radio "חבילת כלה 120 דקות" [ref=e788]
+                - generic [ref=e789]:
+                  - generic [ref=e790]: חבילת כלה
+                  - generic [ref=e791]: 120 דקות
+          - generic [ref=e792]:
+            - generic [ref=e793]: תאריך
+            - textbox "תאריך" [ref=e794]: 2026-08-04
+          - group "שעה" [ref=e795]:
+            - generic [ref=e797]:
+              - generic [ref=e798] [cursor=pointer]:
+                - radio "10:00" [ref=e799]
+                - generic [ref=e800]: 10:00
+              - generic [ref=e801] [cursor=pointer]:
+                - radio "10:45" [ref=e802]
+                - generic [ref=e803]: 10:45
+              - generic [ref=e804] [cursor=pointer]:
+                - radio "11:30" [checked] [ref=e805]
+                - generic [ref=e806]: 11:30
+              - generic [ref=e807] [cursor=pointer]:
+                - radio "12:15" [ref=e808]
+                - generic [ref=e809]: 12:15
+              - generic [ref=e810] [cursor=pointer]:
+                - radio "13:00" [ref=e811]
+                - generic [ref=e812]: 13:00
+              - generic [ref=e813] [cursor=pointer]:
+                - radio "13:45" [ref=e814]
+                - generic [ref=e815]: 13:45
+              - generic [ref=e816] [cursor=pointer]:
+                - radio "14:30" [ref=e817]
+                - generic [ref=e818]: 14:30
+              - generic [ref=e819] [cursor=pointer]:
+                - radio "15:15" [ref=e820]
+                - generic [ref=e821]: 15:15
+              - generic [ref=e822] [cursor=pointer]:
+                - radio "16:00" [ref=e823]
+                - generic [ref=e824]: 16:00
+              - generic [ref=e825] [cursor=pointer]:
+                - radio "16:45" [ref=e826]
+                - generic [ref=e827]: 16:45
+          - button "להמשך" [ref=e829] [cursor=pointer]
+      - generic [ref=e830]: ◑
+  - generic [ref=e831]:
+    - paragraph [ref=e832]: "/book/confirm/{dressId} · ‎≥768. ריפוד ה-Card בלבד משתנה; העמודה אינה מתרחבת."
+    - generic [ref=e833]:
+      - generic [ref=e834]:
+        - heading "התור נקבע" [level=1] [ref=e836]
+        - generic [ref=e838]:
+          - paragraph [ref=e840]: יום שלישי, 4.8.2026 בשעה 16:30
+          - separator [ref=e841]
+          - generic [ref=e842]:
+            - paragraph [ref=e843]: מדידה ראשונה · 45 דקות
+            - paragraph [ref=e844]: עלמה · מידה 42
+        - paragraph [ref=e845]: זה האישור היחיד שלך — כדאי לצלם את המסך או לשמור אותו. אנחנו נחכה לך.
+        - link "חזרה לקולקציה" [ref=e846] [cursor=pointer]:
+          - /url: /
+          - generic [ref=e847]: →
+          - text: חזרה לקולקציה
+      - generic [ref=e848]: ◑

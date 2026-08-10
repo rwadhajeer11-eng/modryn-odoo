@@ -1,0 +1,171 @@
+- generic [ref=f5e19]:
+  - link "דלג לתוכן" [ref=f5e20] [cursor=pointer]:
+    - /url: "#console-main"
+  - banner [ref=f5e21]:
+    - generic [ref=f5e22]:
+      - generic [ref=f5e23]: owner@demo.example
+      - generic [ref=f5e24]:
+        - button "מדריך" [ref=f5e25]
+        - button "יציאה" [ref=f5e26]
+    - navigation [ref=f5e27]:
+      - list [ref=f5e28]:
+        - listitem [ref=f5e29]:
+          - button "סקירה" [ref=f5e30]
+        - listitem [ref=f5e31]:
+          - button "פרופיל והגדרות" [ref=f5e32]
+        - listitem [ref=f5e33]:
+          - button "שעות פעילות" [ref=f5e34]
+        - listitem [ref=f5e35]:
+          - button "סוגי תורים" [ref=f5e36]
+        - listitem [ref=f5e37]:
+          - button "מדיניות ביטולים" [ref=f5e38]
+        - listitem [ref=f5e39]:
+          - button "שמלות" [ref=f5e40]
+        - listitem [ref=f5e41]:
+          - button "תורים" [ref=f5e42]
+        - listitem [ref=f5e43]:
+          - button "לקוחות" [ref=f5e44]
+        - listitem [ref=f5e45]:
+          - button "לוח היום" [ref=f5e46]
+        - listitem [ref=f5e47]:
+          - button "תפירה" [ref=f5e48]
+        - listitem [ref=f5e49]:
+          - button "קוד סריקה" [ref=f5e50]
+        - listitem [ref=f5e51]:
+          - button "צוות" [ref=f5e52]
+        - listitem [ref=f5e53]:
+          - button "סליקה ותשלומים" [ref=f5e54]
+        - listitem [ref=f5e55]:
+          - button "פרטיות" [ref=f5e56]
+  - main [ref=f5e57]:
+    - heading "MODRYN — ניהול הבוטיק" [level=1] [ref=f5e58]
+    - generic [ref=f5e249]:
+      - button "חזרה לרשימה" [ref=f5e250]
+      - generic [ref=f5e252]:
+        - heading "פרטי התור" [level=2] [ref=f5e253]
+        - generic [ref=f5e254]: מאושר
+      - status
+      - generic [ref=f5e255]:
+        - heading "הלקוחה" [level=3] [ref=f5e256]
+        - generic [ref=f5e257]:
+          - generic [ref=f5e258]: שם
+          - generic [ref=f5e259]: רות בן דוד
+        - generic [ref=f5e260]:
+          - generic [ref=f5e261]: טלפון
+          - generic [ref=f5e262]: "+972501234567"
+        - button "תיקון מספר הטלפון" [ref=f5e263]
+        - generic [ref=f5e265]:
+          - heading "הפגישה" [level=3] [ref=f5e266]
+          - generic [ref=f5e267]:
+            - generic [ref=f5e268]: מועד
+            - generic [ref=f5e269]: 6.8.2026 · 11:00
+          - generic [ref=f5e270]:
+            - generic [ref=f5e271]: סוג הפגישה
+            - generic [ref=f5e272]: מדידה ראשונה
+          - generic [ref=f5e273]:
+            - generic [ref=f5e274]: שמלה
+            - generic [ref=f5e275]: תמר · מידה 38
+          - generic [ref=f5e276]:
+            - generic [ref=f5e277]: עמדה
+            - generic [ref=f5e278]: "1"
+          - generic [ref=f5e279]:
+            - generic [ref=f5e280]: נקבע בתאריך
+            - generic [ref=f5e281]: 4.8.2026 · 16:08
+          - generic [ref=f5e282]:
+            - generic [ref=f5e283]: מדיניות שאושרה
+            - generic [ref=f5e284]: גרסה 1 · 4.8.2026
+          - generic [ref=f5e285]:
+            - generic [ref=f5e286]: קישור ניהול
+            - generic [ref=f5e287]: קישור ניהול פעיל
+        - generic [ref=f5e288]:
+          - heading "הערות הלקוחה" [level=3] [ref=f5e289]
+          - paragraph [ref=f5e290]: מגיעה עם אמא
+      - generic [ref=f5e291]:
+        - heading "פעולות" [level=3] [ref=f5e292]
+        - paragraph [ref=f5e293]: אין באפשרותנו לאמת שהודעות נמסרו ללקוחה. אם חשוב לוודא, אפשר להתקשר אליה.
+        - generic [ref=f5e294]:
+          - button "שינוי מועד" [ref=f5e295]
+          - generic [ref=f5e297]:
+            - button "הנפקת קישור ניהול חדש" [ref=f5e298]
+            - paragraph [ref=f5e300]: הנפקת קישור חדש מבטלת את הקישור הקודם של הלקוחה.
+        - button "ביטול התור" [ref=f5e302]
+      - dialog [ref=f5e304]:
+        - heading "שינוי מועד התור" [level=2] [ref=f5e305]
+        - generic [ref=f5e307]:
+          - paragraph [ref=f5e308]: "המועד הנוכחי: 6.8.2026 · 11:00"
+          - generic [ref=f5e309]:
+            - generic [ref=f5e310]:
+              - generic [ref=f5e311]: תאריך
+              - textbox "תאריך" [ref=f5e312]: 2026-08-06
+            - group "שעה" [ref=f5e313]:
+              - generic [ref=f5e315]:
+                - generic [ref=f5e316] [cursor=pointer]:
+                  - radio "10:00" [ref=f5e317]
+                  - generic [ref=f5e318]: 10:00
+                - generic [ref=f5e319] [cursor=pointer]:
+                  - radio "10:30" [ref=f5e320]
+                  - generic [ref=f5e321]: 10:30
+                - generic [ref=f5e322] [cursor=pointer]:
+                  - radio "11:00" [checked] [ref=f5e323]
+                  - generic [ref=f5e324]: 11:00
+                - generic [ref=f5e325] [cursor=pointer]:
+                  - radio "11:30" [ref=f5e326]
+                  - generic [ref=f5e327]: 11:30
+                - generic [ref=f5e328] [cursor=pointer]:
+                  - radio "12:00" [ref=f5e329]
+                  - generic [ref=f5e330]: 12:00
+                - generic [ref=f5e331] [cursor=pointer]:
+                  - radio "12:30" [ref=f5e332]
+                  - generic [ref=f5e333]: 12:30
+                - generic [ref=f5e334] [cursor=pointer]:
+                  - radio "13:00" [ref=f5e335]
+                  - generic [ref=f5e336]: 13:00
+                - generic [ref=f5e337] [cursor=pointer]:
+                  - radio "13:30" [ref=f5e338]
+                  - generic [ref=f5e339]: 13:30
+                - generic [ref=f5e340] [cursor=pointer]:
+                  - radio "14:00" [ref=f5e341]
+                  - generic [ref=f5e342]: 14:00
+                - generic [ref=f5e343] [cursor=pointer]:
+                  - radio "14:30" [ref=f5e344]
+                  - generic [ref=f5e345]: 14:30
+                - generic [ref=f5e346] [cursor=pointer]:
+                  - radio "15:00" [ref=f5e347]
+                  - generic [ref=f5e348]: 15:00
+                - generic [ref=f5e349] [cursor=pointer]:
+                  - radio "15:30" [ref=f5e350]
+                  - generic [ref=f5e351]: 15:30
+                - generic [ref=f5e352] [cursor=pointer]:
+                  - radio "16:00" [ref=f5e353]
+                  - generic [ref=f5e354]: 16:00
+                - generic [ref=f5e355] [cursor=pointer]:
+                  - radio "16:30" [ref=f5e356]
+                  - generic [ref=f5e357]: 16:30
+                - generic [ref=f5e358] [cursor=pointer]:
+                  - radio "17:00" [ref=f5e359]
+                  - generic [ref=f5e360]: 17:00
+                - generic [ref=f5e361] [cursor=pointer]:
+                  - radio "17:30" [ref=f5e362]
+                  - generic [ref=f5e363]: 17:30
+                - generic [ref=f5e364] [cursor=pointer]:
+                  - radio "18:00" [ref=f5e365]
+                  - generic [ref=f5e366]: 18:00
+                - generic [ref=f5e367] [cursor=pointer]:
+                  - radio "18:30" [ref=f5e368]
+                  - generic [ref=f5e369]: 18:30
+                - generic [ref=f5e370] [cursor=pointer]:
+                  - radio "19:00" [ref=f5e371]
+                  - generic [ref=f5e372]: 19:00
+                - generic [ref=f5e373] [cursor=pointer]:
+                  - radio "19:30" [ref=f5e374]
+                  - generic [ref=f5e375]: 19:30
+                - generic [ref=f5e376] [cursor=pointer]:
+                  - radio "20:00" [ref=f5e377]
+                  - generic [ref=f5e378]: 20:00
+                - generic [ref=f5e379] [cursor=pointer]:
+                  - radio "20:30" [ref=f5e380]
+                  - generic [ref=f5e381]: 20:30
+          - paragraph [ref=f5e382]: המועד יתעדכן, והקישור של הלקוחה יצביע על המועד החדש.
+        - generic [ref=f5e383]:
+          - button "חזרה" [active] [ref=f5e384]
+          - button "עדכון המועד" [ref=f5e386]

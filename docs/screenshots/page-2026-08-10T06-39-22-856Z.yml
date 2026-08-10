@@ -1,0 +1,15 @@
+- generic [ref=e2]:
+  - link "דלג לתוכן" [ref=e3] [cursor=pointer]:
+    - /url: "#wrap"
+  - main [ref=e4]:
+    - generic [ref=e6]:
+      - heading "MODRYN" [level=1] [ref=e7]
+      - paragraph [ref=e8]: כניסת צוות
+      - generic [ref=e9]:
+        - generic [ref=e10]:
+          - generic [ref=e11]: שם משתמש
+          - textbox "שם משתמש" [active] [ref=e12]
+        - generic [ref=e13]:
+          - generic [ref=e14]: סיסמה
+          - textbox "סיסמה" [ref=e15]
+        - button "כניסה" [ref=e16] [cursor=pointer]

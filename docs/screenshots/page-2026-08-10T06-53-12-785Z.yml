@@ -1,0 +1,157 @@
+- generic [ref=f4e2]:
+  - link "דלג לתוכן" [ref=f4e3] [cursor=pointer]:
+    - /url: "#wrap"
+  - main [ref=f4e4]:
+    - generic [ref=f4e5]:
+      - navigation [ref=f4e6]:
+        - generic [ref=f4e7]: MODRYN
+        - generic [ref=f4e8]: מסך משמרת
+        - link "Workshop" [ref=f4e9] [cursor=pointer]:
+          - /url: /atelier
+        - button "English" [ref=f4e11] [cursor=pointer]
+        - generic [ref=f4e12]: שרה כהן
+        - link "יציאה" [ref=f4e13] [cursor=pointer]:
+          - /url: /staff/logout
+      - main [ref=f4e14]:
+        - generic [ref=f4e17]:
+          - generic [ref=f4e18]:
+            - generic [ref=f4e19]:
+              - generic [ref=f4e20]:
+                - generic [ref=f4e21]:
+                  - heading "תור בכניסה" [level=2] [ref=f4e22]
+                  - generic [ref=f4e23]: 0 ממתינות
+                - paragraph [ref=f4e113]: אין לקוחות בתור.
+              - generic [ref=f4e40]:
+                - generic [ref=f4e41]:
+                  - heading "תורים להיום" [level=2] [ref=f4e42]
+                  - generic [ref=f4e43]: "3"
+                - generic [ref=f4e44]:
+                  - generic [ref=f4e45]:
+                    - generic [ref=f4e46]:
+                      - generic [ref=f4e47]: 10:00
+                      - generic [ref=f4e48]:
+                        - generic [ref=f4e49]: "מדידה: שמלת כלה אמילי"
+                        - generic [ref=f4e50]: "0521234567"
+                        - generic [ref=f4e51]: שמלת כלה אמילי · 38
+                    - generic [ref=f4e52]:
+                      - generic [ref=f4e53]: יעל שמש
+                      - generic [ref=f4e112]: שרה כהן
+                    - combobox [ref=f4e56]:
+                      - option "— שיוך —" [selected]
+                      - option "אורלי דוד"
+                      - option "יעל שמש"
+                      - option "נועה מזרחי"
+                      - option "רותם אברהם"
+                      - option "שרה כהן"
+                  - generic [ref=f4e57]:
+                    - generic [ref=f4e58]:
+                      - generic [ref=f4e59]: 11:00
+                      - generic [ref=f4e60]:
+                        - generic [ref=f4e61]: "פגישת ייעוץ: בדיקת מארגן"
+                        - generic [ref=f4e62]: "0581230000"
+                    - generic [ref=f4e63]: ראשי
+                    - combobox [ref=f4e67]:
+                      - option "— שיוך —" [selected]
+                      - option "אורלי דוד"
+                      - option "יעל שמש"
+                      - option "נועה מזרחי"
+                      - option "רותם אברהם"
+                      - option "שרה כהן"
+                  - generic [ref=f4e68]:
+                    - generic [ref=f4e69]:
+                      - generic [ref=f4e70]: 14:00
+                      - generic [ref=f4e71]:
+                        - generic [ref=f4e72]: "פגישת ייעוץ: מיכל כהן"
+                        - generic [ref=f4e73]: "0549876543"
+                    - generic [ref=f4e74]: ראשי
+                    - combobox [ref=f4e78]:
+                      - option "— שיוך —" [selected]
+                      - option "אורלי דוד"
+                      - option "יעל שמש"
+                      - option "נועה מזרחי"
+                      - option "רותם אברהם"
+                      - option "שרה כהן"
+            - complementary [ref=f4e79]:
+              - generic [ref=f4e80]:
+                - heading "צוות במשמרת" [level=2] [ref=f4e81]
+                - generic [ref=f4e82]: 5 פנויות
+              - generic [ref=f4e83]:
+                - generic [ref=f4e84]:
+                  - generic [ref=f4e85]: אורלי דוד
+                  - generic [ref=f4e86]:
+                    - generic [ref=f4e87]: תופרת
+                    - generic [ref=f4e88]: פנויה
+                - generic [ref=f4e90]:
+                  - generic [ref=f4e91]: יעל שמש
+                  - generic [ref=f4e92]:
+                    - generic [ref=f4e93]: מוכרת בכירה
+                    - generic [ref=f4e94]: פנויה
+                - generic [ref=f4e95]:
+                  - generic [ref=f4e96]: נועה מזרחי
+                  - generic [ref=f4e97]:
+                    - generic [ref=f4e98]: קבלת קהל
+                    - generic [ref=f4e99]: פנויה
+                - generic [ref=f4e100]:
+                  - generic [ref=f4e101]: רותם אברהם
+                  - generic [ref=f4e102]:
+                    - generic [ref=f4e103]: מוכרת
+                    - generic [ref=f4e104]: פנויה
+                - generic [ref=f4e106]:
+                  - generic [ref=f4e107]: שרה כהן
+                  - generic [ref=f4e108]:
+                    - generic [ref=f4e109]: מוכרת
+                    - generic [ref=f4e110]: פנויה
+              - paragraph [ref=f4e111]: Drag a name onto a customer to assign her.
+          - dialog [ref=f4e115]:
+            - heading "Alterations for מיכל ברקת?" [level=2] [ref=f4e116]
+            - paragraph [ref=f4e117]: If the gown needs work, open a task for the workshop. Otherwise just skip.
+            - generic [ref=f4e118]:
+              - generic [ref=f4e119]: Dress
+              - combobox [ref=f4e120]:
+                - option "— Choose a dress —" [selected]
+                - option "שמלת כלה אמילי · 36"
+                - option "שמלת כלה אמילי · 38"
+                - option "שמלת כלה אמילי · 40"
+                - option "שמלת כלה קלרה · 36"
+                - option "שמלת כלה קלרה · 38"
+                - option "שמלת כלה קלרה · 40"
+                - option "שמלת ערב ורוניקה · 36"
+                - option "שמלת ערב ורוניקה · 38"
+                - option "שמלת ערב ורוניקה · 34"
+            - generic [ref=f4e121]:
+              - generic [ref=f4e122]: Pieces to alter
+              - generic [ref=f4e123]:
+                - generic [ref=f4e124] [cursor=pointer]:
+                  - checkbox "מכפלת" [ref=f4e125]
+                  - generic [ref=f4e126]: מכפלת
+                - generic [ref=f4e127] [cursor=pointer]:
+                  - checkbox "מחוך" [ref=f4e128]
+                  - generic [ref=f4e129]: מחוך
+                - generic [ref=f4e130] [cursor=pointer]:
+                  - checkbox "שרוולים" [ref=f4e131]
+                  - generic [ref=f4e132]: שרוולים
+                - generic [ref=f4e133] [cursor=pointer]:
+                  - checkbox "שובל" [ref=f4e134]
+                  - generic [ref=f4e135]: שובל
+                - generic [ref=f4e136] [cursor=pointer]:
+                  - checkbox "כתפיות" [ref=f4e137]
+                  - generic [ref=f4e138]: כתפיות
+            - generic [ref=f4e139]:
+              - generic [ref=f4e140]: Instructions
+              - textbox [ref=f4e141]
+            - generic [ref=f4e142]:
+              - generic [ref=f4e143]:
+                - generic [ref=f4e144]: Seamstress
+                - combobox [ref=f4e145]:
+                  - option "— Later —" [selected]
+                  - option "אורלי דוד"
+                  - option "יעל שמש"
+                  - option "נועה מזרחי"
+                  - option "רותם אברהם"
+                  - option "שרה כהן"
+              - generic [ref=f4e146]:
+                - generic [ref=f4e147]: Due
+                - textbox [ref=f4e148]
+            - generic [ref=f4e149]:
+              - button "Create task" [ref=f4e150] [cursor=pointer]
+              - button "Skip" [ref=f4e151] [cursor=pointer]

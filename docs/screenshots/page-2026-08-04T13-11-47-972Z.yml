@@ -1,0 +1,52 @@
+- generic [ref=f6e2]:
+  - link "דלג לתוכן" [ref=f6e3] [cursor=pointer]:
+    - /url: "#content"
+  - generic [ref=f6e4]:
+    - main [ref=f6e5]:
+      - generic [ref=f6e6]:
+        - heading "התור שלך" [level=1] [ref=f6e8]
+        - generic [ref=f6e10]:
+          - generic [ref=f6e11]:
+            - paragraph [ref=f6e12]: מתי
+            - paragraph [ref=f6e13]: יום חמישי, 6.8.2026 · 14:00
+          - generic [ref=f6e15]:
+            - paragraph [ref=f6e16]: מה
+            - paragraph [ref=f6e17]: מדידה ראשונה
+            - paragraph [ref=f6e18]: תמר · מידה 38
+        - generic [ref=f6e19]:
+          - paragraph [ref=f6e20]: ✓ ההגעה אושרה. נתראה.
+          - button "ביטול התור" [active] [ref=f6e58]
+        - paragraph [ref=f6e60]: לפי המדיניות שאישרת, אפשר לבטל עד 48 שעות לפני המועד.
+        - generic [ref=f6e25]:
+          - link "חיוג" [ref=f6e26] [cursor=pointer]:
+            - /url: tel:+972 3 555 1234
+          - link "וואטסאפ" [ref=f6e27] [cursor=pointer]:
+            - /url: https://wa.me/97235551234
+          - link "ניווט ב-Waze" [ref=f6e28] [cursor=pointer]:
+            - /url: https://waze.com/ul?q=%D7%A8%D7%97%D7%95%D7%91%20%D7%A9%D7%99%D7%A0%D7%A7%D7%99%D7%9F%2024%2C%20%D7%AA%D7%9C%20%D7%90%D7%91%D7%99%D7%91
+          - link "פתיחה ב-Google Maps" [ref=f6e29] [cursor=pointer]:
+            - /url: https://maps.google.com/?q=Sheinkin+24+Tel+Aviv
+          - link "אינסטגרם @modryn.demo" [ref=f6e30] [cursor=pointer]:
+            - /url: https://instagram.com/modryn.demo
+            - generic [ref=f6e31]: אינסטגרם
+            - generic [ref=f6e32]: "@modryn.demo"
+        - generic [ref=f6e33]:
+          - status
+    - contentinfo [ref=f6e34]:
+      - generic [ref=f6e35]:
+        - link "על הבוטיק" [ref=f6e36] [cursor=pointer]:
+          - /url: /about
+        - generic [ref=f6e37]: ·
+        - link "הצהרת נגישות" [ref=f6e38] [cursor=pointer]:
+          - /url: /accessibility
+        - generic [ref=f6e39]: ·
+        - link "הודעת פרטיות" [ref=f6e40] [cursor=pointer]:
+          - /url: /privacy
+        - generic [ref=f6e41]: ·
+        - link "@modryn.demo" [ref=f6e42] [cursor=pointer]:
+          - /url: https://instagram.com/modryn.demo
+        - generic [ref=f6e44]: ·
+        - link "+972 3 555 1234" [ref=f6e45] [cursor=pointer]:
+          - /url: tel:+972 3 555 1234
+  - button "תפריט נגישות" [ref=f6e47]:
+    - generic [ref=f6e48]: ◑

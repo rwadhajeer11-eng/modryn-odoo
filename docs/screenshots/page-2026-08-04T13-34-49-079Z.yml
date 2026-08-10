@@ -1,0 +1,157 @@
+- generic [ref=f14e227]:
+  - link "דלג לתוכן" [ref=f14e228] [cursor=pointer]:
+    - /url: "#console-main"
+  - banner [ref=f14e229]:
+    - generic [ref=f14e230]:
+      - generic [ref=f14e231]: owner@demo.example
+      - generic [ref=f14e232]:
+        - button "מדריך" [ref=f14e233]
+        - button "יציאה" [ref=f14e234]
+    - navigation [ref=f14e235]:
+      - list [ref=f14e236]:
+        - listitem [ref=f14e237]:
+          - button "סקירה" [ref=f14e238]
+        - listitem [ref=f14e239]:
+          - button "פרופיל והגדרות" [ref=f14e240]
+        - listitem [ref=f14e241]:
+          - button "שעות פעילות" [ref=f14e242]
+        - listitem [ref=f14e243]:
+          - button "סוגי תורים" [ref=f14e244]
+        - listitem [ref=f14e245]:
+          - button "מדיניות ביטולים" [ref=f14e246]
+        - listitem [ref=f14e247]:
+          - button "שמלות" [ref=f14e248]
+        - listitem [ref=f14e249]:
+          - button "תורים" [ref=f14e250]
+        - listitem [ref=f14e251]:
+          - button "לקוחות" [ref=f14e252]
+        - listitem [ref=f14e253]:
+          - button "לוח היום" [ref=f14e254]
+        - listitem [ref=f14e255]:
+          - button "תפירה" [ref=f14e256]
+        - listitem [ref=f14e257]:
+          - button "קוד סריקה" [ref=f14e258]
+        - listitem [ref=f14e259]:
+          - button "צוות" [ref=f14e260]
+        - listitem [ref=f14e261]:
+          - button "סליקה ותשלומים" [ref=f14e262]
+        - listitem [ref=f14e263]:
+          - button "פרטיות" [ref=f14e264]
+  - main [ref=f14e265]:
+    - heading "MODRYN — ניהול הבוטיק" [level=1] [ref=f14e266]
+    - generic [ref=f14e267]:
+      - heading "סקירה" [level=2] [ref=f14e269]
+      - paragraph [ref=f14e271]: "נכון לתאריך: 4.8.2026"
+      - status [ref=f14e272]: "סך התורים שלא בוטלו בתקופה: 0"
+      - generic [ref=f14e273]:
+        - heading "תפוסה בשבעת הימים הקרובים" [level=3] [ref=f14e274]
+        - paragraph [ref=f14e275]:
+          - text: "הטווח:"
+          - generic [ref=f14e276]: 4.8.2026–10.8.2026
+        - generic [ref=f14e277]:
+          - generic [ref=f14e278]:
+            - term [ref=f14e279]: אחוז התפוסה
+            - definition [ref=f14e280]:
+              - generic [ref=f14e281]: 0.4%
+          - generic [ref=f14e285]:
+            - term [ref=f14e286]: סך המקומות בטווח
+            - definition [ref=f14e287]: "228"
+          - generic [ref=f14e288]:
+            - term [ref=f14e289]: מקומות שנתפסו
+            - definition [ref=f14e290]: "1"
+        - paragraph [ref=f14e291]: הספירה כוללת רק מועדים שאפשר עדיין להציע מהרגע הזה. מועדים שכבר חלפו היום אינם נכללים בה.
+      - generic [ref=f14e292]:
+        - heading "תורים לפי שבוע" [level=3] [ref=f14e293]
+        - paragraph [ref=f14e294]:
+          - text: "התקופה:"
+          - generic [ref=f14e295]: 10.5.2026–1.8.2026
+        - paragraph [ref=f14e296]: נספרים תורים שנקבעו ולא בוטלו, כולל תורים שהלקוחה לא הגיעה אליהם.
+        - table [ref=f14e297]:
+          - caption [ref=f14e298]: תורים שלא בוטלו, לפי שבוע
+          - rowgroup [ref=f14e299]:
+            - row [ref=f14e300]:
+              - columnheader "תחילת שבוע" [ref=f14e301]
+              - columnheader "תורים שלא בוטלו" [ref=f14e302]
+          - rowgroup [ref=f14e303]:
+            - row [ref=f14e304]:
+              - rowheader "10.5" [ref=f14e305]
+              - cell "0" [ref=f14e306]
+            - row [ref=f14e311]:
+              - rowheader "17.5" [ref=f14e312]
+              - cell "0" [ref=f14e313]
+            - row [ref=f14e318]:
+              - rowheader "24.5" [ref=f14e319]
+              - cell "0" [ref=f14e320]
+            - row [ref=f14e325]:
+              - rowheader "31.5" [ref=f14e326]
+              - cell "0" [ref=f14e327]
+            - row [ref=f14e332]:
+              - rowheader "7.6" [ref=f14e333]
+              - cell "0" [ref=f14e334]
+            - row [ref=f14e339]:
+              - rowheader "14.6" [ref=f14e340]
+              - cell "0" [ref=f14e341]
+            - row [ref=f14e346]:
+              - rowheader "21.6" [ref=f14e347]
+              - cell "0" [ref=f14e348]
+            - row [ref=f14e353]:
+              - rowheader "28.6" [ref=f14e354]
+              - cell "0" [ref=f14e355]
+            - row [ref=f14e360]:
+              - rowheader "5.7" [ref=f14e361]
+              - cell "0" [ref=f14e362]
+            - row [ref=f14e367]:
+              - rowheader "12.7" [ref=f14e368]
+              - cell "0" [ref=f14e369]
+            - row [ref=f14e374]:
+              - rowheader "19.7" [ref=f14e375]
+              - cell "0" [ref=f14e376]
+            - row [ref=f14e381]:
+              - rowheader "26.7" [ref=f14e382]
+              - cell "0" [ref=f14e383]
+      - generic [ref=f14e388]:
+        - heading "ביטולים ואי־הגעה" [level=3] [ref=f14e389]
+        - generic [ref=f14e390]:
+          - generic [ref=f14e391]:
+            - term [ref=f14e392]: שיעור הביטולים
+            - definition [ref=f14e393]:
+              - text: אין עדיין מספיק נתונים לחישוב.
+              - generic [ref=f14e394]: מתוך כל התורים שנקבעו בתקופה, בכל סטטוס.
+          - generic [ref=f14e395]:
+            - term [ref=f14e396]: ביטולים ביוזמת הלקוחה
+            - definition [ref=f14e397]: "0"
+          - generic [ref=f14e398]:
+            - term [ref=f14e399]: ביטולים ביוזמת הבוטיק
+            - definition [ref=f14e400]: "0"
+          - generic [ref=f14e401]:
+            - term [ref=f14e402]: שיעור אי־ההגעה
+            - definition [ref=f14e403]:
+              - text: אין עדיין מספיק נתונים לחישוב.
+              - generic [ref=f14e404]: מתוך התורים שסומנו כהתקיימו או כאי־הגעה בלבד.
+          - generic [ref=f14e405]:
+            - term [ref=f14e406]: תורים שעברו ולא סומנו
+            - definition [ref=f14e407]:
+              - text: "0"
+              - generic [ref=f14e408]: תורים שכבר עברו ולא סומנו כהתקיימו או כאי־הגעה. הם אינם נכללים בשיעור אי־ההגעה.
+      - generic [ref=f14e409]:
+        - heading "לקוחות בתקופה" [level=3] [ref=f14e410]
+        - paragraph [ref=f14e411]: נספרות לקוחות עם תור אחד לפחות בתקופה שלא בוטל.
+        - generic [ref=f14e412]:
+          - generic [ref=f14e413]:
+            - term [ref=f14e414]: סך הלקוחות
+            - definition [ref=f14e415]: "0"
+          - generic [ref=f14e416]:
+            - term [ref=f14e417]: לקוחות חדשות
+            - definition [ref=f14e418]: "0"
+          - generic [ref=f14e419]:
+            - term [ref=f14e420]: לקוחות חוזרות
+            - definition [ref=f14e421]: "0"
+          - generic [ref=f14e422]:
+            - term [ref=f14e423]: שיעור החזרה
+            - definition [ref=f14e424]:
+              - text: אין עדיין מספיק נתונים לחישוב.
+              - generic [ref=f14e425]: חלקן של הלקוחות בתקופה שקבעו בבוטיק יותר מתור אחד אי פעם.
+      - generic [ref=f14e426]:
+        - heading "סוגי התורים המבוקשים" [level=3] [ref=f14e427]
+        - paragraph [ref=f14e428]: מוצגים סוגי התורים שנקבעו הכי הרבה פעמים בתקופה.
+        - paragraph [ref=f14e429]: לא נקבעו תורים בתקופה הזו.

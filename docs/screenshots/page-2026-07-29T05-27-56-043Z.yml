@@ -1,0 +1,27 @@
+- generic [ref=e3]:
+  - banner [ref=e4]:
+    - link "✦ מערכת בוטיק" [ref=e5] [cursor=pointer]:
+      - /url: /
+    - button "❓ מדריך" [ref=e6] [cursor=pointer]
+    - generic "מנותק" [ref=e7]
+    - group "language" [ref=e10]:
+      - button "עב" [pressed] [ref=e11] [cursor=pointer]
+      - button "ع" [ref=e12] [cursor=pointer]
+      - button "EN" [ref=e13] [cursor=pointer]
+  - main [ref=e14]:
+    - generic [ref=e15]:
+      - heading "צ׳ק-אין ללקוחות" [level=1] [ref=e16]
+      - paragraph [ref=e17]: הזינו פרטים כדי להצטרף לתור
+      - generic [ref=e18]:
+        - generic [ref=e19]:
+          - generic [ref=e20]: שם מלא
+          - textbox [active] [ref=e21]
+        - generic [ref=e22]:
+          - generic [ref=e23]: טלפון
+          - textbox [ref=e24]
+        - generic [ref=e25]:
+          - generic [ref=e26]: סוג לקוחה
+          - generic [ref=e27]:
+            - button "👰 כלה" [ref=e28] [cursor=pointer]
+            - button "✨ ערב" [ref=e29] [cursor=pointer]
+        - button "הצטרפות לתור" [disabled] [ref=e30]
