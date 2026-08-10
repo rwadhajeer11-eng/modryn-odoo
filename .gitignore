@@ -13,3 +13,6 @@ __pycache__/
 # Logs / scratch
 *.log
 .DS_Store
+
+# Spartan AI config (contains API keys)
+.spartan/ai.env
