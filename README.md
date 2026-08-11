@@ -15,24 +15,31 @@ Two fake boutiques, each a full tenant on its own subdomain:
 |---|---|
 | http://bella.localtest.me:8069 | Bella Bridal — 3 dresses |
 | http://noga.localtest.me:8069 | Noga Couture — 2 dresses |
-| http://bella.localtest.me:8069/odoo | staff back office (`admin` / `modrynpoc123`) |
+| http://bella.localtest.me:8069/odoo | staff back office (`admin`, password you set at setup) |
 
 Working: subdomain tenancy · Hebrew-first RTL · Arabic toggle · luxury theme from
 MODRYN's tokens · dress catalog with per-size stock · price-visibility toggle ·
 dual-path booking (dress-bound + standalone) with server-side terms enforcement ·
 QR walk-in check-in · live queue board over websockets.
 
+Also working: phone OTP login · SMS through Twilio (queued in an outbox, drained by cron)
+· day waitlist with one standing offer at a time · staff floor board · roster · alterations.
+
 Deliberately **not** built — each is a Phase-2 line item in the scorecard: availability
-engine, phone OTP, Israeli payment gateway, SMS/WhatsApp, waitlist, roster, alterations.
+engine, Israeli payment gateway, WhatsApp.
 
 ## Layout
 
 ```
 odoo/          Odoo 19 source — shallow clone, gitignored, NEVER edited
-addons/        our three addons (the only customization surface)
+addons/        our seven addons (the only customization surface)
   modryn_theme/       palette, fonts, RTL, price-visibility toggle
   modryn_booking/     dual-path booking on calendar.event
   modryn_queue_poc/   QR check-in + bus.bus live board
+  modryn_portal/      phone OTP login, her bookings, SMS outbox, day waitlist
+  modryn_staff/       staff login + floor board
+  modryn_atelier/     alterations
+  modryn_roster/      shifts, availability, weekly rota
 scripts/       bootstrap, template build, tenant provisioning, catalog seed
 docs/          scorecard + screenshots
 odoo.conf      dbfilter tenancy config
@@ -47,7 +54,8 @@ each release, and your delta stays in `addons/`.
 
 ```bash
 ./scripts/bootstrap.sh                      # clone Odoo, venv, deps, rtlcss
-./scripts/build_template.sh                 # golden DB: modules, he_IL + ar, ILS, variants
+./scripts/build_template.sh                 # golden DB: core + all seven modryn addons,
+                                            # he_IL + ar, ILS, variants
 ./scripts/new_boutique.sh bella "Bella Bridal"
 ./scripts/new_boutique.sh noga  "Noga Couture"
 
@@ -55,11 +63,20 @@ source .venv/bin/activate
 MODRYN_SLUG=bella ./odoo/odoo-bin shell -c odoo.conf -d bella --db-filter='^bella$' --no-http < scripts/seed_catalog.py
 MODRYN_SLUG=noga  ./odoo/odoo-bin shell -c odoo.conf -d noga  --db-filter='^noga$'  --no-http < scripts/seed_catalog.py
 
-./odoo/odoo-bin server -c odoo.conf -d bella --db-filter='^bella$' -i modryn_theme,modryn_booking,modryn_queue_poc --stop-after-init
-./odoo/odoo-bin server -c odoo.conf -d noga  --db-filter='^noga$'  -i modryn_theme,modryn_booking,modryn_queue_poc --stop-after-init
-
 ./odoo/odoo-bin server -c odoo.conf --http-interface=127.0.0.1     # run it
 ```
+
+**The addons are installed once, into the template.** A boutique is `createdb -T`
+plus the fixups — no module install per tenant, which is why provisioning is seconds
+rather than minutes. It also means the template is the only place the launch-critical
+unique indexes can come from, so both scripts assert those indexes exist and refuse to
+hand you a tenant without them. If `new_boutique.sh` tells you the template is missing
+one, `dropdb modryn_template` and rebuild it; every existing tenant is unaffected.
+
+No credential is stored in this repo, so you pick your own. Set the back-office `admin`
+password right after `build_template.sh` (Settings → Users → Administrator), and export
+`MODRYN_DEMO_PASSWORD` before running `scripts/seed_staff.py` — that seeder has no default
+password and exits if the variable is unset.
 
 ### How tenancy works
 
@@ -118,3 +135,24 @@ Every one of these failed **silently** — no error, no log line — which is th
 Also renamed in 19: `res.users.groups_id` → `group_ids`, and `res.groups.category_id` →
 `privilege_id` (pointing at a new `res.groups.privilege` model). That drift is the real
 cost of a version upgrade, and it is why the addon count matters.
+
+---
+
+## Deployment
+
+Everything needed to run this in production lives in **[`deploy/`](deploy/)**, and the runbook
+is **[`deploy/README.md`](deploy/README.md)** — provision, deploy, add a boutique, rotate
+certificates, back up, restore, roll back.
+
+| | |
+|---|---|
+| `deploy/provision.sh` | idempotent Ubuntu 24.04 bootstrap; re-run it to apply a config change |
+| `deploy/odoo.conf.prod` | production Odoo config, every directive carrying its reason |
+| `deploy/nginx/` | catch-all 404, `/web/database/` 404, websocket proxy, rate limits, X-Accel filestore |
+| `deploy/postgresql/tuning.conf` | PostgreSQL 16 overrides + `pg_stat_statements` |
+| `deploy/systemd/` | the service unit and the nightly backup timer |
+| `deploy/scripts/` | `deploy.sh`, `new_boutique_prod.sh`, `build_template_prod.sh`, `backup.sh`, `restore.sh` |
+
+The reasoning behind the sizing and the hosting choice is in
+`.planning/specs/deployment-spec.md`; where these artifacts deliberately depart from it, the
+correction is listed at the end of `deploy/README.md`.

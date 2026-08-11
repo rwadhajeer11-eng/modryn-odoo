@@ -72,7 +72,11 @@ class CalendarEvent(models.Model):
             if not event.modryn_customer_phone:
                 continue
             body = event._modryn_sms_env()._modryn_body('confirmation')
-            ok, detail = event.env['modryn.sms'].send(event.modryn_customer_phone, body)
+            # Queued, not sent inline: this runs on POST /book/submit, and a
+            # degraded Twilio used to hold that worker for SEND_TIMEOUT per
+            # booking. Nothing here reads the result beyond logging it, so there
+            # is nothing to preserve by waiting.
+            ok, detail = event.env['modryn.sms'].send_async(event.modryn_customer_phone, body)
             if not ok:
                 _logger.warning('[modryn.comms] confirmation not sent for %s: %s',
                                 event.id, detail)
@@ -114,6 +118,14 @@ class CalendarEvent(models.Model):
             if not event.modryn_customer_phone:
                 continue
             body = event._modryn_sms_env()._modryn_body('reminder')
+            # Stays SYNCHRONOUS on purpose, alone among the non-interactive
+            # senders. This is a cron: there is no HTTP worker here to pin, so
+            # queueing buys nothing — and it would cost the one thing that makes
+            # the reminder reliable. The stamp below is the retry ledger; if we
+            # stamped on "enqueued" instead, a row that later exhausts its
+            # attempts leaves an event marked reminded that nobody was reminded
+            # about, lost forever. Un-stamping it would need the outbox to call
+            # back into the event, which is the job framework this is not.
             ok, detail = self.env['modryn.sms'].send(event.modryn_customer_phone, body)
             # Stamp on success only, so a transport blip retries next quarter hour
             # rather than silently dropping the reminder for good.

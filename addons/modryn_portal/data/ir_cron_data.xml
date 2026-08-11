@@ -27,6 +27,24 @@
             <field name="active" eval="True"/>
         </record>
 
+        <!-- The outbox drain. The interval is NOT how fast a text goes out:
+             send_async calls _trigger(), which pg_notifies the cron workers
+             post-commit, so a queued message leaves about a second after the
+             request returns. Five minutes is purely the safety net for a notify
+             that nobody was awake to hear — a worker restart, or a row queued
+             while the cron thread was busy. Short enough that a missed notify
+             costs a late text rather than a lost one, long enough that an idle
+             boutique is not polling all night. -->
+        <record id="ir_cron_sms_outbox_drain" model="ir.cron">
+            <field name="name">MODRYN: send queued texts</field>
+            <field name="model_id" ref="model_modryn_sms_outbox"/>
+            <field name="state">code</field>
+            <field name="code">model._drain()</field>
+            <field name="interval_number">5</field>
+            <field name="interval_type">minutes</field>
+            <field name="active" eval="True"/>
+        </record>
+
         <!-- An unclaimed offer must not hold a slot hostage: after the window
              it lapses and the next person in line is texted. -->
         <record id="ir_cron_expire_offers" model="ir.cron">

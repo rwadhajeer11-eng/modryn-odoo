@@ -43,6 +43,21 @@ fi
 echo "==> cloning database $TEMPLATE -> $SLUG"
 createdb -T "$TEMPLATE" "$SLUG"
 
+# A clone inherits exactly what the template had, and a template built before the
+# modryn addons were added to build_template.sh produces a tenant that 404s on
+# /book and /floor — while the missing unique indexes announce nothing at all
+# until two brides hold the same hour. Check the clone, not the template: this is
+# the last point where the answer is still about THIS tenant.
+for idx in calendar_event_modryn_one_live_booking_per_slot \
+           modryn_day_waitlist_modryn_one_offer_per_day; do
+  if ! psql -d "$SLUG" -tAc "select to_regclass('$idx')" | grep -q .; then
+    echo "!! $SLUG cloned from a $TEMPLATE that has no $idx."
+    echo "   Rebuild the template: dropdb $TEMPLATE && ./scripts/build_template.sh"
+    dropdb "$SLUG"
+    exit 1
+  fi
+done
+
 # Attachments live on disk in a directory named after the database. A cloned DB
 # points at filestore rows that would otherwise resolve to nothing.
 if [ -d "$FILESTORE/$TEMPLATE" ]; then

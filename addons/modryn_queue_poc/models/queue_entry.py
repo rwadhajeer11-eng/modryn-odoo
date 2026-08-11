@@ -134,7 +134,12 @@ class ModrynQueueEntry(models.Model):
         self.ensure_one()
         if not self.phone:
             return
-        ok, detail = self.env['modryn.sms'].send(self.phone, body)
+        # The one chokepoint every queue text goes through — redirect, you're
+        # next, and your turn — so queueing here covers all three at once.
+        # Staff clicking "call next" is an HTTP request like any other, and the
+        # notified-at stamps above are written regardless of the result, so no
+        # decision here depends on waiting for Twilio.
+        ok, detail = self.env['modryn.sms'].send_async(self.phone, body)
         if not ok:
             _logger.warning('[modryn.queue] sms not sent for %s: %s', self.id, detail)
 

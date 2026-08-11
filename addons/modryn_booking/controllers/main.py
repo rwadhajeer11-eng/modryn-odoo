@@ -2,6 +2,7 @@ import re
 from datetime import datetime, timedelta
 
 import pytz
+from psycopg2.errors import UniqueViolation
 
 from odoo import _, http
 from odoo.http import request
@@ -12,6 +13,12 @@ OPEN_HOUR, CLOSE_HOUR = 10, 18
 SLOT_MINUTES = 60
 DAYS_AHEAD = 14
 TZ = pytz.timezone('Asia/Jerusalem')
+
+# Mirror of ONE_LIVE_BOOKING_PER_SLOT_INDEX in
+# modryn_portal/models/calendar_event.py, which owns the index. Copied rather
+# than imported because the dependency runs the other way — modryn_portal depends
+# on this module — and importing upwards would be a load cycle.
+ONE_LIVE_BOOKING_PER_SLOT_INDEX = 'calendar_event_modryn_one_live_booking_per_slot'
 
 # Israeli mobile/landline, tolerant of spaces and dashes: 05X-XXXXXXX or +9725X...
 PHONE_RE = re.compile(r'^(?:\+972|0)\d{1,2}[\d\-\s]{6,10}$')
@@ -33,9 +40,26 @@ class ModrynBooking(http.Controller):
         PoC needs to know.
         """
         now_local = datetime.now(TZ)
+        # Bound the scan to exactly the fortnight the loop below renders. Without
+        # an upper bound /book — a primary load-test page — reads every booking
+        # the boutique will ever take and throws away all but 14 days of it.
+        #
+        # The bound is local midnight AFTER the last rendered day, converted to
+        # UTC: the last slot that day starts at 17:00 local, so everything the
+        # page can show falls strictly before it. NOT utcnow() + DAYS_AHEAD —
+        # the loop counts days in Jerusalem local time while the column is UTC,
+        # so just after local midnight (00:30, i.e. 22:30 UTC the day before)
+        # that bound lands ~22 hours short of the final day's last slot. The
+        # final day's bookings would drop out of the scan and be offered to a
+        # second bride.
+        last_day = (now_local + timedelta(days=DAYS_AHEAD)).date()
+        until = TZ.localize(
+            datetime.combine(last_day + timedelta(days=1), datetime.min.time())
+        ).astimezone(pytz.utc).replace(tzinfo=None)
         domain = [
             ('modryn_is_booking', '=', True),
             ('start', '>=', datetime.utcnow()),
+            ('start', '<', until),
         ]
         # A cancelled appointment must hand its slot back, or cancelling would
         # punish the boutique. The field arrives with modryn_portal, which
@@ -188,8 +212,12 @@ class ModrynBooking(http.Controller):
             errors['variant'] = _("Please choose a size")
 
         if start and not errors:
-            # Last-writer-wins is not good enough for a fitting room: re-check
-            # the slot at submit time, because the form was rendered minutes ago.
+            # KEPT, but demoted: this is now a UX affordance, not the guarantee.
+            # It catches the common case — the form was rendered minutes ago and
+            # somebody has taken the slot since — and answers with a sentence
+            # instead of a collision. Correctness belongs to the partial unique
+            # index on calendar_event (modryn_portal), because a read-then-write
+            # check can never close the window between the read and the write.
             taken_domain = [('modryn_is_booking', '=', True), ('start', '=', start)]
             # A cancelled booking holds nothing. This guard used to disagree with
             # _slots(): the freed time was offered on the form and then rejected
@@ -199,20 +227,31 @@ class ModrynBooking(http.Controller):
                 taken_domain.append(('modryn_cancelled_at', '=', False))
             if request.env['calendar.event'].sudo().search_count(taken_domain):
                 errors['slot'] = _("That time was just taken, please choose another")
+            # Nothing above asks whether this hour EXISTS. The unique index does
+            # not either — it enforces one booking per slot, not which slots the
+            # boutique sells — so a crafted POST booked 03:00 on a closed Saturday
+            # eight months out and got a confirmation SMS for it.
+            #
+            # The honest test is "is this a value the server itself just offered",
+            # so ask the same function that offers them rather than restating
+            # OPEN_WEEKDAYS/OPEN_HOUR/DAYS_AHEAD here where they could drift apart.
+            # That also keeps the DST handling in one place: _slots() derives every
+            # candidate by localising a local wall clock, never by UTC arithmetic.
+            # Runs AFTER the taken check because _slots() omits taken hours too,
+            # and "just taken" is the more useful sentence when both apply.
+            elif start.strftime('%Y-%m-%d %H:%M:%S') not in {
+                t['value'] for d in self._slots() for t in d['times']
+            }:
+                errors['slot'] = _("That time isn't valid")
 
         if errors:
             return self._render_form(dress=dress, variant=variant, errors=errors, values=post)
 
         Partner = request.env['res.partner'].sudo()
-        partner = Partner.search([('phone', '=', phone)], limit=1) or Partner.create({
-            'name': name, 'phone': phone,
-        })
-
         vals = {
             'name': (_("Fitting: %s") % dress.name) if dress else (_("Consultation: %s") % name),
             'start': start,
             'stop': start + timedelta(minutes=SLOT_MINUTES),
-            'partner_ids': [(6, 0, partner.ids)],
             'modryn_is_booking': True,
             'modryn_booking_type': 'dress' if dress else 'consult',
             'modryn_variant_id': variant.id if variant else False,
@@ -225,7 +264,39 @@ class ModrynBooking(http.Controller):
         organizer = self._organizer()
         if organizer:
             vals['user_id'] = organizer.id
-        event = request.env['calendar.event'].sudo().create(vals)
+        try:
+            # The savepoint is load-bearing, not decoration. Catching the
+            # UniqueViolation turns the losing racer's 500 into a message, but it
+            # does NOT undo the rejected INSERT — and an aborted transaction
+            # fails every query issued after it, including the _slots() read that
+            # re-renders the form below. Same bug floor.py's set_room() already
+            # had to fix.
+            with request.env.cr.savepoint():
+                # The partner belongs INSIDE the savepoint. A savepoint rolls back
+                # only what it wraps, and entering one flushes everything written
+                # before it — so a losing racer's res.partner used to survive the
+                # rollback and commit. One orphan bride per lost race, 44 of them
+                # in the last concurrency run. Before the savepoint existed the
+                # exception took the whole request cursor down and nothing
+                # survived; the fix for the 500 is what let these leak.
+                partner = Partner.search([('phone', '=', phone)], limit=1) or Partner.create({
+                    'name': name, 'phone': phone,
+                })
+                vals['partner_ids'] = [(6, 0, partner.ids)]
+                event = request.env['calendar.event'].sudo().create(vals)
+        except UniqueViolation as exc:
+            # Only OUR index means "slot taken". create() also writes
+            # calendar_attendee and mail_followers, and either can raise
+            # UniqueViolation for reasons no change of time will fix — telling
+            # her to pick another hour would send her round a loop forever while
+            # hiding a real bug. Anything else is a 500, which is honest.
+            if exc.diag.constraint_name != ONE_LIVE_BOOKING_PER_SLOT_INDEX:
+                raise
+            # She lost the slot by microseconds. Deliberately the same sentence
+            # the pre-check gives: which of the two guards caught it is our
+            # problem, not hers.
+            errors['slot'] = _("That time was just taken, please choose another")
+            return self._render_form(dress=dress, variant=variant, errors=errors, values=post)
         # Tell her it worked, in the language she booked in. Guarded by a
         # field check because modryn_portal owns comms and depends on THIS
         # module — the reverse dependency would be a load cycle.

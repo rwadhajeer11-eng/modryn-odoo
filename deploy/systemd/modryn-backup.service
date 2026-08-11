@@ -1,0 +1,24 @@
+[Unit]
+Description=MODRYN nightly backup (per-tenant pg_dump + filestore + config)
+Documentation=file:/opt/modryn/deploy/README.md
+After=postgresql.service
+Requires=postgresql.service
+
+[Service]
+Type=oneshot
+# Runs as root: it reads /etc/odoo/odoo.conf (0640 root:odoo), rsyncs /etc, and
+# writes under /var/backups/modryn. pg_dump inside the script drops to the odoo
+# role via `sudo -u odoo`, so no superuser database access is used.
+User=root
+Environment=TZ=UTC
+ExecStart=/opt/modryn/deploy/scripts/backup.sh
+
+# A backup that half-works and exits 0 is worse than no backup, because it
+# removes the anxiety that would otherwise catch it. The script exits non-zero
+# on any failure; this makes systemd record that as a failed unit so
+# `systemctl --failed` and the status file both tell the same story.
+SuccessExitStatus=0
+
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=modryn-backup

@@ -21,3 +21,7 @@ __pycache__/
 .env
 docs/screenshots/*.yml
 docs/screenshots/*.log
+
+# Load-test artefacts — regenerated per run, and tenants.json carries live logins.
+loadtest/results/
+loadtest/config/tenants.json

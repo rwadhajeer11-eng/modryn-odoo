@@ -1,0 +1,217 @@
+; MODRYN production Odoo configuration.
+;
+; Installed to /etc/odoo/odoo.conf, owner root:odoo, mode 0640 — it carries
+; admin_passwd, so the odoo user may read it and may not write it.
+;
+; Every directive below was verified to exist in THIS Odoo tree:
+;   grep -c 'dest="<name>"' odoo/odoo/tools/config.py
+; A misspelled directive in an Odoo config file is SILENTLY IGNORED — no
+; warning, no startup failure — so "it is in the file" is not evidence that it
+; is in effect. Check with `odoo-bin server -c ... --help` or the grep above
+; before adding a line here.
+
+[options]
+
+; --- Where Odoo finds code -------------------------------------------------
+; Core first, our addons second. Odoo core is NEVER edited; everything we add
+; lives in addons/ and reaches core through model/view inheritance. That is
+; what makes a version upgrade survivable at all.
+addons_path = /opt/modryn/odoo/addons,/opt/modryn/addons
+
+; --- Runtime data ----------------------------------------------------------
+; Holds filestore/ AND sessions/. Both are live state that is NOT in the repo
+; and must survive a deploy. filestore/ is what nginx X-Accel-aliases below;
+; sessions/ is a FilesystemSessionStore scattered over 4096 subdirectories
+; (odoo/odoo/http.py), which is why a second app box would need sticky sessions.
+data_dir = /var/lib/modryn
+
+; --- Database --------------------------------------------------------------
+; db_host is a STRING in Odoo 19; writing `False` logs a warning and is ignored.
+; Leaving it EMPTY makes libpq use the local unix socket, which is the only
+; thing PostgreSQL listens on in production (listen_addresses = '' in
+; postgresql/tuning.conf). No TCP listener means no network attack surface and
+; no database password to leak — peer auth over the socket is the credential.
+db_host =
+db_user = odoo
+
+; The ONLY databases this instance may touch.
+;
+; Without this line Odoo's cron enumerator falls back to listing EVERY database
+; on the server: cron_database_list() is literally
+;   config['db_name'] or list_dbs(True)          (odoo/odoo/service/server.py)
+; and then errors against each database it has no business opening. dbfilter
+; below routes HTTP; ONLY db_name bounds the cron enumerator. Deleting this
+; line does not break a page load, so the damage shows up as log noise and
+; wasted cron passes rather than as an outage — which is why it gets a comment
+; this long.
+;
+; TENANTS ONLY — modryn_template is deliberately ABSENT. Anything listed here
+; gets a persistent connection held open, and `createdb -T` requires ZERO
+; connections to the source database. scripts/new_boutique.sh (and its
+; production twin) abort when pg_stat_activity shows any connection to the
+; template. Listing the template here would mean every new boutique needs a
+; server restart. Template work passes `-d modryn_template` explicitly, which
+; overrides this line.
+;
+; Maintained by deploy/scripts/new_boutique_prod.sh — it appends here and then
+; regenerates /etc/nginx/tenants.map from this same line, so nginx and the cron
+; enumerator cannot disagree about which tenants exist.
+;
+; SHIPPED EMPTY on purpose: naming a database that does not exist yet makes
+; every cron pass log an error against it. An empty value does fall back to the
+; enumerate-everything behaviour described above, which is why provision.sh
+; enables the service without starting it — do not start Odoo before the first
+; boutique exists.
+db_name =
+
+; THE TENANCY ROUTER. %d is the first hostname label, so
+; bella.example.com -> database "bella". One PostgreSQL database per boutique:
+; isolation by construction, no row-level security to get wrong.
+dbfilter = ^%d$
+
+; Kills the database manager operations: create / drop / duplicate / backup /
+; restore / list all refuse (odoo/odoo/service/db.py).
+;
+; This does NOT unregister the routes. They stay registered at auth="none",
+; and create/duplicate/drop/backup/restore are csrf=False
+; (odoo/addons/web/controllers/database.py), gated only by admin_passwd. That
+; is why nginx also returns 404 for /web/database/ on EVERY server block — see
+; deploy/nginx/.
+;
+; Be precise about what each layer buys, because the two are NOT equivalent:
+;   - THIS LINE is the one that refuses the operations themselves. With it,
+;     create / drop / duplicate / backup / restore / list all fail inside
+;     odoo/odoo/service/db.py no matter who reaches the route.
+;   - The nginx 404 is DEFENCE IN DEPTH on top of that: it keeps the manager
+;     and selector PAGES from being reachable at all, so a box that is briefly
+;     mis-set to list_db = True — or an Odoo upgrade that changes the check —
+;     is not one config typo away from an exposed manager.
+; Removing this line alone does not hand anyone remote destruction while nginx
+; stands; removing the nginx blocks alone does not either. Keep both.
+;
+; The nginx side of this needed a fix that is easy to reintroduce: a
+; `location ^~ /web/database/` covers /web/database/manager and NOT
+; /en/web/database/manager, which Odoo serves as the byte-identical page. See
+; the two-location comment in deploy/nginx/modryn-site.conf.
+list_db = False
+
+; pbkdf2_sha512 hash — NEVER a plaintext password. Odoo verifies hashes
+; natively (verify_admin_password in odoo/odoo/tools/config.py).
+; Generate with:
+;   /opt/modryn/.venv/bin/python - <<'PY'
+;   from passlib.context import CryptContext; import getpass
+;   print(CryptContext(schemes=['pbkdf2_sha512'],
+;         pbkdf2_sha512__rounds=600_000).hash(getpass.getpass('master: ')))
+;   PY
+; Store the plaintext in a password manager, put only the hash here.
+admin_passwd = __ADMIN_PASSWD_HASH__
+
+; Per-PROCESS connection pool size, not per-instance: sql_db.py builds a
+; module-global _Pool = ConnectionPool(db_maxconn), one per OS process, and
+; prefork runs http workers + cron workers + gevent as separate processes:
+;   48 http x 4 + 4 cron x 4 + 1 gevent x 4 = 212
+; against max_connections = 250 (minus 3 superuser-reserved) — 35 spare for
+; psql, pg_dump and monitoring. Raising `workers` without re-running that sum
+; produces connection REFUSALS under load, which look like an application bug.
+;
+; If anyone ever sets db_replica_host, Registry.__init__ creates a SECOND pool
+; per process and the ceiling doubles to 424. Adding a read replica is a
+; max_connections change, not just one config line.
+db_maxconn = 4
+
+; --- HTTP ------------------------------------------------------------------
+; Bind to LOOPBACK ONLY. nginx is the sole ingress. A public bind would let a
+; direct request to :8069 bypass every rule in deploy/nginx/ — including the
+; /web/database/ 404 and every rate limit — which is the single highest-value
+; line in this file.
+http_interface = 127.0.0.1
+http_port = 8069
+
+; The websocket port. PreforkServer spawns the gevent process ITSELF via
+; long_polling_spawn() whenever workers > 0 (odoo/odoo/service/server.py).
+; Do NOT write a second systemd unit for it: a second unit double-binds 8072
+; and the real child dies on startup.
+gevent_port = 8072
+
+; Applies werkzeug's ProxyFix (x_for=1, x_proto=1, x_host=1) so REMOTE_ADDR,
+; scheme and host come from the proxy headers.
+;
+; ONLY safe because http_interface is loopback and nginx is the only client.
+;
+; CRITICAL: this is a NO-OP unless nginx sends X-Forwarded-Host — the whole
+; block is gated on environ.get("HTTP_X_FORWARDED_HOST") in odoo/odoo/http.py.
+; Without that one header Odoo records 127.0.0.1 as the client IP for every
+; request, and the fail2ban jail in deploy/fail2ban/ then bans nginx itself —
+; taking the entire platform down on the sixth wrong password.
+proxy_mode = True
+
+; --- Processes -------------------------------------------------------------
+; Little's Law: workers = R x S. At R = 400 req/s and S = 100 ms mean service
+; time that is 40, so 48 leaves ~17% headroom (a queue at 100% utilisation has
+; unbounded latency). 48 workers on 32 hardware threads is 1.5x oversubscribed,
+; which is fine while workers block on Postgres and wrong if QWeb rendering
+; pins the CPU. This is the FIRST row of the tuning log — expect to change it,
+; and record the measurement that justified the change.
+workers = 48
+
+; Four cron worker PROCESSES (not threads) in prefork mode. Sized against the
+; 1-minute SOS escalation cron, not against request load: a cron worker handles
+; ONE database per call, so a full pass over every tenant must finish inside
+; 60 s or the escalation is late. That, not request throughput, is what bounds
+; tenant count on one box.
+max_cron_threads = 4
+
+; --- Limits ----------------------------------------------------------------
+; Seconds of CPU per request. A request that burns 120 s of CPU is a bug, and
+; without this limit it takes a worker with it.
+limit_time_cpu = 120
+
+; Seconds of wall clock per request. MUST exceed limit_time_cpu or the CPU
+; limit can never fire (the wall-clock killer would always win first).
+limit_time_real = 240
+
+; Crons get a longer budget of their own. -1 (the default) makes crons inherit
+; limit_time_real and kills a legitimate reminder sweep across every tenant at
+; 240 s, mid-sweep, with no obvious cause in the log.
+limit_time_real_cron = 600
+
+; BYTES, not megabytes. The Odoo defaults are 2048*1024*1024 and
+; 2560*1024*1024 (odoo/odoo/tools/config.py). Writing `limit_memory_soft = 2048`
+; sets a 2 KB limit and every worker dies at startup.
+; soft = recycle the worker after the current request; hard = fail the next
+; allocation. Keep hard > soft or the hard limit fires first and kills
+; mid-request instead of between requests.
+limit_memory_soft = 2147483648
+limit_memory_hard = 2684354560
+
+; Recycle a worker after this many requests, to cap slow leaks. It also bounds
+; the cron worker's database queue — server.py logs an error when there are
+; more databases to process than limit_request allows — which only matters if
+; tenant count ever approaches this number.
+limit_request = 65536
+
+; --- Static delivery -------------------------------------------------------
+; Makes Odoo emit `X-Accel-Redirect: /web/filestore/<db>/<ab>/<sha>` and an
+; empty body, so nginx serves attachment bytes straight from disk and the
+; Python worker is freed immediately (odoo/odoo/http.py).
+; REQUIRES the `internal` /web/filestore location in deploy/nginx/. Without
+; that location every attachment 404s — including every dress photograph.
+x_sendfile = True
+
+; --- Logging ---------------------------------------------------------------
+; No logfile directive: stdout goes to journald via the systemd unit, so
+; rotation, retention and querying are the OS's problem and not a cron job
+; we have to keep working.
+;
+; log_level = warn maps to `odoo:WARNING`, which is quiet enough to keep the
+; journal readable at 400 req/s.
+log_level = warn
+
+; ...but `odoo:WARNING` also silences res_users' INFO line
+;   "Login failed for login:%s from %s"
+; which is the ONLY thing the fail2ban jail matches on. log_handler entries are
+; applied AFTER the log_level pseudo-config (odoo/odoo/netsvc.py builds
+; DEFAULT_LOG_CONFIGURATION + pseudo_config + log_handler and setLevel()s each
+; in order), so naming the logger explicitly here wins and re-opens exactly
+; that one line. Remove this and the jail silently stops banning anyone.
+log_handler = odoo.addons.base.models.res_users:INFO

@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>הדף לא נמצא</title>
+<!--
+  Served by nginx, NOT by Odoo. It must render when Odoo is down, so:
+    * no reference to /web/assets/ — that path is exactly what is unavailable
+      when nginx is serving this page instead of proxying;
+    * no webfont, no external stylesheet, no image request of any kind;
+    * colours inlined from addons/modryn_theme/.../primary_variables.scss
+      (ink #2B2118, cream #FDFBF7, surface #F6F0E6, gold #C5A059).
+  Font stack falls back to the system Hebrew faces rather than loading
+  Frank Ruhl Libre, for the same reason.
+-->
+<style>
+  html { background: #FDFBF7; }
+  body {
+    margin: 0; min-height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+    background: #FDFBF7; color: #2B2118;
+    font-family: "Assistant", "Heebo", "Arial Hebrew", system-ui, sans-serif;
+    line-height: 1.6;
+  }
+  main {
+    max-width: 34rem; padding: 3rem 1.5rem; text-align: center;
+  }
+  .rule {
+    width: 3rem; height: 2px; background: #C5A059;
+    margin: 0 auto 2rem; border: 0;
+  }
+  h1 {
+    font-family: "Frank Ruhl Libre", "David Libre", Georgia, serif;
+    font-weight: 500; font-size: 2rem; margin: 0 0 .75rem;
+  }
+  p { margin: 0 0 1.75rem; color: #5b4c3d; }
+  a {
+    display: inline-block; padding: .7rem 1.6rem; border-radius: 8px;
+    background: #2B2118; color: #FDFBF7; text-decoration: none;
+    font-weight: 600;
+  }
+  a:hover { background: #3a2d20; }
+  .code { margin-top: 2.5rem; font-size: .8rem; color: #9a8b7c; letter-spacing: .08em; }
+</style>
+</head>
+<body>
+<main>
+  <hr class="rule">
+  <h1>הדף לא נמצא</h1>
+  <p>ייתכן שהקישור השתנה או שהכתובת הוקלדה בטעות.</p>
+  <a href="/">חזרה לדף הבית</a>
+  <div class="code">404</div>
+</main>
+</body>
+</html>

@@ -1,0 +1,16 @@
+[Unit]
+Description=Nightly MODRYN backup at 02:30 UTC
+
+[Timer]
+# 02:30 UTC is deliberately outside 01:00-03:00 LOCAL time for Israel in both
+# halves of the year, so the run never lands inside a DST fold (where a timer
+# can fire twice or not at all). The unit and the service both force TZ=UTC, so
+# OnCalendar is read in UTC regardless of the host's /etc/localtime.
+OnCalendar=*-*-* 02:30:00
+Persistent=true
+# Spread the offsite rsync so a fleet of boxes does not hit the storage box in
+# the same second. Harmless on one box, correct if there is ever a second.
+RandomizedDelaySec=300
+
+[Install]
+WantedBy=timers.target

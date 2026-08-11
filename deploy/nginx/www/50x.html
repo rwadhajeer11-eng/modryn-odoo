@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>הבוטיק זמנית לא זמין</title>
+<!--
+  This page is what a customer sees when Odoo is DOWN. Every asset it needs
+  must already be in this file:
+    * no /web/assets/ (unreachable by definition when this fires),
+    * no webfont, no external stylesheet, no image,
+    * colours inlined from addons/modryn_theme/.../primary_variables.scss.
+  The "no home link" is deliberate: linking to / when the origin is 502ing
+  invites a refresh loop against a server that is already struggling.
+-->
+<style>
+  html { background: #FDFBF7; }
+  body {
+    margin: 0; min-height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+    background: #FDFBF7; color: #2B2118;
+    font-family: "Assistant", "Heebo", "Arial Hebrew", system-ui, sans-serif;
+    line-height: 1.6;
+  }
+  main { max-width: 34rem; padding: 3rem 1.5rem; text-align: center; }
+  .rule { width: 3rem; height: 2px; background: #C5A059; margin: 0 auto 2rem; border: 0; }
+  h1 {
+    font-family: "Frank Ruhl Libre", "David Libre", Georgia, serif;
+    font-weight: 500; font-size: 2rem; margin: 0 0 .75rem;
+  }
+  p { margin: 0 0 .5rem; color: #5b4c3d; }
+  .panel {
+    margin-top: 2rem; padding: 1rem 1.25rem; border-radius: 8px;
+    background: #F6F0E6; color: #5b4c3d; font-size: .95rem;
+  }
+  .code { margin-top: 2.5rem; font-size: .8rem; color: #9a8b7c; letter-spacing: .08em; }
+</style>
+</head>
+<body>
+<main>
+  <hr class="rule">
+  <h1>אנחנו כבר חוזרים</h1>
+  <p>האתר בתחזוקה קצרה. אנא נסו שוב בעוד מספר דקות.</p>
+  <div class="panel">
+    התור והתורים שנקבעו נשמרים במלואם — שום פגישה לא בוטלה.
+  </div>
+  <div class="code">5xx</div>
+</main>
+</body>
+</html>

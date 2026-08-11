@@ -1,0 +1,11 @@
+# Served ONLY by the catch-all default_server — i.e. for hostnames that are not
+# a known tenant. Nothing behind an unknown host is a real site, so nothing here
+# should ever be indexed.
+#
+# Real tenants do NOT use this file. Their /robots.txt is proxied to Odoo, which
+# serves a per-website robots.txt (addons/website/controllers/main.py) that the
+# boutique owner can edit from the website editor. Overriding it in nginx would
+# silently take that control away from her, which is why modryn-site.conf has no
+# /robots.txt location.
+User-agent: *
+Disallow: /

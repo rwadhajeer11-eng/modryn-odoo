@@ -43,7 +43,7 @@ cd /Users/mrwen/Documents/Github/modryn-odoo && source .venv/bin/activate
 bash scripts/verify.sh          # 85 checks — run this before believing anything works
 ```
 
-Logins seeded by `scripts/seed_staff.py` (demo password `modryn2026`): `miri` owner · `sara`
+Logins seeded by `scripts/seed_staff.py` (demo password: whatever `MODRYN_DEMO_PASSWORD` was set to at seed time): `miri` owner · `sara`
 shift manager · `rotem`/`noa`/`orly` staff. Staff sign in at `/staff/login`; owner admin is `/manage/*`, floor terminal is
 `/floor`, rota is `/roster`.
 

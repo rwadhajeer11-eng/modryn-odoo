@@ -1,14 +1,24 @@
 # Seeds one boutique's people so the walkthrough has real humans in it.
 # Runs inside `odoo-bin shell`. Idempotent: re-running skips anyone who exists.
 #
-#   MODRYN_SLUG=bella ./odoo/odoo-bin shell -c odoo.conf -d bella \
+#   MODRYN_DEMO_PASSWORD='pick-your-own' MODRYN_SLUG=bella \
+#       ./odoo/odoo-bin shell -c odoo.conf -d bella \
 #       --db-filter='^bella$' --no-http < scripts/seed_staff.py
 
 import os
 
 SLUG = os.environ.get('MODRYN_SLUG', 'bella')
-# Demo-only. Documented in docs/walkthrough.md; never a real credential.
-DEMO_PASSWORD = 'modryn2026'
+
+# No fallback, deliberately. The literal that used to sit here survived every cleanup
+# precisely because the script still ran when nobody set anything — a default is how a
+# credential gets re-committed, so an unset var has to be fatal rather than convenient.
+DEMO_PASSWORD = os.environ.get('MODRYN_DEMO_PASSWORD')
+if not DEMO_PASSWORD:
+    raise SystemExit(
+        "MODRYN_DEMO_PASSWORD is unset. Pick a password for the seeded demo logins, then:\n"
+        "    MODRYN_DEMO_PASSWORD='pick-your-own' MODRYN_SLUG=%s"
+        " ./odoo/odoo-bin shell -c odoo.conf -d %s"
+        " --db-filter='^%s$' --no-http < scripts/seed_staff.py" % (SLUG, SLUG, SLUG))
 
 Employee = env['hr.employee'].sudo()
 Role = env['modryn.staff.role'].sudo()
