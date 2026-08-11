@@ -66,16 +66,26 @@ about fifty lines, against MODRYN's five-second polling.
 | Check | Result |
 |---|---|
 | Catalogs | Fully disjoint; bella's 3 dresses and noga's 2 never cross |
-| Bella's product URL requested on noga | No leak |
+| Bella's product URL requested on noga | 404s (fixed — it used to 301 onto noga's same-numbered dress) |
 | Authenticated session cookie replayed cross-tenant | `SessionExpiredException` — rejected |
 | Bookings | Booking created on bella; noga's table stayed empty |
 | Slot availability | 10:00 consumed on bella, still free on noga |
 | Storage | Physically separate databases (`bella` 75 MB, `noga` 74 MB) |
 
-**One caveat worth fixing before any pilot:** requesting bella's product URL on noga does
-not 404 — Odoo's slug resolution falls back to the *same-numbered* local record, so the
-visitor silently lands on a different boutique's dress. No data leaks, but shared links
-and SEO both misbehave. MODRYN 404s correctly here.
+**The caveat this table used to carry is now fixed.** Requesting bella's product URL on
+noga did not 404: a `<model(...)>` route matches on the id and discards the slug's
+name-half, so `http_routing` found the URL non-canonical and 301'd onto noga's
+*same-numbered* dress. Nothing leaked — the record was noga's own — but a shared link
+landed the visitor in the wrong boutique. `modryn_theme`'s `ir.http._pre_dispatch` now
+compares the requested slug against the record's canonical one and 404s on a mismatch;
+`verify.sh` §1 probes it in both directions with a positive control. Odoo's bare-id
+`/shop/<id>` → canonical 301 is deliberately kept, because it is load-bearing for SEO.
+
+**One ceiling, stated rather than hidden:** the comparison uses the request's language
+only. If a product name is ever *translated*, a URL carrying another language's slug will
+404 where it used to 301. Not reachable today — `name->>'he_IL'` and `name->>'en_US'` are
+identical in both tenants and `ar_001` is unset — and comparing every active language
+would cost a query per language per request.
 
 ---
 

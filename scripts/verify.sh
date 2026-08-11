@@ -105,6 +105,37 @@ fi
 # could not fail under any input — including both tenants reading zero, which is
 # what a broken isolation boundary collapsing to one empty database looks like.
 # The disjoint-catalogs check above is the real isolation proof and does fail.
+#
+# The URL half of isolation, which the catalog comparison above cannot see. A
+# <model(...)> route matches on the id and throws the name away, so bella's
+# /shop/<her dress>-2 opened on noga used to 301 onto NOGA's dress 2 and serve
+# it. Probed on an id published in BOTH tenants — a 404 for an id noga simply
+# does not have would prove nothing.
+SHARED_ID=$(comm -12 <(psql -d bella -tAc "select id from product_template where is_published order by id" | sort) \
+                     <(psql -d noga  -tAc "select id from product_template where is_published order by id" | sort) | head -1)
+# Ask each tenant for its own canonical slug — the Location of the bare-id 301 —
+# rather than re-implementing _slugify in bash. website overrides _slug to prefer
+# seo_name, so a hand-rolled slug would probe a URL that 404s for the wrong reason.
+BSLUG=$(curl -sg -o /dev/null -w '%{redirect_url}' "$BELLA/shop/$SHARED_ID"); BSLUG="${BSLUG#$BELLA}"
+NSLUG=$(curl -sg -o /dev/null -w '%{redirect_url}' "$NOGA/shop/$SHARED_ID");  NSLUG="${NSLUG#$NOGA}"
+if [ -z "$SHARED_ID" ] || [ -z "$BSLUG" ] || [ -z "$NSLUG" ]; then
+  bad "cross-tenant product URL 404s" "could not build a slugged URL (id '$SHARED_ID', bella '$BSLUG', noga '$NSLUG') — if python-slugify ever gets installed it strips Hebrew, every slug collapses to a bare id, and this boundary quietly stops existing"
+else
+  # Positive control. Without it a broken URL builder makes the two 404 assertions
+  # below pass for the wrong reason.
+  [ "$(code "$BELLA$BSLUG")" = "200" ] && [ "$(code "$NOGA$NSLUG")" = "200" ] \
+    && ok "each tenant serves its own slugged product URL" \
+    || bad "each tenant serves its own slugged product URL" "the probe URLs are not even valid at home — bella $(code "$BELLA$BSLUG"), noga $(code "$NOGA$NSLUG")"
+  [ "$(code "$NOGA$BSLUG")" = "404" ] && ok "bella's product URL 404s on noga" \
+    || bad "bella's product URL 404s on noga" "got $(code "$NOGA$BSLUG") — noga answered for a name that is not hers"
+  [ "$(code "$BELLA$NSLUG")" = "404" ] && ok "noga's product URL 404s on bella" \
+    || bad "noga's product URL 404s on bella" "got $(code "$BELLA$NSLUG")"
+  # The rule must stay narrow. A bare id is not a wrong name, and Odoo's canonical
+  # 301 onto the slugged URL is load-bearing for SEO — if this flips to 404 the fix
+  # has over-reached and every /shop/<id> link in the wild breaks.
+  [ "$(code "$BELLA/shop/$SHARED_ID")" = "301" ] && ok "bare-id product URL still 301s to its canonical slug" \
+    || bad "bare-id canonical 301" "expected 301, got $(code "$BELLA/shop/$SHARED_ID")"
+fi
 
 head_ "2. theme + RTL"
 body "$BELLA/shop" | grep -q 'dir="rtl"' && ok "storefront is RTL" || bad "storefront is RTL" "no dir=rtl"
