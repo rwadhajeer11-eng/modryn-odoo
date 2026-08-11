@@ -1,6 +1,6 @@
 # Where this project stands
 
-_Last updated 2026-08-10, at commit `0b42239`._
+_Last updated 2026-08-11, on branch `feature/tenancy-slug-and-ics`._
 
 One question, answered with evidence: **should MODRYN be rebuilt on Odoo?** The answer is no —
 see [`../docs/scorecard.md`](../docs/scorecard.md). Everything below exists to make that answer
@@ -10,7 +10,7 @@ defensible rather than theoretical.
 
 | | |
 |---|---|
-| `scripts/verify.sh` | **296 passed, 0 failed, 1 skipped** — +33 over the `modryn_ops` build: 9 in §1 (cross-tenant product URLs in three languages, and the shared `database.secret` that let one tenant's booking token open another's) and 24 in the new §10b-bis (`.ics` export). The skip is honest: no tenant currently holds a *cancelled future* booking, so the "remove from calendar" branch has no subject. It was verified by hand and will fire on its own the moment a customer cancels ahead of time |
+| `scripts/verify.sh` | **297 passed, 0 failed, 1 skipped** — +34 over the `modryn_ops` build: 9 in §1 (cross-tenant product URLs in three languages, and the shared `database.secret` that let one tenant's booking token open another's), 24 in the new §10b-bis (`.ics` export), and 1 guarding the slug rule against over-reach (a non-canonical slug that *slugifies* to canonical must still 301). The skip is honest: no tenant currently holds a *cancelled future* booking, so the "remove from calendar" branch has no subject. It was verified by hand and will fire on its own the moment a customer cancels ahead of time |
 | Odoo | 19.0 **Community**, shallow gitignored clone at `odoo/`, never edited |
 | Tenants | `bella` and `noga` — one Postgres database each, routed by `dbfilter = ^%d$` |
 | Custom code | ~8,100 non-blank lines across eight addons |
@@ -20,10 +20,10 @@ defensible rather than theoretical.
 
 | Addon | Lines | What it is |
 |---|---|---|
-| `modryn_theme` | 317 | MODRYN palette, fonts and RTL through Odoo's native theming slots; per-dress price visibility; the slug guard that makes one tenant's product URL 404 on another |
+| `modryn_theme` | 359 | MODRYN palette (declared once, consumed by every frontend bundle), fonts and RTL through Odoo's native theming slots; per-dress price visibility; the slug guard that makes one tenant's product URL 404 on another |
 | `modryn_booking` | 460 | Dual-path booking on `calendar.event` — dress-bound and standalone; server-enforced terms |
 | `modryn_queue_poc` | 517 | QR walk-in queue, `bus.bus` realtime, Waitwhile-style intake with an invisible acceptance gate |
-| `modryn_staff` | 2,774 | Employees, owner-defined roles, assignment with primary + helpers, drag-and-drop floor board, fitting rooms, SOS paging |
+| `modryn_staff` | 2,767 | Employees, owner-defined roles, assignment with primary + helpers, drag-and-drop floor board, fitting rooms, SOS paging |
 | `modryn_portal` | 1,251 | Phone + SMS OTP login, my-bookings, confirmation and 24h reminder SMS, day-waitlist refill loop, `.ics` export |
 | `modryn_atelier` | 474 | Garment pieces, alteration tasks, workshop dashboard, seamstress self-view |
 | `modryn_roster` | 779 | Owner shift templates, staff availability, per-role coverage targets, publish |
@@ -69,7 +69,7 @@ deliberately not a silent success.
 ```bash
 cd /Users/mrwen/Documents/Github/modryn-odoo && source .venv/bin/activate
 ./odoo/odoo-bin server -c odoo.conf --http-interface=127.0.0.1
-bash scripts/verify.sh          # 263 checks — run before believing anything works
+bash scripts/verify.sh          # 298 checks — run before believing anything works
 ```
 
 Logins seeded by `scripts/seed_staff.py`, demo password `modryn2026`: `miri` owner ·

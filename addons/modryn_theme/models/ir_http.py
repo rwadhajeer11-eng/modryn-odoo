@@ -18,6 +18,13 @@ class IrHttp(models.AbstractModel):
         # but a shared link lands the visitor in the wrong boutique. A name that
         # belongs to no record here is a wrong URL, so: 404.
         #
+        # That 404 also catches a record's OWN former name after a rename, which
+        # used to 301 onto the new canonical URL. Nothing in a URL separates
+        # "another tenant's name" from "this record's stale name", so one of the
+        # two behaviours has to go; .planning/BACKLOG.md chose the 404, and MODRYN
+        # behaves the same way. A dead marketing link after a rename is a decision
+        # here, not a regression.
+        #
         # BEFORE super() on purpose. That 301 sits at the tail of the inherited
         # _pre_dispatch and aborts, so a check placed after super() never sees
         # the mismatching case at all.
@@ -65,6 +72,17 @@ class IrHttp(models.AbstractModel):
                 # cls._slug, never a re-slugify of display_name: website overrides
                 # _slug to prefer seo_name, and a record carrying an SEO name
                 # would otherwise 404 on its own canonical URL.
-                if not any(cls._slug(base.with_context(lang=c)) == requested for c in ordered):
+                #
+                # Slugify the requested half too, or this is stricter than Odoo's
+                # own canonicalisation: _slugify lowercases and drops combining
+                # marks, so /shop/Aurora-Gown-7 and /shop/Café-Blanc-7 would 404
+                # on the boutique's own dress where core used to 301 them onto the
+                # canonical URL. An autocapitalising phone keyboard or a press-kit
+                # link is precisely the shared link this guard exists to protect.
+                # It also survives python-slugify ever landing in the venv: both
+                # halves then transliterate the same way, where comparing the raw
+                # segment would 404 every Hebrew URL already in the wild.
+                canonical = cls._slugify(requested)
+                if not any(cls._slug(base.with_context(lang=c)) == canonical for c in ordered):
                     raise werkzeug.exceptions.NotFound()
         super()._pre_dispatch(rule, args)

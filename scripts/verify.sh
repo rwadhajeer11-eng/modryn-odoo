@@ -146,6 +146,18 @@ else
   # has over-reached and every /shop/<id> link in the wild breaks.
   [ "$(code "$BELLA/shop/$SHARED_ID")" = "301" ] && ok "bare-id product URL still 301s to its canonical slug" \
     || bad "bare-id canonical 301" "expected 301, got $(code "$BELLA/shop/$SHARED_ID")"
+  # ...and a slug that is not canonical but SLUGIFIES to canonical is still this
+  # record's URL. _slugify lowercases, drops combining marks and collapses
+  # duplicate dashes, so /shop/Aurora-Gown-7 and /shop/Café-Blanc-7 are the same
+  # dress as their canonical form — core 301'd them onto it. The guard compared
+  # the raw segment once and turned all of those into dead 404s, which is exactly
+  # the broken shared link this whole section exists to prevent (a press-kit URL,
+  # an autocapitalising phone keyboard). Hebrew has no case, so the variant here
+  # doubles a dash: same normalisation path, and it works whatever the catalogue
+  # is named. A slug always carries its "-<id>" tail, so there is always a dash.
+  VARSLUG="${BSLUG/-/--}"
+  [ "$(code "$BELLA$VARSLUG")" = "301" ] && ok "non-canonical slug that slugifies to canonical still 301s" \
+    || bad "slug normalisation" "expected 301 for $VARSLUG, got $(code "$BELLA$VARSLUG") — the guard is stricter than Odoo's own canonicalisation"
   # The guard compares the requested slug against the record's canonical one, and
   # display_name is TRANSLATABLE. A real browser sending Accept-Language: en-US is
   # 303'd to the /en/ form before the guard runs, so the boutique's own canonical

@@ -1,9 +1,9 @@
 // rgba() only — LibSass rejects Color Level 4 and takes the whole frontend
 // bundle down with it, not just the offending rule.
-$modryn-surface: #F6F0E6;
-$modryn-border: #E4DACA;
-$modryn-gold: #C5A059;
-$modryn-ink-muted: #6B5D4F;
+//
+// The $modryn-* variables are declared once, in modryn_theme's
+// primary_variables.scss, and reach here through the web._assets_helpers
+// include — no @import.
 
 .modryn_roster_nav {
     display: flex;

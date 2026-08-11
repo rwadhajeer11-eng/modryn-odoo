@@ -1,19 +1,11 @@
 // Staff-facing chrome. The storefront theme already supplies the palette and
-// fonts; this is only the layout those screens need.
+// fonts; this is only the layout those screens need. The $modryn-* variables
+// used below are declared once, in modryn_theme's primary_variables.scss, and
+// reach here through the web._assets_helpers include — no @import.
 //
 // rgba() everywhere, NEVER the modern `rgb(a b c / d)` syntax: Odoo compiles
 // SCSS with LibSass, which fails on Color Level 4 and takes down the entire
 // frontend bundle rather than just the offending rule.
-
-$modryn-bg: #FDFBF7;
-$modryn-surface: #F6F0E6;
-$modryn-ink: #2B2118;
-$modryn-ink-muted: #6B5D4F;
-$modryn-gold: #C5A059;
-$modryn-gold-text: #7F612B; // the ONLY gold that may carry text (AA)
-$modryn-border: #E4DACA;
-$modryn-danger: #A03232;
-$modryn-success: #2E6B4F;
 
 // Odoo shows internal users a fixed corner widget ("edit this content", "go to
 // your Odoo Apps") on every frontend page. It is the one piece of Odoo chrome

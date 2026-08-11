@@ -37,21 +37,7 @@ with a send. Do this whenever the PoC ends, sooner if the transcript is shared.
 
 ---
 
-## 3. Reconcile the duplicated design tokens · S
-
-The palette is declared in **three** places:
-`addons/modryn_theme/static/src/scss/primary_variables.scss`,
-`addons/modryn_staff/static/src/floor/floor.scss`, and
-`addons/modryn_roster/static/src/roster.scss` (which redeclares four of them defensively — they
-are already in scope from `floor.scss` in the same `web.assets_frontend` bundle).
-
-They agree today. Nothing makes them agree tomorrow. Extract one `_tokens.scss` and `@import` it.
-See [`../docs/design-system.md`](../docs/design-system.md), which documents the drift rather than
-hiding it.
-
----
-
-## 4. Make the roster actually mean something · M
+## 3. Make the roster actually mean something · M
 
 Publishing a week currently changes nothing outside the roster page. It does not restrict who can
 be assigned on the floor that day, and it does not feed the booking grid.
@@ -62,18 +48,18 @@ rather than blocks — blocking would be wrong on a day when someone covers a si
 
 ---
 
-## 5. Availability engine · XL
+## 4. Availability engine · XL
 
 The booking grid is a fixed Sunday–Thursday, 10:00–18:00 lattice with a one-hour slot and no
 concept of capacity. Real opening hours, per-type durations, holidays, blackout dates and
 per-staff calendars are all missing.
 
 This is the single largest piece of remaining work and the one Odoo Enterprise's `appointment`
-module would most plausibly halve. It is also the thing item 4 should eventually feed.
+module would most plausibly halve. It is also the thing item 3 should eventually feed.
 
 ---
 
-## 6. Israeli payment provider and deposits · M each
+## 5. Israeli payment provider and deposits · M each
 
 No PSP exists in Odoo for Grow, Meshulam or Tranzila — each is a custom `payment.provider`.
 Deferred deliberately: it needs a real merchant account, which is a business decision, not a
@@ -82,7 +68,7 @@ here.
 
 ---
 
-## 7. WhatsApp · blocked externally
+## 6. WhatsApp · blocked externally
 
 Odoo's WhatsApp module is Enterprise-only, and the Business API needs Meta verification the
 business has not started. SMS via Twilio is the working channel. Do not start this without the

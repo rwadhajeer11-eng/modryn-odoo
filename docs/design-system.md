@@ -8,14 +8,26 @@ here and, honestly, where it has already drifted.
 
 | File | Scope |
 |---|---|
-| `addons/modryn_theme/static/src/scss/primary_variables.scss` | The **customer** storefront, expressed in Odoo's native theming slots |
+| `addons/modryn_theme/static/src/scss/primary_variables.scss` | The `$modryn-*` palette, declared once, **and** the **customer** storefront expressed in Odoo's native theming slots |
 | `addons/modryn_theme/static/src/scss/modryn.scss` | Overrides that undo Odoo eCommerce chrome and enforce contrast |
 | `addons/modryn_staff/static/src/floor/floor.scss` | All **staff** chrome — login, `/manage`, `/floor`, cards, chips, modals, SOS |
 | `addons/modryn_roster/static/src/roster.scss` | The roster grid |
 
-**Known defect:** the palette is declared in three of those four files. They agree today and
-nothing enforces that tomorrow. Fixing it is item 4 in
-[`../.planning/BACKLOG.md`](../.planning/BACKLOG.md).
+The nine `$modryn-*` variables are declared in `primary_variables.scss` and nowhere else;
+`floor.scss` and `roster.scss` consume them. There is no `@import`, and adding one is worse
+than useless: `AssetsBundle.compile_css`'s `sanitize()` rejects a local import outright
+(`odoo/odoo/addons/base/models/assetsbundle.py:618-627`, *"Local import … is forbidden for
+security reasons"*), pushes the message onto `css_errors` and emits the error in place of the
+stylesheet — so the whole bundle dies, exactly as in rule 2 below. `web.assets_frontend` includes `web._assets_helpers`, which includes
+`web._assets_primary_variables`, and the three files compile as one SCSS unit, so bundle
+membership *is* the import. That include chain also reaches `web.assets_backend`, which is why
+`primary_variables.scss` holds variables only: a CSS rule in it would be emitted into every
+bundle in the product.
+
+**Still not clean.** Nothing *stops* a future file redeclaring a token — the guard is convention,
+not a check. And this only deduplicated the variables: `#FFFFFF` is still written as a literal in
+both consumer files, and the tinted fills are hand-expanded `rgba(197, 160, 89, …)` rather than
+derived from `$modryn-gold`. Retokenizing those was out of scope.
 
 ## Palette
 
@@ -134,6 +146,6 @@ from Odoo's own POT export, never hand-written — see
 Not a component library, and not MODRYN's design system. It is the subset needed to prove a
 boutique-grade surface is reachable inside Odoo. `docs/scorecard.md` row 1 is candid about the
 ceiling: the palette, fonts, radii and RTL all land through Odoo's *native* variable slots with
-no `!important` and no specificity war (`primary_variables.scss`, 72 lines) — but `modryn.scss`
+no `!important` and no specificity war (`primary_variables.scss`, 97 lines) — but `modryn.scss`
 needed a further 112 lines to undo eCommerce chrome, and the header logo, footer boilerplate and
 Odoo branding remain unstyled.

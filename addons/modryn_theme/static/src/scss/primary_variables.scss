@@ -9,6 +9,31 @@
 // Source of truth for the values: Frontend/packages/ui/src/theme.css (MODRYN).
 
 //------------------------------------------------------------------------------
+// MODRYN palette — the single declaration
+//------------------------------------------------------------------------------
+// web.assets_frontend includes web._assets_helpers, which includes
+// web._assets_primary_variables, so these are in scope for every frontend .scss
+// without an @import — Odoo does not resolve @import across addon paths, bundle
+// membership IS the import. They used to be redeclared in floor.scss and again
+// in roster.scss; nothing kept those copies honest.
+//
+// VARIABLES ONLY below this line. The same include chain reaches
+// web.assets_backend, so a CSS rule here would be emitted into every bundle in
+// the product.
+//
+// rgba() only, never `rgb(a b c / d)`: LibSass predates Color Level 4 and dies
+// on it silently, taking the whole bundle rather than the offending rule.
+$modryn-bg: #FDFBF7;
+$modryn-surface: #F6F0E6;
+$modryn-ink: #2B2118;
+$modryn-ink-muted: #6B5D4F;
+$modryn-gold: #C5A059;
+$modryn-gold-text: #7F612B; // the ONLY gold that may carry text (AA)
+$modryn-border: #E4DACA;
+$modryn-danger: #A03232;
+$modryn-success: #2E6B4F;
+
+//------------------------------------------------------------------------------
 // Fonts
 //------------------------------------------------------------------------------
 // map-merge (not a bare assignment) so Odoo's built-in font list survives and
