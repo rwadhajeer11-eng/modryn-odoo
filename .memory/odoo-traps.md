@@ -208,6 +208,42 @@ directive.
 
 ---
 
+## 13. `createdb -T` clones `database.secret`, and every signed thing with it
+
+Found 2026-08-11, while building something unrelated.
+
+`scripts/new_boutique.sh` provisions a tenant with `createdb -T modryn_template`, a
+Postgres-level copy. It duplicates `ir_config_parameter` wholesale, and that table holds
+**`database.secret`** — the HMAC key behind Odoo's CSRF tokens, its session tokens, our OTP
+hashes in `otp.py` and our booking token in `booking_comms.py`.
+
+The script already regenerated `database.uuid` with the comment *"a duplicated database.uuid
+makes two tenants look like one instance"*. The identical argument applies to the secret and it
+was simply missed for months.
+
+Consequence, verified rather than reasoned: ids restart at 1 in every database, and
+`_modryn_token()` signed only `"booking:<id>"`, so **bella's token for booking N was
+byte-identical to noga's**. Bella's reminder link returned 200 on noga and rendered another
+boutique's customer. Ten of noga's live bookings had a colliding bella token. Since the token
+*is* the auth for `/b/<token>`, and CSRF keys off the same secret, the POST cancel was reachable
+too — cancelling a stranger's fitting and firing that boutique's day-waitlist.
+
+Two lessons, not one:
+
+- **Rotate every per-instance secret on clone, not just the ones you happened to think of.**
+  Anything in `ir_config_parameter` that is supposed to be unique per instance is copied by
+  `createdb -T`. `database.uuid` and `database.secret` both are.
+- **Do not let DB-per-tenant stand in for a signature's scope.** Under DB-per-tenant the key
+  alone *looks* like enough context. It is not, the moment two databases share a key. Put the
+  tenant in the signed message: `"booking:<db>:<id>"`. It costs nothing and it fails safe.
+
+The suite had 263 green checks and none of them noticed, because **every check asked one tenant
+about itself**. `verify.sh` §1 now asserts the secrets are pairwise distinct and that one
+tenant's booking token 404s in the other — with an own-tenant control, so a broken token builder
+cannot make the probe pass for the wrong reason.
+
+---
+
 ## Renamed or moved in Odoo 19
 
 | Was | Now |

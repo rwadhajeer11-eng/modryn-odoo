@@ -37,22 +37,7 @@ with a send. Do this whenever the PoC ends, sooner if the transcript is shared.
 
 ---
 
-## 3. Fix Odoo's cross-tenant slug fallback · S
-
-Requesting **bella's** product URL against **noga** does not 404. Odoo's slug resolution falls
-back to the same-numbered *local* record, so the visitor silently lands on a different
-boutique's dress.
-
-No data leaks — the record is noga's own — but shared links and SEO both misbehave, and it reads
-as a tenancy bug to anyone who notices. MODRYN 404s correctly here.
-
-**Fix:** validate that the slug's name-part matches the resolved record, else `not_found()`.
-Add a `verify.sh` check. This is the last open item from the tenancy audit and the cheapest
-credibility win on the list.
-
----
-
-## 4. Reconcile the duplicated design tokens · S
+## 3. Reconcile the duplicated design tokens · S
 
 The palette is declared in **three** places:
 `addons/modryn_theme/static/src/scss/primary_variables.scss`,
@@ -66,7 +51,7 @@ hiding it.
 
 ---
 
-## 5. Make the roster actually mean something · M
+## 4. Make the roster actually mean something · M
 
 Publishing a week currently changes nothing outside the roster page. It does not restrict who can
 be assigned on the floor that day, and it does not feed the booking grid.
@@ -77,26 +62,18 @@ rather than blocks — blocking would be wrong on a day when someone covers a si
 
 ---
 
-## 6. `.ics` export for a booking · S
-
-The one piece of the client portal from PRD §5 that never got built. `calendar.event` already
-holds everything needed; this is a controller returning `text/calendar` plus a link on the
-confirmation page and the reminder.
-
----
-
-## 7. Availability engine · XL
+## 5. Availability engine · XL
 
 The booking grid is a fixed Sunday–Thursday, 10:00–18:00 lattice with a one-hour slot and no
 concept of capacity. Real opening hours, per-type durations, holidays, blackout dates and
 per-staff calendars are all missing.
 
 This is the single largest piece of remaining work and the one Odoo Enterprise's `appointment`
-module would most plausibly halve. It is also the thing item 5 should eventually feed.
+module would most plausibly halve. It is also the thing item 4 should eventually feed.
 
 ---
 
-## 8. Israeli payment provider and deposits · M each
+## 6. Israeli payment provider and deposits · M each
 
 No PSP exists in Odoo for Grow, Meshulam or Tranzila — each is a custom `payment.provider`.
 Deferred deliberately: it needs a real merchant account, which is a business decision, not a
@@ -105,7 +82,7 @@ here.
 
 ---
 
-## 9. WhatsApp · blocked externally
+## 7. WhatsApp · blocked externally
 
 Odoo's WhatsApp module is Enterprise-only, and the Business API needs Meta verification the
 business has not started. SMS via Twilio is the working channel. Do not start this without the

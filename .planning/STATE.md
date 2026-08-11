@@ -10,7 +10,7 @@ defensible rather than theoretical.
 
 | | |
 |---|---|
-| `scripts/verify.sh` | **284 passed, 0 failed, 0 skipped** — +21 over the `modryn_ops` build: 4 in §1 (cross-tenant product URLs) and 17 in the new §10b-bis (`.ics` export) |
+| `scripts/verify.sh` | **287 passed, 0 failed, 0 skipped** — +24 over the `modryn_ops` build: 7 in §1 (cross-tenant product URLs, and the shared `database.secret` that let one tenant's booking token open another's) and 17 in the new §10b-bis (`.ics` export) |
 | Odoo | 19.0 **Community**, shallow gitignored clone at `odoo/`, never edited |
 | Tenants | `bella` and `noga` — one Postgres database each, routed by `dbfilter = ^%d$` |
 | Custom code | ~8,100 non-blank lines across eight addons |
@@ -41,6 +41,16 @@ through claim to booking, the roster from offer through assignment to publish, a
 rendering on customer surfaces. Since 2026-08-11 that list also holds the cross-tenant product
 URL 404 and the `.ics` export — the latter checked byte-for-byte against the booking's real
 `start` in Postgres, not merely for a 200.
+
+**"Tenancy isolation" was on that list before it had earned its place**, and saying so is the
+point of this section. On 2026-08-11 it failed in two independent ways: bella's product URL
+301'd onto noga's same-numbered dress, and — far worse — all three databases shared one
+`database.secret`, because `createdb -T` copies it and `new_boutique.sh` never rotated it. Ids
+restart at 1 per database, so **bella's booking token was byte-identical to noga's**, and the
+token is the entire auth model for `/b/<token>`: it read, confirmed and could cancel another
+boutique's appointment. Both are fixed and both are now asserted in §1. The lesson worth keeping
+is why 263 green checks missed it — **every one of them asked a single tenant about itself**. A
+cross-tenant claim needs a cross-tenant probe. See `.memory/odoo-traps.md` §13.
 
 **Verified in a real browser:** the SOS overlay reaching a second signed-in user over the
 websocket with no reload, and drag-and-drop on the floor board.
@@ -89,6 +99,8 @@ After editing an addon, upgrade it or nothing changes:
 | `13bdba8` | Fitting-room registry and SOS paging |
 | `a5a65cb` | Weekly roster |
 | `0b42239` | Walkthrough acts 10–13, refreshed scorecard, two verify fixes |
+| `7006ad6` | `modryn_ops` — outcomes, tasks, CRM, reports, audit |
+| `56cfa46` `de547b7` `f8c377b` | Cross-tenant product URLs 404; `.ics` export; and the shared `database.secret` found while building it |
 
 ## Before changing anything
 
