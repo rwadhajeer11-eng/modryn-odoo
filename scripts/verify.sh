@@ -50,6 +50,17 @@ SQL
     || bad "$db: $label monitor" "planting the condition produced '${saw:-<seed failed>}', not a detection — this check cannot fail and proves nothing"
 }
 
+# A booking's public token, derived exactly the way booking_comms.py derives it:
+# the id, then the first 24 hex of HMAC-SHA256("booking:<db>:<id>") under that
+# database's own secret. The db name is inside the signed message, not merely
+# implied by the key — see the comment on _modryn_token.
+bk_token() {
+  local db="$1" id="$2" secret
+  secret=$(psql -d "$db" -tAc "select value from ir_config_parameter where key='database.secret'")
+  printf '%s-%s' "$id" \
+    "$(printf 'booking:%s:%s' "$db" "$id" | openssl dgst -sha256 -hmac "$secret" -r | cut -c1-24)"
+}
+
 code() { curl -sg -o /dev/null -w "%{http_code}" "$1"; }
 # Fetch to a FILE, never through $(...). Command substitution mangles the
 # multi-hundred-KB pages Odoo serves, which silently turns real passes into
@@ -135,6 +146,37 @@ else
   # has over-reached and every /shop/<id> link in the wild breaks.
   [ "$(code "$BELLA/shop/$SHARED_ID")" = "301" ] && ok "bare-id product URL still 301s to its canonical slug" \
     || bad "bare-id canonical 301" "expected 301, got $(code "$BELLA/shop/$SHARED_ID")"
+fi
+
+# database.secret is the HMAC key behind CSRF tokens, session tokens, the OTP
+# hashes in otp.py and the booking token in booking_comms.py. new_boutique.sh
+# clones with `createdb -T`, which copies it — and until 2026-08-11 nothing
+# rotated it, so every tenant shared one key. Ids restart at 1 per database, so
+# bella's token for booking 7 was byte-identical to noga's: one boutique's
+# reminder link opened, confirmed and CANCELLED another boutique's appointment.
+# Nothing in this suite noticed, because every check asked one tenant about
+# itself.
+SECRETS=$(for db in $TENANTS modryn_template; do
+  psql -d "$db" -tAc "select value from ir_config_parameter where key='database.secret'" 2>/dev/null
+done)
+N_SECRET=$(printf '%s\n' "$SECRETS" | grep -cve '^\s*$')
+N_UNIQ=$(printf '%s\n' "$SECRETS" | grep -ve '^\s*$' | sort -u | wc -l | tr -d ' ')
+[ "$N_SECRET" -gt 1 ] && [ "$N_SECRET" = "$N_UNIQ" ] \
+  && ok "every database has its own database.secret ($N_UNIQ distinct)" \
+  || bad "database.secret is shared" "$N_SECRET databases, only $N_UNIQ distinct key(s) — a signed token from one tenant verifies in another"
+# The rotation above is the root fix; this is the behaviour it protects, asserted
+# end to end so it fails even if some future clone path forgets to rotate.
+XB=$(psql -d bella -tAc "select id from calendar_event where modryn_is_booking and active limit 1")
+if [ -n "$XB" ] && [ -n "$(psql -d noga -tAc "select id from calendar_event where id=$XB and modryn_is_booking")" ]; then
+  XTOK=$(bk_token bella "$XB")
+  [ "$(code "$BELLA/b/$XTOK")" = "200" ] \
+    && ok "a booking token works in its own tenant (control)" \
+    || bad "booking token control" "bella's own token did not open bella's booking $XB — the probe below would pass for the wrong reason"
+  [ "$(code "$NOGA/b/$XTOK")" = "404" ] \
+    && ok "bella's booking token 404s on noga" \
+    || bad "cross-tenant booking token" "got $(code "$NOGA/b/$XTOK") — bella's link opened noga's booking $XB, and the same token can cancel it"
+else
+  skip "cross-tenant booking token" "no booking id exists in both tenants to probe with"
 fi
 
 head_ "2. theme + RTL"
@@ -315,14 +357,6 @@ head_ "10b-bis. add to calendar (.ics)"
 # DTSTART — which must equal the exact UTC start Postgres holds, so this fails if
 # timezone handling drifts, the wrong booking is exported, or the body is a stub —
 # and the UID, which must be derived from the booking rather than vobject's clock.
-# Token derived the way the model does: id, then the first 24 hex of
-# HMAC-SHA256("booking:<id>") under that database's own secret.
-bk_token() {
-  local db="$1" id="$2" secret
-  secret=$(psql -d "$db" -tAc "select value from ir_config_parameter where key='database.secret'")
-  printf '%s-%s' "$id" \
-    "$(printf 'booking:%s' "$id" | openssl dgst -sha256 -hmac "$secret" -r | cut -c1-24)"
-}
 for db in $TENANTS; do
   case "$db" in bella) BASE="$BELLA" ;; noga) BASE="$NOGA" ;; *) continue ;; esac
   ROW=$(psql -d "$db" -tAc "select id || '|' || to_char(start, 'YYYYMMDD\"T\"HH24MISS\"Z\"')

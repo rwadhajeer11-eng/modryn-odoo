@@ -42,11 +42,21 @@ class CalendarEvent(models.Model):
 
         A signed token rather than a stored one: nothing to expire, nothing to
         clean up, and it cannot be enumerated by walking ids the way /b/17 could.
+
+        The database name is IN the signed message, not just implied by the key.
+        Under DB-per-boutique the key alone looked like enough — until it wasn't:
+        new_boutique.sh clones with `createdb -T`, which copies database.secret,
+        and nothing rotated it. Every tenant shared one key, ids restart at 1 in
+        each database, so bella's token for booking 7 was byte-identical to
+        noga's. One boutique's reminder link opened, confirmed and cancelled
+        another boutique's appointment. new_boutique.sh now rotates the secret;
+        this line means a clone path that forgets to, some day, still cannot
+        collide.
         """
         self.ensure_one()
         secret = self.env['ir.config_parameter'].sudo().get_param('database.secret') or ''
-        digest = hmac.new(secret.encode(), ('booking:%s' % self.id).encode(),
-                          hashlib.sha256).hexdigest()[:24]
+        msg = ('booking:%s:%s' % (self.env.cr.dbname, self.id)).encode()
+        digest = hmac.new(secret.encode(), msg, hashlib.sha256).hexdigest()[:24]
         return '%s-%s' % (self.id, digest)
 
     @api.model

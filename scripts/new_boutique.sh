@@ -79,6 +79,16 @@ ICP = env['ir.config_parameter'].sudo()
 # bookkeeping and to Odoo's own publisher warranty. Always regenerate.
 ICP.set_param('database.uuid', str(uuid.uuid4()))
 
+# The same argument, and it was missed here until 2026-08-11. database.secret is
+# the HMAC key behind every signed thing Odoo and MODRYN produce: CSRF tokens,
+# session tokens, the OTP hashes in otp.py, and the booking token in
+# booking_comms.py. `createdb -T` copies it, so before this line every tenant
+# cloned from the template shared one key — and _modryn_token() is HMAC over
+# "booking:<id>", which made bella's token for booking 7 byte-identical to
+# noga's. One boutique's reminder link opened, confirmed and CANCELLED another
+# boutique's appointment, firing that boutique's day-waitlist. Always regenerate.
+ICP.set_param('database.secret', str(uuid.uuid4()))
+
 base = 'http://%s.localtest.me:%s' % (slug, port)
 ICP.set_param('web.base.url', base)
 # Otherwise the first login overwrites base.url with whatever host was used.
