@@ -204,4 +204,6 @@ class ModrynWaitlist(http.Controller):
             return self._render_claim(offer, _("That time was just taken, please choose another"))
         event.modryn_send_confirmation()
         offer.write({'state': 'claimed', 'offer_token': False})
-        return request.redirect('/book/confirmed/%s' % event.id)
+        # Token, not id: that page prints her phone and her cancel token, so a
+        # sequential integer made both enumerable. See book_confirmed.
+        return request.redirect('/book/confirmed/%s' % event._modryn_token())

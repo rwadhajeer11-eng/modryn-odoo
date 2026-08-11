@@ -304,12 +304,34 @@ class ModrynBooking(http.Controller):
             event.modryn_lang = request.env.lang or 'he_IL'
             event.modryn_send_confirmation()
 
-        return request.redirect('/book/confirmed/%s' % event.id)
+        return request.redirect('/book/confirmed/%s' % self._modryn_ref(event))
 
-    @http.route('/book/confirmed/<int:event_id>', type='http', auth='public', website=True,
+    @staticmethod
+    def _modryn_ref(event):
+        """How this booking is addressed in a URL: its token where one exists.
+
+        modryn_portal owns the token and depends on THIS module, so importing it
+        would be a load cycle — hence the runtime capability check, the same one
+        the confirmation branch above uses for modryn_lang.
+        """
+        return event._modryn_token() if hasattr(event, '_modryn_token') else event.id
+
+    @http.route('/book/confirmed/<string:ref>', type='http', auth='public', website=True,
                 sitemap=False)
-    def book_confirmed(self, event_id, **kw):
-        event = request.env['calendar.event'].sudo().browse(event_id).exists()
+    def book_confirmed(self, ref, **kw):
+        # Token-addressed, not <int:event_id>. This page prints the customer's
+        # phone number, and since it gained an "add to calendar" link it also
+        # prints her booking token — which is the credential POST /b/<token>/
+        # cancel accepts. A sequential integer meant `seq 1 500` harvested both
+        # for every booking in the boutique, which is exactly what
+        # _modryn_token's docstring promises cannot happen.
+        events = request.env['calendar.event']
+        if hasattr(events, '_modryn_from_token'):
+            event = events._modryn_from_token(ref)
+        else:
+            # No modryn_portal, so no tokens exist and nothing sensitive is
+            # rendered here; the id is all there is to address it by.
+            event = events.sudo().browse(int(ref)).exists() if ref.isdigit() else events.browse()
         if not event or not event.modryn_is_booking:
             return request.not_found()
         local = pytz.utc.localize(event.start).astimezone(TZ)

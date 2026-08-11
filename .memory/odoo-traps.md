@@ -244,6 +244,32 @@ cannot make the probe pass for the wrong reason.
 
 ---
 
+## 14. `start > now()` in psql is wrong by three hours
+
+Odoo stores datetimes as `timestamp WITHOUT time zone` holding **UTC** — `calendar_event.start`,
+`create_date`, all of them. A local `psql` session runs with `TimeZone = Asia/Jerusalem`, so
+`now()` is a `timestamptz` that coerces to *local wall clock* when compared against them:
+
+```sql
+select now();                    -- 2026-08-11 14:22:01+03
+select now()::timestamp;         -- 2026-08-11 14:22:01   <- what the comparison uses
+select now() at time zone 'utc'; -- 2026-08-11 11:22:01   <- what you meant
+```
+
+A booking at `14:00` UTC therefore reads as **past** for three hours before it actually is. Any
+`verify.sh` query picking rows relative to the present must say
+`start > (now() at time zone 'utc')`, the idiom the SMS-outbox checks already use.
+
+The failure mode is nastier than a wrong answer: it is *time-of-day dependent*. A check written
+at 09:00 passes all morning and starts selecting the wrong row — or no row, silently degrading to
+a `skip` — after lunch.
+
+This does **not** apply inside `detects()`. There the planted row is seeded with the same `now()`
+it is queried with, so the offset cancels; the two pre-existing `start < now()` uses in this file
+are correct for that reason.
+
+---
+
 ## Renamed or moved in Odoo 19
 
 | Was | Now |
@@ -251,6 +277,7 @@ cannot make the probe pass for the wrong reason.
 | `res.users.groups_id` | `res.users.group_ids` |
 | `res.groups.category_id` | `res.groups.privilege_id` (new `res.groups.privilege` model) |
 | `_sql_constraints` | `models.Constraint(...)` — see trap 4 |
+| `res.partner.mobile` | folded into `res.partner.phone` — reading `.mobile` is an `AttributeError`, i.e. a 500 on whatever route touched it |
 
 ## Environment (macOS, no Docker)
 

@@ -81,11 +81,23 @@ compares the requested slug against the record's canonical one and 404s on a mis
 `verify.sh` §1 probes it in both directions with a positive control. Odoo's bare-id
 `/shop/<id>` → canonical 301 is deliberately kept, because it is load-bearing for SEO.
 
-**One ceiling, stated rather than hidden:** the comparison uses the request's language
-only. If a product name is ever *translated*, a URL carrying another language's slug will
-404 where it used to 301. Not reachable today — `name->>'he_IL'` and `name->>'en_US'` are
-identical in both tenants and `ar_001` is unset — and comparing every active language
-would cost a query per language per request.
+The comparison runs against **every language the site publishes**, request-language first.
+An earlier cut compared only the request's language, which looked safe because `curl` always
+saw 200 — curl's user-agent trips `is_a_bot()` in `http_routing`, which pins `request.lang`
+to the default. A real browser sending `Accept-Language: en-US` is 303'd to the `/en/` form
+*before* the guard runs, so the boutique's own canonical Hebrew link would have arrived to be
+compared in English. Latent only because `name->>'he_IL'` and `name->>'en_US'` hold the same
+string today; the day the owner translated one dress name, the canonical link would have
+404'd for every English-defaulting first-time visitor. `verify.sh` §1 now probes the `/en`
+and `/ar` forms too.
+
+**One ceiling that remains, stated rather than hidden:** a *stale* slug inside one tenant
+404s where it used to 301 onto the canonical URL. Cross-tenant and same-tenant-stale are
+textually identical — a name that is not this record's name — and there is no rename history
+to separate them (`website_rewrite` is empty in both databases), so the choices were "404
+every mismatch" or "leave the tenancy hole open". Renaming a published dress therefore
+breaks its indexed URLs. Cheap to revisit: one `website.rewrite` row per rename restores the
+301, and Odoo already honours those.
 
 ---
 

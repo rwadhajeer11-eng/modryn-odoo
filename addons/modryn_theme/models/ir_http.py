@@ -29,21 +29,42 @@ class IrHttp(models.AbstractModel):
         if getattr(request, 'is_frontend_multilang', False) \
                 and request.httprequest.method in ('GET', 'HEAD'):
             for value in args.values():
-                if not isinstance(value, models.BaseModel):
+                # len check as well as the isinstance: <models(...)> resolves to a
+                # multi-record set, and cls._slug unpacks value.id/display_name,
+                # which would raise "Expected singleton" — a 500 on a frontend
+                # GET. It never carries _converter_value today, so the guard below
+                # already skips it; this makes that safety explicit rather than
+                # incidental.
+                if not isinstance(value, models.BaseModel) or len(value) != 1:
                     continue
                 requested = value.env.context.get('_converter_value')
                 if not requested or cls._unslug(requested)[0] is None:
                     # No name half at all (/shop/2). Still Odoo's to canonicalise.
                     continue
-                # with_env escapes the converter's RequestUID env. sudo() keeps an
-                # unreadable record from turning this into a 500 — super() 404s it
-                # a moment later either way, so it is not an oracle. The lang must
-                # be the URL's: display_name, and so the slug, is translatable,
-                # and request.env is not langed until super() runs.
-                record = value.with_env(request.env).sudo().with_context(lang=request.lang.code)
+                # with_env escapes the converter's RequestUID env, in which
+                # reading any field raises TypeError. sudo() keeps a record the
+                # public user cannot read from turning this into a 500, and it is
+                # not an oracle: unreadable-with-a-matching-slug 404s in super()
+                # via check_access, unreadable-with-a-wrong-slug 404s here, and
+                # the two responses are byte-identical.
+                base = value.with_env(request.env).sudo()
+                if not base.exists():
+                    continue
+                # Every language the site publishes, not just this request's.
+                # display_name is translatable, so the slug is too — and a real
+                # browser sending Accept-Language: en-US is 303'd to /en/ BEFORE
+                # this runs, so the boutique's own canonical Hebrew link arrives
+                # here to be compared against its English slug. Today the two are
+                # the same string and nothing breaks; the day the owner
+                # translates one dress name, a single-language comparison would
+                # 404 the canonical link for every en-defaulting visitor. The
+                # request's own language is tried first, so the common case costs
+                # one read.
+                langs = request.env['website'].get_current_website().language_ids.mapped('code')
+                ordered = [request.lang.code] + [c for c in langs if c != request.lang.code]
                 # cls._slug, never a re-slugify of display_name: website overrides
                 # _slug to prefer seo_name, and a record carrying an SEO name
                 # would otherwise 404 on its own canonical URL.
-                if record.exists() and cls._slug(record) != requested:
+                if not any(cls._slug(base.with_context(lang=c)) == requested for c in ordered):
                     raise werkzeug.exceptions.NotFound()
         super()._pre_dispatch(rule, args)

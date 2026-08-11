@@ -100,21 +100,34 @@ class CalendarEvent(models.Model):
             makes a re-download UPDATE the entry she already has.
           * every MODRYN partner is phone-only, so the attendee loop emits a
             bare `ATTENDEE:MAILTO:` — not a CAL-ADDRESS, and enough to make
-            Outlook offer accept/decline on what is a personal appointment.
-            There is no ORGANIZER to pair it with either (the organizer partner
-            has no email), so the line carries nothing at all.
+            Outlook offer accept/decline on what is a personal appointment. The
+            ORGANIZER is the other half of that trigger, and it is NOT reliably
+            absent: bella's organizer partner has no email so the line is
+            omitted, but noga's resolves to OdooBot and ships
+            `ORGANIZER;CN=OdooBot:MAILTO:odoobot@example.com`. A bella-only
+            reading of this said it could never appear. Both go.
           * the stock DESCRIPTION is Odoo's contact block: "Organized by /
             Public user" — stale, the booking is reassigned away from the public
             user immediately after creation — then the customer's OWN name and
             phone, with the tel: anchor mangled by html2plaintext into
-            "0521234567 [1] ... [1] tel:0521234567". She needs none of that. The
-            way back to confirm or cancel is the one thing worth carrying.
+            "0521234567 [1] ... [1] tel:0521234567". She needs none of that.
+
+        What replaces the description is deliberately NOT the /b/<token> link,
+        though that was the first instinct. An SMS is one secret on one handset;
+        a DESCRIPTION is a field whose whole purpose is replication — a shared
+        calendar syncs it to everyone it is shared with, "add guests" forwards
+        it, and for a bridal fitting a calendar shared with the mother and the
+        bridesmaids is the normal case. The token never expires and it can
+        cancel. Eleven lines away the route sets `Cache-Control: no-store`
+        because "the URL carries a secret token"; writing that same token into a
+        document destined for years of third-party storage contradicts it. She
+        already holds the link — in the SMS she opened this file from.
 
         Reparsing what stock just serialized, rather than overriding
-        _get_ics_file: four lines instead of re-implementing sixty, and the day
+        _get_ics_file: a few lines instead of re-implementing sixty, and the day
         core changes its VCALENDAR we inherit the change. Not via
         _get_customer_description either — google_calendar and
-        microsoft_calendar both call that, and this token belongs in neither.
+        microsoft_calendar both call that.
         """
         self.ensure_one()
         content = self._get_ics_file().get(self.id)
@@ -124,12 +137,43 @@ class CalendarEvent(models.Model):
         # pop-then-add rather than assigning to .value: a VEVENT takes at most
         # one of each, and pop cannot AttributeError on a line vobject omitted.
         cal.vevent.contents.pop('attendee', None)
+        cal.vevent.contents.pop('organizer', None)
         cal.vevent.contents.pop('uid', None)
         cal.vevent.add('uid').value = 'modryn-booking-%s@%s' % (
             self.id, urlsplit(self._modryn_base_url()).hostname or 'modryn')
+
         cal.vevent.contents.pop('description', None)
-        cal.vevent.add('description').value = '%s/b/%s' % (
-            self._modryn_base_url(), self._modryn_token())
+        # Who she is meeting and how to reach them — public information she
+        # already has, and the two things a calendar entry is actually asked
+        # three weeks later. res.partner has no `mobile` in Odoo 19; it was
+        # folded into `phone`.
+        company = self.env.company
+        details = [company.name] + [v for v in (company.partner_id.phone,) if v]
+        cal.vevent.add('description').value = '\n'.join(details)
+        # Gated on street-or-city, NOT on _display_address being non-empty.
+        # Both tenants leave the address blank but carry a default country, so
+        # the looser test yielded `LOCATION:United States` — a line that tells
+        # her to drive to a continent is worse than no line at all. The day a
+        # boutique fills in a real address, this starts working on its own.
+        addr = company.partner_id
+        if addr.street or addr.city:
+            cal.vevent.add('location').value = ', '.join(
+                p.strip() for p in addr._display_address(without_company=True).splitlines()
+                if p.strip())
+
+        # A stable UID means a re-download UPDATEs the entry she already has,
+        # and that is what makes the retraction free: she cancels through our
+        # own page, taps the same button, and the fitting leaves her calendar
+        # instead of sitting there forever looking live.
+        if self.modryn_cancelled_at:
+            cal.vevent.add('status').value = 'CANCELLED'
+        # RFC 5545 clients ignore an update whose SEQUENCE has not risen, and
+        # vobject never emits one — so without this a reschedule silently does
+        # nothing in her calendar. Seconds since creation is monotonic per
+        # booking and small enough to stay an int.
+        if self.write_date and self.create_date:
+            cal.vevent.add('sequence').value = str(
+                int((self.write_date - self.create_date).total_seconds()))
         return cal.serialize().encode()
 
     # ------------------------------------------------------------- send hooks

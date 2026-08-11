@@ -201,6 +201,11 @@ msgstr ""
 "الإلغاء: %(link)s"
 
 #. module: modryn_portal
+#: model_terms:ir.ui.view,arch_db:modryn_portal.booking_link
+msgid "Remove from calendar"
+msgstr "إزالة من التقويم"
+
+#. module: modryn_portal
 #: model_terms:ir.ui.view,arch_db:modryn_portal.claim_expired
 msgid "See available days"
 msgstr "الأيام المتاحة"

@@ -55,13 +55,21 @@
 
                     <!-- Outside the decide-buttons block on purpose. Once she has
                          tapped "I'll be there" that block is gone, and the page
-                         still has one useful thing left to offer. Inside
-                         `not cancelled and not past` because there is nothing to
-                         add for a fitting that is off or already over. -->
-                    <div t-if="not cancelled and not past" class="mt-4">
-                        <a t-attf-href="/b/#{token}/ics" class="btn btn-outline-dark">
-                            Add to calendar
-                        </a>
+                         still has one useful thing left to offer.
+                         Cancelled is INSIDE this branch, not excluded from it:
+                         the .ics carries STATUS:CANCELLED under the same UID, so
+                         the tap that added the fitting now retracts it. Hiding
+                         the button on a cancelled booking would leave the wrong
+                         appointment in her calendar with no way to remove it —
+                         she cancelled through this very page.
+                         Two <a> elements rather than one with a t-if inside: an
+                         <a> starts its own translation unit, so branching within
+                         it would fold the markup into the msgid. -->
+                    <div t-if="not past" class="mt-4">
+                        <a t-if="cancelled" t-attf-href="/b/#{token}/ics"
+                           class="btn btn-outline-dark">Remove from calendar</a>
+                        <a t-else="" t-attf-href="/b/#{token}/ics"
+                           class="btn btn-outline-dark">Add to calendar</a>
                     </div>
 
                     <p t-if="past and not done" class="text-muted">

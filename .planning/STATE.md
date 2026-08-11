@@ -10,7 +10,7 @@ defensible rather than theoretical.
 
 | | |
 |---|---|
-| `scripts/verify.sh` | **287 passed, 0 failed, 0 skipped** — +24 over the `modryn_ops` build: 7 in §1 (cross-tenant product URLs, and the shared `database.secret` that let one tenant's booking token open another's) and 17 in the new §10b-bis (`.ics` export) |
+| `scripts/verify.sh` | **296 passed, 0 failed, 1 skipped** — +33 over the `modryn_ops` build: 9 in §1 (cross-tenant product URLs in three languages, and the shared `database.secret` that let one tenant's booking token open another's) and 24 in the new §10b-bis (`.ics` export). The skip is honest: no tenant currently holds a *cancelled future* booking, so the "remove from calendar" branch has no subject. It was verified by hand and will fire on its own the moment a customer cancels ahead of time |
 | Odoo | 19.0 **Community**, shallow gitignored clone at `odoo/`, never edited |
 | Tenants | `bella` and `noga` — one Postgres database each, routed by `dbfilter = ^%d$` |
 | Custom code | ~8,100 non-blank lines across eight addons |

@@ -146,6 +146,17 @@ else
   # has over-reached and every /shop/<id> link in the wild breaks.
   [ "$(code "$BELLA/shop/$SHARED_ID")" = "301" ] && ok "bare-id product URL still 301s to its canonical slug" \
     || bad "bare-id canonical 301" "expected 301, got $(code "$BELLA/shop/$SHARED_ID")"
+  # The guard compares the requested slug against the record's canonical one, and
+  # display_name is TRANSLATABLE. A real browser sending Accept-Language: en-US is
+  # 303'd to the /en/ form before the guard runs, so the boutique's own canonical
+  # link arrives to be compared in English. These must stay 200 — the day a dress
+  # name is translated, a single-language comparison would 404 the canonical link
+  # for every en-defaulting first-time visitor. (Plain curl cannot see this: its
+  # UA trips is_a_bot() in http_routing, which pins request.lang to the default.)
+  for p in /en /ar; do
+    [ "$(code "$BELLA$p$BSLUG")" = "200" ] && ok "product URL still resolves under $p" \
+      || bad "localized product URL $p" "answered $(code "$BELLA$p$BSLUG") — the slug guard is comparing one language only"
+  done
 fi
 
 # database.secret is the HMAC key behind CSRF tokens, session tokens, the OTP
@@ -385,10 +396,34 @@ for db in $TENANTS; do
     && ok "$db: UID is derived from the booking, not the clock" \
     || bad "$db .ics UID" "vobject's invented UID survived — every download would be a NEW event in her calendar, and it carries the server hostname"
   # A bare ATTENDEE:MAILTO: (every partner here is phone-only) makes Outlook offer
-  # accept/decline on what is a personal appointment.
+  # accept/decline on what is a personal appointment. ORGANIZER is the other half
+  # of that trigger, and it is NOT symmetric across tenants: bella's organizer
+  # partner has no email so stock omits the line, noga's resolves to OdooBot and
+  # ships one. Asserting only on bella would have missed it — this loop runs both.
   grep -q '^ATTENDEE' "$PAGE" \
     && bad "$db .ics attendee" "an empty ATTENDEE:MAILTO: line came back" \
     || ok "$db: no empty attendee line"
+  grep -q '^ORGANIZER' "$PAGE" \
+    && bad "$db .ics organizer" "$(grep '^ORGANIZER' "$PAGE" | tr -d '\r') — Outlook will offer accept/decline on a personal appointment" \
+    || ok "$db: no organizer line"
+  # The token can cancel and never expires. A DESCRIPTION syncs to every calendar
+  # the file is shared into, which for a bridal fitting means the mother and the
+  # bridesmaids. It must not be in there.
+  grep -q "$TOK" "$PAGE" \
+    && bad "$db .ics leaks the booking token" "the cancel credential is in the file, which syncs to every shared calendar and never expires" \
+    || ok "$db: .ics carries no booking token"
+  # She cancels through our own page; the fitting must not sit in her calendar
+  # afterwards looking live. Same UID + STATUS:CANCELLED is what retracts it.
+  CID=$(psql -d "$db" -tAc "select id from calendar_event
+        where modryn_is_booking and modryn_cancelled_at is not null and active limit 1")
+  if [ -z "$CID" ]; then
+    skip "$db: cancelled booking .ics" "no cancelled booking to export"
+  else
+    fetch "$BASE/b/$(bk_token "$db" "$CID")/ics"
+    grep -q '^STATUS:CANCELLED' "$PAGE" \
+      && ok "$db: a cancelled fitting exports as STATUS:CANCELLED" \
+      || bad "$db cancelled .ics" "the file still looks live — she cancels through our own page and the appointment stays in her calendar forever"
+  fi
 done
 # A forged token must not hand out somebody's appointment as a file either.
 [ "$(code "$BELLA/b/1-deadbeefdeadbeefdeadbeef/ics")" = "404" ] \
@@ -399,7 +434,11 @@ done
   && ok "token-with-suffix form 404s" || bad "suffix form" "did not 404"
 # A route nobody can reach is not a feature. Both pages must actually link to it,
 # and the link only belongs on a booking that is still ahead of her.
-FUT=$(psql -d bella -tAc "select id from calendar_event where modryn_is_booking and active and modryn_cancelled_at is null and start > now() order by start limit 1")
+# `start` is `timestamp without time zone` holding UTC, and psql's session TZ here
+# is Asia/Jerusalem — so a bare now() compares UTC data against local wall-clock and
+# is wrong by the offset. It silently picked the wrong booking, and for three hours
+# a day picked none at all and skipped. Same idiom as the outbox checks below.
+FUT=$(psql -d bella -tAc "select id from calendar_event where modryn_is_booking and active and modryn_cancelled_at is null and start > (now() at time zone 'utc') order by start limit 1")
 if [ -z "$FUT" ]; then
   skip "'add to calendar' link renders" "no future booking on bella — the link is deliberately hidden on past ones"
 else
@@ -408,17 +447,34 @@ else
   grep -qF "/b/$FTOK/ics" "$PAGE" \
     && ok "reminder page offers 'add to calendar'" \
     || bad "reminder page .ics link" "the route exists but the page does not link to it"
-  fetch "$BELLA/book/confirmed/$FUT"
+  fetch "$BELLA/book/confirmed/$FTOK"
   grep -qF "/b/$FTOK/ics" "$PAGE" \
     && ok "confirmation page offers 'add to calendar'" \
     || bad "confirmation page .ics link" "the inherit into modryn_booking.booking_confirmed did not apply"
-  # Cancelled and past bookings must NOT offer it — there is nothing to add.
-  PAST=$(psql -d bella -tAc "select id from calendar_event where modryn_is_booking and active and start < now() order by start limit 1")
+  # THE POINT of token-addressing that page. It prints her phone number, and
+  # since it gained the .ics link it prints her cancel token too — so while it
+  # answered to <int:event_id>, `seq 1 500` harvested both for every booking in
+  # the boutique. Fetching it by id above would have locked that in.
+  [ "$(code "$BELLA/book/confirmed/$FUT")" = "404" ] \
+    && ok "the id-addressed confirmation page is gone" \
+    || bad "confirmation page still enumerable" "/book/confirmed/$FUT answered $(code "$BELLA/book/confirmed/$FUT") — walking ids hands out every booking's phone number and cancel token"
+  # Past bookings must NOT offer it — there is nothing to add. Cancelled ones
+  # MUST, because that tap is what removes the dead fitting from her calendar.
+  PAST=$(psql -d bella -tAc "select id from calendar_event where modryn_is_booking and active and start < (now() at time zone 'utc') order by start limit 1")
   if [ -n "$PAST" ]; then
     fetch "$BELLA/b/$(bk_token bella "$PAST")"
     grep -q "/ics" "$PAGE" \
       && bad "past booking hides the .ics link" "it is still offered on an appointment that has already happened" \
       || ok "past booking hides the .ics link"
+  fi
+  CANC=$(psql -d bella -tAc "select id from calendar_event where modryn_is_booking and active and modryn_cancelled_at is not null and start > (now() at time zone 'utc') limit 1")
+  if [ -z "$CANC" ]; then
+    skip "cancelled booking offers 'remove from calendar'" "no cancelled future booking on bella"
+  else
+    fetch "$BELLA/b/$(bk_token bella "$CANC")"
+    grep -q "/ics" "$PAGE" \
+      && ok "cancelled booking offers 'remove from calendar'" \
+      || bad "cancelled booking .ics link" "she cancelled through this page and has no way to clear the fitting from her calendar"
   fi
 fi
 
