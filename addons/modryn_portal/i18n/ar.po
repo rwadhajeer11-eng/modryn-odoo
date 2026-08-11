@@ -53,6 +53,12 @@ msgstr ""
 "شغر موعد في %(date)s. إنه محجوز لكِ خلال الساعات %(hours)s القادمة: %(link)s"
 
 #. module: modryn_portal
+#: model_terms:ir.ui.view,arch_db:modryn_portal.booking_confirmed_ics
+#: model_terms:ir.ui.view,arch_db:modryn_portal.booking_link
+msgid "Add to calendar"
+msgstr "إضافة إلى التقويم"
+
+#. module: modryn_portal
 #: model_terms:ir.ui.view,arch_db:modryn_portal.waitlist_joined
 msgid "Back to booking"
 msgstr "العودة إلى الحجز"

@@ -52,12 +52,39 @@
                             </form>
                         </div>
                     </t>
+
+                    <!-- Outside the decide-buttons block on purpose. Once she has
+                         tapped "I'll be there" that block is gone, and the page
+                         still has one useful thing left to offer. Inside
+                         `not cancelled and not past` because there is nothing to
+                         add for a fitting that is off or already over. -->
+                    <div t-if="not cancelled and not past" class="mt-4">
+                        <a t-attf-href="/b/#{token}/ics" class="btn btn-outline-dark">
+                            Add to calendar
+                        </a>
+                    </div>
+
                     <p t-if="past and not done" class="text-muted">
                         This appointment has already passed.
                     </p>
                 </div>
             </div>
         </t>
+    </template>
+
+    <!-- Lives here rather than in modryn_booking: modryn_portal depends on
+         modryn_booking, and the reverse is the load cycle documented in
+         models/calendar_event.py. -->
+    <template id="booking_confirmed_ics"
+              inherit_id="modryn_booking.booking_confirmed"
+              name="MODRYN: add the booking to a calendar">
+        <xpath expr="//a[@href='/shop']" position="before">
+            <!-- me-2, not mr-2: Bootstrap's logical margins flip under the RTL
+                 storefront. `event` is the record in this context, so the token
+                 is one call away. -->
+            <a t-attf-href="/b/#{event._modryn_token()}/ics"
+               class="btn btn-outline-dark me-2">Add to calendar</a>
+        </xpath>
     </template>
 
 </odoo>

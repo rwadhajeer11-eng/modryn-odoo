@@ -2,8 +2,17 @@ import hashlib
 import hmac
 import logging
 from datetime import datetime, timedelta
+from urllib.parse import urlsplit
 
 import pytz
+
+# Guarded exactly the way core guards it (addons/calendar/models/calendar_event.py)
+# so this module still imports on a server without it. Core already logs the
+# warning; a second one would only be noise.
+try:
+    import vobject
+except ImportError:
+    vobject = None
 
 from odoo import _, api, fields, models
 
@@ -64,6 +73,54 @@ class CalendarEvent(models.Model):
 
     def _modryn_base_url(self):
         return self.env['ir.config_parameter'].sudo().get_param('web.base.url', '')
+
+    # --------------------------------------------------------------- calendar
+    def _modryn_ics(self):
+        """This booking as a .ics, or b'' when the server has no vobject.
+
+        Stock _get_ics_file() does all the VCALENDAR work. Three things it
+        leaves behind are wrong for a file a customer keeps:
+
+          * vobject invents the UID at serialize time out of the clock, the pid
+            and the server's HOSTNAME — verified, two runs a second apart gave
+            two different UIDs. Every download would be a NEW event: tap the
+            link on the confirmation page and again on the reminder page and she
+            has two fittings, and our hostname rides along in a file that lives
+            in her calendar. A UID derived from the booking id fixes both, and
+            makes a re-download UPDATE the entry she already has.
+          * every MODRYN partner is phone-only, so the attendee loop emits a
+            bare `ATTENDEE:MAILTO:` — not a CAL-ADDRESS, and enough to make
+            Outlook offer accept/decline on what is a personal appointment.
+            There is no ORGANIZER to pair it with either (the organizer partner
+            has no email), so the line carries nothing at all.
+          * the stock DESCRIPTION is Odoo's contact block: "Organized by /
+            Public user" — stale, the booking is reassigned away from the public
+            user immediately after creation — then the customer's OWN name and
+            phone, with the tel: anchor mangled by html2plaintext into
+            "0521234567 [1] ... [1] tel:0521234567". She needs none of that. The
+            way back to confirm or cancel is the one thing worth carrying.
+
+        Reparsing what stock just serialized, rather than overriding
+        _get_ics_file: four lines instead of re-implementing sixty, and the day
+        core changes its VCALENDAR we inherit the change. Not via
+        _get_customer_description either — google_calendar and
+        microsoft_calendar both call that, and this token belongs in neither.
+        """
+        self.ensure_one()
+        content = self._get_ics_file().get(self.id)
+        if not content:
+            return b''
+        cal = vobject.readOne(content.decode())
+        # pop-then-add rather than assigning to .value: a VEVENT takes at most
+        # one of each, and pop cannot AttributeError on a line vobject omitted.
+        cal.vevent.contents.pop('attendee', None)
+        cal.vevent.contents.pop('uid', None)
+        cal.vevent.add('uid').value = 'modryn-booking-%s@%s' % (
+            self.id, urlsplit(self._modryn_base_url()).hostname or 'modryn')
+        cal.vevent.contents.pop('description', None)
+        cal.vevent.add('description').value = '%s/b/%s' % (
+            self._modryn_base_url(), self._modryn_token())
+        return cal.serialize().encode()
 
     # ------------------------------------------------------------- send hooks
     def modryn_send_confirmation(self):

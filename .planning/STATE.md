@@ -10,7 +10,7 @@ defensible rather than theoretical.
 
 | | |
 |---|---|
-| `scripts/verify.sh` | **263 passed, 0 failed, 0 skipped** — after the `modryn_ops` build (sections 21–23 added; the 217-check pre-build baseline was recorded the same day after cleaning 3 stale demo rows) |
+| `scripts/verify.sh` | **284 passed, 0 failed, 0 skipped** — +21 over the `modryn_ops` build: 4 in §1 (cross-tenant product URLs) and 17 in the new §10b-bis (`.ics` export) |
 | Odoo | 19.0 **Community**, shallow gitignored clone at `odoo/`, never edited |
 | Tenants | `bella` and `noga` — one Postgres database each, routed by `dbfilter = ^%d$` |
 | Custom code | ~8,100 non-blank lines across eight addons |
@@ -20,11 +20,11 @@ defensible rather than theoretical.
 
 | Addon | Lines | What it is |
 |---|---|---|
-| `modryn_theme` | 271 | MODRYN palette, fonts and RTL through Odoo's native theming slots; per-dress price visibility |
+| `modryn_theme` | 317 | MODRYN palette, fonts and RTL through Odoo's native theming slots; per-dress price visibility; the slug guard that makes one tenant's product URL 404 on another |
 | `modryn_booking` | 460 | Dual-path booking on `calendar.event` — dress-bound and standalone; server-enforced terms |
 | `modryn_queue_poc` | 517 | QR walk-in queue, `bus.bus` realtime, Waitwhile-style intake with an invisible acceptance gate |
 | `modryn_staff` | 2,774 | Employees, owner-defined roles, assignment with primary + helpers, drag-and-drop floor board, fitting rooms, SOS paging |
-| `modryn_portal` | 1,136 | Phone + SMS OTP login, my-bookings, confirmation and 24h reminder SMS, day-waitlist refill loop |
+| `modryn_portal` | 1,251 | Phone + SMS OTP login, my-bookings, confirmation and 24h reminder SMS, day-waitlist refill loop, `.ics` export |
 | `modryn_atelier` | 474 | Garment pieces, alteration tasks, workshop dashboard, seamstress self-view |
 | `modryn_roster` | 779 | Owner shift templates, staff availability, per-role coverage targets, publish |
 | `modryn_ops` | ~1,700 | Appointment outcomes (sold / not sold / no-show) with SMS flows, follow-up tasks + owner-defined opening/closing checklists with overdue escalation, bride CRM fields with manager-gated budget, conversion/ATV reports, append-only audit trail |
@@ -38,7 +38,9 @@ tenancy isolation, both booking paths, the queue with its acceptance gate and wa
 floor board including realtime over `bus.bus`, drag-and-drop assignment, fitting rooms and their
 collision rule, SOS paging with acknowledgement and escalation, the refill loop from cancellation
 through claim to booking, the roster from offer through assignment to publish, and tri-language
-rendering on customer surfaces.
+rendering on customer surfaces. Since 2026-08-11 that list also holds the cross-tenant product
+URL 404 and the `.ics` export — the latter checked byte-for-byte against the booking's real
+`start` in Postgres, not merely for a 200.
 
 **Verified in a real browser:** the SOS overlay reaching a second signed-in user over the
 websocket with no reload, and drag-and-drop on the floor board.

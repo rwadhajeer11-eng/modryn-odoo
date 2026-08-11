@@ -310,6 +310,84 @@ done
 # bookings, or a freed slot can be offered and then refused.
 grep -q "modryn_cancelled_at" addons/modryn_booking/controllers/main.py && ok "collision guard honours cancellations" || bad "collision guard" "still counts cancelled bookings"
 
+head_ "10b-bis. add to calendar (.ics)"
+# A bare 200 here would pass on an empty file. The assertions with teeth are the
+# DTSTART — which must equal the exact UTC start Postgres holds, so this fails if
+# timezone handling drifts, the wrong booking is exported, or the body is a stub —
+# and the UID, which must be derived from the booking rather than vobject's clock.
+# Token derived the way the model does: id, then the first 24 hex of
+# HMAC-SHA256("booking:<id>") under that database's own secret.
+bk_token() {
+  local db="$1" id="$2" secret
+  secret=$(psql -d "$db" -tAc "select value from ir_config_parameter where key='database.secret'")
+  printf '%s-%s' "$id" \
+    "$(printf 'booking:%s' "$id" | openssl dgst -sha256 -hmac "$secret" -r | cut -c1-24)"
+}
+for db in $TENANTS; do
+  case "$db" in bella) BASE="$BELLA" ;; noga) BASE="$NOGA" ;; *) continue ;; esac
+  ROW=$(psql -d "$db" -tAc "select id || '|' || to_char(start, 'YYYYMMDD\"T\"HH24MISS\"Z\"')
+        from calendar_event
+        where modryn_is_booking and modryn_cancelled_at is null and active
+        order by start desc limit 1")
+  if [ -z "$ROW" ]; then
+    skip "$db: .ics export" "no live booking to export — nothing to assert against"
+    continue
+  fi
+  EID="${ROW%%|*}"; DTSTART="${ROW##*|}"
+  TOK=$(bk_token "$db" "$EID")
+  HDR=$(curl -sg -D- -o "$PAGE" "$BASE/b/$TOK/ics")
+  printf '%s' "$HDR" | grep -qi '^HTTP/1.1 200' \
+    && ok "$db: /b/<token>/ics answers 200" \
+    || bad "$db .ics status" "$(printf '%s' "$HDR" | head -1 | tr -d '\r')"
+  printf '%s' "$HDR" | grep -qi '^Content-Type: text/calendar' \
+    && ok "$db: served as text/calendar" \
+    || bad "$db .ics content-type" "not text/calendar — a phone would save a blob instead of handing it to the calendar app"
+  grep -q '^BEGIN:VCALENDAR' "$PAGE" \
+    && ok "$db: body is a VCALENDAR" || bad "$db .ics body" "no BEGIN:VCALENDAR"
+  grep -q "^DTSTART:$DTSTART" "$PAGE" \
+    && ok "$db: DTSTART is the booking's real start ($DTSTART)" \
+    || bad "$db .ics DTSTART" "expected $DTSTART, file has '$(grep '^DTSTART' "$PAGE" | tr -d '\r')'"
+  grep -q "^UID:modryn-booking-$EID@" "$PAGE" \
+    && ok "$db: UID is derived from the booking, not the clock" \
+    || bad "$db .ics UID" "vobject's invented UID survived — every download would be a NEW event in her calendar, and it carries the server hostname"
+  # A bare ATTENDEE:MAILTO: (every partner here is phone-only) makes Outlook offer
+  # accept/decline on what is a personal appointment.
+  grep -q '^ATTENDEE' "$PAGE" \
+    && bad "$db .ics attendee" "an empty ATTENDEE:MAILTO: line came back" \
+    || ok "$db: no empty attendee line"
+done
+# A forged token must not hand out somebody's appointment as a file either.
+[ "$(code "$BELLA/b/1-deadbeefdeadbeefdeadbeef/ics")" = "404" ] \
+  && ok "forged token cannot download an .ics" || bad "forged .ics token" "did not 404"
+# The suffix form is a different URL: <string:token> swallows ".ics", so the HMAC
+# compare fails. Asserted so nobody 'helpfully' switches the route to /b/<token>.ics.
+[ "$(code "$BELLA/b/$(bk_token bella 1).ics")" = "404" ] \
+  && ok "token-with-suffix form 404s" || bad "suffix form" "did not 404"
+# A route nobody can reach is not a feature. Both pages must actually link to it,
+# and the link only belongs on a booking that is still ahead of her.
+FUT=$(psql -d bella -tAc "select id from calendar_event where modryn_is_booking and active and modryn_cancelled_at is null and start > now() order by start limit 1")
+if [ -z "$FUT" ]; then
+  skip "'add to calendar' link renders" "no future booking on bella — the link is deliberately hidden on past ones"
+else
+  FTOK=$(bk_token bella "$FUT")
+  fetch "$BELLA/b/$FTOK"
+  grep -qF "/b/$FTOK/ics" "$PAGE" \
+    && ok "reminder page offers 'add to calendar'" \
+    || bad "reminder page .ics link" "the route exists but the page does not link to it"
+  fetch "$BELLA/book/confirmed/$FUT"
+  grep -qF "/b/$FTOK/ics" "$PAGE" \
+    && ok "confirmation page offers 'add to calendar'" \
+    || bad "confirmation page .ics link" "the inherit into modryn_booking.booking_confirmed did not apply"
+  # Cancelled and past bookings must NOT offer it — there is nothing to add.
+  PAST=$(psql -d bella -tAc "select id from calendar_event where modryn_is_booking and active and start < now() order by start limit 1")
+  if [ -n "$PAST" ]; then
+    fetch "$BELLA/b/$(bk_token bella "$PAST")"
+    grep -q "/ics" "$PAGE" \
+      && bad "past booking hides the .ics link" "it is still offered on an appointment that has already happened" \
+      || ok "past booking hides the .ics link"
+  fi
+fi
+
 head_ "10c. premium waitlist"
 for db in $TENANTS; do
   QCOLS=$(psql -d $db -tAc "select count(*) from information_schema.columns where table_name='modryn_queue_entry' and column_name in ('access_token','next_notified_at','turn_notified_at')")

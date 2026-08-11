@@ -52,6 +52,12 @@ msgstr ""
 "התפנה מקום בתאריך %(date)s. הוא שמור לך ל-%(hours)s השעות הקרובות: %(link)s"
 
 #. module: modryn_portal
+#: model_terms:ir.ui.view,arch_db:modryn_portal.booking_confirmed_ics
+#: model_terms:ir.ui.view,arch_db:modryn_portal.booking_link
+msgid "Add to calendar"
+msgstr "הוספה ליומן"
+
+#. module: modryn_portal
 #: model_terms:ir.ui.view,arch_db:modryn_portal.waitlist_joined
 msgid "Back to booking"
 msgstr "חזרה לקביעת תור"
