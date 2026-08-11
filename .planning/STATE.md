@@ -10,13 +10,13 @@ defensible rather than theoretical.
 
 | | |
 |---|---|
-| `scripts/verify.sh` | **85 passed, 0 failed** — from a cold upgrade of all seven addons on both tenants |
+| `scripts/verify.sh` | **263 passed, 0 failed, 0 skipped** — after the `modryn_ops` build (sections 21–23 added; the 217-check pre-build baseline was recorded the same day after cleaning 3 stale demo rows) |
 | Odoo | 19.0 **Community**, shallow gitignored clone at `odoo/`, never edited |
 | Tenants | `bella` and `noga` — one Postgres database each, routed by `dbfilter = ^%d$` |
-| Custom code | ~6,400 non-blank lines across seven addons |
-| Walkthrough | 13 replayable acts in [`../docs/walkthrough.md`](../docs/walkthrough.md) |
+| Custom code | ~8,100 non-blank lines across eight addons |
+| Walkthrough | 14 replayable acts in [`../docs/walkthrough.md`](../docs/walkthrough.md) |
 
-## The seven addons
+## The eight addons
 
 | Addon | Lines | What it is |
 |---|---|---|
@@ -27,6 +27,7 @@ defensible rather than theoretical.
 | `modryn_portal` | 1,136 | Phone + SMS OTP login, my-bookings, confirmation and 24h reminder SMS, day-waitlist refill loop |
 | `modryn_atelier` | 474 | Garment pieces, alteration tasks, workshop dashboard, seamstress self-view |
 | `modryn_roster` | 779 | Owner shift templates, staff availability, per-role coverage targets, publish |
+| `modryn_ops` | ~1,700 | Appointment outcomes (sold / not sold / no-show) with SMS flows, follow-up tasks + owner-defined opening/closing checklists with overdue escalation, bride CRM fields with manager-gated budget, conversion/ATV reports, append-only audit trail |
 
 ## Proven vs merely written
 
@@ -56,7 +57,7 @@ deliberately not a silent success.
 ```bash
 cd /Users/mrwen/Documents/Github/modryn-odoo && source .venv/bin/activate
 ./odoo/odoo-bin server -c odoo.conf --http-interface=127.0.0.1
-bash scripts/verify.sh          # 85 checks — run before believing anything works
+bash scripts/verify.sh          # 263 checks — run before believing anything works
 ```
 
 Logins seeded by `scripts/seed_staff.py`, demo password `modryn2026`: `miri` owner ·

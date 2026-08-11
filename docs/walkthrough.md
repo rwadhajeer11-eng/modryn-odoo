@@ -30,7 +30,9 @@ Two boutiques, each a full tenant on its own subdomain:
 
 ### The cast (seeded by `scripts/seed_staff.py`)
 
-All demo passwords are `modryn2026`.
+All demo passwords are whatever you exported as `MODRYN_DEMO_PASSWORD` when you ran the
+seeder — the script has no default and refuses to run without it. Below it is written as
+`$MODRYN_DEMO_PASSWORD`; type your own.
 
 | Person | Role | Level | Username | Account |
 |---|---|---|---|---|
@@ -47,7 +49,7 @@ Bella's cannot see them.
 
 ## Act 1 — The owner hires a saleswoman
 
-**1.1 Sign in as the owner.** Go to `/staff/login` and enter `miri` / `modryn2026`.
+**1.1 Sign in as the owner.** Go to `/staff/login` and enter `miri` / `$MODRYN_DEMO_PASSWORD`.
 
 *Expect:* a cream-and-gold login card, Hebrew, right-to-left — **not** Odoo's purple login
 page. After signing in you land on `/manage/staff`.
@@ -63,7 +65,7 @@ page. After signing in you land on `/manage/staff`.
 [README](../README.md) for why a SQL one silently does nothing here.)
 
 **1.3 Hire someone.** **צוות** → **הוספת עובדת**. Name `יעל שמש`, phone `052-5559999`,
-role `מוכרת בכירה`, level `עובדת`, username `yaels`, password `modryn2026`.
+role `מוכרת בכירה`, level `עובדת`, username `yaels`, password `$MODRYN_DEMO_PASSWORD`.
 
 *Expect:* she appears in the staff list showing her role, level, username and **פנויה**. A
 **portal** account was created for her in the same step — she can sign in, but she cannot
@@ -142,7 +144,7 @@ not change identity, so every booking used to be owned by the anonymous visitor)
 
 ## Act 3 — The manager assigns someone to her
 
-**3.1 Sign in as the shift manager.** `/staff/login` → `sara` / `modryn2026`.
+**3.1 Sign in as the shift manager.** `/staff/login` → `sara` / `$MODRYN_DEMO_PASSWORD`.
 
 *Expect:* she lands on `/floor`, not on `/manage` — she is a manager, not the owner. Try
 `/manage/staff` as her: refused. She cannot invent roles or hire people.
@@ -384,6 +386,45 @@ from who is *rostered*, never from who is *available*.
 
 **13.4 Publish.** One button, the whole week. Afterwards staff see the rota and availability
 is frozen, with a message telling them who to ask. The following week is still open.
+
+## Act 14 — A fitting ends, and the ending does work
+
+**14.1 The owner writes the routine.** As `miri` → `/manage/checklists`: add "Steam the
+window gowns" (opening, 11:00) and "Lock the register" (closing, 20:00). The template DB
+ships this page empty on purpose — every boutique invents its own routine.
+
+**14.2 The checklist materialises itself.** Open `/floor` as anyone. Today's items appear
+under **Today's tasks** — generated lazily on this very page load (a day nobody opens the
+board is a day the shop was closed; no orphan rows). Tick one; it strikes through with your
+name. Verify: `select name, state, done_by_id from modryn_task where day = current_date;`
+
+**14.3 A stylist closes her own fitting.** As `rotem`, on a booking card assigned to her →
+**Done** → the outcome modal: Sold (amount + items), Not sold (note; a feedback text goes
+out and is stamped), or No-show (a warm rebook text). Not-sold creates a follow-up call
+task due in 7 days, assigned to her; no-show creates a next-day recovery task. Verify:
+`select modryn_outcome, modryn_sale_amount, modryn_feedback_sent_at from calendar_event
+where modryn_outcome is not null;` and `select task_type, due_at from modryn_task where
+event_id is not null;`
+
+**14.4 Only a manager may change a recorded outcome.** Tap the outcome badge as `sara` —
+the modal warns it will replace the record. As `rotem`, there is no badge button at all,
+and a forged request answers `forbidden`.
+
+**14.5 The bride's record.** **Profile** on any card: wedding date, party, measurements,
+notes. The **budget field renders only for managers** — and its absence for staff is the
+server omitting the key, not the UI hiding a box. A sold fitting marks her *Purchased*; a
+later not-sold browse never downgrades her.
+
+**14.6 Forgotten work escalates.** Leave a checklist item 30 minutes past due: every
+manager with a work phone is texted one summary line, once (`escalated_at` stamps it).
+Verify: `select phone, left(body, 40) from modryn_sms_outbox order by id desc limit 1;`
+
+**14.7 The numbers.** As `sara` → **Reports** (staff shell): conversion (appointment and
+contact-based), average sale, no-show rate, follow-up and checklist completion, and a
+per-stylist table. A stylist sees none of that — only her own **My month** card on
+`/floor`. As `miri` → `/manage/audit`: every outcome edit, stylist swap and CRM change,
+with who/old/new. The **"N to close"** badge on the manager's board is what keeps all of
+it honest — a past booking with no outcome is a number leaking out of every report.
 
 ## What this walkthrough does **not** cover
 

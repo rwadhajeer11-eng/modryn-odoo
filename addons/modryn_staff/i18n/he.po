@@ -503,6 +503,8 @@ msgid "Rooms"
 msgstr "חדרים"
 
 #. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manage_staff_form
 msgid "Save"
 msgstr "שמירה"
@@ -743,3 +745,174 @@ msgstr "— בהמשך —"
 #: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
 msgid "— No room —"
 msgstr "— ללא חדר —"
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "Amount (₪)"
+msgstr "סכום (₪)"
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "Budget (₪)"
+msgstr "תקציב (₪)"
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "Currently recorded:"
+msgstr "רשום כרגע:"
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "Fittings closed"
+msgstr "מדידות שנסגרו"
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "Follow-ups open"
+msgstr "מעקבים פתוחים"
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "Gown, veil, alterations…"
+msgstr "שמלה, הינומה, תיקונים…"
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "How did it end for"
+msgstr "איך זה הסתיים עבור"
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "Loved the second gown, thinking it over…"
+msgstr "אהבה את השמלה השנייה, חושבת על זה…"
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "Measurements"
+msgstr "מידות"
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "Mother + two bridesmaids…"
+msgstr "אמא + שתי שושבינות…"
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "My month"
+msgstr "החודש שלי"
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "No profile yet — saving starts one."
+msgstr "אין עדיין כרטיס — שמירה תפתח אחד."
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.js:0
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "No-show"
+msgstr "לא הגיעה"
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "Not purchased yet"
+msgstr "טרם רכשה"
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.js:0
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "Not sold"
+msgstr "לא נמכר"
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "Note (optional)"
+msgstr "הערה (לא חובה)"
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "Notes"
+msgstr "הערות"
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "Party"
+msgstr "מלוות"
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "Profile"
+msgstr "כרטיס לקוחה"
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "Purchased"
+msgstr "רכשה"
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "She'll receive a feedback text."
+msgstr "היא תקבל הודעת משוב."
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "She'll receive a warm text with a link to rebook."
+msgstr "היא תקבל הודעה חמה עם קישור לתיאום מחדש."
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.js:0
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "Sold"
+msgstr "נמכר"
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "Today's tasks"
+msgstr "המשימות של היום"
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "Wedding date"
+msgstr "תאריך החתונה"
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "What she bought"
+msgstr "מה היא קנתה"
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "open"
+msgstr "פתוחות"
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "to close"
+msgstr "לסגירה"

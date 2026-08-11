@@ -35,6 +35,9 @@ ADDONS = [
     ('modryn_portal', ['he', 'ar']),
     ('modryn_atelier', ['he']),
     ('modryn_roster', ['he']),
+    # Customer-facing SMS bodies ship he + ar; the staff pages are he-only like
+    # every other staff surface, and the ar file simply never gains UI terms.
+    ('modryn_ops', ['he', 'ar']),
 ]
 
 TAG_RE = re.compile(r'<[^>]+>')

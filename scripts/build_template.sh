@@ -54,5 +54,36 @@ print('TEMPLATE_CONFIGURED langs=%s default=%s currency=%s' % (
     site.language_ids.mapped('code'), site.default_lang_id.code, env.company.currency_id.name))
 PY
 
+# The modryn addons go in the TEMPLATE, not per tenant. new_boutique.sh is a
+# `createdb -T` plus fixups, so whatever is not here is not in the boutique: a
+# tenant cloned from a template without these 404s on /book, /floor and /my,
+# and — the part that does not announce itself — carries none of the unique
+# indexes, so it will happily sell one fitting room to two brides.
+# Installing once here also means a new tenant costs a clone (seconds) instead of
+# a seven-module install (1-2 minutes), which is what the 30-tenant load-test
+# budget in .planning/plans/load-test-plan.md §6 assumes.
+#
+# After the config step, not merged into the first -i: modryn_theme writes website
+# pages and menus, and it should write them into a site that is already Hebrew-
+# first with ILS. Same ordering the load-test plan's gold build uses.
+echo "==> installing modryn addons into the template"
+./odoo/odoo-bin server -c odoo.conf \
+  -d "$TEMPLATE" --db-filter="^$TEMPLATE\$" \
+  -i modryn_theme,modryn_booking,modryn_queue_poc,modryn_staff,modryn_portal,modryn_atelier,modryn_roster,modryn_ops \
+  --without-demo=True \
+  --stop-after-init
+
+# modryn_portal's post_init_hook raises when a unique index did not get created,
+# so reaching this line already proves the template has them. Assert anyway: the
+# hook only fires when the module actually installs, and a re-run of this script
+# on an existing DB is a no-op install that would skip it silently.
+for idx in calendar_event_modryn_one_live_booking_per_slot \
+           modryn_day_waitlist_modryn_one_offer_per_day; do
+  if ! psql -d "$TEMPLATE" -tAc "select to_regclass('$idx')" | grep -q .; then
+    echo "!! $TEMPLATE is missing index $idx — every clone would inherit the hole"
+    exit 1
+  fi
+done
+
 echo
 echo "Template ready. Next: ./scripts/new_boutique.sh bella 'Bella Bridal'"

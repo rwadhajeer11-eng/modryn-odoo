@@ -255,6 +255,7 @@ msgstr "מספר הטלפון אינו תקין."
 #. module: modryn_portal
 #. odoo-python
 #: code:addons/modryn_portal/controllers/waitlist.py:0
+#: model:ir.model.constraint,message:modryn_portal.constraint_calendar_event_modryn_one_live_booking_per_slot
 msgid "That time was just taken, please choose another"
 msgstr "השעה הזו נתפסה הרגע, בחרי שעה אחרת"
 

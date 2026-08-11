@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="manage_nav_audit" inherit_id="modryn_staff.manage_layout">
+        <xpath expr="//a[@href='/manage/rooms']" position="after">
+            <a href="/manage/checklists"
+               t-attf-class="modryn_admin_link #{'is_active' if active_tab == 'checklists' else ''}">Checklists</a>
+            <a href="/manage/reports"
+               t-attf-class="modryn_admin_link #{'is_active' if active_tab == 'reports' else ''}">Reports</a>
+            <a href="/manage/audit"
+               t-attf-class="modryn_admin_link #{'is_active' if active_tab == 'audit' else ''}">Audit</a>
+        </xpath>
+    </template>
+
+    <!-- Shift managers reach the numbers from the staff shell; the link is
+         role-gated the same way the Workshop link above it already is. -->
+    <template id="staff_nav_reports" inherit_id="modryn_staff.staff_layout">
+        <xpath expr="//a[@href='/atelier']" position="after">
+            <a t-if="request.env.user.has_group('modryn_staff.group_shift_manager')"
+               href="/manage/reports"
+               t-attf-class="modryn_admin_link #{'is_active' if active_tab == 'reports' else ''}">Reports</a>
+        </xpath>
+    </template>
+
+    <!-- ========================== owner: checklists ========================== -->
+    <template id="manage_checklists" name="Checklists">
+        <t t-call="modryn_staff.manage_layout">
+            <h1 class="mb-1">Checklists</h1>
+            <p class="modryn_sub mb-4">
+                The opening and closing routine, as data. Every morning the floor board
+                materialises today's list; anyone on shift ticks the items off.
+            </p>
+
+            <div t-if="error" class="modryn_field_error mb-3" role="alert">
+                <t t-esc="error"/>
+            </div>
+
+            <form action="/manage/checklists/new" method="post" class="d-flex gap-2 mb-4 flex-wrap">
+                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                <input type="text" name="name" class="form-control w-auto" required="required"
+                       placeholder="e.g. Steam the window gowns"/>
+                <select name="kind" class="form-select w-auto">
+                    <option value="opening">Opening</option>
+                    <option value="closing">Closing</option>
+                </select>
+                <input type="time" name="due_time" class="form-control w-auto" value="11:00"/>
+                <button type="submit" class="btn btn-primary">Add</button>
+            </form>
+
+            <p t-if="not templates" class="modryn_empty">
+                No checklist items yet. Add the first one above.
+            </p>
+
+            <table t-if="templates" class="table modryn_table align-middle">
+                <thead>
+                    <tr><th>Item</th><th>When</th><th>Due</th><th></th></tr>
+                </thead>
+                <tbody>
+                    <tr t-foreach="templates" t-as="tpl">
+                        <td><span t-attf-class="#{'' if tpl.active else 'text-muted'}"><t t-esc="tpl.name"/></span></td>
+                        <td>
+                            <span class="modryn_badge is_muted">
+                                <t t-if="tpl.kind == 'opening'">Opening</t>
+                                <t t-else="">Closing</t>
+                            </span>
+                        </td>
+                        <td class="modryn_sub">
+                            <t t-esc="'%02d:%02d' % (int(tpl.due_hour), int(round((tpl.due_hour - int(tpl.due_hour)) * 60)) % 60)"/>
+                        </td>
+                        <td class="text-end">
+                            <form t-attf-action="/manage/checklists/archive/#{tpl.id}" method="post" class="d-inline">
+                                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                <button type="submit" class="btn btn-sm btn-outline-dark">
+                                    <t t-if="tpl.active">Archive</t>
+                                    <t t-else="">Restore</t>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </t>
+    </template>
+
+    <!-- ============================== reports ==============================
+         Rendered in the STAFF shell, not the owner shell: shift managers are
+         the daily readers, and staff_layout already gates its links by role. -->
+    <template id="manage_reports" name="Reports">
+        <t t-call="modryn_staff.staff_layout">
+            <div class="d-flex align-items-baseline justify-content-between mb-1 flex-wrap gap-2">
+                <h1 class="mb-0">Reports</h1>
+                <form action="/manage/reports" method="get" class="d-flex gap-2 align-items-center">
+                    <input type="date" name="from" class="form-control form-control-sm w-auto"
+                           t-att-value="date_from"/>
+                    <span class="modryn_sub">–</span>
+                    <input type="date" name="to" class="form-control form-control-sm w-auto"
+                           t-att-value="date_to"/>
+                    <button type="submit" class="btn btn-sm btn-outline-dark">Show</button>
+                </form>
+            </div>
+            <p class="modryn_sub mb-4">
+                Made entirely of recorded outcomes — the "to close" badge on the floor board
+                is what keeps these numbers honest.
+            </p>
+
+            <div class="row g-3 mb-4">
+                <div class="col-6 col-md-3">
+                    <div class="modryn_panel p-3">
+                        <div class="modryn_sub">Conversion</div>
+                        <div class="modryn_strong fs-3"><t t-esc="stats['conversion']"/>%</div>
+                        <div class="modryn_sub"><t t-esc="stats['sold']"/> sold / <t t-esc="stats['sold'] + stats['not_sold']"/> completed</div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="modryn_panel p-3">
+                        <div class="modryn_sub">Contact conversion</div>
+                        <div class="modryn_strong fs-3"><t t-esc="stats['contact_conversion']"/>%</div>
+                        <div class="modryn_sub">unique brides who bought</div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="modryn_panel p-3">
+                        <div class="modryn_sub">Revenue (₪)</div>
+                        <div class="modryn_strong fs-3"><t t-esc="'{:,}'.format(int(stats['revenue']))"/></div>
+                        <div class="modryn_sub">avg sale ₪<t t-esc="'{:,}'.format(stats['atv'])"/></div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="modryn_panel p-3">
+                        <div class="modryn_sub">No-shows</div>
+                        <div class="modryn_strong fs-3"><t t-esc="stats['no_show_rate']"/>%</div>
+                        <div class="modryn_sub"><t t-esc="stats['no_show']"/> of <t t-esc="stats['closed']"/> closed</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-3 mb-4">
+                <div class="col-6 col-md-3">
+                    <div class="modryn_panel p-3">
+                        <div class="modryn_sub">Follow-ups done</div>
+                        <div class="modryn_strong fs-4"><t t-esc="stats['followups_done']"/>/<t t-esc="stats['followups_total']"/></div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="modryn_panel p-3">
+                        <div class="modryn_sub">Checklist items done</div>
+                        <div class="modryn_strong fs-4"><t t-esc="stats['checklist_done']"/>/<t t-esc="stats['checklist_total']"/></div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="modryn_panel p-3">
+                        <div class="modryn_sub">Feedback texts sent</div>
+                        <div class="modryn_strong fs-4"><t t-esc="stats['feedback_sent']"/>/<t t-esc="stats['not_sold']"/></div>
+                        <div class="modryn_sub">of not-sold fittings</div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="modryn_panel p-3">
+                        <div class="modryn_sub">Cancelled · still to close</div>
+                        <div class="modryn_strong fs-4"><t t-esc="stats['cancelled']"/> · <t t-esc="stats['unclosed']"/></div>
+                    </div>
+                </div>
+            </div>
+
+            <h2 class="mb-2">By stylist</h2>
+            <p t-if="not stylists" class="modryn_empty">
+                No closed appointments with an assigned stylist in this range yet.
+            </p>
+            <table t-if="stylists" class="table modryn_table align-middle">
+                <thead>
+                    <tr>
+                        <th>Stylist</th><th>Closed</th><th>Sold</th><th>No-shows</th>
+                        <th>Conversion</th><th>Revenue (₪)</th><th>Avg sale (₪)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr t-foreach="stylists" t-as="s">
+                        <td class="modryn_strong"><t t-esc="s['name']"/></td>
+                        <td><t t-esc="s['closed']"/></td>
+                        <td><t t-esc="s['sold']"/></td>
+                        <td><t t-esc="s['no_show']"/></td>
+                        <td><t t-esc="s['conversion']"/>%</td>
+                        <td><t t-esc="'{:,}'.format(s['revenue'])"/></td>
+                        <td><t t-esc="'{:,}'.format(s['atv'])"/></td>
+                    </tr>
+                </tbody>
+            </table>
+        </t>
+    </template>
+
+    <!-- ============================ audit trail ============================ -->
+    <template id="manage_audit" name="Audit trail">
+        <t t-call="modryn_staff.manage_layout">
+            <div class="d-flex align-items-center justify-content-between mb-4">
+                <h1 class="mb-0">Audit trail</h1>
+                <span class="modryn_sub"><t t-esc="total"/> entries</span>
+            </div>
+
+            <p t-if="not rows" class="modryn_empty">Nothing has been changed yet.</p>
+
+            <table t-if="rows" class="table modryn_table align-middle">
+                <thead>
+                    <tr>
+                        <th>When</th>
+                        <th>Who</th>
+                        <th>What</th>
+                        <th>Change</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr t-foreach="rows" t-as="r">
+                        <td class="modryn_sub"><t t-esc="r['when']"/></td>
+                        <td><t t-esc="r['actor']"/></td>
+                        <td><t t-esc="r['label']"/></td>
+                        <td>
+                            <span class="modryn_sub"><t t-esc="r['old'] or '—'"/></span>
+                            <span class="modryn_sub"> → </span>
+                            <span class="modryn_strong"><t t-esc="r['new'] or '—'"/></span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div t-if="has_prev or has_next" class="d-flex gap-2">
+                <a t-if="has_prev" t-attf-href="/manage/audit?page=#{page - 1}"
+                   class="btn btn-sm btn-outline-dark">Newer</a>
+                <a t-if="has_next" t-attf-href="/manage/audit?page=#{page + 1}"
+                   class="btn btn-sm btn-outline-dark">Older</a>
+            </div>
+        </t>
+    </template>
+
+</odoo>

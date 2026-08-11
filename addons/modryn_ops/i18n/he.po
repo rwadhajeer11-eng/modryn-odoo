@@ -1,0 +1,328 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: he\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: \n"
+
+#. module: modryn_ops
+#. odoo-python
+#: code:addons/modryn_ops/models/calendar_event.py:0
+msgid "Follow up: %s"
+msgstr "מעקב: %s"
+
+#. module: modryn_ops
+#. odoo-python
+#: code:addons/modryn_ops/models/task.py:0
+msgid "Overdue on the floor board: %(names)s"
+msgstr "משימות באיחור בלוח הרצפה: %(names)s"
+
+#. module: modryn_ops
+#. odoo-python
+#: code:addons/modryn_ops/models/calendar_event.py:0
+msgid "Rebook after no-show: %s"
+msgstr "תיאום מחדש אחרי אי-הגעה: %s"
+
+#. module: modryn_ops
+#. odoo-python
+#: code:addons/modryn_ops/models/task.py:0
+msgid "Task done: %s"
+msgstr "משימה בוצעה: %s"
+
+#. module: modryn_ops
+#. odoo-python
+#: code:addons/modryn_ops/models/task.py:0
+msgid "Task reopened: %s"
+msgstr "משימה נפתחה מחדש: %s"
+
+#. module: modryn_ops
+#. odoo-python
+#: code:addons/modryn_ops/models/calendar_event.py:0
+msgid ""
+"Thank you for visiting %(boutique)s! We'd love to hear how it went — just "
+"reply to this message."
+msgstr ""
+"תודה שביקרת ב%(boutique)s! נשמח לשמוע איך היה — פשוט השיבי להודעה הזו."
+
+#. module: modryn_ops
+#. odoo-python
+#: code:addons/modryn_ops/models/calendar_event.py:0
+msgid ""
+"Thank you for visiting %(boutique)s! We're so happy for you — we'll be in "
+"touch about the next steps."
+msgstr ""
+"תודה שביקרת ב%(boutique)s! אנחנו כל כך שמחות בשבילך — נהיה בקשר לגבי ההמשך."
+
+#. module: modryn_ops
+#. odoo-python
+#: code:addons/modryn_ops/models/calendar_event.py:0
+msgid ""
+"We missed you today at %(boutique)s. Life happens! Book a new time here: "
+"%(book_link)s"
+msgstr ""
+"התגעגענו אלייך היום ב%(boutique)s. קורה! אפשר לקבוע תור חדש כאן: "
+"%(book_link)s"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_checklists
+msgid "Add"
+msgstr "הוספה"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_checklists
+msgid "Archive"
+msgstr "לארכיון"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_nav_audit
+msgid "Audit"
+msgstr "יומן שינויים"
+
+#. module: modryn_ops
+#: model:ir.model,name:modryn_ops.model_modryn_audit_log
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_audit
+msgid "Audit trail"
+msgstr "יומן שינויים"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_reports
+msgid "Avg sale (₪)"
+msgstr "מכירה ממוצעת (₪)"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_reports
+msgid "By stylist"
+msgstr "לפי סטייליסטית"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_reports
+msgid "Cancelled · still to close"
+msgstr "בוטלו · נותרו לסגירה"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_audit
+msgid "Change"
+msgstr "שינוי"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_reports
+msgid "Checklist items done"
+msgstr "משימות צ'קליסט שבוצעו"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_checklists
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_nav_audit
+msgid "Checklists"
+msgstr "צ'קליסטים"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_reports
+msgid "Closed"
+msgstr "נסגרו"
+
+#. module: modryn_ops
+#: model:ir.model.fields.selection,name:modryn_ops.selection__modryn_task__task_type__closing
+#: model:ir.model.fields.selection,name:modryn_ops.selection__modryn_task_template__kind__closing
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_checklists
+msgid "Closing"
+msgstr "סגירה"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_reports
+msgid "Contact conversion"
+msgstr "המרת לקוחות"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_reports
+msgid "Conversion"
+msgstr "המרה"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_checklists
+msgid "Due"
+msgstr "שעה"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_reports
+msgid "Feedback texts sent"
+msgstr "הודעות משוב שנשלחו"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_reports
+msgid "Follow-ups done"
+msgstr "מעקבים שבוצעו"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_checklists
+msgid "Item"
+msgstr "פריט"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_reports
+msgid ""
+"Made entirely of recorded outcomes — the \"to close\" badge on the floor board\n"
+"                is what keeps these numbers honest."
+msgstr ""
+"עשוי כולו מתוצאות שנרשמו — תג \"לסגירה\" בלוח הרצפה הוא ששומר על המספרים "
+"כנים."
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_audit
+msgid "Newer"
+msgstr "חדש יותר"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_checklists
+msgid "No checklist items yet. Add the first one above."
+msgstr "אין עדיין פריטים בצ'קליסט. הוסיפי את הראשון למעלה."
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_reports
+msgid "No closed appointments with an assigned stylist in this range yet."
+msgstr "אין עדיין פגישות סגורות עם סטייליסטית משויכת בטווח הזה."
+
+#. module: modryn_ops
+#: model:ir.model.fields.selection,name:modryn_ops.selection__calendar_event__modryn_outcome__no_show
+msgid "No-show"
+msgstr "לא הגיעה"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_reports
+msgid "No-shows"
+msgstr "אי-הגעות"
+
+#. module: modryn_ops
+#: model:ir.model.fields.selection,name:modryn_ops.selection__calendar_event__modryn_outcome__not_sold
+msgid "Not sold"
+msgstr "לא נמכר"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_audit
+msgid "Nothing has been changed yet."
+msgstr "עוד לא בוצעו שינויים."
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_audit
+msgid "Older"
+msgstr "ישן יותר"
+
+#. module: modryn_ops
+#: model:ir.model.fields.selection,name:modryn_ops.selection__modryn_task__task_type__opening
+#: model:ir.model.fields.selection,name:modryn_ops.selection__modryn_task_template__kind__opening
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_checklists
+msgid "Opening"
+msgstr "פתיחה"
+
+#. module: modryn_ops
+#: model:ir.model.fields.selection,name:modryn_ops.selection__res_partner__modryn_category__purchased
+msgid "Purchased"
+msgstr "רכשה"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_nav_audit
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_reports
+#: model_terms:ir.ui.view,arch_db:modryn_ops.staff_nav_reports
+msgid "Reports"
+msgstr "דוחות"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_checklists
+msgid "Restore"
+msgstr "שחזור"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_reports
+msgid "Revenue (₪)"
+msgstr "הכנסות (₪)"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_reports
+msgid "Show"
+msgstr "הצגה"
+
+#. module: modryn_ops
+#: model:ir.model.fields.selection,name:modryn_ops.selection__calendar_event__modryn_outcome__sold
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_reports
+msgid "Sold"
+msgstr "נמכר"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_reports
+msgid "Stylist"
+msgstr "סטייליסטית"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_checklists
+msgid ""
+"The opening and closing routine, as data. Every morning the floor board\n"
+"                materialises today's list; anyone on shift ticks the items off."
+msgstr ""
+"שגרת הפתיחה והסגירה, כנתונים. בכל בוקר לוח הרצפה יוצר את רשימת היום; מי "
+"שבמשמרת מסמנת את הפריטים."
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_audit
+msgid "What"
+msgstr "מה"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_audit
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_checklists
+msgid "When"
+msgstr "מתי"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_audit
+msgid "Who"
+msgstr "מי"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_reports
+msgid "avg sale ₪"
+msgstr "מכירה ממוצעת ₪"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_reports
+msgid "closed"
+msgstr "שנסגרו"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_reports
+msgid "completed"
+msgstr "הושלמו"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_checklists
+msgid "e.g. Steam the window gowns"
+msgstr "לדוגמה: לגהץ את שמלות החלון"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_audit
+msgid "entries"
+msgstr "רשומות"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_reports
+msgid "of"
+msgstr "מתוך"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_reports
+msgid "of not-sold fittings"
+msgstr "ממדידות שלא נמכרו"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_reports
+msgid "sold /"
+msgstr "נמכרו /"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_reports
+msgid "unique brides who bought"
+msgstr "כלות ייחודיות שרכשו"

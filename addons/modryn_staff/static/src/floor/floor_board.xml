@@ -123,6 +123,10 @@
                                                     t-att-selected="r.id === entry.room_id"><t t-esc="r.name"/></option>
                                         </t>
                                     </select>
+                                    <button t-if="entry.phone" class="btn btn-sm btn-outline-dark"
+                                            t-on-click="() => this.openCustomer(entry.name, entry.phone)">
+                                        Profile
+                                    </button>
                                     <button class="btn btn-sm btn-outline-danger"
                                             t-on-click="() => this.openSos('queue', entry.id)">
                                         Call for help
@@ -150,6 +154,14 @@
                         <header class="modryn_panel_head">
                             <h2>Today's appointments</h2>
                             <span class="modryn_count"><t t-esc="state.bookings.length"/></span>
+                            <!-- The nag (modryn_ops): conversion numbers are made of
+                                 outcomes, so past bookings without one must not be
+                                 allowed to quietly evaporate. The board only renders
+                                 today, so the badge opens the full list to act on. -->
+                            <button t-if="state.unclosed" class="modryn_badge is_busy btn btn-sm p-0 border-0"
+                                    t-on-click="openUnclosed">
+                                <t t-esc="state.unclosed"/> to close
+                            </button>
                         </header>
 
                         <p t-if="!state.bookings.length" class="modryn_empty">No appointments today.</p>
@@ -167,6 +179,19 @@
                                             <t t-esc="b.dress"/><t t-if="b.size"> · <t t-esc="b.size"/></t>
                                         </div>
                                     </div>
+                                    <!-- Closed bookings wear their outcome; a manager may
+                                         tap it to correct a mistake (force, server-checked). -->
+                                    <t t-if="b.outcome">
+                                        <button t-if="state.canAssign"
+                                                t-attf-class="modryn_badge ms-auto btn btn-sm p-0 border-0 #{b.outcome === 'sold' ? 'is_free' : 'is_muted'}"
+                                                t-on-click="() => this.openOutcome(b)">
+                                            <t t-esc="outcomeLabel(b.outcome)"/>
+                                        </button>
+                                        <span t-else=""
+                                              t-attf-class="modryn_badge ms-auto #{b.outcome === 'sold' ? 'is_free' : 'is_muted'}">
+                                            <t t-esc="outcomeLabel(b.outcome)"/>
+                                        </span>
+                                    </t>
                                 </div>
 
                                 <t t-call="modryn_staff.CardPeople">
@@ -184,22 +209,89 @@
                                                     t-att-selected="r.id === b.room_id"><t t-esc="r.name"/></option>
                                         </t>
                                     </select>
+                                    <button t-if="b.phone" class="btn btn-sm btn-outline-dark"
+                                            t-on-click="() => this.openCustomer(b.title, b.phone)">
+                                        Profile
+                                    </button>
                                     <button class="btn btn-sm btn-outline-danger"
                                             t-on-click="() => this.openSos('booking', b.id)">
                                         Call for help
                                     </button>
                                 </div>
-                                <div t-if="state.canAssign" class="modryn_card_actions">
-                                    <select class="form-select form-select-sm w-auto"
+                                <div t-if="state.canAssign or (!b.outcome and canClose(b))" class="modryn_card_actions">
+                                    <select t-if="state.canAssign" class="form-select form-select-sm w-auto"
                                             t-on-change="(ev) => this.assignFromSelect('booking', b.id, ev)">
                                         <option value="">— Assign —</option>
                                         <t t-foreach="state.staff" t-as="s" t-key="s.id">
                                             <option t-att-value="s.id"><t t-esc="s.name"/></option>
                                         </t>
                                     </select>
+                                    <!-- Her own stylist may close the fitting; the server
+                                         re-checks, this only decides what to draw. -->
+                                    <button t-if="!b.outcome and canClose(b)"
+                                            class="btn btn-sm btn-primary"
+                                            t-on-click="() => this.openOutcome(b)">Done</button>
                                 </div>
                             </div>
                         </div>
+                    </section>
+
+                    <!-- ============ today's checklist + follow-up work (modryn_ops) ============ -->
+                    <section t-if="state.checklist.length or state.opsTasks.length" class="modryn_panel">
+                        <header class="modryn_panel_head">
+                            <h2>Today's tasks</h2>
+                            <span class="modryn_count">
+                                <t t-esc="state.checklist.filter((t) => t.state === 'open').length + state.opsTasks.length"/> open
+                            </span>
+                        </header>
+
+                        <table t-if="state.checklist.length" class="table modryn_table align-middle">
+                            <tbody>
+                                <tr t-foreach="state.checklist" t-as="task" t-key="task.id">
+                                    <td class="w-auto">
+                                        <input type="checkbox" class="form-check-input"
+                                               t-att-checked="task.state === 'done'"
+                                               t-att-disabled="task.state === 'done' and !state.canAssign"
+                                               t-on-click="() => task.state === 'open' ? this.doneOpsTask(task.id) : (state.canAssign ? this.reopenOpsTask(task.id) : null)"/>
+                                    </td>
+                                    <td>
+                                        <span t-attf-class="#{task.state === 'done' ? 'text-decoration-line-through modryn_sub' : 'modryn_strong'}">
+                                            <t t-esc="task.name"/>
+                                        </span>
+                                        <span t-if="task.done_by" class="modryn_sub"> · <t t-esc="task.done_by"/></span>
+                                    </td>
+                                    <td class="text-end">
+                                        <span t-attf-class="modryn_badge #{task.overdue ? 'is_busy' : 'is_muted'}">
+                                            <t t-esc="task.due"/>
+                                        </span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <table t-if="state.opsTasks.length" class="table modryn_table align-middle">
+                            <tbody>
+                                <tr t-foreach="state.opsTasks" t-as="task" t-key="task.id">
+                                    <td>
+                                        <div class="modryn_strong"><t t-esc="task.name"/></div>
+                                        <div t-if="task.phone" class="modryn_sub" dir="ltr"><t t-esc="task.phone"/></div>
+                                        <div t-if="task.note" class="modryn_sub"><t t-esc="task.note"/></div>
+                                    </td>
+                                    <td>
+                                        <span t-if="task.assignee" class="modryn_badge is_muted"><t t-esc="task.assignee"/></span>
+                                    </td>
+                                    <td>
+                                        <span t-attf-class="modryn_badge #{task.overdue ? 'is_busy' : 'is_muted'}">
+                                            <t t-esc="task.due_date"/> <t t-esc="task.due"/>
+                                        </span>
+                                    </td>
+                                    <td class="text-end">
+                                        <button class="btn btn-sm btn-primary"
+                                                t-on-click="() => this.doneOpsTask(task.id)">Done</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </section>
 
                     <!-- ============ my alterations (seamstress self-view) ============ -->
@@ -278,6 +370,37 @@
                     <p t-if="state.canAssign" class="modryn_sub mt-2 mb-0">
                         Drag a name onto a customer to assign her.
                     </p>
+
+                    <!-- My month (modryn_ops): my own numbers, nobody else's.
+                         Private by decision — there is no leaderboard. -->
+                    <div t-if="state.myStats" class="mt-4">
+                        <header class="modryn_panel_head">
+                            <h2>My month</h2>
+                        </header>
+                        <div class="modryn_bench_list">
+                            <div class="modryn_bench_row">
+                                <div class="modryn_bench_meta">
+                                    <span class="modryn_sub">Fittings closed</span>
+                                    <span class="modryn_strong"><t t-esc="state.myStats.closed"/></span>
+                                </div>
+                            </div>
+                            <div class="modryn_bench_row">
+                                <div class="modryn_bench_meta">
+                                    <span class="modryn_sub">Sold</span>
+                                    <span class="modryn_strong">
+                                        <t t-esc="state.myStats.sold"/>
+                                        (<t t-esc="state.myStats.conversion"/>%)
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="modryn_bench_row">
+                                <div class="modryn_bench_meta">
+                                    <span class="modryn_sub">Follow-ups open</span>
+                                    <span class="modryn_strong"><t t-esc="state.myStats.open_followups"/></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </aside>
             </div>
 
@@ -330,6 +453,152 @@
                     <div class="d-flex gap-2">
                         <button class="btn btn-danger" t-on-click="sendSos">Call for help</button>
                         <button class="btn btn-outline-dark" t-on-click="closeSos">Cancel</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ============ unclosed past bookings (modryn_ops) ============
+                 The rows behind the nag badge. Each opens the same outcome
+                 modal a live card uses — that is how the count reaches zero. -->
+            <div t-if="state.unclosedList" class="modryn_modal_backdrop" t-on-click.self="closeUnclosed">
+                <div class="modryn_modal" role="dialog" aria-modal="true">
+                    <h2 class="mb-1">Still to close</h2>
+                    <p class="modryn_sub mb-3">
+                        Past fittings without an outcome. Every one of them is missing
+                        from the numbers until it's closed.
+                    </p>
+                    <p t-if="!state.unclosedList.length" class="modryn_empty">All closed. Well done.</p>
+                    <table t-if="state.unclosedList.length" class="table modryn_table align-middle">
+                        <tbody>
+                            <tr t-foreach="state.unclosedList" t-as="u" t-key="u.id">
+                                <td class="modryn_sub"><t t-esc="u.when"/></td>
+                                <td>
+                                    <div class="modryn_strong"><t t-esc="u.title"/></div>
+                                    <div t-if="u.phone" class="modryn_sub" dir="ltr"><t t-esc="u.phone"/></div>
+                                </td>
+                                <td class="text-end">
+                                    <button class="btn btn-sm btn-primary"
+                                            t-on-click="() => this.openOutcome(u)">Close</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-outline-dark" t-on-click="closeUnclosed">Done</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ============ customer profile (modryn_ops) ============
+                 The relationship data every card can open. Budget renders only
+                 when the server sent it — its absence from the staff payload
+                 IS the permission, mirrored here, enforced there. -->
+            <div t-if="state.customer" class="modryn_modal_backdrop" t-on-click.self="closeCustomer">
+                <div class="modryn_modal" role="dialog" aria-modal="true">
+                    <h2 class="mb-1"><t t-esc="state.customer.name"/></h2>
+                    <p class="modryn_sub mb-3" dir="ltr"><t t-esc="state.customer.phone"/></p>
+                    <p t-if="state.customer.category" class="mb-3">
+                        <span t-attf-class="modryn_badge #{state.customer.category === 'purchased' ? 'is_free' : 'is_muted'}">
+                            <t t-if="state.customer.category === 'purchased'">Purchased</t>
+                            <t t-else="">Not purchased yet</t>
+                        </span>
+                    </p>
+                    <p t-if="state.customer.isNew" class="modryn_sub mb-3">
+                        No profile yet — saving starts one.
+                    </p>
+                    <div t-if="state.modalError" class="modryn_field_error mb-3" role="alert">
+                        <t t-esc="state.modalError"/>
+                    </div>
+
+                    <div class="modryn_modal_row mb-3">
+                        <div>
+                            <label class="form-label">Wedding date</label>
+                            <input type="date" class="form-control" t-model="state.customer.form.wedding_date"/>
+                        </div>
+                        <div t-if="state.customer.hasBudget or (state.customer.isNew and state.canAssign)">
+                            <label class="form-label">Budget (₪)</label>
+                            <input type="number" min="0" step="100" class="form-control"
+                                   t-model="state.customer.form.budget"/>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Party</label>
+                        <input type="text" class="form-control"
+                               placeholder="Mother + two bridesmaids…"
+                               t-model="state.customer.form.party"/>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Measurements</label>
+                        <textarea class="form-control" rows="2" t-model="state.customer.form.measurements"/>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Notes</label>
+                        <textarea class="form-control" rows="2" t-model="state.customer.form.notes"/>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-primary" t-on-click="saveCustomer">Save</button>
+                        <button class="btn btn-outline-dark" t-on-click="closeCustomer">Cancel</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ============ outcome modal: how did the fitting end? ============
+                 Served by modryn_ops. Three endings; each fires its flow on the
+                 server (thank-you / feedback / rebook text). Choosing Sold chains
+                 into the alteration modal below via the `finished` payload. -->
+            <div t-if="state.outcomeForm" class="modryn_modal_backdrop" t-on-click.self="closeOutcome">
+                <div class="modryn_modal" role="dialog" aria-modal="true">
+                    <h2 class="mb-1">How did it end for <t t-esc="state.outcomeForm.customer"/>?</h2>
+                    <p t-if="state.outcomeForm.existing" class="modryn_sub mb-3">
+                        Currently recorded: <t t-esc="outcomeLabel(state.outcomeForm.existing)"/>.
+                        Saving will replace it.
+                    </p>
+                    <div t-if="state.modalError" class="modryn_field_error mb-3" role="alert">
+                        <t t-esc="state.modalError"/>
+                    </div>
+
+                    <div class="d-flex gap-2 mb-3">
+                        <button t-attf-class="btn #{state.outcomeForm.kind === 'sold' ? 'btn-primary' : 'btn-outline-dark'}"
+                                t-on-click="() => this.pickOutcome('sold')">Sold</button>
+                        <button t-attf-class="btn #{state.outcomeForm.kind === 'not_sold' ? 'btn-primary' : 'btn-outline-dark'}"
+                                t-on-click="() => this.pickOutcome('not_sold')">Not sold</button>
+                        <button t-attf-class="btn #{state.outcomeForm.kind === 'no_show' ? 'btn-primary' : 'btn-outline-dark'}"
+                                t-on-click="() => this.pickOutcome('no_show')">No-show</button>
+                    </div>
+
+                    <t t-if="state.outcomeForm.kind === 'sold'">
+                        <div class="mb-3">
+                            <label class="form-label">Amount (₪)</label>
+                            <input type="number" min="0" step="1" class="form-control"
+                                   t-model="state.outcomeForm.amount"/>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">What she bought</label>
+                            <textarea class="form-control" rows="2"
+                                      placeholder="Gown, veil, alterations…"
+                                      t-model="state.outcomeForm.items"/>
+                        </div>
+                    </t>
+
+                    <t t-if="state.outcomeForm.kind === 'not_sold'">
+                        <div class="mb-3">
+                            <label class="form-label">Note (optional)</label>
+                            <input type="text" class="form-control"
+                                   placeholder="Loved the second gown, thinking it over…"
+                                   t-model="state.outcomeForm.note"/>
+                        </div>
+                        <p class="modryn_sub mb-3">She'll receive a feedback text.</p>
+                    </t>
+
+                    <t t-if="state.outcomeForm.kind === 'no_show'">
+                        <p class="modryn_sub mb-3">She'll receive a warm text with a link to rebook.</p>
+                    </t>
+
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-primary" t-att-disabled="!state.outcomeForm.kind"
+                                t-on-click="saveOutcome">Save</button>
+                        <button class="btn btn-outline-dark" t-on-click="closeOutcome">Cancel</button>
                     </div>
                 </div>
             </div>

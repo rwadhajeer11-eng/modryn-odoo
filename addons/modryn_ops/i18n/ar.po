@@ -1,0 +1,42 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: ar\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: \n"
+
+#. module: modryn_ops
+#. odoo-python
+#: code:addons/modryn_ops/models/calendar_event.py:0
+msgid ""
+"Thank you for visiting %(boutique)s! We'd love to hear how it went — just "
+"reply to this message."
+msgstr ""
+"شكرًا لزيارتك %(boutique)s! يسعدنا أن نسمع رأيك — ما عليك سوى الرد على هذه "
+"الرسالة."
+
+#. module: modryn_ops
+#. odoo-python
+#: code:addons/modryn_ops/models/calendar_event.py:0
+msgid ""
+"Thank you for visiting %(boutique)s! We're so happy for you — we'll be in "
+"touch about the next steps."
+msgstr ""
+"شكرًا لزيارتك %(boutique)s! نحن سعداء جدًا من أجلك — سنتواصل معك بشأن "
+"الخطوات القادمة."
+
+#. module: modryn_ops
+#. odoo-python
+#: code:addons/modryn_ops/models/calendar_event.py:0
+msgid ""
+"We missed you today at %(boutique)s. Life happens! Book a new time here: "
+"%(book_link)s"
+msgstr ""
+"افتقدناك اليوم في %(boutique)s. لا بأس! يمكنك حجز موعد جديد هنا: "
+"%(book_link)s"

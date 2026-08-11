@@ -33,6 +33,22 @@ export class FloorBoard extends Component {
             // The finish modal. null = closed; otherwise the /floor/finish payload
             // plus the form the manager is filling in.
             finish: null,
+            // The booking-outcome modal (modryn_ops). null = closed.
+            outcomeForm: null,
+            // Managers only: past bookings still without an outcome.
+            unclosed: 0,
+            // modryn_ops: today's opening/closing checklist + follow-up work.
+            checklist: [],
+            opsTasks: [],
+            // modryn_ops: the customer-profile modal. null = closed.
+            customer: null,
+            // modryn_ops: my own month, private to me. null = unavailable.
+            myStats: null,
+            // modryn_ops: an error belonging to the OPEN modal — rendered
+            // inside it, because state.error sits behind the modal backdrop.
+            modalError: null,
+            // modryn_ops: the unclosed-bookings list the nag badge opens.
+            unclosedList: null,
         });
 
         onWillStart(async () => {
@@ -40,6 +56,16 @@ export class FloorBoard extends Component {
             this.bus.addChannel(QUEUE_CHANNEL);
             this.onBusEvent = () => this.refresh();
             this.bus.subscribe("modryn_queue/update", this.onBusEvent);
+            // My-month numbers are private and change slowly — fetched once,
+            // not on every board round-trip.
+            try {
+                const mine = await rpc("/floor/my/stats", {});
+                if (mine && mine.ok) {
+                    this.state.myStats = { ...mine.stats, open_followups: mine.open_followups };
+                }
+            } catch {
+                this.state.myStats = null;
+            }
         });
 
         onWillUnmount(() => {
@@ -109,11 +135,15 @@ export class FloorBoard extends Component {
     }
 
     apply(board) {
-        if (!board || board.error) {
-            this.state.error = board ? board.error : "unreachable";
+        // A payload can carry BOTH a board and an error (a room collision
+        // returns the fresh truth plus a message). Discarding the board in
+        // that case left the select lying about where the customer is — so
+        // only an error-ONLY payload short-circuits.
+        if (!board || (board.error && !board.queue)) {
+            this.state.error = board ? this.errorText(board.error) : "unreachable";
             return;
         }
-        this.state.error = null;
+        this.state.error = board.error ? this.errorText(board.error) : null;
         this.state.pending = board.pending || [];
         this.state.queue = board.queue;
         this.state.bookings = board.bookings;
@@ -124,6 +154,9 @@ export class FloorBoard extends Component {
         this.state.myTasks = board.my_tasks || [];
         this.state.atelier = board.atelier || { pieces: [] };
         this.state.canAssign = board.can_assign;
+        this.state.unclosed = board.unclosed_count || 0;
+        this.state.checklist = board.checklist || [];
+        this.state.opsTasks = board.ops_tasks || [];
         if (board.finished) {
             this.state.finish = {
                 customer: board.finished.customer,
@@ -200,13 +233,10 @@ export class FloorBoard extends Component {
             target_id: targetId,
             room_id: roomId,
         });
-        // A room collision comes back with the board intact plus a message, so
-        // the select snaps back to the truth rather than lying about where the
-        // customer is.
+        // A room collision comes back with the board intact plus a message;
+        // apply() now keeps both — the select snaps back to the truth AND the
+        // message shows, instead of the error discarding the fresh board.
         this.apply(board);
-        if (board && board.error) {
-            this.state.error = board.error;
-        }
     }
 
     roomName(roomId) {
@@ -267,6 +297,85 @@ export class FloorBoard extends Component {
         await this.call("/floor/finish", { entry_id: entryId });
     }
 
+    // ------------------------------------------------- booking outcome modal
+    // Served by modryn_ops when installed. A stylist may close her OWN
+    // booking; a manager closes (or, with force, changes) any — the server
+    // re-checks both, this only decides what to draw.
+    canClose(b) {
+        return this.state.canAssign || (this.state.me && b.employee_id === this.state.me.id);
+    }
+
+    outcomeLabel(outcome) {
+        return { sold: _t("Sold"), not_sold: _t("Not sold"), no_show: _t("No-show") }[outcome] || outcome;
+    }
+
+    openOutcome(b) {
+        // Changing a recorded outcome is manager-only; the button simply
+        // doesn't render for staff when b.outcome is set (see canClose use).
+        // A correction PREFILLS the recorded figures — a re-save must carry
+        // the existing sale, not silently zero it.
+        this.state.unclosedList = null;
+        this.state.modalError = null;
+        this.state.outcomeForm = {
+            event_id: b.id,
+            customer: b.title,
+            kind: b.outcome || "",
+            amount: b.sale_amount ? String(b.sale_amount) : "",
+            items: b.sale_items || "",
+            note: "",
+            existing: b.outcome || "",
+        };
+    }
+
+    closeOutcome() {
+        this.state.outcomeForm = null;
+        this.state.modalError = null;
+    }
+
+    pickOutcome(kind) {
+        this.state.outcomeForm.kind = kind;
+    }
+
+    async saveOutcome() {
+        const f = this.state.outcomeForm;
+        if (!f || !f.kind) {
+            return;
+        }
+        const board = await rpc("/floor/finish/booking", {
+            event_id: f.event_id,
+            outcome: f.kind,
+            amount: f.amount ? parseFloat(f.amount) : 0,
+            items: f.items,
+            note: f.note,
+            force: Boolean(f.existing),
+        });
+        if (board && board.error && !board.queue) {
+            // Inside the modal, in words — a code behind the backdrop reads
+            // as "Save did nothing".
+            this.state.modalError = this.errorText(board.error);
+            return;
+        }
+        this.state.outcomeForm = null;
+        this.state.modalError = null;
+        // On a sale the payload carries `finished`, so apply() opens the
+        // alteration handoff modal next — same chain as a walk-in.
+        this.apply(board);
+    }
+
+    // ---------------------------------------- unclosed bookings (modryn_ops)
+    async openUnclosed() {
+        const result = await rpc("/floor/unclosed", {});
+        if (result && result.error) {
+            this.state.error = this.errorText(result.error);
+            return;
+        }
+        this.state.unclosedList = result.unclosed || [];
+    }
+
+    closeUnclosed() {
+        this.state.unclosedList = null;
+    }
+
     async acceptPending(entryId) {
         await this.call("/floor/accept", { entry_id: entryId });
     }
@@ -308,6 +417,96 @@ export class FloorBoard extends Component {
             return;
         }
         this.state.finish = null;
+        await this.refresh();
+    }
+
+    // Server error codes -> words a person on the floor can act on. Unknown
+    // codes fall through verbatim rather than hiding.
+    errorText(code) {
+        return {
+            forbidden: _t("You don't have permission for that."),
+            not_found: _t("That record is gone — refresh the board."),
+            already_set: _t("An outcome is already recorded. Only a manager can change it."),
+            cancelled: _t("This booking was cancelled — it doesn't get an outcome."),
+            invalid_amount: _t("Please enter a valid amount."),
+            invalid_date: _t("Please enter a valid date."),
+            invalid_budget: _t("Please enter a valid budget."),
+        }[code] || code;
+    }
+
+    // --------------------------------------- customer profile (modryn_ops)
+    async openCustomer(name, phone) {
+        if (!phone) {
+            return;
+        }
+        const result = await rpc("/floor/customer", { phone });
+        if (result && result.error) {
+            this.state.error = result.error;
+            return;
+        }
+        const c = result.customer;
+        this.state.modalError = null;
+        this.state.customer = {
+            name: c ? c.name : name,
+            phone,
+            isNew: !c,
+            // 'budget' is present in the payload only for managers — its
+            // absence is the server's field-level ACL, mirrored here.
+            hasBudget: Boolean(c && "budget" in c),
+            form: {
+                wedding_date: c ? c.wedding_date : "",
+                party: c ? c.party : "",
+                measurements: c ? c.measurements : "",
+                notes: c ? c.notes : "",
+                budget: c && "budget" in c ? c.budget || "" : "",
+            },
+            category: c ? c.category : "",
+        };
+    }
+
+    closeCustomer() {
+        this.state.customer = null;
+        this.state.modalError = null;
+    }
+
+    async saveCustomer() {
+        const c = this.state.customer;
+        const params = {
+            phone: c.phone,
+            name: c.name,
+            wedding_date: c.form.wedding_date || null,
+            party: c.form.party,
+            measurements: c.form.measurements,
+            notes: c.form.notes,
+        };
+        if (c.hasBudget || (c.isNew && this.state.canAssign)) {
+            params.budget = c.form.budget === "" ? 0 : parseFloat(c.form.budget);
+        }
+        const result = await rpc("/floor/customer/save", params);
+        if (result && result.error) {
+            this.state.modalError = this.errorText(result.error);
+            return;
+        }
+        this.state.customer = null;
+        this.state.modalError = null;
+    }
+
+    // ------------------------------------------- floor tasks (modryn_ops)
+    async doneOpsTask(taskId) {
+        const result = await rpc("/tasks/done", { task_id: taskId });
+        if (result && result.error) {
+            this.state.error = this.errorText(result.error);
+        }
+        // Refresh EVEN on error: the native checkbox click already toggled
+        // the DOM, and only a redraw from server truth un-lies it.
+        await this.refresh();
+    }
+
+    async reopenOpsTask(taskId) {
+        const result = await rpc("/tasks/reopen", { task_id: taskId });
+        if (result && result.error) {
+            this.state.error = this.errorText(result.error);
+        }
         await this.refresh();
     }
 

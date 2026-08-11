@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Overdue tasks poke the room once. Ten minutes, not one: half an
+             hour of lateness (ESCALATE_AFTER_MINUTES) is the trigger, so the
+             cron's own granularity adds at most a third to that — and the
+             threaded scheduler keeps short-interval crons permanently
+             "overdue" anyway (.memory/odoo-traps.md §11), so verify asserts
+             existence and activity, never nextcall. -->
+        <record id="ir_cron_escalate_overdue_tasks" model="ir.cron">
+            <field name="name">MODRYN: escalate overdue floor tasks</field>
+            <field name="model_id" ref="model_modryn_task"/>
+            <field name="state">code</field>
+            <field name="code">model._modryn_escalate_overdue()</field>
+            <field name="interval_number">10</field>
+            <field name="interval_type">minutes</field>
+            <field name="active" eval="True"/>
+        </record>
+    </data>
+</odoo>
