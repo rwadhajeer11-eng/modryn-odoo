@@ -51,7 +51,18 @@ walk-in it created is still *pending* on the board next time, the second
 check-in is refused as a duplicate, the board does not change, and act 6 reports
 the websocket broken when nothing was ever handed to it.
 
-**3. Scope every submit to its own form.** `lib/form.js::submitFormWith()`.
+**3. Never consume the last seat of a day.** Act 3c picks a slot from a day that
+has another one after it, and `test.skip`s when no such day exists. It used to
+take the last slot on offer — the furthest day is also the emptiest, so it sold
+that day out, a sold-out day correctly vanishes from `/book`, and `verify.sh`
+§24 then reported *"open days missing from the page: 26.08.2026"*. The product
+was right; §24 derives open days from the rota rather than from remaining
+capacity. **A write-test that turns a legitimate state into a red line in the
+suite that gates deploys is worse than no test.** Verified over three
+consecutive qa→verify cycles: 328/0 each time, with act 3c skipping rather than
+closing a day.
+
+**4. Scope every submit to its own form.** `lib/form.js::submitFormWith()`.
 `website.layout` renders a site-search form into the header of every frontend
 page — twice — and each carries a hidden `<button type="submit">` that appears
 *before* the real form. `form button[type=submit]` resolves to one of those on

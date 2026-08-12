@@ -54,9 +54,29 @@ test('act 3c — a complete booking takes the slot off the grid @writes', async 
 
   const values = (await page.locator('select[name="slot"] option').evaluateAll((os) => os.map((o) => o.value))).filter(Boolean);
   test.skip(values.length === 0, 'no slot on offer');
-  // The LAST offered slot, not the first: act 3b already probed the first, and
-  // two specs competing for one hour would make this file race itself.
-  const chosen = values[values.length - 1];
+
+  // NEVER TAKE THE LAST SEAT OF A DAY, and never simply the last slot on offer.
+  //
+  // This spec used to book values[values.length - 1] to stay clear of act 3b's
+  // values[0]. The furthest day is also the emptiest, so on a fixture with one
+  // slot left there it sold the day out — and a sold-out day correctly
+  // disappears from /book, which made verify.sh §24 report
+  //   "open days missing from the page: 26.08.2026"
+  // on the very next run. The product was right; the check derives open days
+  // from the rota rather than from remaining capacity, and the test had turned
+  // a legitimate state into a red line in a suite that gates deploys.
+  //
+  // So: pick from a day that still has another slot after this one. The day
+  // survives, §24 keeps its subject, and the assertion below is unchanged.
+  const byDay = new Map();
+  for (const v of values) {
+    const day = v.slice(0, 10);
+    byDay.set(day, [...(byDay.get(day) || []), v]);
+  }
+  const roomy = [...byDay.values()].find((slots) => slots.length >= 2);
+  test.skip(!roomy, 'every open day has exactly one slot left — booking any of them would close a day');
+  // Its last slot, so act 3b's values[0] is never the same hour.
+  const chosen = roomy[roomy.length - 1];
 
   await page.locator('select[name="slot"]').selectOption(chosen);
   await page.fill('input[name="name"]', 'QA Bride');
