@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <!--
+    website/views/website_templates.xml emits, unconditionally, inside
+    website.layout:
+
+        <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin=""/>
+
+    Odoo's own comment directly above it is a TODO admitting it should be
+    conditional on a Google font actually being used.
+
+    A preconnect is NOT a hint the browser may ignore. Chrome and Firefox both
+    open TCP and TLS to fonts.gstatic.com while parsing the head. With the two
+    @import lines gone (see primary_variables.scss and fonts.generated.scss)
+    that connection carries no request — and it still resolves Google's DNS,
+    still exposes every visitor's IP to a third party, still costs a handshake
+    on each cold load, and still fails launch gate 6 exactly as written: "no
+    request to fonts.gstatic.com on any page".
+
+    Removing the 'url' keys alone therefore does not close gate 6. This does.
+
+    MATCHED ON THE href, NOT ON POSITION. The surrounding block gains and loses
+    <link> elements across Odoo point releases, and an xpath anchored to a
+    sibling index would start deleting the wrong element rather than failing.
+    If Odoo moves or renames this, the upgrade fails loudly with
+    "Element ... cannot be located in parent view" — which is the correct
+    outcome. A view that silently matches nothing is a gate that silently stops
+    being checked.
+  -->
+  <template id="no_google_font_preconnect"
+            inherit_id="website.layout"
+            name="MODRYN: no third-party font preconnect">
+    <xpath expr="//link[@rel='preconnect'][@href='https://fonts.gstatic.com/']"
+           position="replace"/>
+  </template>
+
+</odoo>

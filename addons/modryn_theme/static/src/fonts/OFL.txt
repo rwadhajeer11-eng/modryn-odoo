@@ -1,0 +1,8 @@
+Assistant and Frank Ruhl Libre are licensed under the SIL Open Font License 1.1.
+
+  https://openfontlicense.org/open-font-license-official-text/
+
+The OFL permits self-hosting and redistribution and requires no attribution in
+the user interface. The .woff2 files beside this notice are Google Fonts' own
+hebrew+latin subsets, fetched once by scripts/fetch_fonts.py and committed so
+that neither a build nor a page load depends on a third party.
