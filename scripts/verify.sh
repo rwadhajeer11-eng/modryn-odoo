@@ -1512,5 +1512,124 @@ done
 # of that check in this section would be one more thing to keep in step, and the
 # suite has a comment further up about exactly that kind of check.
 
+# ---- the rota caps the grid, and a silent rota caps nothing ------------------
+# A day cannot sell more concurrent fittings than it has stylists on the floor,
+# so modryn_roster overrides modryn_daily_caps() and trims each hour by the
+# people its PUBLISHED rota puts on that date. The risk is entirely in the
+# fallback: a date the rota says nothing about must come back UNCAPPED, never
+# capped at zero, or the boutique's whole booking grid empties with no error
+# anywhere. The three checks below are that fallback, from both sides.
+#
+# noga has never opened /roster: every one of its shift slots is unpublished, so
+# modryn_rostered_on() answers None for all fourteen days and the cap must be
+# completely silent there. Its grid is asserted whole — the day count AND the
+# first hour — because "the page still rendered" is not the same as "it still
+# sells what it sold yesterday". This is THE regression guard for the empty-grid
+# disaster; bella's own grid is already asserted in full above.
+fetch "$NOGA/book"
+N_LBL=$(psql -d noga -tAc "select to_char(time '00:00' + start_hour * interval '1 hour', 'HH24:MI') from modryn_opening_hours where active order by start_hour limit 1" 2>/dev/null)
+if [ -z "$N_LBL" ]; then
+  # An empty label leaves the regex as `> *<`, which matches nearly every tag on
+  # the page — the check would pass hardest exactly when the table is gone.
+  bad "noga /book offers the table's first hour" "no active opening-hours row on noga to derive the label from"
+else
+  # The label, not the option's value: the value is UTC, so the hour she reads is
+  # an hour or two off it depending on the season.
+  tr '\n' ' ' < "$PAGE" | grep -qE "> *$N_LBL *<" \
+    && ok "noga: /book still offers a $N_LBL slot with no published rota" \
+    || bad "noga /book first slot" "no $N_LBL option on the page — the rota cap is trimming a boutique whose rota says nothing, so this grid is empty"
+fi
+N_SEEN=0; N_MISSING=""; N_OFFERED=""
+while IFS='|' read -r DAY IS_OPEN; do
+  [ -z "$DAY" ] && continue
+  N_SEEN=$((N_SEEN+1))
+  # label="..." is the OPTGROUP attribute, and templates.xml emits an optgroup
+  # only for a day that is `not full`. A bare grep for the date matches the
+  # waitlist <select> too, which a FULL day also prints — so it would report a
+  # day the cap had emptied as present, and this check exists to catch exactly
+  # that. Trade-off worth naming: a legitimately fully-booked day emits no
+  # optgroup either, so this reads "still bookable" rather than "still listed".
+  # Both tenants hold zero future bookings, so a full day cannot arise here; if
+  # one ever does, this points at it and the answer is to look at why.
+  if grep -qF "label=\"$DAY\"" "$PAGE"; then
+    [ "$IS_OPEN" = "t" ] || N_OFFERED="$N_OFFERED $DAY"
+  elif [ "$IS_OPEN" = "t" ]; then
+    N_MISSING="$N_MISSING $DAY"
+  fi
+done <<SQL
+$(psql -d noga -tAq -c "SELECT to_char(d, 'DD.MM.YYYY'), (extract(isodow from d)::int - 1)::text in (select weekday from modryn_opening_hours where active) AND NOT EXISTS (select 1 from modryn_closure where active and d::date between date_from and date_to) FROM generate_series((now() at time zone 'Asia/Jerusalem')::date + 1, (now() at time zone 'Asia/Jerusalem')::date + 14, interval '1 day') d" 2>/dev/null)
+SQL
+# N_SEEN is the positive control: with the table absent the query errors, the
+# loop reads nothing, and both lists stay empty — a silent green over zero days.
+[ "$N_SEEN" = "14" ] && [ -z "$N_MISSING$N_OFFERED" ] \
+  && ok "noga: /book renders the same 14 days the tables alone would give" \
+  || bad "noga /book grid changed under the rota cap" "$N_SEEN of 14 days derived; open days missing from the page:${N_MISSING:- none}; days shut and offered anyway:${N_OFFERED:- none}"
+# ...and a silent cap proves nothing about a cap that WORKS.
+#
+# What was here first was a detects() that planted a published shift in SQL and
+# then read it back with SQL that re-derived the same predicate by hand. It was
+# a tautology: it passed with modryn_roster/models/opening_hours.py DELETED,
+# because it never touched the override at all. It tested Postgres.
+#
+# This suite cannot start an odoo-bin shell, so it cannot call modryn_daily_caps
+# and cannot honestly claim to have exercised it. What it CAN do is assert the
+# wiring, which is what actually disappears if the feature is removed or
+# half-merged — the same grep-of-the-source tool section 18 uses for the dedupe
+# and section 16 for the scan bound. The behaviour itself is proved by hand
+# against a running server and recorded in .planning/specs/avail-6-*.md.
+grep -q "from . import opening_hours" addons/modryn_roster/models/__init__.py \
+  && ok "modryn_roster loads its opening-hours override" \
+  || bad "rota cap not loaded" "models/__init__.py does not import opening_hours — Odoo loads Python through __init__, so the override silently does not exist and every date stays uncapped"
+grep -q "_inherit = 'modryn.opening.hours'" addons/modryn_roster/models/opening_hours.py \
+  && grep -q "def modryn_daily_caps" addons/modryn_roster/models/opening_hours.py \
+  && ok "the override extends modryn.opening.hours and defines modryn_daily_caps" \
+  || bad "rota cap override missing" "modryn_roster does not override modryn_daily_caps — the booking grid would keep the base {} and the rota would cap nothing"
+grep -q "super().modryn_daily_caps" addons/modryn_roster/models/opening_hours.py \
+  && ok "the override calls super(), so a third module could cap too" \
+  || bad "rota cap does not chain" "the override replaces the base answer instead of extending it"
+# Both grids must ASK. An override nothing calls is the same as no override.
+grep -q "modryn_daily_caps" addons/modryn_booking/controllers/main.py \
+  && grep -q "modryn_daily_caps" addons/modryn_portal/controllers/waitlist.py \
+  && ok "both grids ask for the daily cap" \
+  || bad "a grid ignores the rota cap" "/book and /claim must both consult it, or the picker and the claim page disagree about what the boutique can staff"
+# And the direction stays one-way: modryn_booking may not learn the rota exists.
+# Matched on the two things that would actually BE a reference — an import of the
+# module, or a lookup of its model — rather than on the module's name, which
+# appears legitimately in several comments explaining why this rule exists.
+grep -rEn "from odoo\.addons\.modryn_roster|import modryn_roster|\[['\"]modryn\.shift\.slot['\"]\]" \
+  addons/modryn_booking/ --include='*.py' > /dev/null \
+  && bad "dependency inverted" "modryn_booking imports the roster or reads modryn.shift.slot — the dependency runs modryn_roster -> modryn_staff -> modryn_booking, so this is a load cycle waiting to happen" \
+  || ok "modryn_booking still knows nothing about the roster"
+# The zero that must never be computed, checked against the live data that would
+# compute it. Publishing is week-wide, so a manager who fills Sunday and hits
+# Publish leaves the rest of the week published and naming NOBODY — bella has
+# four such days next week right now. A day rostered only by the owner counts the
+# same way: rostered, and nobody on the floor. Both are "the rota has nothing to
+# say", and both must still be sold. If one of these dates vanishes from /book,
+# the cap emitted 0 for it.
+for db in $TENANTS; do
+  fetch "http://$db.localtest.me:$BASE_PORT/book"
+  Z_SEEN=0; Z_LOST=""
+  while read -r DAY; do
+    [ -z "$DAY" ] && continue
+    Z_SEEN=$((Z_SEEN+1))
+    # Same reason as above, and here it is the whole point: a cap of 0 empties
+    # the day's times, which makes it FULL, which still prints the date in the
+    # waitlist <select>. Matching the bare date would pass on precisely the
+    # failure this loop is named after.
+    grep -qF "label=\"$DAY\"" "$PAGE" || Z_LOST="$Z_LOST $DAY"
+  done <<SQL
+$(psql -d "$db" -tAq -c "SELECT to_char(s.day,'DD.MM.YYYY') FROM modryn_shift_slot s LEFT JOIN hr_employee_modryn_shift_slot_rel r ON r.modryn_shift_slot_id = s.id LEFT JOIN hr_employee e ON e.id = r.hr_employee_id AND e.active AND e.modryn_level IN ('manager','staff') WHERE s.published AND s.day BETWEEN (now() at time zone 'Asia/Jerusalem')::date + 1 AND (now() at time zone 'Asia/Jerusalem')::date + 14 AND (extract(isodow from s.day)::int - 1)::text IN (SELECT weekday FROM modryn_opening_hours WHERE active) AND NOT EXISTS (SELECT 1 FROM modryn_closure c WHERE c.active AND s.day BETWEEN c.date_from AND c.date_to) GROUP BY s.day HAVING count(e.id) = 0 ORDER BY s.day" 2>/dev/null)
+SQL
+  if [ "$Z_SEEN" = "0" ]; then
+    # No subject on this tenant — noga publishes nothing at all. Not a pass:
+    # this check saw no day that could have produced a zero.
+    note "$db: no published-but-unstaffed day in the fortnight" "the never-zero guard had nothing to test here"
+  else
+    [ -z "$Z_LOST" ] && ok "$db: all $Z_SEEN published-but-unstaffed days are still on /book" \
+      || bad "$db: a rota cap of zero reached /book" "days published with nobody on the floor and now missing from the page:$Z_LOST — an unstaffed day is uncapped, never capped at 0"
+  fi
+done
+
 printf "\n\033[1m%d passed, %d failed, %d skipped\033[0m\n" "$PASS" "$FAIL" "$SKIP"
 [ "$FAIL" -eq 0 ] || exit 1

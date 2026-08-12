@@ -37,39 +37,21 @@ with a send. Do this whenever the PoC ends, sooner if the transcript is shared.
 
 ---
 
-## 3. Make the roster actually mean something · M
+## 3. Per-appointment-type duration · M
 
-Publishing a week currently changes nothing outside the roster page. It does not restrict who can
-be assigned on the floor that day, and it does not feed the booking grid.
+The last piece of the availability engine, and the only one deliberately not attempted.
 
-That gap is the difference between a rota and a spreadsheet. The smallest honest version: the
-floor board's staff list shows who is rostered today, and assigning someone who is not warns
-rather than blocks — blocking would be wrong on a day when someone covers a sick colleague.
+A 90-minute fitting overlapping the following 60-minute slot **cannot be expressed by a unique
+index**. It needs a `tstzrange` EXCLUDE constraint and the `btree_gist` extension, plus a grid
+that is no longer uniform — a different feature wearing the same name. A half-built version that
+offers 11:00 while a fitting runs through it is worse than not shipping one.
 
----
-
-## 4. Availability engine · L (was XL)
-
-**Opening hours are done** — `modryn.opening.hours`, editable at `/manage/hours`, read by both
-the booking grid and the waitlist claim page, seeded so the old Sunday–Thursday 10:00–18:00
-lattice survives unchanged. That also closed a latent bug: the waitlist copy of the grid had no
-weekday filter at all, so a claim link could offer a Friday.
-
-**Blackout dates and per-window capacity are done too.** The partial unique index now keys on
-`(start, modryn_slot_seat)`, so a window can take more than one fitting an hour and Postgres —
-not Python — still decides who gets the last seat.
-
-Still missing: **per-appointment-type duration**, and **per-staff calendars**. Duration is the
-harder half and was deliberately not attempted: a 90-minute fitting overlapping an adjacent
-60-minute slot cannot be expressed by any unique index. It needs a `tstzrange` EXCLUDE constraint
-and `btree_gist`, plus a non-uniform grid — a different feature wearing the same name.
-
-Still the largest piece of remaining work and the one Odoo Enterprise's `appointment` module
-would most plausibly halve.
+Everything else in that engine landed: opening hours, closures, per-window capacity enforced by
+Postgres, and the published rota capping what a day can sell.
 
 ---
 
-## 5. Israeli payment provider and deposits · M each
+## 4. Israeli payment provider and deposits · M each
 
 No PSP exists in Odoo for Grow, Meshulam or Tranzila — each is a custom `payment.provider`.
 Deferred deliberately: it needs a real merchant account, which is a business decision, not a
@@ -78,7 +60,7 @@ here.
 
 ---
 
-## 6. WhatsApp · blocked externally
+## 5. WhatsApp · blocked externally
 
 Odoo's WhatsApp module is Enterprise-only, and the Business API needs Meta verification the
 business has not started. SMS via Twilio is the working channel. Do not start this without the

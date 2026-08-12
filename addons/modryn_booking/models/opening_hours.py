@@ -177,6 +177,27 @@ class ModrynOpeningHours(models.Model):
         return self._capacities([])
 
     @api.model
+    def modryn_daily_caps(self, days):
+        """Per-date ceiling on concurrent fittings, or {} when nothing caps them.
+
+        A window's capacity says what the ROOM can hold; it cannot know whether
+        anyone is there to do the fitting. Anything that does know overrides this
+        method — modryn_roster caps a date by the stylists its published rota
+        puts on the floor — and this module stays ignorant of them, because the
+        dependency only ever points this way.
+
+        A date ABSENT from the mapping is uncapped and keeps its window capacity.
+        Absence is the sentinel and 0 is NOT: an override that returns 0 for a
+        date it knows nothing about closes the boutique's whole grid, silently,
+        for every hour of that day.
+
+        Takes the WHOLE list of dates and answers in one go, because /book
+        renders a fortnight and the read behind it is a fixed number of queries
+        by design. A per-day variant of this would put fourteen back.
+        """
+        return {}
+
+    @api.model
     def modryn_hour_label(self, value):
         """A float hour as a wall clock, which is how anyone reads a time.
 

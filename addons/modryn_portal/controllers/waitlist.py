@@ -91,6 +91,12 @@ class ModrynWaitlist(http.Controller):
         # An empty list here renders the page with no times, which is the truth.
         if request.env['modryn.closure'].sudo().modryn_is_closed(day_date):
             return []
+        # What the boutique can STAFF that day, on top of what the room holds.
+        # None — the answer for every date nothing knows anything about, and the
+        # only answer at all until modryn_roster is installed — leaves the
+        # window's own capacity standing. A single-date call because this page
+        # renders a single date; the list form is /book's.
+        cap = Hours.modryn_daily_caps([day_date]).get(day_date)
         # This day's own window, read from the boutique's hours instead of a
         # hardcoded 10-18. Deriving it matters for the SCAN, not just the
         # display: against a fixed 10-18 a boutique opening at 12 or closing at
@@ -133,14 +139,17 @@ class ModrynWaitlist(http.Controller):
         now = datetime.utcnow()
         for hour in hours:
             utc = _utc_at(hour)
-            capacity = capacities[hour]
             # Capacity is per HOUR, never per day: the owner may take two on a
-            # Thursday evening and one the rest of the week.
+            # Thursday evening and one the rest of the week. The day's cap trims
+            # that hour rather than replacing it — a rota of three does not make
+            # a one-chair window seat three.
+            capacity = capacities[hour] if cap is None else min(capacities[hour], cap)
             if utc <= now or taken[utc.replace(second=0, microsecond=0)] >= capacity:
                 continue
-            # The seat count rides along so claim_submit can size its retry from
-            # the same read that offered the hour, rather than asking the model a
-            # second time and risking a different answer.
+            # The EFFECTIVE seat count rides along, so claim_submit sizes its
+            # retry from the same read that offered the hour. The window's own
+            # number here would hand the link holder a seat the rota does not
+            # staff, which is the whole thing this guard exists to stop.
             slots.append({'value': utc.strftime('%Y-%m-%d %H:%M:%S'),
                           'label': Hours.modryn_hour_label(hour),
                           'capacity': capacity})

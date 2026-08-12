@@ -130,9 +130,18 @@ class ModrynBooking(http.Controller):
         # the loop renders, both ends inclusive.
         closed = request.env['modryn.closure'].sudo().modryn_closed_dates(
             (now_local + timedelta(days=LEAD_DAYS)).date(), last_day)
+        dates = [(now_local + timedelta(days=offset)).date()
+                 for offset in range(LEAD_DAYS, DAYS_AHEAD + 1)]
+        # What the boutique can STAFF, on top of what the room can hold. Empty
+        # unless something is installed that knows — modryn_roster caps a date by
+        # the stylists its published rota puts on the floor. Asked once for the
+        # whole fortnight, like the two reads above and for the same reason.
+        #
+        # A date missing from this mapping is UNCAPPED, which is the answer for
+        # every date the rota has nothing to say about. It is never 0.
+        caps = Hours.modryn_daily_caps(dates)
         days = []
-        for offset in range(LEAD_DAYS, DAYS_AHEAD + 1):
-            day = (now_local + timedelta(days=offset)).date()
+        for day in dates:
             hours = by_weekday.get(str(day.weekday()), {})
             # No hours means shut, and a SHUT day is not a FULL one. A full day
             # is still rendered below, with a waitlist form, because she should
@@ -147,6 +156,7 @@ class ModrynBooking(http.Controller):
             # would invite her to queue for a day nobody is coming in.
             if not hours or day in closed:
                 continue
+            cap = caps.get(day)
             times = []
             # sorted(), so the order she reads is chronological whatever order
             # the model happened to build its dict in — a page that lists 14:00
@@ -155,15 +165,19 @@ class ModrynBooking(http.Controller):
                 utc = _utc_on(day, hour)
                 # Capacity is per HOUR, never boutique-wide: a shop that takes
                 # two on a Thursday evening and one the rest of the week is the
-                # ordinary case this exists for.
-                if taken[utc.replace(second=0, microsecond=0)] >= capacity:
+                # ordinary case this exists for. The day's cap trims that hour
+                # rather than replacing it — a rota of three does not make a
+                # one-chair window seat three.
+                seats = capacity if cap is None else min(capacity, cap)
+                if taken[utc.replace(second=0, microsecond=0)] >= seats:
                     continue
-                # The seat count rides along so /book/submit can size its retry
-                # from the same read that offered the hour, instead of asking the
-                # model a second time and risking a different answer.
+                # The EFFECTIVE seat count rides along, so /book/submit sizes its
+                # retry from the same read that offered the hour. Passing the
+                # window's number here instead would hand a bride a seat the rota
+                # does not staff — the guard would exist and change nothing.
                 times.append({'value': utc.strftime('%Y-%m-%d %H:%M:%S'),
                               'label': Hours.modryn_hour_label(hour),
-                              'capacity': capacity})
+                              'capacity': seats})
             # A day with no free hours is still shown — with a waitlist form
             # instead of a time picker. Hiding it would mean she never learns
             # she could have been first in line. "No free hours" now means every

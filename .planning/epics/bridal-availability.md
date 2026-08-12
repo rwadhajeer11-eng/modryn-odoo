@@ -1,6 +1,6 @@
 # Epic: bridal-availability — the booking grid becomes real
 
-**Created**: 2026-08-11 · **Status**: building
+**Created**: 2026-08-11 · **Status**: done 2026-08-12 (verify 326/0/2) — except F1, which is blocked on the owner
 **Master plan**: [`../plans/bridal-availability.md`](../plans/bridal-availability.md)
 **Baseline**: `verify.sh` 263/0/0 at commit `7006ad6`
 
@@ -28,12 +28,12 @@ listed both as work to do; that is what the branch reconciliation on 2026-08-11 
 | # | Feature | Spec | Size | Status | Depends on |
 |---|---------|------|------|--------|------------|
 | 0 | Palette consolidation + slug-normalisation fix | [`../specs/avail-0-baseline-hygiene.md`](../specs/avail-0-baseline-hygiene.md) | S | ✅ done — `6b7687d` | — |
-| 1 | Record the SMS-delivery evidence | — | S | todo | — |
+| 1 | Record the SMS-delivery evidence | — | S | ⛔ blocked on the owner — needs a real handset | — |
 | 2 | Opening hours as data (`/manage/hours`) | [`../specs/avail-2-opening-hours.md`](../specs/avail-2-opening-hours.md) | M | ✅ done | 0 |
 | 3 | Blackout dates and holidays | — | S | ✅ done | 2 |
 | 4 | Per-window capacity (duration deferred) | — | M | ✅ done | 2 |
 | 5 | The roster means something on the floor | — | M | ✅ done | 0 |
-| 6 | The roster feeds availability | — | M | building | 2, 4, 5 |
+| 6 | The roster feeds availability | [`../specs/avail-6-roster-feeds-availability.md`](../specs/avail-6-roster-feeds-availability.md) | M | ✅ done | 2, 4, 5 |
 
 Sizes: **S** ≤ half a day · **M** ≤ 2 days · **L** ≤ a week.
 
