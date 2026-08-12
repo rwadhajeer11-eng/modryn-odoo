@@ -1,4 +1,5 @@
 import re
+from collections import Counter
 from datetime import datetime, timedelta
 
 import pytz
@@ -51,7 +52,7 @@ class ModrynBooking(http.Controller):
 
     # ---------------------------------------------------------------- helpers
     def _slots(self):
-        """Open slots for the next fortnight, minus the ones already taken.
+        """Open slots for the next fortnight, minus the ones already full.
 
         The grid is the boutique's own week, read from modryn.opening.hours,
         not a constant in this file. sudo() because /book is public: an
@@ -59,9 +60,17 @@ class ModrynBooking(http.Controller):
         non-sudo read would make the page 403 for exactly the people it exists
         for.
 
-        ponytail: still one fixed slot length and no capacity. Per-appointment
-        duration, per-window capacity, holidays and staff rosters remain the
-        Phase-2 booking engine (XL).
+        Capacity comes from the same windows, so an hour keeps being offered
+        until its seats run out rather than until it is touched once. Full is
+        therefore a count, not a membership test.
+
+        ponytail: still one fixed slot length, and per-appointment DURATION is
+        deliberately out of scope rather than merely unbuilt. A 90-minute
+        fitting overlapping the following hour cannot be expressed by ANY
+        unique index — it needs a tstzrange EXCLUDE constraint, btree_gist, and
+        a grid that is no longer uniform — and a half-built version that offers
+        11:00 while a fitting runs through it is worse than not shipping one.
+        Staff rosters remain the Phase-2 booking engine (XL).
         """
         now_local = datetime.now(TZ)
         # Bound the scan to exactly the fortnight the loop below renders. Without
@@ -94,11 +103,16 @@ class ModrynBooking(http.Controller):
         if 'modryn_cancelled_at' in request.env['calendar.event']._fields:
             domain.append(('modryn_cancelled_at', '=', False))
         booked = request.env['calendar.event'].sudo().search(domain)
+        # A COUNT per start, not a set of starts: with more than one seat an hour
+        # the question stopped being "is this instant spoken for" and became "how
+        # many of its seats are gone". Counter answers 0 for an hour nobody has
+        # booked without inserting a key, so the lookup below stays a plain read.
+        #
         # A comprehension, NOT recordset.mapped(lambda): on an EMPTY recordset
         # Odoo's mapped() calls the callable once with the recordset itself, so
         # `ev.start` is False and this raises. With zero bookings — i.e. every
         # fresh boutique — that made this page a guaranteed 500.
-        taken = {ev.start.replace(second=0, microsecond=0) for ev in booked}
+        taken = Counter(ev.start.replace(second=0, microsecond=0) for ev in booked)
 
         Hours = request.env['modryn.opening.hours'].sudo()
         # The whole week in ONE read, then a dict lookup per day. Asking
@@ -106,6 +120,9 @@ class ModrynBooking(http.Controller):
         # five-row table on every render of the page whose scan bound above
         # exists precisely to keep it cheap — and three times that on a failed
         # submit, which regenerates the grid twice more.
+        #
+        # Each weekday maps to {hour: capacity}, so the seats come out of the
+        # same read as the hours and no second query per day appears.
         by_weekday = Hours.modryn_hours_by_weekday()
         # And every blackout date in ONE search, for the same reason: asking
         # modryn_is_closed() inside the loop would put back the fourteen queries
@@ -116,7 +133,7 @@ class ModrynBooking(http.Controller):
         days = []
         for offset in range(LEAD_DAYS, DAYS_AHEAD + 1):
             day = (now_local + timedelta(days=offset)).date()
-            hours = by_weekday.get(str(day.weekday()), [])
+            hours = by_weekday.get(str(day.weekday()), {})
             # No hours means shut, and a SHUT day is not a FULL one. A full day
             # is still rendered below, with a waitlist form, because she should
             # learn she could be first in line. A day the boutique does not open
@@ -131,15 +148,27 @@ class ModrynBooking(http.Controller):
             if not hours or day in closed:
                 continue
             times = []
-            for hour in hours:
+            # sorted(), so the order she reads is chronological whatever order
+            # the model happened to build its dict in — a page that lists 14:00
+            # above 11:00 reads as a bug even when every hour on it is right.
+            for hour, capacity in sorted(hours.items()):
                 utc = _utc_on(day, hour)
-                if utc.replace(second=0, microsecond=0) in taken:
+                # Capacity is per HOUR, never boutique-wide: a shop that takes
+                # two on a Thursday evening and one the rest of the week is the
+                # ordinary case this exists for.
+                if taken[utc.replace(second=0, microsecond=0)] >= capacity:
                     continue
+                # The seat count rides along so /book/submit can size its retry
+                # from the same read that offered the hour, instead of asking the
+                # model a second time and risking a different answer.
                 times.append({'value': utc.strftime('%Y-%m-%d %H:%M:%S'),
-                              'label': Hours.modryn_hour_label(hour)})
+                              'label': Hours.modryn_hour_label(hour),
+                              'capacity': capacity})
             # A day with no free hours is still shown — with a waitlist form
             # instead of a time picker. Hiding it would mean she never learns
-            # she could have been first in line.
+            # she could have been first in line. "No free hours" now means every
+            # hour is at capacity, which is the same predicate as before for a
+            # boutique that seats one.
             days.append({'date': day, 'times': times, 'full': not times})
         return days
 
@@ -259,44 +288,52 @@ class ModrynBooking(http.Controller):
         if dress and not variant:
             errors['variant'] = _("Please choose a size")
 
+        capacity = 0
         if start and not errors:
-            # KEPT, but demoted: this is now a UX affordance, not the guarantee.
-            # It catches the common case — the form was rendered minutes ago and
-            # somebody has taken the slot since — and answers with a sentence
-            # instead of a collision. Correctness belongs to the partial unique
-            # index on calendar_event (modryn_portal), because a read-then-write
-            # check can never close the window between the read and the write.
-            taken_domain = [('modryn_is_booking', '=', True), ('start', '=', start)]
-            # A cancelled booking holds nothing. This guard used to disagree with
-            # _slots(): the freed time was offered on the form and then rejected
-            # here as "just taken", so a cancelled slot could never be rebooked
-            # by anyone — which would also have silently broken the waitlist.
-            if 'modryn_cancelled_at' in request.env['calendar.event']._fields:
-                taken_domain.append(('modryn_cancelled_at', '=', False))
-            if request.env['calendar.event'].sudo().search_count(taken_domain):
-                errors['slot'] = _("That time was just taken, please choose another")
-            # Nothing above asks whether this hour EXISTS. The unique index does
-            # not either — it enforces one booking per slot, not which slots the
-            # boutique sells — so a crafted POST booked 03:00 on a closed Saturday
-            # eight months out and got a confirmation SMS for it.
+            # ONE regenerated offer set answers every question the form asked:
+            # which hours the boutique sells, which dates it opens, and how many
+            # seats this hour has left. Restating any of that here — the opening
+            # hours, DAYS_AHEAD, or now the capacity arithmetic — is what lets the
+            # form and the submit drift apart, and they would drift the moment the
+            # owner edits her week. Asking the same function that offers them keeps
+            # them true by construction, and keeps DST in one place: _slots()
+            # derives every candidate by localising a local wall clock, never by
+            # UTC arithmetic.
             #
-            # The honest test is "is this a value the server itself just offered",
-            # so ask the same function that offers them rather than restating the
-            # opening hours and DAYS_AHEAD here where they could drift apart —
-            # and they would drift the moment the owner edits her week.
-            # That also keeps the DST handling in one place: _slots() derives every
-            # candidate by localising a local wall clock, never by UTC arithmetic.
-            # Runs AFTER the taken check because _slots() omits taken hours too,
-            # and "just taken" is the more useful sentence when both apply.
-            elif start.strftime('%Y-%m-%d %H:%M:%S') not in {
-                t['value'] for d in self._slots() for t in d['times']
-            }:
-                errors['slot'] = _("That time isn't valid")
+            # KEPT but demoted, as before: this is a UX affordance, not the
+            # guarantee. A read-then-write check can never close the window
+            # between the read and the write. Correctness belongs to the partial
+            # unique index on calendar_event (modryn_portal) and to the seat retry
+            # below.
+            offered = {t['value']: t['capacity']
+                       for d in self._slots() for t in d['times']}
+            capacity = offered.get(start.strftime('%Y-%m-%d %H:%M:%S'), 0)
+            if not capacity:
+                # Two different reasons an hour is not on offer, and each earns
+                # its own sentence. A live booking on it means she was seconds
+                # late — the common case, a form rendered minutes ago. None at all
+                # means the hour was never for sale: the index does not police
+                # that either (it enforces one booking per seat, not which slots
+                # the boutique sells), so a crafted POST booked 03:00 on a closed
+                # Saturday eight months out and got a confirmation SMS for it.
+                taken_domain = [('modryn_is_booking', '=', True), ('start', '=', start)]
+                # A cancelled booking holds nothing. This guard used to disagree
+                # with _slots(): the freed time was offered on the form and then
+                # rejected here as "just taken", so a cancelled slot could never
+                # be rebooked by anyone — which would also have silently broken
+                # the waitlist.
+                if 'modryn_cancelled_at' in request.env['calendar.event']._fields:
+                    taken_domain.append(('modryn_cancelled_at', '=', False))
+                errors['slot'] = (
+                    _("That time was just taken, please choose another")
+                    if request.env['calendar.event'].sudo().search_count(taken_domain)
+                    else _("That time isn't valid"))
 
         if errors:
             return self._render_form(dress=dress, variant=variant, errors=errors, values=post)
 
         Partner = request.env['res.partner'].sudo()
+        Event = request.env['calendar.event'].sudo()
         vals = {
             'name': (_("Fitting: %s") % dress.name) if dress else (_("Consultation: %s") % name),
             'start': start,
@@ -313,37 +350,80 @@ class ModrynBooking(http.Controller):
         organizer = self._organizer()
         if organizer:
             vals['user_id'] = organizer.id
-        try:
-            # The savepoint is load-bearing, not decoration. Catching the
-            # UniqueViolation turns the losing racer's 500 into a message, but it
-            # does NOT undo the rejected INSERT — and an aborted transaction
-            # fails every query issued after it, including the _slots() read that
-            # re-renders the form below. Same bug floor.py's set_room() already
-            # had to fix.
-            with request.env.cr.savepoint():
-                # The partner belongs INSIDE the savepoint. A savepoint rolls back
-                # only what it wraps, and entering one flushes everything written
-                # before it — so a losing racer's res.partner used to survive the
-                # rollback and commit. One orphan bride per lost race, 44 of them
-                # in the last concurrency run. Before the savepoint existed the
-                # exception took the whole request cursor down and nothing
-                # survived; the fix for the 500 is what let these leak.
-                partner = Partner.search([('phone', '=', phone)], limit=1) or Partner.create({
-                    'name': name, 'phone': phone,
-                })
-                vals['partner_ids'] = [(6, 0, partner.ids)]
-                event = request.env['calendar.event'].sudo().create(vals)
-        except UniqueViolation as exc:
-            # Only OUR index means "slot taken". create() also writes
-            # calendar_attendee and mail_followers, and either can raise
-            # UniqueViolation for reasons no change of time will fix — telling
-            # her to pick another hour would send her round a loop forever while
-            # hiding a real bug. Anything else is a 500, which is honest.
-            if exc.diag.constraint_name != ONE_LIVE_BOOKING_PER_SLOT_INDEX:
-                raise
-            # She lost the slot by microseconds. Deliberately the same sentence
-            # the pre-check gives: which of the two guards caught it is our
-            # problem, not hers.
+
+        # Which rows already hold a seat at this hour. Character for character the
+        # index predicate: search() drops archived rows itself via active_test, so
+        # the seats counted here are exactly the seats Postgres will police.
+        seated_domain = [('modryn_is_booking', '=', True), ('start', '=', start)]
+        if 'modryn_cancelled_at' in Event._fields:
+            seated_domain.append(('modryn_cancelled_at', '=', False))
+
+        event = None
+        # One attempt per seat. The read below is a HINT and nothing more —
+        # between it and the INSERT another bride can take the seat it picked, and
+        # that is precisely what the unique index is for. But losing ONE seat is
+        # not losing the hour while others are free, so recompute and try the next
+        # one; never reuse the seat the violation just rejected, or the retry
+        # loses to the same row forever. Bounded by capacity because that is how
+        # many times it can happen before the hour genuinely is full, and an
+        # unbounded loop under contention would spin instead of answering her.
+        #
+        # The read sits OUTSIDE the savepoint on purpose: it writes nothing, and
+        # bailing out of a savepoint that had already created the partner would
+        # release it rather than roll it back — the orphan-bride bug below, back
+        # by another door.
+        # Seats this transaction has already had refused. Carried in PYTHON on
+        # purpose: Odoo runs every cursor at REPEATABLE READ
+        # (odoo/odoo/sql_db.py:373), so the snapshot was fixed at this request's
+        # first query and re-reading after a violation returns the SAME rows the
+        # first read did. The unique index, by contrast, validates against the
+        # live heap. Without this set the loop would re-pick the seat it just
+        # lost on every attempt, burn all of them, and tell a bride the hour was
+        # full while the seat beside her sat empty.
+        rejected = set()
+        for _attempt in range(capacity):
+            seats = {ev.modryn_slot_seat for ev in Event.search(seated_domain)} | rejected
+            seat = next((s for s in range(capacity) if s not in seats), None)
+            if seat is None:
+                break
+            vals['modryn_slot_seat'] = seat
+            try:
+                # The savepoint is load-bearing, not decoration. Catching the
+                # UniqueViolation turns the losing racer's 500 into a message, but
+                # it does NOT undo the rejected INSERT — and an aborted transaction
+                # fails every query issued after it, including the next attempt's
+                # seat read and the _slots() read that re-renders the form below.
+                # Same bug floor.py's set_room() already had to fix.
+                with request.env.cr.savepoint():
+                    # The partner belongs INSIDE the savepoint. A savepoint rolls
+                    # back only what it wraps, and entering one flushes everything
+                    # written before it — so a losing racer's res.partner used to
+                    # survive the rollback and commit. One orphan bride per lost
+                    # race, 44 of them in the last concurrency run. Before the
+                    # savepoint existed the exception took the whole request cursor
+                    # down and nothing survived; the fix for the 500 is what let
+                    # these leak.
+                    partner = Partner.search([('phone', '=', phone)], limit=1) or Partner.create({
+                        'name': name, 'phone': phone,
+                    })
+                    vals['partner_ids'] = [(6, 0, partner.ids)]
+                    event = Event.create(vals)
+            except UniqueViolation as exc:
+                # Only OUR index means "seat taken". create() also writes
+                # calendar_attendee and mail_followers, and either can raise
+                # UniqueViolation for reasons no retry will ever fix — looping on
+                # those would spin while hiding a real bug. Anything else is a
+                # 500, which is honest.
+                if exc.diag.constraint_name != ONE_LIVE_BOOKING_PER_SLOT_INDEX:
+                    raise
+                rejected.add(vals['modryn_slot_seat'])
+                continue
+            break
+
+        if not event:
+            # Every seat gone — either the read saw it or she lost the last one by
+            # microseconds. Deliberately the same sentence the offer-set check
+            # gives: which of the guards caught it is our problem, not hers.
             errors['slot'] = _("That time was just taken, please choose another")
             return self._render_form(dress=dress, variant=variant, errors=errors, values=post)
         # Tell her it worked, in the language she booked in. Guarded by a

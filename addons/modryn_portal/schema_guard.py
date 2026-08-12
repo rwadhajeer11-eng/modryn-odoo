@@ -54,6 +54,74 @@ REQUIRED_INDEXES = (
     PHONE_DAY_INDEX,
 )
 
+# The slot column that turns the slot index from "one booking per hour" into
+# "capacity bookings per hour". The slot index alone gets a second, stricter
+# check than the two above, and only for this one substring, because it is the
+# one index here whose definition CHANGED under an unchanged name. Existence is
+# no longer proof: a surviving (start) index passes REQUIRED_INDEXES while
+# pinning every window to one fitting — an owner would set capacity to 2, see it
+# saved, and watch the second bride be told the hour was just taken.
+SEAT_COLUMN = 'modryn_slot_seat'
+
+
+def _ensure_slot_seat(cr):
+    """Make `modryn_slot_seat` a filled, NOT NULL column before the index needs it.
+
+    The column is modryn_booking's field, not this module's, so on a plain
+    `-u modryn_portal` that module's _auto_init never runs and the column simply
+    would not exist when the widened index is applied. Creating it here makes the
+    upgrade self-sufficient whatever set of modules the deploy happens to name;
+    _auto_init skips columns that already exist (fields.py:update_db_column), so
+    a run that DOES include modryn_booking is unaffected.
+
+    Raw DDL rather than sql.create_column() because that helper writes no DEFAULT
+    for anything but a boolean, and this field is `required=True`: the rows have
+    to be filled before NOT NULL can hold. Every live booking today is unique on
+    `start`, so seat 0 for all of them satisfies the new index by construction;
+    cancelled and archived rows sit outside its predicate and cannot collide.
+    """
+    if sql.column_exists(cr, 'calendar_event', 'modryn_slot_seat'):
+        # Still backfill: an earlier partial run may have added the column
+        # without filling it, and one NULL is enough to fail SET NOT NULL.
+        cr.execute("UPDATE calendar_event SET modryn_slot_seat = 0 "
+                   "WHERE modryn_slot_seat IS NULL")
+        # And still set the DEFAULT, so an INSTALL ends with the same schema an
+        # UPGRADE does. On the install path modryn_booking's _auto_init got here
+        # first, and sql.create_column() writes a DEFAULT for booleans only — so
+        # without this the two paths differ in exactly the way that makes a raw
+        # SQL INSERT omitting the column succeed on one and fail on the other.
+        # verify.sh plants rows that way.
+        cr.execute('ALTER TABLE calendar_event '
+                   'ALTER COLUMN modryn_slot_seat SET DEFAULT 0')
+        return
+    cr.execute('ALTER TABLE calendar_event '
+               'ADD COLUMN modryn_slot_seat integer NOT NULL DEFAULT 0')
+    cr.execute("COMMENT ON COLUMN calendar_event.modryn_slot_seat IS 'Slot seat'")
+
+
+def _drop_stale_slot_index(cr):
+    """Drop a slot index that predates the seat column, so it gets rebuilt.
+
+    Odoo usually does this itself: Index.apply_to_database drops and recreates
+    when the stored COMMENT differs from the new definition. But the same method
+    returns early — keeping whatever is there — when the index carries NO comment
+    at all, because that is how support hand-tunes an index
+    (`if db_comment == definition or (not db_comment and db_definition)`,
+    odoo/odoo/orm/table_objects.py). An index built by anything other than this
+    model therefore survives the widening under its own name, `assert_indexes`
+    finds it present, and the deploy reports success while every window stays
+    pinned to one fitting.
+
+    Narrow on purpose: only when the definition is missing the seat column, so a
+    correctly-widened index (comment or not) is never dropped and rebuilt for
+    nothing.
+    """
+    definition, _comment = sql.index_definition(cr, ONE_LIVE_BOOKING_PER_SLOT_INDEX)
+    if definition and SEAT_COLUMN not in definition:
+        sql.drop_index(cr, ONE_LIVE_BOOKING_PER_SLOT_INDEX, 'calendar_event')
+        _logger.info("modryn_portal: dropped pre-capacity %s so it is rebuilt over "
+                     "(start, %s)", ONE_LIVE_BOOKING_PER_SLOT_INDEX, SEAT_COLUMN)
+
 
 def _dedupe_live_bookings(cr):
     if not sql.column_exists(cr, 'calendar_event', 'modryn_is_booking'):
@@ -75,6 +143,14 @@ def _dedupe_live_bookings(cr):
     # break on id so two rows created in the same transaction resolve the same
     # way on every tenant and on a re-run.
     #
+    # Partitioned by (start, seat), not by start alone — the pair IS the new
+    # uniqueness. On every database that exists today the two are the same query,
+    # because _ensure_slot_seat() has just put every row on seat 0; they diverge
+    # the moment a window takes two fittings, and partitioning by start alone
+    # would then cancel the perfectly legal second booking of the hour. This is
+    # not a re-run guard, it is the difference between cleaning conflicts and
+    # manufacturing them.
+    #
     # Cancelled, never deleted — same rule modryn_cancel() follows, and the same
     # two fields, so the losing rows stay in the customer's history and on the
     # boutique's board as booked-and-dropped. 'boutique' because no customer
@@ -82,7 +158,7 @@ def _dedupe_live_bookings(cr):
     # waitlist: the hour is not free, the winning booking still holds it.
     cr.execute("""
         WITH ranked AS (
-            SELECT id, row_number() OVER (PARTITION BY "start"
+            SELECT id, row_number() OVER (PARTITION BY "start", modryn_slot_seat
                                           ORDER BY create_date, id) AS rn
             FROM calendar_event
             WHERE %s
@@ -145,8 +221,39 @@ def _dedupe_standing_offers(cr):
             ', '.join('%s@%s' % (i, d) for i, d in losers))
 
 
+def _ensure_window_capacity(cr):
+    """Make `capacity` exist on modryn_opening_hours before anything reads it.
+
+    Same reasoning as the seat column and the same blind spot: `capacity` is
+    modryn_booking's field, and Odoo marks only DEPENDENTS for upgrade, never
+    dependencies (ir_module.button_upgrade). So `-u modryn_portal` alone — a
+    perfectly ordinary deploy line, and the one _ensure_slot_seat exists to
+    survive — would leave this column missing while every other part of the
+    feature lands, and /book, /claim and /manage/hours would all 500 on a model
+    they cannot read.
+
+    Guarded on the table existing: modryn_booking could in principle not be
+    installed yet on a database this hook runs against, and a missing table is
+    that module's business, not ours.
+    """
+    if not sql.table_exists(cr, 'modryn_opening_hours'):
+        return
+    if not sql.column_exists(cr, 'modryn_opening_hours', 'capacity'):
+        cr.execute('ALTER TABLE modryn_opening_hours '
+                   'ADD COLUMN capacity integer NOT NULL DEFAULT 1')
+        return
+    cr.execute("UPDATE modryn_opening_hours SET capacity = 1 WHERE capacity IS NULL")
+    cr.execute('ALTER TABLE modryn_opening_hours ALTER COLUMN capacity SET DEFAULT 1')
+
+
 def dedupe(cr):
-    """Clear the rows that would make a unique index un-buildable."""
+    """Get the table into a shape the unique indexes can be built over."""
+    # Order matters: the seat column has to exist and be filled before anything
+    # partitions by it, and the stale index has to go before _auto_init decides
+    # it is entitled to keep it.
+    _ensure_slot_seat(cr)
+    _ensure_window_capacity(cr)
+    _drop_stale_slot_index(cr)
     _dedupe_live_bookings(cr)
     _dedupe_standing_offers(cr)
 
@@ -160,6 +267,14 @@ def assert_indexes(cr):
             "guard against selling one fitting room twice; a tenant running without "
             "them is not safe to serve. Check the _schema logger for the CREATE that "
             "failed, clean the conflicting rows, and re-run." % ', '.join(missing))
+    definition, _comment = sql.index_definition(cr, ONE_LIVE_BOOKING_PER_SLOT_INDEX)
+    if SEAT_COLUMN not in (definition or ''):
+        raise RuntimeError(
+            "modryn_portal: %s exists but does not key on %s — it is the "
+            "pre-capacity index, which admits exactly one booking per hour. Every "
+            "opening-hours window would behave as capacity 1 while the owner's "
+            "screen says two. Drop it and re-run the upgrade. Found: %s"
+            % (ONE_LIVE_BOOKING_PER_SLOT_INDEX, SEAT_COLUMN, definition))
 
 
 def pre_init_hook(env):

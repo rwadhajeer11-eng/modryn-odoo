@@ -31,9 +31,9 @@ listed both as work to do; that is what the branch reconciliation on 2026-08-11 
 | 1 | Record the SMS-delivery evidence | — | S | todo | — |
 | 2 | Opening hours as data (`/manage/hours`) | [`../specs/avail-2-opening-hours.md`](../specs/avail-2-opening-hours.md) | M | ✅ done | 0 |
 | 3 | Blackout dates and holidays | — | S | ✅ done | 2 |
-| 4 | Appointment types: duration + capacity | — | M | todo | 2 |
+| 4 | Per-window capacity (duration deferred) | — | M | ✅ done | 2 |
 | 5 | The roster means something on the floor | — | M | ✅ done | 0 |
-| 6 | The roster feeds availability | — | M | todo | 2, 4, 5 |
+| 6 | The roster feeds availability | — | M | building | 2, 4, 5 |
 
 Sizes: **S** ≤ half a day · **M** ≤ 2 days · **L** ≤ a week.
 

@@ -2,8 +2,12 @@ from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
 
 # One slot length for the whole boutique, deliberately not a field. Per-
-# appointment-type duration and capacity are a later feature; two competing
-# sources of slot length is the bug this model exists to remove, not add.
+# appointment-type DURATION is still a later feature and stays out on purpose:
+# a 90-minute fitting overlaps the next hour, and no unique index on a start
+# time can express that — it needs a tstzrange EXCLUDE constraint, btree_gist,
+# and a grid that is no longer uniform. Half of that ships a page that offers
+# 11:00 while a 90-minute fitting is running through it. Capacity is the part
+# the index can actually enforce, so capacity is the part that shipped.
 SLOT_MINUTES = 60
 
 # The lattice that used to be a constant in two controllers, reproduced exactly
@@ -81,6 +85,16 @@ class ModrynOpeningHours(models.Model):
     weekday = fields.Selection(selection=weekday_selection, required=True, default='6')
     start_hour = fields.Float(default=10.0, required=True)
     end_hour = fields.Float(default=18.0, required=True)
+    # Capacity belongs to the WINDOW rather than to a new appointment-type model
+    # because that is how a boutique already says it: "Thursday evening we can
+    # take two". It also leaves room for min(capacity, rostered stylists) later
+    # without another table.
+    capacity = fields.Integer(
+        string="Fittings at once",
+        default=1,
+        required=True,
+        help="How many customers this boutique can take at the same time in this window.",
+    )
     active = fields.Boolean(default=True)
 
     # An archived window keeps its start time reserved, so switching a window
@@ -97,40 +111,70 @@ class ModrynOpeningHours(models.Model):
             if window.end_hour <= window.start_hour:
                 raise ValidationError(_("A boutique has to close after it opens."))
 
+    @api.constrains('capacity')
+    def _check_capacity(self):
+        for window in self:
+            if window.capacity < 1:
+                # Zero is not "open but unbookable" — that is what archiving the
+                # window or adding a closure says, and both of those stay visible
+                # as a decision. A zero here would read as an open shop that
+                # refuses every hour for no stated reason.
+                raise ValidationError(
+                    _("An open window has to take at least one fitting."))
+
+    def _capacities(self, domain):
+        """{weekday_str: {hour_float: capacity_int}} for the matching windows.
+
+        The one place the window arithmetic happens; the three public methods
+        below are the shapes their callers want, not three copies of this.
+
+        sudo() because the public /book page reads this as the anonymous website
+        user: opening hours are printed on the shop door, there is nothing here
+        to leak, and the alternative is a 500 on the storefront.
+        """
+        by_day = {}
+        # search() drops archived rows by itself (active_test), which is how an
+        # owner switches a window off without losing it.
+        for window in self.sudo().search(domain):
+            hours = by_day.setdefault(window.weekday, {})
+            for hour in _starts(window.start_hour, window.end_hour):
+                # Overlapping windows on one weekday: the roomier one wins.
+                # max() rather than last-write, so the answer does not depend on
+                # _order — and so an hour is never offered twice.
+                hours[hour] = max(hours.get(hour, 0), window.capacity)
+        # Sorted keys, because callers render these in order and several of them
+        # iterate the dict directly rather than sorting it themselves.
+        return {day: dict(sorted(hours.items())) for day, hours in by_day.items()}
+
     @api.model
     def modryn_hours_on(self, day_date):
         """The local wall-clock hours a fitting may START at on that date.
 
         An empty list means shut, and that empty list IS the weekday filter — a
         caller looping over this cannot offer a Friday by forgetting to check.
-
-        sudo() because the public /book page reads this as the anonymous website
-        user: opening hours are printed on the shop door, there is nothing here
-        to leak, and the alternative is a 500 on the storefront.
         """
-        starts = set()
-        # search() drops archived rows by itself (active_test), which is how an
-        # owner switches a window off without losing it.
-        for window in self.sudo().search([('weekday', '=', str(day_date.weekday()))]):
-            starts.update(_starts(window.start_hour, window.end_hour))
-        # Sorted, and a set first: overlapping windows on one weekday must not
-        # offer the same hour twice.
-        return sorted(starts)
+        return sorted(self.modryn_capacities_on(day_date))
+
+    @api.model
+    def modryn_capacities_on(self, day_date):
+        """{hour_float: capacity_int} for that date. Empty dict means shut."""
+        weekday = str(day_date.weekday())
+        return self._capacities([('weekday', '=', weekday)]).get(weekday, {})
 
     @api.model
     def modryn_hours_by_weekday(self):
-        """Every weekday's slot starts, in ONE read. Keys are weekday strings.
+        """Every weekday's slot starts AND capacities, in ONE read.
 
-        /book renders a fortnight, so asking modryn_hours_on() per day fired
-        fourteen queries at a five-row table on the boutique's busiest public
-        page — and three times that on a failed submit, which re-renders. The
-        arithmetic is identical; only the number of round trips differs.
+        Keys are weekday strings; each value is {hour: capacity}. Iterating a
+        value yields the hours in order, which is what it yielded when this
+        returned plain lists.
+
+        /book renders a fortnight, so asking modryn_capacities_on() per day
+        fired fourteen queries at a five-row table on the boutique's busiest
+        public page — and three times that on a failed submit, which re-renders.
+        The arithmetic is identical; only the number of round trips differs.
         """
-        by_day = {}
-        for window in self.sudo().search([]):
-            by_day.setdefault(window.weekday, set()).update(
-                _starts(window.start_hour, window.end_hour))
-        return {day: sorted(starts) for day, starts in by_day.items()}
+        return self._capacities([])
 
     @api.model
     def modryn_hour_label(self, value):

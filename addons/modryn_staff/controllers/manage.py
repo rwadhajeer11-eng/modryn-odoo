@@ -9,6 +9,9 @@ from odoo.http import request
 from odoo.tools import mute_logger
 
 MIN_PASSWORD = 8
+# The most fittings an owner can claim to run in one hour. Not a business rule
+# so much as a typo guard — see _to_capacity.
+MAX_CAPACITY = 20
 
 # modryn.opening.hours stores Python weekday() numbers as strings, which start on
 # Monday. The Israeli retail week starts on Sunday, so the page reads in this
@@ -36,6 +39,29 @@ def _to_date(raw):
         return fields.Date.to_date(raw)
     except (TypeError, ValueError):
         return None
+
+
+def _to_capacity(raw):
+    """"2" -> 2. None when the field is not a whole number of fittings.
+
+    Empty means one, so an owner who never looks at the field keeps the
+    behaviour the boutique had before capacity existed. Zero is refused rather
+    than accepted as "open but unbookable" — closing the window or adding a
+    closure is how a day is taken off the page, and two ways to say it is how
+    they drift apart.
+    """
+    if raw is None or not str(raw).strip():
+        return 1
+    try:
+        value = int(str(raw).strip())
+    except (TypeError, ValueError):
+        return None
+    # Capped as well as floored. This box sits between two time boxes, so a
+    # mistyped "1000" is a live possibility — and both submit paths size a retry
+    # loop and a seat scan directly from this number, so an absurd value turns a
+    # typo into per-request work no bride benefits from. No boutique fits twenty
+    # brides in an hour.
+    return value if 1 <= value <= MAX_CAPACITY else None
 
 
 def _levels():
@@ -348,6 +374,7 @@ class ModrynManage(http.Controller):
             'day': labels.get(h.weekday, h.weekday),
             'opens': Hours.modryn_hour_label(h.start_hour),
             'closes': Hours.modryn_hour_label(h.end_hour),
+            'capacity': h.capacity,
             'active': h.active,
         } for h in windows]
 
@@ -396,6 +423,13 @@ class ModrynManage(http.Controller):
         if closes <= opens:
             return request.redirect(
                 '/manage/hours?error=%s' % _("A day has to close after it opens"))
+        capacity = _to_capacity(post.get('capacity'))
+        # Checked here as well as by the model's @api.constrains, for the reason
+        # closure_new() checks its dates: the owner reads a sentence, not a
+        # traceback.
+        if capacity is None:
+            return request.redirect('/manage/hours?error=%s' % _(
+                "Please say how many fittings you can take at once — one or more"))
 
         taken = _("You already open at that time on that day")
         Hours = self._hours()
@@ -407,9 +441,38 @@ class ModrynManage(http.Controller):
             # poisoning the request's transaction.
             with request.env.cr.savepoint(), mute_logger('odoo.sql_db'):
                 Hours.create({
-                    'weekday': weekday, 'start_hour': opens, 'end_hour': closes})
+                    'weekday': weekday, 'start_hour': opens, 'end_hour': closes,
+                    'capacity': capacity})
         except (ValidationError, IntegrityError):
             return request.redirect('/manage/hours?error=%s' % taken)
+        return request.redirect('/manage/hours')
+
+    @http.route('/manage/hours/capacity/<int:hours_id>', type='http', auth='user',
+                website=True, methods=['POST'], csrf=True, sitemap=False)
+    def hours_capacity(self, hours_id, **post):
+        """Change how many fittings an EXISTING window takes.
+
+        Without this the feature is unreachable on every boutique that exists:
+        the five seeded windows are all capacity 1, hours_new refuses a duplicate
+        (weekday, start_hour) and the model constrains it too — counting archived
+        rows — so a window can never be re-created to carry a different number.
+        A one-field POST rather than a general edit form: capacity is the only
+        thing about a window that a boutique changes week to week.
+        """
+        if not self._require_owner():
+            return request.not_found()
+        window = self._hours().browse(hours_id).exists()
+        if not window:
+            return request.not_found()
+        capacity = _to_capacity(post.get('capacity'))
+        if capacity is None:
+            return request.redirect('/manage/hours?error=%s' % (
+                _("Fittings at once has to be a whole number between 1 and %d.") % MAX_CAPACITY))
+        # Lowering it below what is already booked cancels nothing — those
+        # fittings stand, and the hour simply stops being offered until they
+        # drain. Refusing here would strand an owner who has just lost a
+        # fitting room and cannot say so.
+        window.capacity = capacity
         return request.redirect('/manage/hours')
 
     @http.route('/manage/hours/archive/<int:hours_id>', type='http', auth='user',

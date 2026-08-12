@@ -627,9 +627,14 @@ done
 # absent AND the race has already fired. The WHERE must match the index predicate
 # character for character — including `active is true` — or this reports conflicts
 # the index does not police and misses the ones it does.
+#
+# GROUPED BY (start, modryn_slot_seat), because that is what the index keys on
+# now. Grouping by start alone would call the second bride of a capacity-2 hour a
+# double-booking and fail the suite the first time a boutique used the feature —
+# the check would be policing a rule the product deliberately dropped.
 for db in $TENANTS; do
-  DBL=$(psql -d $db -tAc "select count(*) from (select start from calendar_event where modryn_is_booking is true and modryn_cancelled_at is null and active is true group by start having count(*) > 1) x")
-  [ "${DBL:-0}" = "0" ] && ok "$db: no hour holds two live bookings" || bad "$db double-booking" "$DBL slots hold two brides"
+  DBL=$(psql -d $db -tAc "select count(*) from (select start, modryn_slot_seat from calendar_event where modryn_is_booking is true and modryn_cancelled_at is null and active is true group by start, modryn_slot_seat having count(*) > 1) x")
+  [ "${DBL:-0}" = "0" ] && ok "$db: no seat holds two live bookings" || bad "$db double-booking" "$DBL seats hold two brides"
 done
 # The index NAME is the discriminator three separate `except UniqueViolation`
 # handlers compare against. If a copy drifts from what Postgres actually reports,
@@ -1135,10 +1140,15 @@ grep -q "from .schema_guard import pre_init_hook, post_init_hook" addons/modryn_
 COPIES=$(grep -rl 'row_number() OVER (PARTITION BY "start"' addons/modryn_portal/ --include='*.py' | wc -l | tr -d ' ')
 [ "$COPIES" = "1" ] && ok "the dedupe SQL exists once, in schema_guard" \
   || bad "duplicated dedupe" "$COPIES copies of the partition query — one will be updated and the other will not"
+# Follow the manifest rather than a frozen version string. This check was pinned
+# to 19.0.1.3.0, so the moment a newer migration was added it kept passing by
+# inspecting a directory that no longer runs anywhere — every database already
+# records 1.3.0 — while the pair that DOES run went unread.
+PORTAL_MIG_V=$(basename "$(ls -d addons/modryn_portal/migrations/19.0.* | sort -V | tail -1)")
 for f in pre-migrate post-migrate; do
   grep -q "from odoo.addons.modryn_portal.schema_guard import" \
-    addons/modryn_portal/migrations/19.0.1.3.0/$f.py 2>/dev/null \
-    && ok "migrations/19.0.1.3.0/$f.py delegates to schema_guard" \
+    addons/modryn_portal/migrations/$PORTAL_MIG_V/$f.py 2>/dev/null \
+    && ok "migrations/$PORTAL_MIG_V/$f.py delegates to schema_guard" \
     || bad "$f not shared" "the upgrade path is running its own SQL again"
 done
 
@@ -1443,6 +1453,64 @@ SQL
 [ "$SEEN" = "14" ] && [ -z "$MISSING$OFFERED" ] \
   && ok "/book renders exactly the 14 days the table opens and no closure shuts" \
   || bad "/book grid does not follow the tables" "$SEEN of 14 days derived; open days missing from the page:${MISSING:- none}; days shut by weekday or by closure and offered anyway:${OFFERED:- none}"
+
+# ---- more than one fitting in the same hour ---------------------------------
+# Capacity is a column on the opening-hours WINDOW, spent through a seat number
+# on the booking, and the unique index moves from (start) to (start, seat).
+# DURATION is deliberately not part of this: a 90-minute fitting overlapping the
+# next hour cannot be expressed by ANY unique index — that needs a tstzrange
+# EXCLUDE constraint, btree_gist, and a non-uniform grid. Capacity is the piece
+# the index actually blocks, so capacity is the piece that ships.
+#
+# modryn_template is in the loop for section 17's reason: an index that never
+# changed in the golden database never changes in any boutique cloned from it.
+for db in $TENANTS modryn_template; do
+  SEAT=$(psql -d "$db" -tAc "select count(*) from information_schema.columns where table_name='calendar_event' and column_name='modryn_slot_seat'" 2>/dev/null)
+  [ "${SEAT:-0}" = "1" ] && ok "$db: calendar_event.modryn_slot_seat exists" \
+    || bad "$db: modryn_slot_seat column" "absent — the unique index has nothing to seat a second bride on, so this boutique is still one fitting an hour"
+  # THE check the happy path cannot make. Section 17 asserts this index by NAME,
+  # and an index left on (start) alone passes that, passes every booking test in
+  # this suite, and pins capacity at 1 while /manage/hours says two. Read the
+  # definition. `start` first, so a seat-only index is caught too.
+  DEF=$(psql -d "$db" -tAc "select indexdef from pg_indexes where indexname='calendar_event_modryn_one_live_booking_per_slot'" 2>/dev/null)
+  printf '%s' "$DEF" | grep -qE 'btree \("?start"?, *modryn_slot_seat\)' \
+    && ok "$db: the one-booking index is on (start, modryn_slot_seat)" \
+    || bad "$db: one-booking index definition" "reads '${DEF:-<no such index>}' — it never gained the seat column, so every window is capped at one fitting whatever the owner typed"
+  # Every window still takes one at a time, which is why every booking assertion
+  # above stays green unedited. `is distinct from` so a NULL — i.e. the column
+  # added without a default — is counted rather than silently skipped.
+  CAPS=$(psql -d "$db" -tAc "select count(*) from modryn_opening_hours where capacity is distinct from 1" 2>/dev/null)
+  [ "${CAPS:-x}" = "0" ] && ok "$db: every seeded window takes one fitting at a time" \
+    || bad "$db: window capacity default" "${CAPS:-<no capacity column>} window(s) are not the default 1 — the week the rest of this suite asserts is not the week /book now draws"
+done
+# ...and none of the three checks above proves the index still REFUSES anything.
+# A unique index that stopped enforcing reads identically in pg_indexes. Plant the
+# clash, inside a rolled-back transaction, and require the database to have
+# refused it — and in the same breath require a DIFFERENT seat at that same
+# instant to be ACCEPTED, which is the half that catches an old (start)-only
+# index surviving the migration under another name. Both halves, or nothing:
+# `count(*) = 2` so one of the two passing alone cannot print green.
+#
+# ON CONFLICT DO NOTHING rather than an exception handler: a raw unique violation
+# aborts the transaction and detects() would read the abort as a failed seed.
+# Untargeted, so it arbitrates against whatever unique indexes the table really
+# has — which is exactly the question being asked.
+SEAT_ROW="INSERT INTO calendar_event (name, show_as, start, stop, active, modryn_is_booking, modryn_slot_seat, allday, create_uid, write_uid, create_date, write_date) VALUES"
+for db in $TENANTS; do
+  detects "$db" "a second bride on a seat that is already taken" \
+    "$SEAT_ROW ('planted-seat-0','busy', now() - interval '2 days', now() - interval '2 days' + interval '1 hour', true, true, 0, false, 1, 1, now(), now());
+     CREATE TEMP TABLE probe (label text, inserted int);
+     WITH again AS ($SEAT_ROW ('planted-seat-0-again','busy', now() - interval '2 days', now() - interval '2 days' + interval '1 hour', true, true, 0, false, 1, 1, now(), now()) ON CONFLICT DO NOTHING RETURNING 1)
+     INSERT INTO probe SELECT 'same_seat', count(*)::int FROM again;
+     WITH other AS ($SEAT_ROW ('planted-seat-1','busy', now() - interval '2 days', now() - interval '2 days' + interval '1 hour', true, true, 1, false, 1, 1, now(), now()) ON CONFLICT DO NOTHING RETURNING 1)
+     INSERT INTO probe SELECT 'other_seat', count(*)::int FROM other;" \
+    "SELECT (count(*) = 2)::int FROM probe WHERE (label = 'same_seat' AND inserted = 0) OR (label = 'other_seat' AND inserted = 1);"
+done
+# modryn_portal's manifest-vs-migrations eligibility is NOT re-checked here. It is
+# already section 19, which additionally compares each tenant's RECORDED version —
+# the state that decides whether the migration can ever run. A second, weaker copy
+# of that check in this section would be one more thing to keep in step, and the
+# suite has a comment further up about exactly that kind of check.
 
 printf "\n\033[1m%d passed, %d failed, %d skipped\033[0m\n" "$PASS" "$FAIL" "$SKIP"
 [ "$FAIL" -eq 0 ] || exit 1

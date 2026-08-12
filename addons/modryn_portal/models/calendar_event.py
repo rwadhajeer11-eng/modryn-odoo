@@ -51,9 +51,22 @@ class CalendarEvent(models.Model):
     # It lives here rather than in modryn_booking because this is the only class
     # where both columns are in scope: modryn_is_booking arrives with
     # modryn_booking, which modryn_portal depends on.
+    #
+    # modryn_slot_seat is the second key column and it is what makes capacity a
+    # number the owner chooses instead of a constant nobody can see. The seat is
+    # 0-based and bounded by the window's capacity, so a window taking two
+    # fittings admits exactly seats 0 and 1 at that start and refuses a third —
+    # at capacity 1 the index is (start, 0) for every row, i.e. exactly the
+    # (start) index it replaces. Per-appointment-type DURATION is deliberately
+    # NOT part of this: an overlapping 90-minute fitting cannot be expressed by
+    # any unique index and needs a tstzrange EXCLUDE constraint over btree_gist.
+    #
+    # The attribute name is unchanged on purpose — the index NAME derives from
+    # it, and that name is the literal three separate `except UniqueViolation`
+    # handlers compare `exc.diag.constraint_name` against.
     _modryn_one_live_booking_per_slot = models.UniqueIndex(
-        "(start) WHERE modryn_is_booking IS TRUE AND modryn_cancelled_at IS NULL"
-        " AND active IS TRUE",
+        "(start, modryn_slot_seat) WHERE modryn_is_booking IS TRUE"
+        " AND modryn_cancelled_at IS NULL AND active IS TRUE",
         "That time was just taken, please choose another",
     )
 

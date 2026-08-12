@@ -21,14 +21,20 @@ cron woken via _trigger(), so a degraded Twilio can no longer hold an HTTP worke
 seconds per booking. The login code stays synchronous — she is watching the screen for it.
 """,
     'category': 'Website',
-    # 1.3.0, not 1.2.0: bella and noga are BOTH already recorded at 19.0.1.2.0
-    # (`select latest_version from ir_module_module where name='modryn_portal'`),
-    # and Odoo only runs a migration when the manifest version rises PAST the
-    # version in ir_module_module. A migrations/19.0.1.2.0/ is a no-op on the only
-    # two tenants that exist — which is why the old one was deleted rather than
-    # kept: a tenant still below 1.2.0 reaches the same dedupe through 1.3.0.
-    'version': '19.0.1.3.0',
-    # migrations/19.0.1.3.0/ covers `-u`. These two cover `-i`, which is the path
+    # 1.4.0, because bella, noga AND modryn_template are all recorded at
+    # 19.0.1.3.0 (`select latest_version from ir_module_module where
+    # name='modryn_portal'`) and Odoo only runs a migration when the manifest
+    # version rises PAST the version in ir_module_module. Re-shipping 1.3.0 would
+    # be a no-op on every database that exists, and the slot index would keep its
+    # old (start) definition on all three.
+    #
+    # 1.3.0's directory STAYS, unlike 1.2.0's, which was deleted. Odoo runs every
+    # eligible version in order, so a database still below 1.3.0 runs both — and
+    # both delegate to the same two schema_guard entry points, which are
+    # idempotent by construction. Deleting it would buy nothing and lose the
+    # record of when the dedupe first shipped.
+    'version': '19.0.1.4.0',
+    # migrations/19.0.1.4.0/ covers `-u`. These two cover `-i`, which is the path
     # every boutique cloned from modryn_template actually takes. See schema_guard.
     'pre_init_hook': 'pre_init_hook',
     'post_init_hook': 'post_init_hook',

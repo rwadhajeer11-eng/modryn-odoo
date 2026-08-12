@@ -55,10 +55,14 @@ the booking grid and the waitlist claim page, seeded so the old Sunday–Thursda
 lattice survives unchanged. That also closed a latent bug: the waitlist copy of the grid had no
 weekday filter at all, so a claim link could offer a Friday.
 
-Still missing, in the order they should land: **blackout dates and holidays** (S), **per-type
-durations and per-slot capacity** (M — the only piece that touches the schema, since the partial
-unique index on `start` alone hard-wires capacity to 1), and **per-staff calendars**, which is
-where item 3 feeds in.
+**Blackout dates and per-window capacity are done too.** The partial unique index now keys on
+`(start, modryn_slot_seat)`, so a window can take more than one fitting an hour and Postgres —
+not Python — still decides who gets the last seat.
+
+Still missing: **per-appointment-type duration**, and **per-staff calendars**. Duration is the
+harder half and was deliberately not attempted: a 90-minute fitting overlapping an adjacent
+60-minute slot cannot be expressed by any unique index. It needs a `tstzrange` EXCLUDE constraint
+and `btree_gist`, plus a non-uniform grid — a different feature wearing the same name.
 
 Still the largest piece of remaining work and the one Odoo Enterprise's `appointment` module
 would most plausibly halve.

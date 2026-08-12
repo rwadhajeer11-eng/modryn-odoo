@@ -271,7 +271,9 @@
             <p class="text-muted mb-4">
                 The hours the boutique takes fittings. This is exactly what the booking
                 page offers — change it here and the next customer sees the new times.
-                A day can have two windows if you close for the afternoon.
+                A day can have two windows if you close for the afternoon, and if
+                two brides can be in at the same hour, say so — the booking page
+                will offer that hour twice.
             </p>
 
             <div t-if="error" class="modryn_field_error mb-3" role="alert" t-out="error"/>
@@ -288,6 +290,17 @@
                      never has to think of half past ten as 10.5. -->
                 <input type="time" name="opens" class="form-control w-auto" dir="ltr" value="10:00"/>
                 <input type="time" name="closes" class="form-control w-auto" dir="ltr" value="18:00"/>
+                <!-- Spelt out, unlike the two time boxes: a bare number next to a
+                     clock reads as minutes. Defaulted to one so an owner who
+                     ignores it keeps the week she already had. min="1" is the
+                     browser's half of the check — the route re-checks it, because
+                     a hand-made POST is not obliged to obey an attribute. -->
+                <label class="d-flex align-items-center gap-2 mb-0" for="capacity">
+                    <span class="text-muted">How many fittings at once</span>
+                    <input type="number" id="capacity" name="capacity" min="1" step="1"
+                           value="1" dir="ltr" class="form-control w-auto"
+                           style="max-width: 5.5rem;"/>
+                </label>
                 <button type="submit" class="btn btn-primary">Add</button>
             </form>
 
@@ -297,7 +310,7 @@
 
             <table t-if="hours" class="table modryn_table align-middle" style="max-width: 640px;">
                 <thead>
-                    <tr><th>Day</th><th>Opens</th><th>Closes</th><th/></tr>
+                    <tr><th>Day</th><th>Opens</th><th>Closes</th><th>At once</th><th/></tr>
                 </thead>
                 <tbody>
                     <tr t-foreach="hours" t-as="h"
@@ -305,6 +318,21 @@
                         <td t-out="h['day']"/>
                         <td dir="ltr" t-out="h['opens']"/>
                         <td dir="ltr" t-out="h['closes']"/>
+                        <!-- Editable in place. Every window a boutique owns was
+                             seeded at one fitting, and a window's day and start
+                             time cannot be re-used, so a read-only cell here
+                             would mean the number could never be corrected. -->
+                        <td dir="ltr">
+                            <form t-attf-action="/manage/hours/capacity/#{h['id']}" method="post"
+                                  class="d-flex align-items-center gap-1">
+                                <input type="hidden" name="csrf_token"
+                                       t-att-value="request.csrf_token()"/>
+                                <input type="number" name="capacity" min="1" max="20" step="1"
+                                       class="form-control form-control-sm" style="width: 4.5rem"
+                                       t-att-value="h['capacity']"/>
+                                <button type="submit" class="btn btn-sm btn-outline-dark">Save</button>
+                            </form>
+                        </td>
                         <td class="text-end">
                             <form t-attf-action="/manage/hours/archive/#{h['id']}" method="post"
                                   class="d-inline">

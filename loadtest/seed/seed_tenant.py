@@ -292,7 +292,9 @@ open_days = []          # [(date, [utc slot, ...]), ...] in calendar order
 by_weekday = env['modryn.opening.hours'].sudo().modryn_hours_by_weekday()
 for offset in range(2, DAYS_AHEAD + 1):
     day = (now_local + timedelta(days=offset)).date()
-    hours = by_weekday.get(str(day.weekday()), [])
+    # {hour: capacity} now, and iterating it yields the hours — which is all this
+    # loop wants. The seats are ignored on purpose; see the FULL_DAYS note below.
+    hours = by_weekday.get(str(day.weekday()), {})
     if not hours:
         continue
     slots = []
@@ -331,6 +333,13 @@ grid = [slot for _day, slots in open_days for slot in slots]
 # weekday, same 10:00-17:00 hours, same exact hour — so scripts/verify.sh
 # §"unoffered booking" still passes: every row is one the server itself would
 # have offered.
+#
+# ponytail: one booking per slot fills a day only while every window seats one,
+# which is the default and what every fixture ships with. Raise a window's
+# capacity on a load tenant and these days stop being full — /book renders a time
+# picker instead of the waitlist form and the branch silently leaves the run
+# again. Fix when a fixture needs capacity: book each full-day slot `capacity`
+# times, on seats 0..capacity-1.
 FULL_DAYS = int(os.environ.get('MODRYN_FULL_DAYS', 1))
 
 if FULL_DAYS < 0:
@@ -372,9 +381,11 @@ Variant = env['product.product'].sudo()
 chosen = full_slots + random.sample(free_grid, BOOKINGS)
 bookings_made = 0
 for n, start in enumerate(sorted(chosen)):
-    # The unique index is on `start` alone for live bookings, so a re-run must not
-    # try the same hour twice — and an hour a load run already booked is equally
-    # off limits.
+    # The unique index is on (start, seat) for live bookings, and this seeder only
+    # ever writes seat 0, so a re-run must not try the same hour twice — and an
+    # hour a load run already booked is equally off limits. Conservative once a
+    # window seats more than one: it skips an hour that still has room, which
+    # costs a booking and never a collision.
     if Event.search_count([('modryn_is_booking', '=', True), ('start', '=', start),
                            ('modryn_cancelled_at', '=', False)]):
         continue

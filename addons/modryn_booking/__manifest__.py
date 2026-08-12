@@ -13,8 +13,20 @@ holds one row per open window, several rows per weekday where the shop shuts for
 the afternoon, and no row at all on a day it is closed. It lives here rather than
 in modryn_staff so that the portal can read it too.
 
+Each window also carries a CAPACITY — how many fittings the boutique can run at
+once in that window. A booking takes a seat (0 .. capacity-1) and modryn_portal's
+unique index keys on (start, seat), so it is Postgres, not a controller's
+read-then-write, that decides who gets the last place. At capacity 1 that index
+is exactly as strict as the (start) index it replaces.
+
+Per-appointment-type DURATION is deliberately still out, and not out of laziness:
+a 90-minute fitting overlaps the following hour, and no unique index on a start
+time can express that. It needs a tstzrange EXCLUDE constraint over btree_gist and
+a grid that is no longer uniform. Shipping half of it means offering 11:00 while a
+90-minute fitting runs through it, which is worse than not offering it at all.
+
 Deliberately NOT in scope for the PoC (each is a Phase-2 line item):
-  - per-window capacity and per-appointment-type duration
+  - per-appointment-type duration (see above)
   - phone OTP verification
   - deposit capture through an Israeli PSP
 """,
