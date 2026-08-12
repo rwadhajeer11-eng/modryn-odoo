@@ -119,6 +119,16 @@
     margin-block-start: 4px;
 }
 
+// A notice, not a refusal. The off-rota nudge means "that went through, and you
+// should know" — painting it in the danger red one slot above made a manager
+// read a completed assignment as a rejected one. The ARIA role already
+// separates them for a screen reader; this separates them for everyone else.
+.modryn_field_warning {
+    color: $modryn-gold-text;
+    font-size: 0.875rem;
+    margin-block-start: 4px;
+}
+
 .modryn_empty {
     color: $modryn-ink-muted;
     padding: 16px 0;

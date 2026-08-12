@@ -1350,6 +1350,34 @@ for db in $TENANTS modryn_template; do
   [ "$SEED" = "5|5|0" ] && ok "$db: seeded Sun-Thu 10:00-18:00, no Friday or Saturday" \
     || bad "$db opening-hours seed" "rows|Sun-Thu 10-18|Fri-Sat reads '$SEED', want '5|5|0' — this boutique's week is not the one the rest of this suite asserts"
 done
+# Blackout dates. The weekly grid can say the shop opens on Thursdays; it cannot
+# say it is shut on THIS Thursday, so Yom Kippur, a wedding and stocktaking were
+# all unsayable and /book sold slots on every one of them. modryn_template is in
+# the loop for the reason it is above: a model that never reached the golden
+# database never reaches a single boutique cloned from it afterwards.
+for db in $TENANTS modryn_template; do
+  [ -n "$(psql -d "$db" -tAc "select to_regclass('public.modryn_closure')" 2>/dev/null)" ] \
+    && ok "$db: modryn_closure table present" \
+    || bad "$db: modryn_closure table" "missing — this boutique cannot close for a holiday, so /book will sell Yom Kippur"
+done
+# EMPTY on the TEMPLATE only, and deliberately not per tenant. Holidays are data
+# the owner types, never a computed Hebrew calendar, so a clone inheriting
+# somebody else's Yom Kippur is a bug — while a real boutique accumulating real
+# closed days is the feature working. Asserting emptiness on bella and noga
+# would turn this suite red the first time anyone uses it.
+CLON=$(psql -d modryn_template -tAc "select count(*) from modryn_closure" 2>/dev/null)
+[ "$CLON" = "0" ] && ok "modryn_template ships no closures" \
+  || bad "template closures" "${CLON:-<no table>} seeded rows — every boutique cloned from here inherits a holiday it never chose"
+# ...and that emptiness is precisely why the grid check below cannot stand alone:
+# with no closure anywhere, "no closed date was rendered" passes over nothing.
+# Plant one inside a rolled-back transaction and require the range test
+# modryn_closed_dates() runs to find tomorrow in it — inclusive on BOTH ends,
+# which is the half an off-by-one breaks silently.
+for db in $TENANTS; do
+  detects "$db" "a closure covering tomorrow" \
+    "INSERT INTO modryn_closure (name, date_from, date_to, active, create_uid, write_uid, create_date, write_date) VALUES ('planted-closure', (now() at time zone 'Asia/Jerusalem')::date + 1, (now() at time zone 'Asia/Jerusalem')::date + 1, true, 1, 1, now(), now());" \
+    "SELECT count(*) FROM modryn_closure WHERE active AND ((now() at time zone 'Asia/Jerusalem')::date + 1) BETWEEN date_from AND date_to;"
+done
 # The two hand-built tenants take the UPGRADE path; a freshly cloned boutique
 # takes the INSTALL path. Odoo runs migrations/<v>/ only while recorded < v <=
 # manifest, so a bumped manifest with no matching directory — or a directory the
@@ -1387,6 +1415,12 @@ fi
 # optgroups NOR the "day you wanted is full" waitlist list — it must not appear
 # in any form. An open day always reaches one of the two, booked out or not.
 # That asymmetry IS the weekday filter, and it is the thing waitlist.py lacked.
+#
+# "Closed" now means two things and the query below derives BOTH from the data:
+# a weekday with no window, and a date a modryn_closure covers. A blackout date
+# must vanish exactly as Saturday does — rendering it as a FULL day instead would
+# invite her onto a waitlist for a day nobody is coming in, which is a product
+# regression dressed as a smaller diff.
 SEEN=0; MISSING=""; OFFERED=""
 while IFS='|' read -r DAY IS_OPEN; do
   [ -z "$DAY" ] && continue
@@ -1397,7 +1431,7 @@ while IFS='|' read -r DAY IS_OPEN; do
     MISSING="$MISSING $DAY"
   fi
 done <<SQL
-$(psql -d bella -tAq -c "SELECT to_char(d, 'DD.MM.YYYY'), (extract(isodow from d)::int - 1)::text in (select weekday from modryn_opening_hours where active) FROM generate_series((now() at time zone 'Asia/Jerusalem')::date + 1, (now() at time zone 'Asia/Jerusalem')::date + 14, interval '1 day') d" 2>/dev/null)
+$(psql -d bella -tAq -c "SELECT to_char(d, 'DD.MM.YYYY'), (extract(isodow from d)::int - 1)::text in (select weekday from modryn_opening_hours where active) AND NOT EXISTS (select 1 from modryn_closure where active and d::date between date_from and date_to) FROM generate_series((now() at time zone 'Asia/Jerusalem')::date + 1, (now() at time zone 'Asia/Jerusalem')::date + 14, interval '1 day') d" 2>/dev/null)
 SQL
 # Jerusalem local dates, not the shell's: _slots() counts its fortnight from
 # datetime.now(TZ), and a psql session on a UTC host would slide the window by a
@@ -1407,8 +1441,8 @@ SQL
 # the loop reads nothing, and both lists stay empty — a silent green over zero
 # days examined.
 [ "$SEEN" = "14" ] && [ -z "$MISSING$OFFERED" ] \
-  && ok "/book renders exactly the 14 days the table opens" \
-  || bad "/book grid does not follow the table" "$SEEN of 14 days derived; open days missing from the page:${MISSING:- none}; closed days offered anyway:${OFFERED:- none}"
+  && ok "/book renders exactly the 14 days the table opens and no closure shuts" \
+  || bad "/book grid does not follow the tables" "$SEEN of 14 days derived; open days missing from the page:${MISSING:- none}; days shut by weekday or by closure and offered anyway:${OFFERED:- none}"
 
 printf "\n\033[1m%d passed, %d failed, %d skipped\033[0m\n" "$PASS" "$FAIL" "$SKIP"
 [ "$FAIL" -eq 0 ] || exit 1

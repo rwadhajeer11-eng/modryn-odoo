@@ -1,6 +1,8 @@
+from datetime import timedelta
+
 from psycopg2 import IntegrityError
 
-from odoo import _, http
+from odoo import _, fields, http
 from odoo.addons.modryn_booking.models.opening_hours import weekday_selection
 from odoo.exceptions import ValidationError
 from odoo.http import request
@@ -22,6 +24,18 @@ def _clock_to_float(raw):
     except (AttributeError, TypeError, ValueError):
         return None
     return value if 0 <= value <= 24 else None
+
+
+def _to_date(raw):
+    """"2026-09-21" -> date. None when the field arrives empty or unparseable.
+
+    <input type="date"> posts exactly this format, but a hand-crafted POST is
+    not obliged to, and a bare strptime would answer that with a traceback.
+    """
+    try:
+        return fields.Date.to_date(raw)
+    except (TypeError, ValueError):
+        return None
 
 
 def _levels():
@@ -337,6 +351,22 @@ class ModrynManage(http.Controller):
             'active': h.active,
         } for h in windows]
 
+    def _closure_rows(self):
+        # active_test=False for the hours reason: an archived closure still has
+        # to be listed, or last year's Yom Kippur cannot be switched back on.
+        closures = request.env['modryn.closure'].sudo().with_context(
+            active_test=False).search([])
+        return [{
+            'id': c.id,
+            'name': c.name,
+            # dd.mm.yyyy, the way the rest of the boutique prints a date. One
+            # date when it is one day: making her read "21.09 - 21.09" to learn
+            # the shop shuts for an afternoon is noise.
+            'when': c.date_from.strftime('%d.%m.%Y') if c.date_from == c.date_to else '%s – %s' % (
+                c.date_from.strftime('%d.%m.%Y'), c.date_to.strftime('%d.%m.%Y')),
+            'active': c.active,
+        } for c in closures]
+
     @http.route('/manage/hours', type='http', auth='user', website=True, sitemap=False)
     def hours_list(self, error=None, **kw):
         if not self._require_owner():
@@ -344,6 +374,7 @@ class ModrynManage(http.Controller):
         return request.render('modryn_staff.manage_hours', {
             'hours': self._hour_rows(),
             'weekdays': self._weekdays(),
+            'closures': self._closure_rows(),
             'error': error,
             'active_tab': 'hours',
         })
@@ -392,4 +423,72 @@ class ModrynManage(http.Controller):
             # week and wants it back, and bookings already taken in it must
             # still read correctly.
             window.active = not window.active
+        return request.redirect('/manage/hours')
+
+    # ------------------------------------------------------------- closures
+    @http.route('/manage/hours/closure/new', type='http', auth='user', website=True,
+                methods=['POST'], csrf=True, sitemap=False)
+    def closure_new(self, **post):
+        if not self._require_owner():
+            return request.not_found()
+
+        name = (post.get('name') or '').strip()
+        if not name:
+            return request.redirect(
+                '/manage/hours?error=%s' % _("Please say what the closure is for"))
+        date_from = _to_date(post.get('date_from'))
+        if date_from is None:
+            return request.redirect('/manage/hours?error=%s' % _("Please choose a date"))
+        # One day is the common case, so an empty second field means "just that
+        # day" rather than an error. Typing the same date twice is the kind of
+        # friction that leaves a feature unused.
+        date_to = _to_date(post.get('date_to')) or date_from
+        # Checked HERE and not only by the model's @api.constrains, so the owner
+        # reads a sentence instead of meeting a traceback.
+        if date_to < date_from:
+            return request.redirect(
+                '/manage/hours?error=%s' % _("A closure has to end on or after the day it starts"))
+        # Refuse to shut a day that already has brides booked into it, and say
+        # how many. A closure only stops a date being OFFERED — it cancels
+        # nothing — so without this the fittings survive, the 24h reminder cron
+        # texts each of those brides to come tomorrow, and they arrive at a dark
+        # shop. Cancelling has to stay the owner's own act on the floor, because
+        # that is the path that actually tells the bride and releases her slot to
+        # the day's waitlist. So: cancel first, then close. Refusing enforces the
+        # order; a warning she can click past would not.
+        booked = request.env['calendar.event'].sudo().search_count([
+            ('modryn_is_booking', '=', True),
+            ('modryn_cancelled_at', '=', False),
+            ('start', '>=', fields.Date.to_string(date_from)),
+            # calendar_event.start is a UTC datetime and these are local dates:
+            # compare against the day AFTER date_to so the whole closing day is
+            # inside the window whatever the offset is doing that week.
+            ('start', '<', fields.Date.to_string(date_to + timedelta(days=1))),
+        ])
+        if booked:
+            return request.redirect('/manage/hours?error=%s' % (
+                _("%s fittings are already booked on those dates. Cancel them from the floor"
+                  " first — that is what tells each bride and frees her slot.") % booked))
+        # Savepoint for roles_new()'s reason: a constraint the model enforces must
+        # be refused in words rather than poison the request's transaction.
+        try:
+            with request.env.cr.savepoint(), mute_logger('odoo.sql_db'):
+                request.env['modryn.closure'].sudo().create({
+                    'name': name, 'date_from': date_from, 'date_to': date_to})
+        except (ValidationError, IntegrityError):
+            return request.redirect(
+                '/manage/hours?error=%s' % _("Those dates aren't valid"))
+        return request.redirect('/manage/hours')
+
+    @http.route('/manage/hours/closure/archive/<int:closure_id>', type='http', auth='user',
+                website=True, methods=['POST'], csrf=True, sitemap=False)
+    def closure_archive(self, closure_id, **post):
+        if not self._require_owner():
+            return request.not_found()
+        closure = request.env['modryn.closure'].sudo().with_context(
+            active_test=False).browse(closure_id).exists()
+        if closure:
+            # Archive, never delete: a holiday recurs, and an owner who reopens
+            # a date wants last year's row back rather than a retyped one.
+            closure.active = not closure.active
         return request.redirect('/manage/hours')

@@ -31,6 +31,15 @@
                 <t t-esc="state.error"/>
             </div>
 
+            <!-- Not a refusal: the assignment went through. role="status", not
+                 "alert", for that reason. Transient like state.error above —
+                 every apply() clears it and the bus refreshes often — which is
+                 the intent: a nudge at the moment of the drop, not a notice that
+                 sits on the board all day. Already translated by the server. -->
+            <div t-if="state.warning" class="modryn_field_warning mb-3" role="status">
+                <t t-esc="state.warning"/>
+            </div>
+
             <!-- My own call stays here rather than in the overlay: I raised it,
                  I need to see whether anyone picked it up — not be blocked by it. -->
             <div t-foreach="myOwnSos" t-as="c" t-key="c.id" class="modryn_sos_mine mb-3">
@@ -340,9 +349,19 @@
                     </section>
                 </div>
 
-                <!-- ============ the bench: who is on shift, live ============ -->
+                <!-- ============ the bench: the whole team, live ============ -->
                 <aside class="modryn_bench" data-drop-target="bench">
                     <header class="modryn_panel_head">
+                        <!-- Kept as "Team on shift" deliberately. The wording is
+                             loose — this is every active staff member, so that
+                             somebody covering for a sick colleague stays
+                             draggable — and modryn_roster marks who is really on
+                             the rota row by row below. Renaming it to "Team"
+                             orphaned its Hebrew: the existing msgid "Team" in
+                             he.po is a server-view term, and only an entry
+                             carrying an `odoo-javascript` comment reaches the
+                             web catalogue this template reads. A truer English
+                             header is not worth an untranslated Hebrew one. -->
                         <h2>Team on shift</h2>
                         <span class="modryn_count"><t t-esc="freeCount"/> available</span>
                     </header>
@@ -363,6 +382,15 @@
                                 </span>
                                 <span t-if="s.occupied and s.occupied_with" class="modryn_sub">
                                     · <t t-esc="s.occupied_with"/>
+                                </span>
+                                <!-- The sentence arrives already translated from
+                                     modryn_roster, because a literal here would
+                                     need a POT re-export to reach Hebrew and the
+                                     staff terminal defaults to he_IL. Empty (or
+                                     undefined, when modryn_roster is not
+                                     installed) renders nothing. -->
+                                <span t-if="s.off_rota_label" class="modryn_sub">
+                                    · <t t-esc="s.off_rota_label"/>
                                 </span>
                             </div>
                         </div>

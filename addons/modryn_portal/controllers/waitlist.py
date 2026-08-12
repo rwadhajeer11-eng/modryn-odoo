@@ -30,6 +30,15 @@ class ModrynWaitlist(http.Controller):
         # cancellation will ever reach.
         if day_date <= datetime.now(TZ).date():
             return request.redirect('/book')
+        # /book stops OFFERING a shut day, which is not the same as refusing one.
+        # This route is public and takes a bare date: a form left open in a tab
+        # before the owner declared a holiday still posts, and would park a bride
+        # on a list for a day nobody will ever open. Ask the server its own
+        # question rather than restating the rule — the same seam /book/submit
+        # and /claim use.
+        if not request.env['modryn.opening.hours'].sudo().modryn_hours_on(day_date) \
+                or request.env['modryn.closure'].sudo().modryn_is_closed(day_date):
+            return request.redirect('/book')
         ok, code, _entry = request.env['modryn.day.waitlist'].sudo().modryn_join(
             name=post.get('name'), phone=post.get('phone'), day=day_date,
             lang=request.env.lang)
@@ -69,6 +78,11 @@ class ModrynWaitlist(http.Controller):
         # link happily offered Friday hours the boutique does not sell. The
         # empty list a shut day returns IS that filter.
         if not hours:
+            return []
+        # Same question, asked of the date rather than the weekday: her offer
+        # was texted for a Thursday the boutique has since closed for a holiday.
+        # An empty list here renders the page with no times, which is the truth.
+        if request.env['modryn.closure'].sudo().modryn_is_closed(day_date):
             return []
         # This day's own window, read from the boutique's hours instead of a
         # hardcoded 10-18. Deriving it matters for the SCAN, not just the

@@ -107,6 +107,12 @@ class ModrynBooking(http.Controller):
         # exists precisely to keep it cheap — and three times that on a failed
         # submit, which regenerates the grid twice more.
         by_weekday = Hours.modryn_hours_by_weekday()
+        # And every blackout date in ONE search, for the same reason: asking
+        # modryn_is_closed() inside the loop would put back the fourteen queries
+        # by_weekday() was introduced to remove. The window is exactly the range
+        # the loop renders, both ends inclusive.
+        closed = request.env['modryn.closure'].sudo().modryn_closed_dates(
+            (now_local + timedelta(days=LEAD_DAYS)).date(), last_day)
         days = []
         for offset in range(LEAD_DAYS, DAYS_AHEAD + 1):
             day = (now_local + timedelta(days=offset)).date()
@@ -117,7 +123,12 @@ class ModrynBooking(http.Controller):
             # has nothing to offer and nothing to queue for, so it does not
             # appear at all — which is also the weekday filter, now that the
             # week is the owner's rather than a constant here.
-            if not hours:
+            #
+            # A blackout date is the same answer arrived at differently: the
+            # weekday is open, this particular date is not. Yom Kippur must
+            # vanish exactly as Saturday does — offering it with a waitlist form
+            # would invite her to queue for a day nobody is coming in.
+            if not hours or day in closed:
                 continue
             times = []
             for hour in hours:

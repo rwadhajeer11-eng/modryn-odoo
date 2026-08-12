@@ -319,6 +319,55 @@
                     </tr>
                 </tbody>
             </table>
+
+            <h2 class="h4 mt-5 mb-2">Days you are closed</h2>
+            <p class="text-muted mb-4">
+                A holiday, a wedding, stocktaking. A closed date disappears from the
+                booking page completely — no times, and no waitlist either, because
+                there is nothing to queue for. Leave the second date empty to close
+                a single day.
+            </p>
+
+            <form action="/manage/hours/closure/new" method="post"
+                  class="d-flex gap-2 mb-4 flex-wrap" style="max-width: 640px;">
+                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                <input type="text" name="name" class="form-control w-auto"
+                       placeholder="What for?"/>
+                <!-- type="date" so the browser supplies the calendar and the
+                     format, exactly as type="time" does for the windows above. -->
+                <input type="date" name="date_from" class="form-control w-auto" dir="ltr"/>
+                <input type="date" name="date_to" class="form-control w-auto" dir="ltr"/>
+                <button type="submit" class="btn btn-primary">Add</button>
+            </form>
+
+            <p t-if="not closures" class="modryn_empty">
+                No closed days — the booking page offers every day above.
+            </p>
+
+            <table t-if="closures" class="table modryn_table align-middle"
+                   style="max-width: 640px;">
+                <thead>
+                    <tr><th>Reason</th><th>Dates</th><th/></tr>
+                </thead>
+                <tbody>
+                    <tr t-foreach="closures" t-as="c"
+                        t-attf-class="#{'modryn_archived' if not c['active'] else ''}">
+                        <td t-out="c['name']"/>
+                        <td dir="ltr" t-out="c['when']"/>
+                        <td class="text-end">
+                            <form t-attf-action="/manage/hours/closure/archive/#{c['id']}"
+                                  method="post" class="d-inline">
+                                <input type="hidden" name="csrf_token"
+                                       t-att-value="request.csrf_token()"/>
+                                <button type="submit" class="btn btn-sm btn-outline-dark">
+                                    <t t-if="c['active']">Open again</t>
+                                    <t t-else="">Close again</t>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </t>
     </template>
 

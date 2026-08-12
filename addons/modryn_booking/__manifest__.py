@@ -19,6 +19,14 @@ Deliberately NOT in scope for the PoC (each is a Phase-2 line item):
   - deposit capture through an Israeli PSP
 """,
     'category': 'Website',
+    # DO NOT bump this for a new model. verify.sh §24 asserts the version has a
+    # MATCHING migrations/<version>/ directory, because a bumped manifest with
+    # no directory means the upgrade path never runs and bella and noga silently
+    # keep the old data while freshly cloned boutiques get the new. A new model
+    # needs no migration at all — the ORM creates modryn_closure's table on `-u`
+    # whatever this string says — so bumping would buy an empty directory and
+    # one more thing that can drift. Bump when DATA has to move, not when a
+    # table appears.
     'version': '19.0.1.1.0',
     'depends': ['website_sale', 'calendar', 'modryn_theme'],
     # migrations/ covers `-u` on every existing database, modryn_template

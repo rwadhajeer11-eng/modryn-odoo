@@ -29,6 +29,12 @@ export class FloorBoard extends Component {
             atelier: { pieces: [] },
             canAssign: false,
             error: null,
+            // modryn_roster: "she isn't on today's rota". Transient by decision,
+            // exactly like error above — every apply() clears it and the bus
+            // refreshes this board on every floor event, so it is a nudge at the
+            // moment of the drop, not a notice that sits there. Who actually
+            // worked off-rota is the roster's record to keep, not the board's.
+            warning: null,
             dragging: false,
             // The finish modal. null = closed; otherwise the /floor/finish payload
             // plus the form the manager is filling in.
@@ -131,6 +137,9 @@ export class FloorBoard extends Component {
     }
 
     async call(route, params) {
+        // The manager's next deliberate action supersedes the last notice. A
+        // bus-driven refresh is not an action and leaves it standing.
+        this.state.warning = null;
         this.apply(await rpc(route, params));
     }
 
@@ -144,6 +153,19 @@ export class FloorBoard extends Component {
             return;
         }
         this.state.error = board.error ? this.errorText(board.error) : null;
+        // Already a translated sentence from the server, not a code — it does
+        // not go through errorText().
+        //
+        // Only /floor/assign ever sends this key, and it must survive the board
+        // refresh that the SAME assignment triggers: writing modryn_employee_id
+        // pushes on the modryn_queue channel (assignment.py), the open board
+        // re-renders within milliseconds, and an unconditional reset here made
+        // the off-rota notice a sub-second flash — the feature's only
+        // assign-time output, invisible. Cleared on the manager's next action
+        // instead, in call().
+        if ("warning" in board) {
+            this.state.warning = board.warning || null;
+        }
         this.state.pending = board.pending || [];
         this.state.queue = board.queue;
         this.state.bookings = board.bookings;

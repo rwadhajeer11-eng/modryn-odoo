@@ -12,6 +12,12 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. module: modryn_roster
+#. odoo-python
+#: code:addons/modryn_roster/controllers/floor_roster.py:0
+msgid "%s isn't on today's rota."
+msgstr "%s לא משובצת בסידור של היום."
+
+#. module: modryn_roster
 #: model_terms:ir.ui.view,arch_db:modryn_roster.manage_shifts
 msgid ""
 "<select name=\"weekday\" class=\"form-select\" style=\"max-width: 150px;\">\n"

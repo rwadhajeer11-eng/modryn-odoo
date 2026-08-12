@@ -103,6 +103,35 @@ class ModrynShiftSlot(models.Model):
         return self
 
     # ----------------------------------------------------------------- reading
+    @api.model
+    def modryn_rostered_on(self, day):
+        """Employee ids the PUBLISHED rota puts on the floor for `day`, or None.
+
+        None and the empty set are different answers and callers must treat them
+        so: None means "this day has no published rota", empty means "published,
+        nobody on it". Slots are materialised lazily on the first read of
+        /roster, so a boutique that never opened the page this week has no rows
+        at all — without the None answer the floor board would mark the whole
+        team as off-rota on day one.
+
+        A day can carry a morning AND a late shift, so this unions across slots.
+
+        Deliberately does NOT call modryn_ensure_week(): that one WRITES, and
+        reading the floor board must never generate a week of shifts.
+        """
+        slots = self.sudo().search([('day', '=', day), ('published', '=', True)])
+        if not slots:
+            return None
+        rostered = {employee.id for employee in slots.employee_ids}
+        # A published day that names NOBODY is not a day the whole team is off —
+        # it is another day the rota has nothing to say about. Publishing is
+        # week-wide (roster.py publishes every slot sharing a week_start), so a
+        # manager who fills Sunday and hits Publish leaves Monday to Thursday
+        # published and empty. Returning the empty set there would flag the
+        # entire boutique off-rota from Monday, which is exactly the failure the
+        # None answer above exists to prevent, one level deeper.
+        return rostered or None
+
     def _shortages(self):
         """Per-role gaps between what this shift needs and who is on it.
 
