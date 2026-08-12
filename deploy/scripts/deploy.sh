@@ -12,7 +12,12 @@ set -euo pipefail
 APP_ROOT=/opt/modryn
 ODOO_CONF=/etc/odoo/odoo.conf
 SERVICE_USER=odoo
+ENV_FILE=/etc/modryn/deploy.env
 DEPLOY_DIR="$APP_ROOT/deploy"
+
+# DOMAIN, for pointing the regression suite at this box's real hostnames.
+# shellcheck disable=SC1090
+[ -r "$ENV_FILE" ] && { set -a; . "$ENV_FILE"; set +a; }
 
 REF="${1:?usage: deploy.sh <git-ref>}"
 
@@ -97,17 +102,47 @@ systemctl reload nginx
 # ---------------------------------------------------------------------------
 say "regression suite"
 # ---------------------------------------------------------------------------
-# verify.sh addresses bella.localtest.me / noga.localtest.me directly, which on
-# this box resolve to 127.0.0.1 via /etc/hosts (see deploy/README.md). That
-# means it exercises ODOO, bypassing nginx — the nginx-specific gates are the
-# separate curl checks in the runbook, and both are needed.
+# The suite runs THROUGH NGINX, against this box's real hostnames. It used to
+# address bella.localtest.me / noga.localtest.me via an /etc/hosts entry, which
+# meant the deploy gate exercised Odoo and never touched the thing actually
+# serving customers — TLS, the catch-all, the rate limits and the
+# X-Forwarded-Host that ProxyFix is gated on were all outside the gate. The
+# nginx-specific checks in verify_edge.sh are now an ADDITION rather than a
+# compensation, and both are run below.
+#
+# Four variables, none optional:
+#   BASE_HOST/BASE_SCHEME  the hostnames to address, and no ":443" in the URL
+#   ODOO_CONF              /etc/odoo/odoo.conf, NOT the ./odoo.conf that also
+#                          exists in this checkout and lists a laptop's tenants
+#   MODRYN_DEMO_PASSWORD   or section 10a fails rather than skips
+#
+# As SERVICE_USER, not root: the suite makes 72 `psql -d <tenant>` calls that
+# authenticate by peer, and there is no `root` PostgreSQL role. Run as root they
+# would every one return empty through the `2>/dev/null || echo 0` idiom and be
+# read as legitimate zeros — the whole suite green, having asserted nothing.
 if [ -x "$APP_ROOT/scripts/verify.sh" ]; then
   if [ -z "${MODRYN_DEMO_PASSWORD:-}" ]; then
-    printf '\033[33m!!\033[0m MODRYN_DEMO_PASSWORD unset — the sign-in section will SKIP, not pass\n'
+    printf '\033[33m!!\033[0m MODRYN_DEMO_PASSWORD unset — the sign-in section will FAIL, not skip\n'
   fi
-  "$APP_ROOT/scripts/verify.sh" || die "verify.sh reported failures on $NEW — roll back: deploy.sh $PREV"
+  [ -n "${DOMAIN:-}" ] || die "DOMAIN unset — $ENV_FILE is unreadable, and the suite would silently fall back to localtest.me and test nothing on this box"
+  sudo -u "$SERVICE_USER" env \
+    BASE_HOST="$DOMAIN" BASE_SCHEME=https ODOO_CONF="$ODOO_CONF" \
+    MODRYN_DEMO_PASSWORD="${MODRYN_DEMO_PASSWORD:-}" \
+    "$APP_ROOT/scripts/verify.sh" \
+    || die "verify.sh reported failures on $NEW — roll back: deploy.sh $PREV"
 else
   die "no $APP_ROOT/scripts/verify.sh — refusing to call this deploy verified"
+fi
+
+# The other half. verify.sh proves Odoo is correct for hostnames that exist;
+# this proves nginx is correct for the ones that must NOT. Neither is a superset
+# of the other, and a deploy that reloads nginx (above) without re-checking it
+# is a deploy that can serve the database manager and still report green.
+if [ -x "$DEPLOY_DIR/scripts/verify_edge.sh" ]; then
+  "$DEPLOY_DIR/scripts/verify_edge.sh" \
+    || die "verify_edge.sh reported failures on $NEW — roll back: deploy.sh $PREV"
+else
+  die "no $DEPLOY_DIR/scripts/verify_edge.sh — refusing to call this deploy verified"
 fi
 
 echo

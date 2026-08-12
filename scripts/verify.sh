@@ -7,9 +7,54 @@
 # Exits non-zero if any check fails, so it can gate a commit.
 set -uo pipefail
 
-BASE_PORT="${PORT:-8069}"
-BELLA="http://bella.localtest.me:$BASE_PORT"
-NOGA="http://noga.localtest.me:$BASE_PORT"
+# ~30 checks grep files under addons/ with relative paths, and sections 11 and 13
+# read odoo.conf relatively. deploy/scripts/deploy.sh invokes this script by
+# ABSOLUTE path and never cd's, so every one of those was already reading from
+# whatever directory root happened to be in when they typed the sudo line.
+cd "$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)" || exit 1
+
+# Where this suite points. The defaults are the developer laptop, so an unset
+# environment behaves exactly as it did before this block existed.
+#
+#   (dev)   ./scripts/verify.sh
+#   (prod)  BASE_HOST=example.com BASE_SCHEME=https ODOO_CONF=/etc/odoo/odoo.conf \
+#           MODRYN_DEMO_PASSWORD=... /opt/modryn/scripts/verify.sh
+#
+# BASE_HOST IS AN ON-BOX CONTRACT. Section 10a signs in with a real
+# POST /staff/login, which through nginx is rate-limited (modryn_otp, 5r/m
+# burst=3) and watched by fail2ban (maxretry=6). The geo block in
+# deploy/nginx/modryn-http.conf exempts 127.0.0.1/32 for exactly this reason,
+# and that exemption only applies when the suite runs ON the box, because
+# $binary_remote_addr is nginx's peer. Driven from a laptop against production
+# it is limit-counted, and three debugging runs later 10a reports "sara could
+# not sign in" with entirely the wrong explanation.
+#
+# BASE_SCHEME drives the PORT default, because the port is a development
+# artifact: dev talks to Odoo on 8069 directly, production talks to nginx on 443
+# and a ":443" in the URL is at best noise and at worst a Host header that does
+# not match server_name. Still overridable for the case that turns up anyway.
+BASE_SCHEME="${BASE_SCHEME:-http}"
+BASE_HOST="${BASE_HOST:-localtest.me}"
+if [ "$BASE_SCHEME" = https ]; then BASE_PORT="${PORT:-}"; else BASE_PORT="${PORT:-8069}"; fi
+turl() { printf '%s://%s.%s%s' "$BASE_SCHEME" "$1" "$BASE_HOST" "${BASE_PORT:+:$BASE_PORT}"; }
+
+# NO -k ANYWHERE IN THIS FILE. Pointed at https:// with -k, an expired
+# certificate, a wrong-name certificate and the self-signed placeholder
+# provision.sh installs at bootstrap all look identical to a healthy one. A
+# certificate fault must present as section 0 failing, loudly, rather than as
+# 217 quiet passes. deploy/scripts/verify_edge.sh inspects the certificate on
+# purpose, which is why it is the only file here that may pass -k.
+BELLA="$(turl bella)"
+NOGA="$(turl noga)"
+
+# odoo.conf is NOT the same file in the two modes, and this is the trap. Both
+# /opt/modryn and this repository are checkouts of the same tree, so
+# ./odoo.conf EXISTS on the box too — and it is the DEVELOPER's config, listing
+# bella,noga,modryn_template with absolute paths to a laptop. Reading it there
+# would resolve a tenant list that has nothing to do with what the server runs,
+# and every per-tenant loop below would assert against the wrong set.
+ODOO_CONF="${ODOO_CONF:-odoo.conf}"
+
 PASS=0
 FAIL=0
 SKIP=0
@@ -71,7 +116,7 @@ body() { curl -sg "$1" -o "$PAGE"; cat "$PAGE"; }
 fetch() { curl -sg "$1" -o "$PAGE"; }
 
 head_ "0. server"
-[ "$(code "$BELLA/shop")" = "200" ] && ok "server is up" || { bad "server is up" "no 200 from $BELLA/shop"; echo; echo "Start it: ./odoo/odoo-bin server -c odoo.conf --http-interface=127.0.0.1"; exit 1; }
+[ "$(code "$BELLA/shop")" = "200" ] && ok "server is up" || { bad "server is up" "no 200 from $BELLA/shop"; echo; echo "Start it:  ./odoo/odoo-bin server -c odoo.conf --http-interface=127.0.0.1"; echo "On the box: BASE_HOST=\$DOMAIN BASE_SCHEME=https ODOO_CONF=/etc/odoo/odoo.conf $0"; exit 1; }
 
 # THE tenant list, derived once. Every per-tenant assertion below loops over it.
 # Sections used to write `for db in bella noga` inline, and one of them (10i) had
@@ -92,7 +137,7 @@ head_ "0. server"
 # which is where a missing index in the template genuinely does matter, since every
 # clone inherits it.
 TENANTS=""
-for db in $(grep -E '^db_name *=' odoo.conf | cut -d= -f2- | tr ',' ' '); do
+for db in $(grep -E '^db_name *=' "$ODOO_CONF" | cut -d= -f2- | tr ',' ' '); do
   [ "$db" = "modryn_template" ] && continue
   INST=$(psql -d "$db" -tAc "select count(*) from ir_module_module where name='modryn_portal' and state='installed'" 2>/dev/null || echo 0)
   [ "${INST:-0}" = "1" ] && TENANTS="$TENANTS $db"
@@ -100,8 +145,42 @@ done
 TENANTS="${TENANTS# }"
 # An empty list would make every per-tenant loop below a no-op and print nothing —
 # the one failure mode that looks exactly like success.
-[ -n "$TENANTS" ] && ok "tenant list resolved from odoo.conf db_name:$(printf ' %s' $TENANTS)" \
-  || bad "tenant list" "no database in odoo.conf db_name has modryn_portal installed — nothing below is actually checked"
+[ -n "$TENANTS" ] && ok "tenant list resolved from $ODOO_CONF db_name:$(printf ' %s' $TENANTS)" \
+  || bad "tenant list" "no database in $ODOO_CONF db_name has modryn_portal installed — nothing below is actually checked"
+
+# $BELLA and $NOGA are not "two tenants" — they are THESE two tenants, by name,
+# and the asymmetry between them is load-bearing in fourteen psql call sites.
+# Section 5 reads modryn_alteration_task on bella because noga holds zero BY
+# DESIGN; section 16 reads modryn_shift_slot on bella for the same reason;
+# sections 1, 2, 6 and 17 compare bella's catalog against noga's.
+#
+# Point this at a production box whose boutiques are called something else and
+# every one of those becomes `psql -d bella` against a database that does not
+# exist. psql writes to stderr, the `2>/dev/null || echo 0` idiom swallows it,
+# and the assertion reads a legitimate 0 — green, on a check with no subject.
+# Meanwhile $NOGA/shop hits nginx's catch-all and 404s, and section 0 would not
+# have fired because section 0 only ever probes $BELLA.
+#
+# So both names must be IN the resolved list, and the suite refuses to continue
+# otherwise. NOT skip() — a suite that cannot see its own subjects has verified
+# nothing, and 217 green lines under those conditions is the single most
+# dangerous output this file can produce.
+#
+# DELIBERATELY NOT DERIVED POSITIONALLY. `BELLA=$(nth 1)` / `NOGA=$(nth 2)`
+# would silently swap the pair the day someone reorders db_name, and the "noga
+# legitimately holds zero" assertions would then run against the tenant that has
+# data — red, for a reason nobody could find. With a third boutique, positional
+# derivation quietly ignores it. The names are the contract.
+for t in bella noga; do
+  case " $TENANTS " in
+    *" $t "*) ;;
+    *) bad "tenant '$t' is not on this server" \
+         "this suite's cross-tenant sections are written against the pair (bella, noga) BY NAME — 14 psql calls and 68 URLs. On a server without both, they would query databases that do not exist and read the resulting empty output as a legitimate zero. Resolved list:$(printf ' %s' $TENANTS)"
+       printf "\n\033[1m%d passed, %d failed, %d skipped\033[0m\n" "$PASS" "$FAIL" "$SKIP"
+       exit 1 ;;
+  esac
+done
+ok "the pair this suite is written against (bella, noga) is present"
 
 head_ "1. tenancy isolation"
 BELLA_DRESSES=$(body "$BELLA/shop" | grep -oE "שמלת [^<\"(]*" | sort -u | head -5)
@@ -954,7 +1033,7 @@ grep -A14 "def modryn_join" "$WAITLIST" | grep -q "state', 'in', ('waiting', 'of
 head_ "11. instance hygiene"
 # Without db_name, Odoo's cron enumerates EVERY database on the server —
 # including MODRYN's f*_test — and errors against each one.
-grep -qE '^db_name *=' odoo.conf && ok "db_name bounds this instance" || bad "db_name" "absent from odoo.conf — crons will roam"
+grep -qE '^db_name *=' "$ODOO_CONF" && ok "db_name bounds this instance" || bad "db_name" "absent from $ODOO_CONF — crons will roam"
 
 head_ "12. MODRYN repo (informational — never gates)"
 # Only meaningful on a machine that has the sibling design repo checked out. It
@@ -1053,10 +1132,27 @@ head_ "15. no orphan partners"
 # partner at all — it passed only because the seed happened to be 28h old, would
 # have false-positived the seeded contacts a day earlier, and let a real orphan
 # age quietly out of the window after 24h. Ownership does not expire; a window does.
+# EXCLUDING phones that have verified an OTP, and this exclusion is load-bearing
+# rather than a loosening. portal.py::verify_submit creates a partner for a
+# number it has never booked for, on purpose, so the session has an identity —
+# its own comment says "her booking list is simply empty". That is a bride who
+# signed in to check her bookings before she has any, which is a legitimate and
+# entirely ordinary state.
+#
+# Without this clause the check reports "savepoint leaking again?" the first
+# time a real customer does that on a healthy tenant. It never fired here only
+# because nothing had ever exercised the portal-login path against a number with
+# no booking — qa/specs/portal.spec.js does, and it went red on its first run.
+#
+# The discriminator is exact: the savepoint leak creates a partner for a booking
+# that then rolled back, and no OTP was ever verified for that number. A portal
+# identity always has one. The planted orphan below carries no OTP row either,
+# so detects() still has its subject and this cannot pass vacuously.
 ORPHAN_SQL="from res_partner p join res_users u on u.id = p.create_uid
   where u.login = 'public' and p.active is true and coalesce(p.phone,'') <> ''
     and not exists (select 1 from calendar_event_res_partner_rel r where r.res_partner_id = p.id)
-    and not exists (select 1 from calendar_event e where e.modryn_customer_phone = p.phone)"
+    and not exists (select 1 from calendar_event e where e.modryn_customer_phone = p.phone)
+    and not exists (select 1 from modryn_otp_code o where o.phone = p.phone)"
 for db in $TENANTS; do
   detects "$db" "orphan partners" \
     "INSERT INTO res_partner (name, phone, active, company_id, autopost_bills, create_uid, write_uid, create_date, write_date) SELECT 'planted orphan','+972500000000', true, 1, 'ask', u.id, u.id, now(), now() FROM res_users u WHERE u.login='public';" \
@@ -1608,7 +1704,7 @@ grep -rEn "from odoo\.addons\.modryn_roster|import modryn_roster|\[['\"]modryn\.
 # say", and both must still be sold. If one of these dates vanishes from /book,
 # the cap emitted 0 for it.
 for db in $TENANTS; do
-  fetch "http://$db.localtest.me:$BASE_PORT/book"
+  fetch "$(turl "$db")/book"
   Z_SEEN=0; Z_LOST=""
   while read -r DAY; do
     [ -z "$DAY" ] && continue

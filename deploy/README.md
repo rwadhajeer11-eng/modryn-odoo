@@ -91,17 +91,32 @@ tenant provisioning.)
 systemctl start odoo
 ```
 
-**e. `/etc/hosts` for the regression suite.** `scripts/verify.sh` hardcodes
-`bella.localtest.me` and `noga.localtest.me`; it cannot be pointed at production hostnames.
-Give those names a local meaning so the suite exercises Odoo directly:
+**e. Point the regression suite at this box.** `scripts/verify.sh` takes `BASE_HOST` and
+`BASE_SCHEME`, so it addresses the real hostnames **through nginx**:
 
-```
-127.0.0.1  bella.localtest.me noga.localtest.me
+```bash
+sudo -u odoo env BASE_HOST="$DOMAIN" BASE_SCHEME=https ODOO_CONF=/etc/odoo/odoo.conf \
+  MODRYN_DEMO_PASSWORD='<seeded password>' /opt/modryn/scripts/verify.sh
 ```
 
-`dbfilter = ^%d$` takes the first hostname label, so `bella.localtest.me:8069` still routes
-to database `bella`. This tests **Odoo, not nginx** — the nginx gates are the separate `curl`
-checks in §8.
+`deploy.sh` passes all four for you; this is the form for running it by hand.
+
+Three things that are not optional:
+
+- **`ODOO_CONF` must be explicit.** `/opt/modryn` is a checkout of the repository, so
+  `./odoo.conf` exists here too — and it is the *developer's*, listing a laptop's tenants.
+- **As `odoo`, not root.** The suite makes 72 `psql -d <tenant>` calls authenticating by peer,
+  and there is no `root` PostgreSQL role. As root they return empty and are read as legitimate
+  zeros: green, having asserted nothing.
+- **On the box, not from a laptop.** §10a signs in with a real `POST /staff/login`, which nginx
+  rate-limits at `5r/m` and fail2ban watches at `maxretry=6`. The `geo` block exempts
+  `127.0.0.1/32` for exactly this, and that only applies when the request originates here.
+
+This replaces the `/etc/hosts` entry earlier revisions of this file prescribed. That workaround
+made the suite address `*.localtest.me` on 127.0.0.1, which meant **the deploy gate exercised
+Odoo and bypassed nginx entirely** — TLS, the catch-all, the rate limits and the
+`X-Forwarded-Host` ProxyFix is gated on were all outside the only suite anyone ran. §8 and
+`verify_edge.sh` are now an *addition* rather than a *compensation*.
 
 ---
 
@@ -347,61 +362,50 @@ sudo -u postgres psql -d bella -c \
 
 ## 8. Verify the box
 
-Run these after any nginx change. Each one is a defence that has a documented way of coming
-back if someone edits carelessly.
+Run this after any nginx change. It is a script, not a checklist, because a checklist has no
+exit code and nobody can tell afterwards whether it was run or skimmed.
 
 ```bash
-D=<DOMAIN>
-
-# 1. An unknown subdomain must 404 STATICALLY and never reach Odoo.
-curl -skI "https://nope.$D/" | head -1                       # expect 404
-journalctl -u odoo --since '1 min ago' | grep nope           # expect NOTHING
-
-# 2. The database manager must be gone on every host AND under a language prefix.
-#    Odoo serves /en/web/database/manager as the byte-identical page, so the
-#    prefixed forms are not decoration — they are the ones that used to answer.
-curl -skI "https://bella.$D/web/database/manager"     | head -1  # expect 404
-curl -skI "https://bella.$D/web/database/selector"    | head -1  # expect 404
-curl -skI "https://bella.$D/en/web/database/manager"  | head -1  # expect 404
-curl -skI "https://bella.$D/he/web/database/manager"  | head -1  # expect 404
-curl -skI "https://nope.$D/web/database/manager"      | head -1  # expect 404
-
-# 2b. The SMS endpoints must be rate-limited WITH and WITHOUT a language prefix.
-#     Every MODRYN route is website=True, so Odoo answers at /path and
-#     /<lang>/path, and it RENDERS the prefixed form into its own <form action>.
-#     Ten POSTs in a row must produce 429s in both shapes. Do this against a
-#     boutique with NO live Twilio credentials — each accepted request is an SMS.
-for p in /waitlist/join /en/waitlist/join; do
-  echo "== $p"
-  for i in $(seq 1 10); do
-    curl -sk -o /dev/null -w '%{http_code} ' -X POST "https://bella.$D$p"
-  done; echo
-done                     # expect the tail of each line to be 429
-
-# 2c. The prefixed form really is a live route, not a 404 that only looks safe.
-#     A registered route rejects the CSRF-less POST with 400; an absent one 404s.
-curl -sk -o /dev/null -w '%{http_code}\n' -X POST "https://bella.$D/en/waitlist/join"
-
-# 3. Odoo must not be reachable except through nginx.
-curl -sI --max-time 3 "http://<PUBLIC_IP>:8069/" || echo "refused — correct"
-
-# 4. No connection to the template while serving (else provisioning needs downtime).
-sudo -u postgres psql -d postgres -tAc \
-  "select count(*) from pg_stat_activity where datname='modryn_template'"   # expect 0
-
-# 5. Compression is on (Odoo does not compress; ~1 MB of CSS depends on this).
-curl -sI -H 'Accept-Encoding: gzip' "https://bella.$D/shop" | grep -i content-encoding
-
-# 6. Filestore is served by nginx, not by a Python worker.
-curl -sI "https://bella.$D/web/filestore/bella/aa/aaaa" | head -1          # expect 404 (internal)
-
-# 7. The fail2ban FILTER MATCHES. Not "the jail is running" — that is healthy
-#    with zero bans whether the filter works or nobody has attacked us, and the
-#    two are indistinguishable. Feed it a real line and make it produce a host.
-sudo fail2ban-regex \
-  "$(journalctl -t modryn --no-pager -o cat | grep -F 'Login failed for login:' | tail -1)" \
-  /etc/fail2ban/filter.d/modryn-odoo.conf
+sudo /opt/modryn/deploy/scripts/verify_edge.sh                      # on the box, all 12
+DOMAIN=<D> TENANT=<slug> ./verify_edge.sh --remote-only             # from a laptop, 8 of 12
 ```
+
+`deploy.sh` runs it automatically after reloading nginx. Twelve checks, each a defence with a
+documented way of coming back if someone edits carelessly:
+
+| | |
+|---|---|
+| E1 | unknown subdomain → static 404, no redirect chain, and **`ua_status=-` in `modryn.log` proving no upstream was contacted** — with a control proving the field is populated for a request that did reach Odoo |
+| E2 | `/web/database/{manager,selector}` → 404 on the tenant host and an unknown host, bare and under `/en/` `/he/` `/ar/` |
+| E3 | the prefixed routes answer **400**, not 404 — so E4 is not measuring a route that no longer exists |
+| E4 | 12 CSRF-less POSTs to `/waitlist/join` and `/en/waitlist/join` → 429 in both shapes |
+| E5 | port 8069 refused from outside |
+| E6 | zero connections to `modryn_template` |
+| E7 | gzip on the HTML **and** on the ~1 MB CSS bundle |
+| E8 | `/web/filestore` → 404 (`internal`) |
+| E9 | certificate chain verifies **and** has 30+ days left — the self-signed placeholder fails here |
+| E10 | HSTS one year with `includeSubDomains`, `nosniff` |
+| E11 | `fail2ban-regex` reports `1 matched` on a real journal line, and the captured host is the real client |
+| E12 | `:80` → 301; the ACME path 404s from disk rather than redirecting |
+
+`--remote-only` `skip()`s E1's log evidence, E6 and E11 **with the reason printed**, and the
+summary says how many did not run — a green laptop run can never be mistaken for a full pass.
+
+**Two checks are not read-only**, both bounded and documented at their call sites. E4 spends the
+running client's own rate-limit bucket for about a minute (zero rows, zero SMS — no `csrf_token`
+is sent, so Odoo rejects at 400 before any handler runs). E11 may generate **one** failed login,
+1 of `maxretry=6` toward a one-hour ban of that IP on 80/443. Never loop it.
+
+### What E1 replaces, and why
+
+Earlier revisions of this section ran `journalctl -u odoo | grep nope` and expected no output.
+**That check cannot fail.** `odoo.conf.prod` sets `log_level = warn` and the only handler override
+is `res_users:INFO`, so production Odoo logs no request lines at all — the grep is empty whether
+or not the request reached Python, including in the exact failure it existed to catch (unknown
+subdomain → 303 → `/web/database/selector`, which raises nothing). Absence of evidence from a
+logger that is switched off is not evidence of absence. `ua_status` in the nginx access log is a
+positive fact about the request, and it carries its own control because `ua_status=-` is also what
+a renamed log field produces.
 
 **This is the check.** Expect `Lines: 1 lines, 0 ignored, 1 matched, 0 missed` and an
 `Addresses found` line naming the client IP. `1 missed` means the filter is decorative and the
@@ -493,18 +497,52 @@ whole reason for database-per-tenant and the reason dumps are per-tenant files.
 
 | # | Gate | How to check |
 |---|---|---|
-| 1 | `scripts/verify.sh` — 0 failed on the box | exit code 0 (§1e for the `/etc/hosts` entries) |
-| 2 | Unknown subdomain 404s statically, nothing in the Odoo journal | §8 check 1 |
-| 3 | `/web/database/` 404s on every host, **prefixed and unprefixed** | §8 check 2 |
-| 3b | SMS endpoints return 429 under a language prefix too | §8 check 2b |
-| 3c | `fail2ban-regex` reports `1 matched` on a real journal line | §8 check 7 |
-| 4 | 0 connections to `modryn_template` while serving | §8 check 4 |
+| 1 | `scripts/verify.sh` — 0 failed, **through nginx** | exit 0, invoked per §1e |
+| 2 | Unknown subdomain 404s statically and no upstream was contacted | `verify_edge.sh` E1 |
+| 3 | `/web/database/` 404s on every host, **prefixed and unprefixed** | `verify_edge.sh` E2 |
+| 3b | SMS endpoints return 429 under a language prefix too | `verify_edge.sh` E3 + E4 |
+| 3c | `fail2ban-regex` reports `1 matched`, capturing the real client | `verify_edge.sh` E11 |
+| 4 | 0 connections to `modryn_template` while serving | `verify_edge.sh` E6 |
 | 5 | One full restore drill passed and logged | §5 |
-| 6 | Fonts self-hosted — **no** request to `fonts.gstatic.com` on any page | browser network tab on `/shop` |
+| 6 | Fonts self-hosted — **no** request to `fonts.gstatic.com` on any page | `qa/specs/fonts.spec.js`, or the four-path probe in §12 |
 | 7 | One SMS delivered to a real second handset | operator-owned |
 | 8 | Twilio credentials rotated (the current ones were pasted into a transcript) | Twilio console |
 | 9 | Ramp campaign done, tuning log filled in | §7 |
-| 10 | nginx 429 count **zero** during the final ramp | `grep ' 429 ' /var/log/nginx/modryn.log` |
+| 10 | Rate limits are not so tight that real traffic trips them | **two numbers, below** |
+
+### Gate 10, restated so it can fail
+
+The old form was `grep ' 429 ' /var/log/nginx/modryn.log`, and it **matches nothing on any box** —
+`log_format modryn_load` writes `status=$status`, so the line reads `status=429`, never
+space-429-space. The gate was passing on grep syntax.
+
+Fixing the grep is not enough. §7 tells you to exempt `LOADGEN_IP` from `limit_req`, which makes
+the generator *structurally incapable* of producing a 429; without the exemption a single-IP
+generator against `rate=10r/m` produces thousands from the first stage. There is no configuration
+in which "zero 429s from the load generator" is both achievable and informative.
+
+What the gate is actually trying to assert is *the limits are not so tight that real traffic trips
+them*. Two numbers, and neither means anything alone:
+
+```bash
+# (a) 429s from anyone who is NOT the exempted generator, during the ramp window.
+#     Non-zero means the limits are too tight for real traffic and must be raised —
+#     which is what modryn-http.conf's own comment already says.
+awk -v since="$RAMP_START" '$1 >= since && /status=429/' /var/log/nginx/modryn.log | wc -l   # 0
+
+# (b) THE CONTROL, without which (a) is worthless: prove 429 is reachable at all.
+#     A limit_req that was deleted, or a zone that never matched a location,
+#     produces the same zero.
+sudo /opt/modryn/deploy/scripts/verify_edge.sh        # E4 must pass, same session
+```
+
+Gate 10 = (a) is zero **and** (b) passed in the same session. One without the other is the
+"healthy jail with zero bans" mistake in a different costume.
+
+Note that `modryn_load` carries no `$remote_addr`, so (a) cannot filter the generator out by IP.
+Either add `client=$remote_addr` to the format — a versioned change, since the format is a
+declared contract with the load harness — or read `/var/log/nginx/access.log` for that one number.
+Flagged rather than silently chosen.
 
 Gates 6, 7 and 8 are not fixable from this directory. Gate 6 in particular is a code change in
 `addons/modryn_theme` — the storefront currently pulls Frank Ruhl Libre and Assistant from
