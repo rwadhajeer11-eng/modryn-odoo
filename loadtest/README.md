@@ -282,9 +282,9 @@ that ever changes silently.
 
 **Seeded bookings sit on the grid `/book` itself offers** — Sun–Thu, 10:00–17:00
 Jerusalem local, on the hour — because `/book/submit` now refuses any other time
-and `verify.sh` asserts the same against the rows. `seed_tenant.py` imports
-`OPEN_WEEKDAYS`, `OPEN_HOUR`, `CLOSE_HOUR`, `DAYS_AHEAD` and `TZ` from the
-controller so they cannot drift, and `gen_tenants.sh` re-asserts the *result* in
+and `verify.sh` asserts the same against the rows. The grid is no longer constants: `seed_tenant.py` reads
+`modryn.opening.hours` — the same model `_slots()` reads — and imports only
+`DAYS_AHEAD` and `TZ` from the controller, so they cannot drift, and `gen_tenants.sh` re-asserts the *result* in
 the same SQL `verify.sh` uses.
 
 ### One day is full on purpose
@@ -302,7 +302,7 @@ the seeder *raised* if bookings reached the grid size. The arithmetic:
 
 | | |
 |---|---|
-| open hours per day | `CLOSE_HOUR - OPEN_HOUR` = 10..17 = **8** |
+| open hours per day | from `modryn.opening.hours`; seeded Sun–Thu 10:00–18:00 = 10..17 = **8** |
 | controller window | offsets 1..14 → 14 days → exactly 10 Sun–Thu → **80 slots** |
 | seed window | offsets 2..14 → 13 days → 9 or 10 Sun–Thu → **72 or 80 slots** |
 | default bookings | 20, uniformly sampled |

@@ -7,11 +7,14 @@ from psycopg2.errors import UniqueViolation
 from odoo import _, http
 from odoo.http import request
 
-# Israeli retail week: Sunday-Thursday. Python's weekday() is Mon=0..Sun=6.
-OPEN_WEEKDAYS = {6, 0, 1, 2, 3}
-OPEN_HOUR, CLOSE_HOUR = 10, 18
-SLOT_MINUTES = 60
+from ..models.opening_hours import SLOT_MINUTES
+
 DAYS_AHEAD = 14
+# The lead time that was never written down: the day loop started at offset 1,
+# and that — not a comment anywhere — is what "no same-day booking" meant. Named
+# so the policy is legible. Deliberately NOT owner-editable: a boutique that
+# wants somebody in today already has the walk-in queue.
+LEAD_DAYS = 1
 TZ = pytz.timezone('Asia/Jerusalem')
 
 # Mirror of ONE_LIVE_BOOKING_PER_SLOT_INDEX in
@@ -28,16 +31,37 @@ def _norm_phone(raw):
     return re.sub(r'[\s\-]', '', (raw or '').strip())
 
 
+def _utc_on(day, hour):
+    """A local wall-clock float hour on `day`, as the naive UTC the column holds.
+
+    Localize then convert. Israel observes DST, so a fixed offset — or any
+    arithmetic done on a UTC value — drifts by an hour for half the year,
+    including on the transition day itself.
+
+    Float, not int: opening hours mirror modryn.shift.template, so 9.5 is a real
+    window start and must land on 09:30, not 09:00.
+    """
+    whole = int(hour)
+    naive = datetime.combine(day, datetime.min.time()).replace(
+        hour=whole, minute=int(round((hour - whole) * 60)))
+    return TZ.localize(naive).astimezone(pytz.utc).replace(tzinfo=None)
+
+
 class ModrynBooking(http.Controller):
 
     # ---------------------------------------------------------------- helpers
     def _slots(self):
         """Open slots for the next fortnight, minus the ones already taken.
 
-        ponytail: a fixed Sun-Thu 10:00-18:00 grid, not an availability engine.
-        Opening hours, per-window capacity, holidays and staff rosters are the
-        Phase-2 booking engine (XL) — building them here would prove nothing the
-        PoC needs to know.
+        The grid is the boutique's own week, read from modryn.opening.hours,
+        not a constant in this file. sudo() because /book is public: an
+        anonymous visitor cannot read the owner's configuration, and a
+        non-sudo read would make the page 403 for exactly the people it exists
+        for.
+
+        ponytail: still one fixed slot length and no capacity. Per-appointment
+        duration, per-window capacity, holidays and staff rosters remain the
+        Phase-2 booking engine (XL).
         """
         now_local = datetime.now(TZ)
         # Bound the scan to exactly the fortnight the loop below renders. Without
@@ -45,8 +69,10 @@ class ModrynBooking(http.Controller):
         # the boutique will ever take and throws away all but 14 days of it.
         #
         # The bound is local midnight AFTER the last rendered day, converted to
-        # UTC: the last slot that day starts at 17:00 local, so everything the
-        # page can show falls strictly before it. NOT utcnow() + DAYS_AHEAD —
+        # UTC: every hour the page can show is a wall-clock time on that day, so
+        # all of it falls strictly before it — which stays true whatever hours
+        # the owner sets, since a window ends at 24:00 at the latest. NOT
+        # utcnow() + DAYS_AHEAD —
         # the loop counts days in Jerusalem local time while the column is UTC,
         # so just after local midnight (00:30, i.e. 22:30 UTC the day before)
         # that bound lands ~22 hours short of the final day's last slot. The
@@ -74,21 +100,32 @@ class ModrynBooking(http.Controller):
         # fresh boutique — that made this page a guaranteed 500.
         taken = {ev.start.replace(second=0, microsecond=0) for ev in booked}
 
+        Hours = request.env['modryn.opening.hours'].sudo()
+        # The whole week in ONE read, then a dict lookup per day. Asking
+        # modryn_hours_on() inside the loop cost fourteen queries against a
+        # five-row table on every render of the page whose scan bound above
+        # exists precisely to keep it cheap — and three times that on a failed
+        # submit, which regenerates the grid twice more.
+        by_weekday = Hours.modryn_hours_by_weekday()
         days = []
-        for offset in range(1, DAYS_AHEAD + 1):
+        for offset in range(LEAD_DAYS, DAYS_AHEAD + 1):
             day = (now_local + timedelta(days=offset)).date()
-            if day.weekday() not in OPEN_WEEKDAYS:
+            hours = by_weekday.get(str(day.weekday()), [])
+            # No hours means shut, and a SHUT day is not a FULL one. A full day
+            # is still rendered below, with a waitlist form, because she should
+            # learn she could be first in line. A day the boutique does not open
+            # has nothing to offer and nothing to queue for, so it does not
+            # appear at all — which is also the weekday filter, now that the
+            # week is the owner's rather than a constant here.
+            if not hours:
                 continue
             times = []
-            for hour in range(OPEN_HOUR, CLOSE_HOUR, SLOT_MINUTES // 60):
-                naive = datetime.combine(day, datetime.min.time()).replace(hour=hour)
-                # Localize then convert: Israel observes DST, so a fixed offset
-                # would drift by an hour for half the year.
-                utc = TZ.localize(naive).astimezone(pytz.utc).replace(tzinfo=None)
+            for hour in hours:
+                utc = _utc_on(day, hour)
                 if utc.replace(second=0, microsecond=0) in taken:
                     continue
                 times.append({'value': utc.strftime('%Y-%m-%d %H:%M:%S'),
-                              'label': '%02d:00' % hour})
+                              'label': Hours.modryn_hour_label(hour)})
             # A day with no free hours is still shown — with a waitlist form
             # instead of a time picker. Hiding it would mean she never learns
             # she could have been first in line.
@@ -233,8 +270,9 @@ class ModrynBooking(http.Controller):
             # eight months out and got a confirmation SMS for it.
             #
             # The honest test is "is this a value the server itself just offered",
-            # so ask the same function that offers them rather than restating
-            # OPEN_WEEKDAYS/OPEN_HOUR/DAYS_AHEAD here where they could drift apart.
+            # so ask the same function that offers them rather than restating the
+            # opening hours and DAYS_AHEAD here where they could drift apart —
+            # and they would drift the moment the owner edits her week.
             # That also keeps the DST handling in one place: _slots() derives every
             # candidate by localising a local wall clock, never by UTC arithmetic.
             # Runs AFTER the taken check because _slots() omits taken hours too,

@@ -22,7 +22,7 @@ reads through sudo(), handing the template only the fields it needs. Portal user
 therefore never touch hr.employee directly.
 """,
     'category': 'Website',
-    'version': '19.0.1.3.0',
+    'version': '19.0.1.4.0',
     'depends': [
         'hr',
         'portal',

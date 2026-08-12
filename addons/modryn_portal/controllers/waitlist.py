@@ -6,8 +6,9 @@ from psycopg2.errors import UniqueViolation
 from odoo import _, http
 from odoo.http import request
 
+from odoo.addons.modryn_booking.models.opening_hours import SLOT_MINUTES
+
 TZ = pytz.timezone('Asia/Jerusalem')
-OPEN_HOUR, CLOSE_HOUR = 10, 18
 # The partial unique index on calendar_event that decides who owns a slot. Named
 # here because a losing racer must be told apart from an unrelated constraint.
 SLOT_INDEX = 'calendar_event_modryn_one_live_booking_per_slot'
@@ -52,8 +53,38 @@ class ModrynWaitlist(http.Controller):
             # so the offset flips between +02:00 and +03:00 and any arithmetic
             # done on a UTC value ("+24h", "+8h") lands an hour out for half the
             # year — including on the transition day itself.
-            naive = datetime.combine(day_date, datetime.min.time()).replace(hour=hour)
+            #
+            # Float hours, because a window may start at 9.5 — the same encoding
+            # modryn.shift.template uses.
+            whole = int(hour)
+            naive = datetime.combine(day_date, datetime.min.time()).replace(
+                hour=whole, minute=int(round((hour - whole) * 60)))
             return TZ.localize(naive).astimezone(pytz.utc).replace(tzinfo=None)
+
+        # sudo() because /claim is public — the link holder is anonymous and
+        # cannot read the owner's configuration.
+        Hours = request.env['modryn.opening.hours'].sudo()
+        hours = Hours.modryn_hours_on(day_date)
+        # This copy of the grid never had a weekday filter at all, so a claim
+        # link happily offered Friday hours the boutique does not sell. The
+        # empty list a shut day returns IS that filter.
+        if not hours:
+            return []
+        # This day's own window, read from the boutique's hours instead of a
+        # hardcoded 10-18. Deriving it matters for the SCAN, not just the
+        # display: against a fixed 10-18 a boutique opening at 12 or closing at
+        # 21 would have its real bookings fall outside the window below, drop
+        # out of `taken`, and be offered to a second bride.
+        #
+        # The upper edge is an INSTANT — the last start plus one slot — not a
+        # wall-clock hour. A window closing at midnight is legal (the model
+        # allows end_hour == 24, exactly as a shift template does), and that
+        # made the old `hours[-1] + 1` reach 24.0, which datetime.replace(hour=)
+        # rejects outright: every /claim on that weekday would 500. Adding the
+        # timedelta AFTER localisation also keeps the edge DST-correct, since a
+        # slot is sixty minutes of real time whatever the offset does that night.
+        first_start = _utc_at(hours[0])
+        after_last = _utc_at(hours[-1]) + timedelta(minutes=SLOT_MINUTES)
 
         Event = request.env['calendar.event'].sudo()
         # Bound the scan to the single day this renders. Unbounded it read every
@@ -62,12 +93,12 @@ class ModrynWaitlist(http.Controller):
         #
         # Both edges come from _utc_at(), the same expression the loop below
         # uses, so the bound cannot drift from what is rendered: the loop offers
-        # OPEN_HOUR..CLOSE_HOUR-1, so OPEN_HOUR is the first hour shown and
-        # CLOSE_HOUR is the first one not shown — a half-open window.
+        # slot STARTS, so the first start is the first instant shown and one
+        # slot past the last start is the first instant not shown — half-open.
         domain = [
             ('modryn_is_booking', '=', True),
-            ('start', '>=', _utc_at(OPEN_HOUR)),
-            ('start', '<', _utc_at(CLOSE_HOUR)),
+            ('start', '>=', first_start),
+            ('start', '<', after_last),
         ]
         if 'modryn_cancelled_at' in Event._fields:
             domain.append(('modryn_cancelled_at', '=', False))
@@ -75,12 +106,12 @@ class ModrynWaitlist(http.Controller):
 
         slots = []
         now = datetime.utcnow()
-        for hour in range(OPEN_HOUR, CLOSE_HOUR):
+        for hour in hours:
             utc = _utc_at(hour)
             if utc <= now or utc.replace(second=0, microsecond=0) in taken:
                 continue
             slots.append({'value': utc.strftime('%Y-%m-%d %H:%M:%S'),
-                          'label': '%02d:00' % hour})
+                          'label': Hours.modryn_hour_label(hour)})
         return slots
 
     def _render_claim(self, offer, error=None):
@@ -141,8 +172,9 @@ class ModrynWaitlist(http.Controller):
             # any hour on any date, including a closed day months away.
             #
             # The honest test is "is this a value this page just offered", so ask
-            # the function that offers them rather than restating OPEN_HOUR /
-            # CLOSE_HOUR / offer.day here where they could drift apart. It also
+            # the function that offers them rather than restating the boutique's
+            # hours and offer.day here where they could drift apart — and they
+            # would, the first time the owner edits her week. It also
             # keeps DST in one place: _free_slots_on() localises a local wall
             # clock, never adds hours to a UTC value. Runs AFTER the taken check
             # because it omits taken hours too, and "just taken" is the more
@@ -185,7 +217,7 @@ class ModrynWaitlist(http.Controller):
                 event = Event.create({
                     'name': _("Consultation: %s") % offer.name,
                     'start': start,
-                    'stop': start + timedelta(hours=1),
+                    'stop': start + timedelta(minutes=SLOT_MINUTES),
                     'partner_ids': [(6, 0, partner.ids)],
                     'modryn_is_booking': True,
                     'modryn_booking_type': 'consult',

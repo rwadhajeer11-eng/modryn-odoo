@@ -1,11 +1,27 @@
 from psycopg2 import IntegrityError
 
 from odoo import _, http
+from odoo.addons.modryn_booking.models.opening_hours import weekday_selection
 from odoo.exceptions import ValidationError
 from odoo.http import request
 from odoo.tools import mute_logger
 
 MIN_PASSWORD = 8
+
+# modryn.opening.hours stores Python weekday() numbers as strings, which start on
+# Monday. The Israeli retail week starts on Sunday, so the page reads in this
+# order rather than the model's.
+WEEK_ORDER = ('6', '0', '1', '2', '3', '4', '5')
+
+
+def _clock_to_float(raw):
+    """"09:30" -> 9.5. None when the field arrives empty or unparseable."""
+    try:
+        hour, minute = (raw.split(':') + ['0'])[:2]
+        value = int(hour) + int(minute) / 60.0
+    except (AttributeError, TypeError, ValueError):
+        return None
+    return value if 0 <= value <= 24 else None
 
 
 def _levels():
@@ -287,3 +303,93 @@ class ModrynManage(http.Controller):
             # Archive, never delete: cards still point at this room.
             room.active = not room.active
         return request.redirect('/manage/rooms')
+
+    # -------------------------------------------------------- opening hours
+    def _hours(self):
+        # active_test=False throughout: a closed window still has to be listed,
+        # or the owner cannot reopen it, and a duplicate check that ignores
+        # archived rows would still hit the model's uniqueness constraint.
+        return request.env['modryn.opening.hours'].sudo().with_context(active_test=False)
+
+    def _weekdays(self):
+        """(value, label) pairs, Sunday first. Labels come from the model so the
+        page and the model never drift apart on what '6' means.
+
+        Called directly rather than through fields_get(): Odoo resolves a
+        callable selection by handing it the recordset, so the round trip only
+        added a query and a way to crash. WEEK_ORDER, not the model's _order,
+        because that sorts the weekday STRING and would put Monday first.
+        """
+        labels = dict(weekday_selection())
+        return [(day, labels.get(day, day)) for day in WEEK_ORDER]
+
+    def _hour_rows(self):
+        Hours = self._hours()
+        labels = dict(self._weekdays())
+        order = {day: index for index, day in enumerate(WEEK_ORDER)}
+        windows = Hours.search([]).sorted(
+            key=lambda h: (order.get(h.weekday, len(WEEK_ORDER)), h.start_hour))
+        return [{
+            'id': h.id,
+            'day': labels.get(h.weekday, h.weekday),
+            'opens': Hours.modryn_hour_label(h.start_hour),
+            'closes': Hours.modryn_hour_label(h.end_hour),
+            'active': h.active,
+        } for h in windows]
+
+    @http.route('/manage/hours', type='http', auth='user', website=True, sitemap=False)
+    def hours_list(self, error=None, **kw):
+        if not self._require_owner():
+            return request.not_found()
+        return request.render('modryn_staff.manage_hours', {
+            'hours': self._hour_rows(),
+            'weekdays': self._weekdays(),
+            'error': error,
+            'active_tab': 'hours',
+        })
+
+    @http.route('/manage/hours/new', type='http', auth='user', website=True,
+                methods=['POST'], csrf=True, sitemap=False)
+    def hours_new(self, **post):
+        if not self._require_owner():
+            return request.not_found()
+
+        weekday = post.get('weekday')
+        if weekday not in WEEK_ORDER:
+            return request.redirect('/manage/hours?error=%s' % _("Please choose a day"))
+        opens = _clock_to_float(post.get('opens'))
+        closes = _clock_to_float(post.get('closes'))
+        if opens is None or closes is None:
+            return request.redirect(
+                '/manage/hours?error=%s' % _("Please enter an opening and a closing time"))
+        if closes <= opens:
+            return request.redirect(
+                '/manage/hours?error=%s' % _("A day has to close after it opens"))
+
+        taken = _("You already open at that time on that day")
+        Hours = self._hours()
+        if Hours.search_count([('weekday', '=', weekday), ('start_hour', '=', opens)]):
+            return request.redirect('/manage/hours?error=%s' % taken)
+        try:
+            # Savepoint so a duplicate that slips past the check above — or any
+            # constraint the model enforces — is refused in words rather than
+            # poisoning the request's transaction.
+            with request.env.cr.savepoint(), mute_logger('odoo.sql_db'):
+                Hours.create({
+                    'weekday': weekday, 'start_hour': opens, 'end_hour': closes})
+        except (ValidationError, IntegrityError):
+            return request.redirect('/manage/hours?error=%s' % taken)
+        return request.redirect('/manage/hours')
+
+    @http.route('/manage/hours/archive/<int:hours_id>', type='http', auth='user',
+                website=True, methods=['POST'], csrf=True, sitemap=False)
+    def hours_archive(self, hours_id, **post):
+        if not self._require_owner():
+            return request.not_found()
+        window = self._hours().browse(hours_id).exists()
+        if window:
+            # Archive, never delete: a boutique closes a window for a holiday
+            # week and wants it back, and bookings already taken in it must
+            # still read correctly.
+            window.active = not window.active
+        return request.redirect('/manage/hours')

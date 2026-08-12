@@ -40,6 +40,8 @@
                        t-attf-class="modryn_admin_link #{'is_active' if active_tab == 'pieces' else ''}">Pieces</a>
                     <a href="/manage/rooms"
                        t-attf-class="modryn_admin_link #{'is_active' if active_tab == 'rooms' else ''}">Rooms</a>
+                    <a href="/manage/hours"
+                       t-attf-class="modryn_admin_link #{'is_active' if active_tab == 'hours' else ''}">Hours</a>
                     <a href="/atelier" class="modryn_admin_link">Workshop</a>
                     <a href="/floor" class="modryn_admin_link">Floor board</a>
                     <t t-call="modryn_staff.lang_toggle"/>
@@ -253,6 +255,64 @@
                                 <button type="submit" class="btn btn-sm btn-outline-dark">
                                     <t t-if="room.active">Archive</t>
                                     <t t-else="">Restore</t>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </t>
+    </template>
+
+    <!-- ========================== opening hours =========================== -->
+    <template id="manage_hours" name="Opening hours">
+        <t t-call="modryn_staff.manage_layout">
+            <h1 class="mb-2">Opening hours</h1>
+            <p class="text-muted mb-4">
+                The hours the boutique takes fittings. This is exactly what the booking
+                page offers — change it here and the next customer sees the new times.
+                A day can have two windows if you close for the afternoon.
+            </p>
+
+            <div t-if="error" class="modryn_field_error mb-3" role="alert" t-out="error"/>
+
+            <form action="/manage/hours/new" method="post" class="d-flex gap-2 mb-4 flex-wrap"
+                  style="max-width: 640px;">
+                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                <select name="weekday" class="form-select w-auto">
+                    <t t-foreach="weekdays" t-as="day">
+                        <option t-att-value="day[0]" t-out="day[1]"/>
+                    </t>
+                </select>
+                <!-- type="time" so the browser does the parsing and the owner
+                     never has to think of half past ten as 10.5. -->
+                <input type="time" name="opens" class="form-control w-auto" dir="ltr" value="10:00"/>
+                <input type="time" name="closes" class="form-control w-auto" dir="ltr" value="18:00"/>
+                <button type="submit" class="btn btn-primary">Add</button>
+            </form>
+
+            <p t-if="not hours" class="modryn_empty">
+                Nothing set yet — the booking page has no times to offer. Add your first day above.
+            </p>
+
+            <table t-if="hours" class="table modryn_table align-middle" style="max-width: 640px;">
+                <thead>
+                    <tr><th>Day</th><th>Opens</th><th>Closes</th><th/></tr>
+                </thead>
+                <tbody>
+                    <tr t-foreach="hours" t-as="h"
+                        t-attf-class="#{'modryn_archived' if not h['active'] else ''}">
+                        <td t-out="h['day']"/>
+                        <td dir="ltr" t-out="h['opens']"/>
+                        <td dir="ltr" t-out="h['closes']"/>
+                        <td class="text-end">
+                            <form t-attf-action="/manage/hours/archive/#{h['id']}" method="post"
+                                  class="d-inline">
+                                <input type="hidden" name="csrf_token"
+                                       t-att-value="request.csrf_token()"/>
+                                <button type="submit" class="btn btn-sm btn-outline-dark">
+                                    <t t-if="h['active']">Close</t>
+                                    <t t-else="">Open again</t>
                                 </button>
                             </form>
                         </td>

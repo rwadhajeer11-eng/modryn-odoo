@@ -27,9 +27,9 @@ listed both as work to do; that is what the branch reconciliation on 2026-08-11 
 
 | # | Feature | Spec | Size | Status | Depends on |
 |---|---------|------|------|--------|------------|
-| 0 | Palette consolidation + slug-normalisation fix | [`../specs/avail-0-baseline-hygiene.md`](../specs/avail-0-baseline-hygiene.md) | S | building | — |
+| 0 | Palette consolidation + slug-normalisation fix | [`../specs/avail-0-baseline-hygiene.md`](../specs/avail-0-baseline-hygiene.md) | S | ✅ done — `6b7687d` | — |
 | 1 | Record the SMS-delivery evidence | — | S | todo | — |
-| 2 | Opening hours as data (`/manage/hours`) | — | M | todo | 0 |
+| 2 | Opening hours as data (`/manage/hours`) | [`../specs/avail-2-opening-hours.md`](../specs/avail-2-opening-hours.md) | M | ✅ done | 0 |
 | 3 | Blackout dates and holidays | — | S | todo | 2 |
 | 4 | Appointment types: duration + capacity | — | M | todo | 2 |
 | 5 | The roster means something on the floor | — | M | todo | 0 |

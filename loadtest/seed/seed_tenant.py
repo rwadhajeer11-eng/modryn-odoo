@@ -20,14 +20,15 @@ from datetime import datetime, timedelta
 import pytz
 from PIL import Image, ImageDraw
 
-# Import the grid constants rather than restating them. /book/submit now refuses
-# any time the server would not itself have offered, and verify.sh §"unoffered
-# booking" asserts the same thing against the rows — so a seeded booking on a
-# closed day, a closed hour or an off-the-hour minute is not merely unrealistic,
-# it fails the suite. Importing is what keeps the two from drifting apart.
-from odoo.addons.modryn_booking.controllers.main import (
-    CLOSE_HOUR, DAYS_AHEAD, OPEN_HOUR, OPEN_WEEKDAYS, SLOT_MINUTES, TZ,
-)
+# Share the server's own definition of the grid rather than restating it.
+# /book/submit refuses any time the server would not itself have offered, and
+# verify.sh §"unoffered booking" asserts the same thing against the rows — so a
+# seeded booking on a closed day, a closed hour or an off-the-hour minute is not
+# merely unrealistic, it fails the suite. The weekdays and hours are no longer
+# constants at all; they are read from modryn.opening.hours below. Only the
+# fortnight, the timezone and the slot length still come from code.
+from odoo.addons.modryn_booking.controllers.main import DAYS_AHEAD, TZ
+from odoo.addons.modryn_booking.models.opening_hours import SLOT_MINUTES
 
 SLUG = os.environ.get('MODRYN_SLUG')
 if not SLUG:
@@ -274,9 +275,9 @@ for idx in range(DRESSES):
 dress_ids = Template.search([('is_published', '=', True)], order='id').ids
 
 # ------------------------------------------------------------------ bookings
-# Only the hours /book would itself offer: Sun-Thu (python weekday in
-# OPEN_WEEKDAYS), OPEN_HOUR..CLOSE_HOUR-1 Jerusalem local, exactly on the hour,
-# derived by localising a local wall clock the way _slots() does. NOT by UTC
+# Only the hours /book would itself offer, read from modryn.opening.hours — the
+# same model _slots() reads, so the two cannot drift. Jerusalem local, derived by
+# localising a local wall clock the way _slots() does. NOT by UTC
 # arithmetic — Israel observes DST, so a fixed offset drifts by an hour for half
 # the year and would put every seeded booking one hour off the grid in summer.
 now_local = datetime.now(TZ)
@@ -284,17 +285,27 @@ open_days = []          # [(date, [utc slot, ...]), ...] in calendar order
 # From offset 2, not 1. Tomorrow's slots belong to the booking scenario, and a
 # seed run that straddles local midnight would see offset 1 become "today" — a
 # day /book never offers — leaving live bookings the server would now refuse.
+# The boutique's own week, from the same model the controllers read, in one
+# query. The grid used to be OPEN_WEEKDAYS/OPEN_HOUR/CLOSE_HOUR imported from
+# the controller; those became data, and an empty hour list is now how a closed
+# day is spelt.
+by_weekday = env['modryn.opening.hours'].sudo().modryn_hours_by_weekday()
 for offset in range(2, DAYS_AHEAD + 1):
     day = (now_local + timedelta(days=offset)).date()
-    if day.weekday() not in OPEN_WEEKDAYS:
+    hours = by_weekday.get(str(day.weekday()), [])
+    if not hours:
         continue
     slots = []
-    for hour in range(OPEN_HOUR, CLOSE_HOUR, SLOT_MINUTES // 60):
-        naive = datetime.combine(day, datetime.min.time()).replace(hour=hour)
+    for hour in hours:
+        whole = int(hour)
+        naive = datetime.combine(day, datetime.min.time()).replace(
+            hour=whole, minute=int(round((hour - whole) * 60)))
         slots.append(TZ.localize(naive).astimezone(pytz.utc).replace(tzinfo=None))
     open_days.append((day, slots))
 
-SLOTS_PER_DAY = (CLOSE_HOUR - OPEN_HOUR) // (SLOT_MINUTES // 60)
+# Reported, not assumed: with owner-defined hours a boutique's days need not be
+# the same length as each other.
+SLOTS_PER_DAY = max((len(slots) for _day, slots in open_days), default=0)
 grid = [slot for _day, slots in open_days for slot in slots]
 
 # ---------------------------------------------------------------- full days

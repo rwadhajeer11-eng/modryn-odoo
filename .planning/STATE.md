@@ -10,7 +10,7 @@ defensible rather than theoretical.
 
 | | |
 |---|---|
-| `scripts/verify.sh` | **297 passed, 0 failed, 1 skipped** — +34 over the `modryn_ops` build: 9 in §1 (cross-tenant product URLs in three languages, and the shared `database.secret` that let one tenant's booking token open another's), 24 in the new §10b-bis (`.ics` export), and 1 guarding the slug rule against over-reach (a non-canonical slug that *slugifies* to canonical must still 301). The skip is honest: no tenant currently holds a *cancelled future* booking, so the "remove from calendar" branch has no subject. It was verified by hand and will fire on its own the moment a customer cancels ahead of time |
+| `scripts/verify.sh` | **301 passed, 0 failed, 2 skipped** — 303 checks, +40 on this run over the `modryn_ops` build's 263: 9 in §1 (cross-tenant product URLs in three languages, and the shared `database.secret` that let one tenant's booking token open another's), §10b-bis for the `.ics` export, 1 guarding the slug rule against over-reach (a non-canonical slug that *slugifies* to canonical must still 301), and 7 in the new §24 (opening hours seeded identically across all three databases, manifest/migration versions in step, and the grid following the table rather than a constant). The total moves with the demo data rather than being fixed: three of §10b-bis's checks need a future booking on bella. Both skips are fixture age, not gaps in the code: bella holds no *future* booking and no *cancelled future* booking, so the "add to calendar" and "remove from calendar" branches have no subject. They were verified by hand and fire again the moment anyone books ahead. The second skip is newly visible rather than newly broken — those checks were nested inside the future-booking branch, so when the last future booking aged into the past three assertions silently stopped running behind a single skip. A fixture guard now gates only the checks that need that fixture |
 | Odoo | 19.0 **Community**, shallow gitignored clone at `odoo/`, never edited |
 | Tenants | `bella` and `noga` — one Postgres database each, routed by `dbfilter = ^%d$` |
 | Custom code | ~8,100 non-blank lines across eight addons |
@@ -21,10 +21,10 @@ defensible rather than theoretical.
 | Addon | Lines | What it is |
 |---|---|---|
 | `modryn_theme` | 359 | MODRYN palette (declared once, consumed by every frontend bundle), fonts and RTL through Odoo's native theming slots; per-dress price visibility; the slug guard that makes one tenant's product URL 404 on another |
-| `modryn_booking` | 460 | Dual-path booking on `calendar.event` — dress-bound and standalone; server-enforced terms |
+| `modryn_booking` | 506 | Dual-path booking on `calendar.event` — dress-bound and standalone; server-enforced terms; **opening hours as owner data**, the one grid both booking and the waitlist read |
 | `modryn_queue_poc` | 517 | QR walk-in queue, `bus.bus` realtime, Waitwhile-style intake with an invisible acceptance gate |
-| `modryn_staff` | 2,767 | Employees, owner-defined roles, assignment with primary + helpers, drag-and-drop floor board, fitting rooms, SOS paging |
-| `modryn_portal` | 1,251 | Phone + SMS OTP login, my-bookings, confirmation and 24h reminder SMS, day-waitlist refill loop, `.ics` export |
+| `modryn_staff` | 2,917 | Employees, owner-defined roles, assignment with primary + helpers, drag-and-drop floor board, fitting rooms, SOS paging, `/manage/hours` |
+| `modryn_portal` | 1,281 | Phone + SMS OTP login, my-bookings, confirmation and 24h reminder SMS, day-waitlist refill loop, `.ics` export |
 | `modryn_atelier` | 474 | Garment pieces, alteration tasks, workshop dashboard, seamstress self-view |
 | `modryn_roster` | 779 | Owner shift templates, staff availability, per-role coverage targets, publish |
 | `modryn_ops` | ~1,700 | Appointment outcomes (sold / not sold / no-show) with SMS flows, follow-up tasks + owner-defined opening/closing checklists with overdue escalation, bride CRM fields with manager-gated budget, conversion/ATV reports, append-only audit trail |
@@ -69,7 +69,7 @@ deliberately not a silent success.
 ```bash
 cd /Users/mrwen/Documents/Github/modryn-odoo && source .venv/bin/activate
 ./odoo/odoo-bin server -c odoo.conf --http-interface=127.0.0.1
-bash scripts/verify.sh          # 298 checks — run before believing anything works
+bash scripts/verify.sh          # 303 checks — run before believing anything works
 ```
 
 Logins seeded by `scripts/seed_staff.py`, demo password `modryn2026`: `miri` owner ·
@@ -101,6 +101,8 @@ After editing an addon, upgrade it or nothing changes:
 | `0b42239` | Walkthrough acts 10–13, refreshed scorecard, two verify fixes |
 | `7006ad6` | `modryn_ops` — outcomes, tasks, CRM, reports, audit |
 | `56cfa46` `de547b7` `f8c377b` | Cross-tenant product URLs 404; `.ics` export; and the shared `database.secret` found while building it |
+| `6b7687d` | One palette, declared once; the slug rule stops over-reaching on case and accents |
+| _this_ | Opening hours become owner data — the fixed Sun–Thu 10–18 lattice, hardcoded in two controllers, is now one table both read |
 
 ## Before changing anything
 

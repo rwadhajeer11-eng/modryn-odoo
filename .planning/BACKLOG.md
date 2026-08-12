@@ -48,14 +48,20 @@ rather than blocks — blocking would be wrong on a day when someone covers a si
 
 ---
 
-## 4. Availability engine · XL
+## 4. Availability engine · L (was XL)
 
-The booking grid is a fixed Sunday–Thursday, 10:00–18:00 lattice with a one-hour slot and no
-concept of capacity. Real opening hours, per-type durations, holidays, blackout dates and
-per-staff calendars are all missing.
+**Opening hours are done** — `modryn.opening.hours`, editable at `/manage/hours`, read by both
+the booking grid and the waitlist claim page, seeded so the old Sunday–Thursday 10:00–18:00
+lattice survives unchanged. That also closed a latent bug: the waitlist copy of the grid had no
+weekday filter at all, so a claim link could offer a Friday.
 
-This is the single largest piece of remaining work and the one Odoo Enterprise's `appointment`
-module would most plausibly halve. It is also the thing item 3 should eventually feed.
+Still missing, in the order they should land: **blackout dates and holidays** (S), **per-type
+durations and per-slot capacity** (M — the only piece that touches the schema, since the partial
+unique index on `start` alone hard-wires capacity to 1), and **per-staff calendars**, which is
+where item 3 feeds in.
+
+Still the largest piece of remaining work and the one Odoo Enterprise's `appointment` module
+would most plausibly halve.
 
 ---
 

@@ -470,24 +470,32 @@ else
   [ "$(code "$BELLA/book/confirmed/$FUT")" = "404" ] \
     && ok "the id-addressed confirmation page is gone" \
     || bad "confirmation page still enumerable" "/book/confirmed/$FUT answered $(code "$BELLA/book/confirmed/$FUT") — walking ids hands out every booking's phone number and cancel token"
-  # Past bookings must NOT offer it — there is nothing to add. Cancelled ones
-  # MUST, because that tap is what removes the dead fitting from her calendar.
-  PAST=$(psql -d bella -tAc "select id from calendar_event where modryn_is_booking and active and start < (now() at time zone 'utc') order by start limit 1")
-  if [ -n "$PAST" ]; then
-    fetch "$BELLA/b/$(bk_token bella "$PAST")"
-    grep -q "/ics" "$PAGE" \
-      && bad "past booking hides the .ics link" "it is still offered on an appointment that has already happened" \
-      || ok "past booking hides the .ics link"
-  fi
-  CANC=$(psql -d bella -tAc "select id from calendar_event where modryn_is_booking and active and modryn_cancelled_at is not null and start > (now() at time zone 'utc') limit 1")
-  if [ -z "$CANC" ]; then
-    skip "cancelled booking offers 'remove from calendar'" "no cancelled future booking on bella"
-  else
-    fetch "$BELLA/b/$(bk_token bella "$CANC")"
-    grep -q "/ics" "$PAGE" \
-      && ok "cancelled booking offers 'remove from calendar'" \
-      || bad "cancelled booking .ics link" "she cancelled through this page and has no way to clear the fitting from her calendar"
-  fi
+fi
+# Past bookings must NOT offer it — there is nothing to add. Cancelled ones MUST,
+# because that tap is what removes the dead fitting from her calendar.
+#
+# These two sit OUTSIDE the future-booking branch on purpose. They were nested
+# inside it, so the day bella's last future booking aged into the past, three
+# assertions that never needed one stopped running and the suite reported a
+# single skip in their place — fewer checks, same green line. A fixture guard
+# must gate only the checks that actually need that fixture.
+PAST=$(psql -d bella -tAc "select id from calendar_event where modryn_is_booking and active and start < (now() at time zone 'utc') order by start limit 1")
+if [ -z "$PAST" ]; then
+  skip "past booking hides the .ics link" "no past booking on bella"
+else
+  fetch "$BELLA/b/$(bk_token bella "$PAST")"
+  grep -q "/ics" "$PAGE" \
+    && bad "past booking hides the .ics link" "it is still offered on an appointment that has already happened" \
+    || ok "past booking hides the .ics link"
+fi
+CANC=$(psql -d bella -tAc "select id from calendar_event where modryn_is_booking and active and modryn_cancelled_at is not null and start > (now() at time zone 'utc') limit 1")
+if [ -z "$CANC" ]; then
+  skip "cancelled booking offers 'remove from calendar'" "no cancelled future booking on bella"
+else
+  fetch "$BELLA/b/$(bk_token bella "$CANC")"
+  grep -q "/ics" "$PAGE" \
+    && ok "cancelled booking offers 'remove from calendar'" \
+    || bad "cancelled booking .ics link" "she cancelled through this page and has no way to clear the fitting from her calendar"
 fi
 
 head_ "10c. premium waitlist"
@@ -796,8 +804,13 @@ grep -q "exc.diag.constraint_name != SLOT_INDEX" "$W" \
   && ok "claim catch is scoped to our slot index" || bad "claim catch scope" "$W swallows every unique violation, not just the slot one"
 # _free_slots_on had NO date bound at all — it read every booking ever taken, on
 # every /claim GET and every failed /claim POST, to decide eight hours.
-grep -q "('start', '>=', _utc_at(OPEN_HOUR))" "$W" && grep -q "('start', '<', _utc_at(CLOSE_HOUR))" "$W" \
-  && ok "_free_slots_on is bounded to the rendered day" || bad "_free_slots_on bound" "the taken-set scan has no date window"
+# The edges are now derived from the boutique's own hours rather than a hardcoded
+# 10-18, and the upper one is an INSTANT (last start + one slot) rather than a
+# wall-clock hour — a window closing at midnight would otherwise reach hour 24,
+# which datetime.replace() rejects, 500ing every /claim that day.
+grep -q "('start', '>=', first_start)" "$W" && grep -q "('start', '<', after_last)" "$W" \
+  && grep -q "after_last = _utc_at(hours\[-1\]) + timedelta(minutes=SLOT_MINUTES)" "$W" \
+  && ok "_free_slots_on is bounded to the rendered day" || bad "_free_slots_on bound" "the taken-set scan has no date window, or its upper edge is back to a wall-clock hour"
 # The bound must localise each local hour, not add hours to a UTC value: on Israel's
 # spring-forward day local midnight is +02:00 while local 10:00 is +03:00, so
 # arithmetic lands an hour out and drops that day's real bookings out of the scan —
@@ -1306,6 +1319,96 @@ grep -q "def my_stats(self):" addons/modryn_ops/controllers/reports.py \
 grep -q "employee_id=me.id" addons/modryn_ops/controllers/reports.py \
   && ok "my-stats query is scoped to the session's own employee" \
   || bad "my_stats scoping" "the employee filter is gone"
+
+head_ "24. opening hours are a table, not a constant (modryn_booking)"
+# The Sun-Thu 10:00-18:00 lattice was hardcoded TWICE — modryn_booking's
+# controller and modryn_portal/controllers/waitlist.py — and the second copy
+# carried no weekday filter at all, so a claim link cheerfully offered a Friday.
+# One table now feeds both. This section is what stops it drifting back.
+#
+# modryn_template is in the loop ON PURPOSE and is NOT in $TENANTS, for section
+# 17's reason: a seed that misses the golden database misses every boutique
+# cloned from it from here on, and no per-tenant check would ever notice.
+for db in $TENANTS modryn_template; do
+  if [ -z "$(psql -d "$db" -tAc "select to_regclass('public.modryn_opening_hours')" 2>/dev/null)" ]; then
+    bad "$db: modryn_opening_hours table" "missing — the model never reached this database, so /book is still drawing a constant"
+    continue
+  fi
+  SEED=$(psql -d "$db" -tAc "select count(*)||'|'||count(*) filter (where start_hour=10 and end_hour=18 and weekday in ('6','0','1','2','3'))||'|'||count(*) filter (where weekday in ('4','5')) from modryn_opening_hours where active" 2>/dev/null)
+  # Positive control, and it has to come first: an empty table answers "no
+  # Friday row" exactly as a correctly seeded one does, so the shape assertion
+  # below would print green against no rows at all — the failure mode section 8
+  # and section 21 both had to grow detects() for.
+  if [ "${SEED%%|*}" = "0" ]; then
+    bad "$db: opening hours seeded" "the table exists and is EMPTY — /book offers nothing, and the shape check below would pass on nothing"
+    continue
+  fi
+  # Exactly the lattice that used to be the constant: Sunday('6') through
+  # Thursday('3'), 10.0->18.0, no Friday('4') or Saturday('5') row. This is what
+  # lets every booking assertion above stay green without being edited — a red
+  # line here means the seed CHANGED behaviour rather than merely relocating it.
+  [ "$SEED" = "5|5|0" ] && ok "$db: seeded Sun-Thu 10:00-18:00, no Friday or Saturday" \
+    || bad "$db opening-hours seed" "rows|Sun-Thu 10-18|Fri-Sat reads '$SEED', want '5|5|0' — this boutique's week is not the one the rest of this suite asserts"
+done
+# The two hand-built tenants take the UPGRADE path; a freshly cloned boutique
+# takes the INSTALL path. Odoo runs migrations/<v>/ only while recorded < v <=
+# manifest, so a bumped manifest with no matching directory — or a directory the
+# manifest has already sailed past — seeds new boutiques and silently leaves
+# bella and noga on no hours at all. Same trap as sections 19 and 22.
+BK_MAN=$(grep -E "^ *'version'" addons/modryn_booking/__manifest__.py | grep -oE "19\.0\.[0-9.]+" | head -1)
+BK_MIG=$(ls addons/modryn_booking/migrations/ 2>/dev/null | sort -V | tail -1)
+[ -n "$BK_MIG" ] && [ "$BK_MAN" = "$BK_MIG" ] \
+  && ok "modryn_booking manifest $BK_MAN matches migrations/$BK_MIG" \
+  || bad "modryn_booking migration eligibility" "manifest '${BK_MAN:-<none>}' vs migrations/'${BK_MIG:-<none>}' — the upgrade path never runs, so only cloned boutiques get hours"
+# 303 exactly, not merely "not 200": a 404 is also not 200, and would mean the
+# page does not exist rather than that it is walled — which is how a wall check
+# passes for a page nobody ever built.
+HRS=$(code "$BELLA/manage/hours")
+[ "$HRS" = "303" ] && ok "/manage/hours exists and redirects an anonymous visitor ($HRS)" \
+  || bad "/manage/hours" "answered $HRS — 200 means the public can rewrite the boutique's week, anything else means the page is not there"
+# ...and the page must actually follow the table. Both halves below are derived
+# from the rows rather than restated here, so an owner who edits her hours moves
+# the expectation with her instead of turning this section red.
+fetch "$BELLA/book"
+OPEN_LBL=$(psql -d bella -tAc "select to_char(time '00:00' + start_hour * interval '1 hour', 'HH24:MI') from modryn_opening_hours where active order by start_hour limit 1" 2>/dev/null)
+if [ -z "$OPEN_LBL" ]; then
+  # An empty label would leave the regex below as `> *<`, which matches nearly
+  # every tag on the page: the check would pass hardest exactly when the table
+  # is gone.
+  bad "/book offers the table's first hour" "no active opening-hours row on bella to derive the label from"
+else
+  # The label, not the option's value: the value is UTC, so the 10:00 the bride
+  # reads is 07:00 in the attribute for half the year.
+  tr '\n' ' ' < "$PAGE" | grep -qE "> *$OPEN_LBL *<" \
+    && ok "/book offers a $OPEN_LBL slot, the earliest hour the table opens" \
+    || bad "/book first slot" "no $OPEN_LBL option on the page — the picker is not built from modryn_opening_hours"
+fi
+# A closed day is skipped whole, so its date reaches NEITHER the picker's
+# optgroups NOR the "day you wanted is full" waitlist list — it must not appear
+# in any form. An open day always reaches one of the two, booked out or not.
+# That asymmetry IS the weekday filter, and it is the thing waitlist.py lacked.
+SEEN=0; MISSING=""; OFFERED=""
+while IFS='|' read -r DAY IS_OPEN; do
+  [ -z "$DAY" ] && continue
+  SEEN=$((SEEN+1))
+  if grep -qF "$DAY" "$PAGE"; then
+    [ "$IS_OPEN" = "t" ] || OFFERED="$OFFERED $DAY"
+  elif [ "$IS_OPEN" = "t" ]; then
+    MISSING="$MISSING $DAY"
+  fi
+done <<SQL
+$(psql -d bella -tAq -c "SELECT to_char(d, 'DD.MM.YYYY'), (extract(isodow from d)::int - 1)::text in (select weekday from modryn_opening_hours where active) FROM generate_series((now() at time zone 'Asia/Jerusalem')::date + 1, (now() at time zone 'Asia/Jerusalem')::date + 14, interval '1 day') d" 2>/dev/null)
+SQL
+# Jerusalem local dates, not the shell's: _slots() counts its fortnight from
+# datetime.now(TZ), and a psql session on a UTC host would slide the window by a
+# day for three hours every evening (.memory/odoo-traps.md §14).
+#
+# SEEN is this check's positive control. With the table absent the query errors,
+# the loop reads nothing, and both lists stay empty — a silent green over zero
+# days examined.
+[ "$SEEN" = "14" ] && [ -z "$MISSING$OFFERED" ] \
+  && ok "/book renders exactly the 14 days the table opens" \
+  || bad "/book grid does not follow the table" "$SEEN of 14 days derived; open days missing from the page:${MISSING:- none}; closed days offered anyway:${OFFERED:- none}"
 
 printf "\n\033[1m%d passed, %d failed, %d skipped\033[0m\n" "$PASS" "$FAIL" "$SKIP"
 [ "$FAIL" -eq 0 ] || exit 1

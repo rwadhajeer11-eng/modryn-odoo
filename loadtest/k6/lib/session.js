@@ -502,7 +502,7 @@ function stillOffered(base, slot) {
  *          still offered -> it contradicts itself   -> path 4, a REJECTION
  *          gone          -> somebody committed on it -> path 3, a lost race
  *        Robust because it uses the server's own grid as the oracle rather than
- *        restating OPEN_WEEKDAYS/OPEN_HOUR/DAYS_AHEAD/DST here, where they would
+ *        restating the boutique's opening hours/DAYS_AHEAD/DST here, where they would
  *        drift from _slots(). It costs one extra GET per loss, which is why it
  *        runs only on the ambiguous branch.
  *
