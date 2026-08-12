@@ -102,14 +102,47 @@ if (!http.__modrynDefaultHeaders) {
 const LOAD_SLUG_RE = /^[a-z]{1,8}[0-9]{2}$/;
 const LOGIN_RES = [/^owner$/, /^mgr[0-9]+$/, /^staff[0-9]{2}$/];
 
-function loadTenantFault(t) {
+// ORIGIN_RE bounds what may be claimed as the fleet origin at all. Without it
+// an origin of "" would make every baseUrl of the form "<scheme>://<slug>."
+// compare equal to itself and the check below would be vacuous.
+const ORIGIN_RE = /^https?:\/\/[a-z0-9.-]+(:[0-9]+)?$/;
+
+// `origin` is a PARAMETER, not a CONFIG read, so this function stays pure and
+// session.check.mjs can exercise it under plain node with no server and no
+// tenants.json. guardTenants() below passes CONFIG.origin.
+function loadTenantFault(t, origin) {
   const slug = String(t.slug || '');
   if (!LOAD_SLUG_RE.test(slug)) {
     return `slug "${slug}" is not <prefix><two-digit index>`;
   }
+  // The dev anchor "localtest.me" was carrying TWO arguments at once, and only
+  // one of them survives being pointed at production. It proved (a) that
+  // gen_tenants.sh wrote this file, and (b) that the target cannot be a
+  // boutique — because new_boutique_prod.sh serves every boutique at
+  // https://<slug>.$DOMAIN and never on localtest.me.
+  //
+  // Launch gates 9 and 10 need a THROUGH-NGINX measurement, so the load fleet
+  // has to live on $DOMAIN and (b) is gone. No shape rule brings it back:
+  // 'lt01' is a perfectly legal boutique slug under new_boutique_prod.sh's own
+  // grammar. What replaces (b) is a CAPABILITY probe — /loadtest/ping, called
+  // for every tenant from setup() in main.js before a single VU runs. A
+  // boutique cannot answer it, because loadtest/odoo_addons is not on
+  // production's addons_path and the module is not even discoverable there.
+  //
+  // (a) is kept and tightened. The URL is not pattern-matched, it is RECOMPUTED
+  // from the slug and the one origin the manifest carries for the whole fleet,
+  // and compared for equality. A hand-edited baseUrl cannot pass without also
+  // being exactly <slug>.<origin> for a slug that already satisfies the shape
+  // rule and a phonePrefix that already satisfies +97252<NN>.
+  const o = String(origin || '');
+  if (!ORIGIN_RE.test(o)) {
+    return `fleet origin "${o}" is not <scheme>://<host>[:port] — tenants.json was not written by gen_tenants.sh`;
+  }
+  const sep = o.indexOf('://');
+  const expected = `${o.slice(0, sep)}://${slug}.${o.slice(sep + 3)}`;
   const url = String(t.baseUrl || '');
-  if (!new RegExp(`^http://${slug}\\.localtest\\.me:[0-9]+$`).test(url)) {
-    return `baseUrl "${url}" is not http://${slug}.localtest.me:<port>`;
+  if (url !== expected) {
+    return `baseUrl "${url}" is not "${expected}" (rebuilt from the fleet origin)`;
   }
   const expectedPrefix = '+97252' + slug.slice(-2);
   if (String(t.phonePrefix || '') !== expectedPrefix) {
@@ -149,14 +182,43 @@ export function guardTenants() {
         'was not written by loadtest/seed/gen_tenants.sh'
     );
   }
+  // From the FILE, never __ENV. The file is the artifact this gate inspects,
+  // and an environment variable would let an operator retarget the harness at
+  // runtime while the gate went on inspecting something else.
   for (const t of CONFIG.tenants) {
-    const fault = loadTenantFault(t);
+    const fault = loadTenantFault(t, CONFIG.origin);
     if (fault) {
       fail(
         `refusing to run: tenant "${t.slug}" does not match what ` +
           `loadtest/seed/gen_tenants.sh writes for a load tenant — ${fault}. ` +
           `Only generated load tenants are allowed here. Regenerate ` +
           `tenants.json with gen_tenants.sh.`
+      );
+    }
+  }
+}
+
+// THE ONLY CHECK THAT IS A CAPABILITY AND NOT A NAME.
+//
+// Everything guardTenants() asserts is shape, and shape can be forged by
+// anyone who can write tenants.json. This asks each target to prove it is
+// running the staging capture addon — a property a production boutique
+// provably cannot have, because loadtest/odoo_addons is not on production's
+// addons_path and the module is not discoverable there at all.
+//
+// Called from setup() in main.js, which k6 runs ONCE, before any VU exists, so
+// a mis-shaped fleet dies before the first invented customer is written.
+// Every tenant, never a sample: a fleet of 29 load tenants and one boutique is
+// exactly the accident this exists to stop.
+export function guardTenantsAreLoadTargets(http, secret) {
+  for (const t of TENANTS) {
+    const r = http.get(`${t.baseUrl}/loadtest/ping?secret=${encodeURIComponent(secret)}`);
+    if (r.status !== 200) {
+      fail(
+        `refusing to run: ${t.baseUrl} answered ${r.status} to /loadtest/ping, not 200. ` +
+          `It is not running the staging capture addon, so it is NOT a load tenant — ` +
+          `and the shape checks above cannot tell a boutique named "lt01" from a ` +
+          `generated one. Nothing has been written to any tenant.`
       );
     }
   }

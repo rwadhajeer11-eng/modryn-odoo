@@ -22,6 +22,33 @@ RECENT_SCANNED = 5
 
 class ModrynLoadtestOtp(http.Controller):
 
+    @http.route('/loadtest/ping', type='http', auth='public', methods=['GET'],
+                csrf=False, save_session=False)
+    def ping(self, secret=None, **kw):
+        """Answer 200 only where this staging module is installed AND enabled
+        AND the secret matches — the same three gates read_code uses, so this
+        leaks nothing read_code does not already leak.
+
+        It exists because guardTenants() had to stop requiring localtest.me when
+        the ramp moved onto the production domain, and shape alone cannot then
+        prove a target is not a boutique: 'lt01' is a legal slug under
+        new_boutique_prod.sh's own grammar. This is the one property that is a
+        CAPABILITY rather than a name, and a production boutique provably cannot
+        have it — loadtest/odoo_addons is not on production's addons_path, so
+        the module is not even discoverable there.
+
+        /loadtest/otp cannot serve as that probe: every refusal there is
+        deliberately the same 404, which is exactly what makes it useless as
+        evidence of anything.
+        """
+        icp = request.env['ir.config_parameter'].sudo()
+        if icp.get_param(P_ENABLED) != '1':
+            return request.not_found()
+        expected = icp.get_param(P_SECRET) or ''
+        if not expected or not hmac.compare_digest(expected, secret or ''):
+            return request.not_found()
+        return request.make_json_response({'loadtest': True})
+
     @http.route('/loadtest/otp', type='http', auth='public', methods=['GET'],
                 csrf=False, save_session=False)
     def read_code(self, phone=None, secret=None, **kw):

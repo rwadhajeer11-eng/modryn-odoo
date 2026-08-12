@@ -8,7 +8,16 @@
 // status codes but writes nothing means the scenarios are hitting 404s or
 // re-rendered error pages — check the row counts, not the percentiles.
 
-import { guardTenants, staffPassword, tagPhase, TENANTS } from './lib/session.js';
+import http from 'k6/http';
+
+import {
+  guardTenants,
+  guardTenantsAreLoadTargets,
+  staffPassword,
+  tagPhase,
+  LOADTEST_SECRET,
+  TENANTS,
+} from './lib/session.js';
 import { ROLE_MIX, STAGES, thresholdsFor } from './config/thresholds.js';
 
 import visitor from './scenarios/visitor.js';
@@ -88,6 +97,14 @@ export function setup() {
   // against a live boutique actually costs — it is writing fake customers onto a
   // working floor board, not the handset story an earlier comment told here.
   guardTenants();
+  // And then the check that is not a name. guardTenants() asserts SHAPE, which
+  // anyone who can write tenants.json can forge — and since the fleet moved off
+  // localtest.me onto the production domain to make gates 9 and 10 measurable,
+  // shape can no longer prove a target is not a boutique ('lt01' is a legal
+  // boutique slug). This asks every target to prove it is running the staging
+  // capture addon, which a boutique cannot be. setup() runs once, before any VU
+  // exists, so a fleet with a boutique in it dies before the first fake booking.
+  guardTenantsAreLoadTargets(http, LOADTEST_SECRET);
   // Fail here rather than at the first staff login: an unset password produces
   // a session-less jar and every authenticated page then answers 303, which
   // reads as four broken routes instead of one missing environment variable.

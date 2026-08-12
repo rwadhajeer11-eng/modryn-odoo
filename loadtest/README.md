@@ -356,6 +356,93 @@ it from its own environment.
 hostname label as the database name — which is why slugs must be valid database
 names *and* hostname labels.
 
+### `origin`, and why the guard stopped trusting a hostname
+
+`origin` is written once for the fleet, and `guardTenants()` **rebuilds** every
+`baseUrl` from it (`<scheme>://<slug>.<host>`) and compares for equality rather
+than pattern-matching. Export `BASE_SCHEME=https BASE_DOMAIN=$DOMAIN` and the
+fleet is generated at `https://<slug>.$DOMAIN`.
+
+That relaxation is not free, and it is worth being exact about what it cost. The
+old `^http://<slug>\.localtest\.me:[0-9]+$` anchor was doing **two** jobs: it
+proved `gen_tenants.sh` wrote the file, and it proved the target could not be a
+boutique — because `new_boutique_prod.sh` serves boutiques at
+`https://<slug>.$DOMAIN` and never on `localtest.me`. Launch gates 9 and 10 need
+a *through-nginx* measurement, so the fleet had to move onto `$DOMAIN`, and the
+second job is gone. **No shape rule brings it back**: `lt01` is a legal boutique
+slug under `new_boutique_prod.sh`'s own grammar.
+
+What replaces it is `/loadtest/ping`, called for **every** tenant from `setup()`
+in `main.js` before any VU exists. It answers 200 only where this staging module
+is installed, enabled, and holding the matching secret — a capability, not a
+name, and one a production boutique cannot have because `loadtest/odoo_addons`
+is not on production's `addons_path`. `/loadtest/otp` cannot serve as that probe:
+every refusal there is deliberately the same 404, which is what makes it useless
+as evidence.
+
+---
+
+## Running the campaign on the production box
+
+**The whole campaign runs before the first real boutique exists.** This is the
+decisive constraint and it costs nothing but ordering. Once the fleet lives on
+the production domain, running load tenants alongside live brides is the one
+arrangement where a single mistake writes invented customers onto a working
+floor board mid-service. If no boutique exists yet, there is nothing to reach.
+
+```
+A  empty box: provisioned, template built, db_name empty,
+   https://anything.$DOMAIN -> 404
+B  load fleet -> ramp -> final validation ramp with LOADGEN_IP CLEARED
+C  teardown, proven
+D  real boutiques, with the rotated Twilio credentials
+```
+
+**Run k6 from an external generator, not on the box.** `modryn-http.conf`
+exempts `127.0.0.1/32` from `limit_req` unconditionally, so an on-box generator
+is structurally incapable of producing a 429 and makes launch gate 10 unfailable.
+It also costs the measurement: 400 VUs plus TLS termination compete with 48 Odoo
+workers and Postgres for the same 32 threads, so `rt` and `urt` would describe a
+box running a load generator rather than one serving customers. External puts
+RTT and jitter inside the numbers instead — subtract them the way
+`modryn-http.conf` already says (`rt - urt` is queueing plus network, `urt` alone
+is Odoo).
+
+### Teardown proof
+
+Absence-of-evidence dominates here, so each check needs a control. **Capture the
+non-zero first**, during stage B, or a column of zeros is not evidence of
+removal:
+
+```bash
+curl -sk "https://lt01.$DOMAIN/loadtest/ping?secret=$SECRET"   # {"loadtest":true}
+```
+
+Then, after dropping the fleet and restoring `odoo.service`'s `ExecStart`:
+
+```bash
+psql -lqt | cut -d'|' -f1 | grep -cE '^ *(lt[0-9]{2}|modryn_gold_seeded) *$'   # 0
+ls /var/lib/modryn/filestore | grep -cE '^(lt[0-9]{2}|modryn_gold_seeded)$'    # 0
+
+# ABSENT, not 'uninstalled' — and including modryn_template, which every future
+# boutique is cloned from. A /loadtest/ping 404 proves nothing here: that route
+# 404s for a wrong secret and a disabled flag too, by design.
+for db in $(awk -F= '/^db_name/{gsub(/ /,"",$2);gsub(/,/," ",$2);print $2}' /etc/odoo/odoo.conf) modryn_template; do
+  psql -d "$db" -tAc "select count(*) from ir_module_module where name='modryn_loadtest'"
+done                                                                           # all 0
+
+grep -c loadtest /etc/systemd/system/odoo.service /etc/odoo/odoo.conf          # 0 0
+# The RUNNING process, not the unit file — the unit is what it will be next boot.
+tr '\0' ' ' < /proc/$(systemctl show -p MainPID --value odoo)/cmdline | grep -c loadtest   # 0
+
+# The exemption is gone — and the control that proves it, because an empty
+# exemption file is also what a misconfigured provision.sh produces:
+test ! -s /etc/nginx/modryn-loadgen-exempt.conf
+sudo /opt/modryn/deploy/scripts/verify_edge.sh      # E4 must show 429s
+
+rm -f loadtest/config/tenants.json
+```
+
 ---
 
 ## Timings measured on this host

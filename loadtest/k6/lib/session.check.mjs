@@ -123,4 +123,64 @@ assert.equal(classify(form('', true), null), 'rejected');
 // A non-slot field error is never a race.
 assert.equal(classify(form(OPTIONS, false), false), 'rejected');
 
+// --- the tenant guard -----------------------------------------------------
+// loadTenantFault takes `origin` as a PARAMETER rather than reading CONFIG, so
+// it can be exercised here with no tenants.json and no server. That is the
+// whole reason for the signature.
+const guardSrc = src.slice(src.indexOf('const ORIGIN_RE'), src.indexOf('// WHY this refuses'));
+const { loadTenantFault } = await import(
+  'data:text/javascript,' +
+    encodeURIComponent(
+      'const LOAD_SLUG_RE = /^[a-z]{1,8}[0-9]{2}$/;\n' +
+      'const LOGIN_RES = [/^owner$/, /^mgr[0-9]+$/, /^staff[0-9]{2}$/];\n' +
+      guardSrc + '\nexport { loadTenantFault };'
+    )
+);
+
+const STAFF = [{ login: 'owner' }, { login: 'mgr1' }, { login: 'staff01' }];
+const tenant = (slug, baseUrl) => ({ slug, baseUrl, phonePrefix: '+97252' + slug.slice(-2), staff: STAFF });
+
+// The legacy dev manifest must keep working unchanged. If this breaks, every
+// existing local fleet has to be regenerated for no reason.
+assert.equal(
+  loadTenantFault(tenant('lt01', 'http://lt01.localtest.me:8069'), 'http://localtest.me:8069'),
+  null
+);
+// The production shape the ramp actually needs — gates 9 and 10 are a
+// through-nginx measurement, so the fleet lives on $DOMAIN.
+assert.equal(loadTenantFault(tenant('lt01', 'https://lt01.example.com'), 'https://example.com'), null);
+
+// A boutique. Rejected on the slug before the origin is even considered —
+// 'bella' has no two-digit index. This is the case the old localtest.me anchor
+// was believed to cover, and the one it covered only by accident.
+assert.match(
+  loadTenantFault(tenant('bella', 'https://bella.example.com'), 'https://example.com'),
+  /slug "bella" is not/
+);
+// A slug that satisfies the shape rule but lives under a DIFFERENT origin —
+// i.e. a hand-edited baseUrl. Equality against the rebuilt URL is what catches
+// it; a regex on the shape alone would not.
+assert.match(
+  loadTenantFault(tenant('lt01', 'https://lt01.someone-elses-domain.com'), 'https://example.com'),
+  /is not "https:\/\/lt01\.example\.com"/
+);
+// No origin at all: a tenants.json that predates this field, or was written by
+// hand. Fails closed rather than comparing against "".
+assert.match(loadTenantFault(tenant('lt01', 'https://lt01.example.com'), undefined), /fleet origin/);
+assert.match(loadTenantFault(tenant('lt01', 'https://lt01.example.com'), ''), /fleet origin/);
+// Scheme downgrade is not a free pass either.
+assert.match(
+  loadTenantFault(tenant('lt01', 'http://lt01.example.com'), 'https://example.com'),
+  /is not "https:\/\/lt01\.example\.com"/
+);
+// The other two shape rules still bite, and are not shadowed by the new one.
+assert.match(
+  loadTenantFault({ ...tenant('lt01', 'https://lt01.example.com'), phonePrefix: '+972521' }, 'https://example.com'),
+  /phonePrefix/
+);
+assert.match(
+  loadTenantFault({ ...tenant('lt01', 'https://lt01.example.com'), staff: [{ login: 'miri' }] }, 'https://example.com'),
+  /staff logins/
+);
+
 console.log('session.check.mjs: all assertions passed');
