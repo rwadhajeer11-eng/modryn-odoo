@@ -1,0 +1,13 @@
+{
+  "name": "modryn-qa",
+  "private": true,
+  "description": "Browser QA. The assertions curl cannot make.",
+  "scripts": {
+    "test": "playwright test --project=dev",
+    "test:prod": "playwright test --project=prod",
+    "install-browser": "playwright install chromium"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.49.0"
+  }
+}

@@ -26,3 +26,10 @@ docs/screenshots/*.log
 loadtest/results/
 loadtest/config/tenants.json
 .worktrees/
+
+# Playwright browser QA. node_modules is ~400 MB of browser tooling; the reports
+# and traces are regenerated per run, and a trace embeds a session cookie.
+qa/node_modules/
+qa/test-results/
+qa/playwright-report/
+qa/.auth/
