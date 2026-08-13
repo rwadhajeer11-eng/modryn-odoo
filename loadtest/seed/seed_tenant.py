@@ -167,6 +167,12 @@ for job in (sales, seamstress, reception):
     if not Grant.search_count([('role_id', '=', job.id), ('page_key', '=', 'floor')]):
         Grant.create({'role_id': job.id, 'page_key': 'floor'})
 
+# And the seamstresses take the workshop queue, or the auto-assign engine —
+# the one concurrent path a load test is uniquely positioned to exercise —
+# is structurally unreachable: _modryn_pool() filters on this flag.
+if not seamstress.is_workshop:
+    seamstress.is_workshop = True
+
 people_made = 0
 for name, job, level, username in PEOPLE:
     if Employee.with_context(active_test=False).search_count([('name', '=', name)]):
@@ -433,7 +439,9 @@ open_now = Entry.search_count(open_domain)
 # crash the whole seed. Skip any number that already holds an open place.
 open_phones = set(Entry.search(open_domain).mapped('phone'))
 n, created = 0, 0
-while open_now + created < QUEUE and n < 10 * QUEUE:
+# The skip bound stays inside phone_for's four-digit space (9000..9999):
+# past it the phone grows a digit and stops matching anything k6 expects.
+while open_now + created < QUEUE and n < min(10 * QUEUE, 1000):
     phone = phone_for(9000 + n)
     n += 1
     if phone in open_phones:

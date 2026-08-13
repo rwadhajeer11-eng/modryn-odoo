@@ -22,5 +22,6 @@ def migrate(cr, version):
                 INSERT INTO modryn_role_page
                        (role_id, page_key, create_uid, write_uid,
                         create_date, write_date)
-                VALUES (%s, %s, 1, 1, now(), now())
+                VALUES (%s, %s, 1, 1,
+                        timezone('utc', now()), timezone('utc', now()))
             """, (role_id, key))

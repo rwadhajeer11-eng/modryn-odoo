@@ -122,6 +122,37 @@ test('act 6 — a walk-in appears on the board without a reload @writes', async 
   }
 });
 
+test('act 6c — the workshop refuses a task without urgency, and takes one with it @writes', async ({ page }) => {
+  // The contract the load test silently broke on once: priority and due date
+  // are REQUIRED at the single creation door. Proven here over the real
+  // route, with the manager's real session.
+  await signIn(page, PEOPLE.manager);
+
+  const rpc = async (params) => {
+    const res = await page.request.post('/atelier/task/create', {
+      data: { jsonrpc: '2.0', method: 'call', params },
+    });
+    return (await res.json()).result || {};
+  };
+
+  const name = `QA Alteration ${Date.now() % 100000}`;
+  const bare = await rpc({ customer_name: name });
+  expect(bare.error, 'a task without priority was accepted').toBe('missing_priority');
+
+  const noDue = await rpc({ customer_name: name, priority: '2' });
+  expect(noDue.error, 'a task without a due date was accepted').toBe('missing_due');
+
+  const due = new Date(Date.now() + 3 * 864e5).toISOString().slice(0, 10);
+  const made = await rpc({ customer_name: name, priority: '2', due_date: due });
+  expect(made.ok, `the full create was refused: ${made.error}`).toBeTruthy();
+  expect(made.task.priority).toBe('2');
+
+  // And the dashboard shows it — in the queue or already on someone's rail,
+  // whichever the pool allowed; both are the engine working.
+  await page.goto('/atelier');
+  await expect(page.getByText(name).first()).toBeVisible();
+});
+
 test('act 6b — the same number cannot hold two places, and she is told so once @writes', async ({ page }) => {
   // The whole flow twice with ONE number. The de-dupe used to be silent; now
   // the second pass must land on the SAME ticket wearing a one-shot notice.

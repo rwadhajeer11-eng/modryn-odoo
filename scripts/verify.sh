@@ -471,7 +471,10 @@ grep -q "access.can_view('floor')" addons/modryn_staff/controllers/floor.py \
 # The three xpath nav injections are gone FROM THE DATABASE, not merely from
 # the source — a forgotten -u leaves the stale inherit view pointing at an
 # anchor that no longer exists, and every staff page dies at view load.
-for db in $TENANTS; do
+# modryn_template is in the loop for the same reason it is in §17: a stale
+# view there is invisible today and inherited by every boutique cloned
+# tomorrow, and new_boutique.sh's post-clone gate checks only indexes.
+for db in $TENANTS modryn_template; do
   STALE=$(psql -d "$db" -tAc "select count(*) from ir_ui_view where key in
     ('modryn_ops.manage_nav_audit','modryn_ops.staff_nav_reports','modryn_roster.manage_nav_shifts')")
   [ "$STALE" = "0" ] && ok "$db: no stale nav-injection views" \
@@ -509,6 +512,33 @@ done
 # $TENANTS loop here would fail on a database that is behaving correctly.
 TASKS=$(psql -d bella -tAc "select count(*) from modryn_alteration_task" 2>/dev/null || echo 0)
 [ "${TASKS:-0}" -ge 1 ] && ok "bella: alteration tasks exist ($TASKS)" || bad "alteration tasks" "none"
+
+# --- the workshop queue engine ---------------------------------------------
+# Schema everywhere (template included — clones inherit it), and greppable
+# teeth on the three behaviors the engine cannot afford to lose silently:
+# the required-fields door, the SKIP LOCKED pull, and the outbox-only SMS.
+# The contract change these guard already broke one consumer once — the k6
+# manager scenario posted priority-less creates and went red on a healthy
+# server — so removing any of them must fail this suite by name.
+for db in $TENANTS modryn_template; do
+  PCOL=$(psql -d "$db" -tAc "select count(*) from information_schema.columns
+    where table_name='modryn_alteration_task' and column_name='priority'")
+  WCOL=$(psql -d "$db" -tAc "select count(*) from information_schema.columns
+    where table_name='modryn_staff_role' and column_name='is_workshop'")
+  [ "$PCOL" = "1" ] && [ "$WCOL" = "1" ] && ok "$db: priority + is_workshop columns exist" \
+    || bad "$db workshop schema" "priority=$PCOL is_workshop=$WCOL — the queue engine has nothing to order by"
+done
+grep -q "FOR UPDATE SKIP LOCKED" addons/modryn_atelier/models/alteration_task.py \
+  && ok "pull-next takes its row under FOR UPDATE SKIP LOCKED" \
+  || bad "pull-next lock" "two simultaneous finishers can be handed the same task"
+grep -q "missing_priority" addons/modryn_atelier/controllers/atelier.py \
+  && grep -q "missing_due" addons/modryn_atelier/controllers/atelier.py \
+  && ok "the create door still requires priority and due date" \
+  || bad "create door" "a task without urgency would sit wherever the defaults drop it"
+grep -q "send_async" addons/modryn_staff/models/notify.py \
+  && ! grep -qE "\.send\(" addons/modryn_staff/models/notify.py \
+  && ok "assignment SMS goes through the outbox, never the blocking door" \
+  || bad "notify send path" "blocking send() is reserved for the OTP and the 24h reminder"
 
 head_ "10. dispatch board"
 # Helpers live in a through-model, not a bare m2m: join order decides who is

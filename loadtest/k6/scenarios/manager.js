@@ -280,6 +280,13 @@ function handoffToAtelier(t, boardWithFinished) {
       customer_name: finished.customer || `LoadTest V${exec.vu.idInTest}`,
       customer_phone: finished.phone || null,
       variant_id: variants.length ? variants[0].id : null,
+      // Both REQUIRED since the workshop-queue build: the create door refuses
+      // a task without them ('missing_priority'/'missing_due'), and neither
+      // code is a known refusal — every handoff would fail the rpc_write
+      // threshold against a healthy server, the exact silent-drift failure
+      // checkInWalkIn's comment warns about.
+      priority: ['0', '1', '2'][Math.floor(Math.random() * 3)],
+      due_date: new Date(Date.now() + 7 * 864e5).toISOString().slice(0, 10),
     },
     'rpc_write',
     'atelier'

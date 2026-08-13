@@ -2,7 +2,7 @@
 
 **Repo:** /Users/mrwen/Documents/Github/modryn-odoo (Odoo 19 Community, 8 custom addons, DB-per-boutique: bella/noga/modryn_template)
 **Branch:** feature/walkin-verification (new work should branch from here or land after it merges)
-**Created:** 2026-08-13 · **Status:** BUILT — landed on `feature/staff-access-and-workshop` (verify.sh 354/0/2 twice, qa 20/20, engine + SMS proven live over HTTP). Designed by 2 architecture passes over 3 exploration reports; 35 technical claims adversarially fact-checked against the code before building (27 confirmed, 8 adjusted, corrections folded in).
+**Created:** 2026-08-13 · **Status:** BUILT — landed on `feature/staff-access-and-workshop` (verify.sh 361/0/2, qa 21/21, engine + SMS proven live over HTTP). Designed by 2 architecture passes over 3 exploration reports; 35 technical claims adversarially fact-checked against the code before building (27 confirmed, 8 adjusted, corrections folded in).
 
 ---
 
