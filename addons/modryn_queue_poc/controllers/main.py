@@ -10,6 +10,13 @@ from ..models.queue_entry import QUEUE_CHANNEL
 # next person on a shared terminal to inherit.
 SESSION_PENDING = 'modryn_queue_pending'
 
+# One-shot marker: she verified a number that was already in the line. The
+# ticket page pops it to show "this is your place" exactly once. A session key
+# rather than ?already=1 because the ticket reloads itself every 15s and its
+# URL is shareable — a query flag would re-announce on every reload and on
+# anyone she forwards the link to.
+SESSION_ALREADY = 'modryn_queue_already'
+
 # Staff drive the same two routes from the floor terminal. Membership decides two
 # things and nothing else: which chrome the page wears, and where she lands.
 STAFF_GROUP = 'modryn_staff.group_boutique_staff'
@@ -135,13 +142,18 @@ class ModrynQueue(http.Controller):
         # Create BEFORE popping the session. If the check-in raises, the whole
         # request rolls back — including verify()'s used_at burn — so the code
         # she just typed still works on a retry.
-        entry = request.env['modryn.queue.entry'].modryn_check_in(
+        entry, created = request.env['modryn.queue.entry'].modryn_check_in(
             name=pending['name'],
             phone=pending['phone'],
             client_type=pending['client_type'],
         )
         staff_mode = self._staff_mode()
         request.session.pop(SESSION_PENDING, None)
+        if not created and not staff_mode:
+            # She proved the number is hers, so telling her it already holds a
+            # place leaks nothing. Staff mode skips it: the terminal goes back
+            # to the board, where she already appears exactly once.
+            request.session[SESSION_ALREADY] = entry.id
 
         # The terminal goes back to the board; she keeps her own page, and
         # re-scanning later returns the same ticket rather than a rival one.
@@ -165,8 +177,14 @@ class ModrynQueue(http.Controller):
         # because a stored flag is wrong the moment anyone ahead is served.
         first = request.env['modryn.queue.entry'].sudo().search(
             [('state', '=', 'waiting')], order='create_date asc', limit=1)
+        # Popped, not read: the notice shows once, then the page is an
+        # ordinary ticket again — for her reloads and for anyone she forwards
+        # the link to. Compared against the entry id so a flag left by one
+        # ticket cannot decorate another.
+        already = request.session.pop(SESSION_ALREADY, None) == entry.id
         return request.render('modryn_queue_poc.ticket', {
             'entry': entry,
+            'already': already,
             'is_next': entry.state == 'waiting' and first and first.id == entry.id,
             'stylist': entry.modryn_employee_id.name if 'modryn_employee_id' in entry._fields else '',
             'book_url': '/book?name=%s&phone=%s' % (entry.name or '', entry.phone or ''),

@@ -4,6 +4,8 @@ import logging
 import secrets
 from datetime import datetime
 
+from psycopg2.errors import UniqueViolation
+
 from odoo import _, api, fields, models
 
 from odoo.addons.modryn_portal.models.sms import normalize_il_phone
@@ -16,6 +18,13 @@ QUEUE_CHANNEL = 'modryn_queue'
 
 # A ticket is live from the moment she scans until she is served or sent home.
 OPEN_STATES = ('pending', 'waiting', 'called')
+
+# Postgres reports this in diag.constraint_name. Compared by name, never by
+# catching the class alone: the table also carries a pkey, and a violation from
+# that is a different bug that must not be swallowed. 40 chars — safely under
+# Postgres's 63-char identifier limit, so the name is used verbatim, not
+# truncated-and-hashed.
+OPEN_PHONE_INDEX = 'modryn_queue_entry_modryn_open_phone_uniq'
 
 
 class ModrynQueueEntry(models.Model):
@@ -62,6 +71,19 @@ class ModrynQueueEntry(models.Model):
     next_notified_at = fields.Datetime(readonly=True)
     turn_notified_at = fields.Datetime(readonly=True)
 
+    # One place in the line per number, decided by the database. The search in
+    # modryn_check_in is a read-then-write with no lock: two verifies for the
+    # same number landing together both see zero and both create. The state
+    # list is OPEN_STATES spelled as literals — an index predicate cannot read
+    # a Python tuple, so the two must be kept in step by hand.
+    # NULL phones are exempt: they can never be texted, and only non-web
+    # callers can produce one (the form validates the number first).
+    _modryn_open_phone_uniq = models.UniqueIndex(
+        "(phone) WHERE state IN ('pending', 'waiting', 'called')"
+        " AND phone IS NOT NULL",
+        "That number is already in the line.",
+    )
+
     @api.model_create_multi
     def create(self, vals_list):
         for vals in vals_list:
@@ -96,6 +118,9 @@ class ModrynQueueEntry(models.Model):
     def modryn_check_in(self, name, phone, client_type='bride'):
         """Take a verified walk-in, or hand back the ticket she already has.
 
+        Returns ``(entry, created)`` — the caller needs to know which, because
+        a re-check-in is told "this is your place" rather than joined again.
+
         Re-scanning the sign, or a second person typing the same number, must
         never create a rival ticket — she would appear twice in the line and
         lose her real place.
@@ -111,14 +136,35 @@ class ModrynQueueEntry(models.Model):
                 ('phone', '=', normalized), ('state', 'in', OPEN_STATES),
             ], limit=1)
             if existing:
-                return existing
-        entry = self.sudo().create({
-            'name': name,
-            'phone': normalized or (phone or '').strip(),
-            'client_type': client_type,
-        })
+                return existing, False
+        try:
+            # Two verifies for the same number landed together; the search
+            # above cannot see the other one until it commits. Savepoint, not a
+            # bare try: a rejected INSERT aborts the whole transaction, so the
+            # re-search below would fail too.
+            with self.env.cr.savepoint():
+                entry = self.sudo().create({
+                    'name': name,
+                    # NULL over raw garbage: an unnormalizable phone can never
+                    # be texted, and storing it in whatever format it arrived
+                    # is what let format-mismatched duplicates past the search.
+                    'phone': normalized or False,
+                    'client_type': client_type,
+                })
+        except UniqueViolation as exc:
+            if exc.diag.constraint_name != OPEN_PHONE_INDEX:
+                raise
+            existing = self.sudo().search([
+                ('phone', '=', normalized), ('state', 'in', OPEN_STATES),
+            ], limit=1)
+            if not existing:
+                # The rival row vanished between the refusal and this read —
+                # only reachable if it closed in that window. Retrying the
+                # create here could livelock; one honest failure is better.
+                raise
+            return existing, False
         entry._notify_joined()
-        return entry
+        return entry, True
 
     def modryn_accept(self):
         """Staff let her into the line. Idempotent: two managers, one transition."""

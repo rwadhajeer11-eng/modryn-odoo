@@ -103,6 +103,14 @@
                 <div class="container py-5 text-center" style="max-width: 520px;"
                      t-att-data-refresh="'1' if entry.state in ('pending','waiting','called') else None">
 
+                    <!-- One-shot: only when she just re-verified a number that
+                         already holds a place, and only while that place is
+                         live. Warm, not scolding — she did nothing wrong. -->
+                    <div t-if="already and entry.state in ('pending', 'waiting', 'called')"
+                         class="alert alert-info" role="status">
+                        This number is already in the line — this is your place.
+                    </div>
+
                     <t t-if="entry.state == 'called'">
                         <h1 class="mb-3">We're ready for you</h1>
                         <p class="text-muted">

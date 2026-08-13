@@ -14,7 +14,13 @@ The QR image itself is Odoo's built-in /report/barcode endpoint — zero custom
 code, which is part of the finding.
 """,
     'category': 'Website',
-    'version': '19.0.1.1.0',
+    'version': '19.0.1.2.0',
+    # The schema guard runs on BOTH paths: init hooks for fresh installs
+    # (every boutique cloned from modryn_template installs, never upgrades)
+    # and migrations/19.0.1.2.0/ for the hand-built tenants. Same wiring as
+    # modryn_ops and modryn_portal.
+    'pre_init_hook': 'pre_init_hook',
+    'post_init_hook': 'post_init_hook',
         # modryn_portal owns the SMS sender port. Depending on it is safe — portal
     # reaches website/booking/theme and never the queue, so there is no cycle —
     # and it is what lets a walk-in be texted when she is next and when it is
