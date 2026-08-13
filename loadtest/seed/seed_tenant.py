@@ -415,14 +415,26 @@ for n, start in enumerate(sorted(chosen)):
 # A floor board with an empty queue renders a different (and much cheaper) page
 # than a real one, so every stage starts from the same non-trivial baseline.
 Entry = env['modryn.queue.entry'].sudo()
-open_now = Entry.search_count([('state', 'in', ('pending', 'waiting', 'called'))])
-for n in range(open_now, QUEUE):
+open_domain = [('state', 'in', ('pending', 'waiting', 'called'))]
+open_now = Entry.search_count(open_domain)
+# One open place per number is now a Postgres index, and these phones are
+# deterministic — a k6 run that opened a walk-in in this 4-digit space, or a
+# previous seed whose entries partially closed, would make a blind create()
+# crash the whole seed. Skip any number that already holds an open place.
+open_phones = set(Entry.search(open_domain).mapped('phone'))
+n, created = 0, 0
+while open_now + created < QUEUE and n < 10 * QUEUE:
+    phone = phone_for(9000 + n)
+    n += 1
+    if phone in open_phones:
+        continue
     Entry.create({
-        'name': 'ממתינה %s-%02d' % (TENANT_INDEX, n),
-        'phone': phone_for(9000 + n),
-        'client_type': 'bride' if n % 3 else 'evening',
-        'state': 'waiting' if n else 'called',
+        'name': 'ממתינה %s-%02d' % (TENANT_INDEX, n - 1),
+        'phone': phone,
+        'client_type': 'bride' if (n - 1) % 3 else 'evening',
+        'state': 'waiting' if (open_now + created) else 'called',
     })
+    created += 1
 
 # odoo-bin shell does NOT commit on exit. Without this the whole seed vanishes
 # silently and the tenant looks like a clone that was never touched.

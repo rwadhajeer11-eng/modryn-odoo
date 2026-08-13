@@ -49,7 +49,8 @@ createdb -T "$TEMPLATE" "$SLUG"
 # until two brides hold the same hour. Check the clone, not the template: this is
 # the last point where the answer is still about THIS tenant.
 for idx in calendar_event_modryn_one_live_booking_per_slot \
-           modryn_day_waitlist_modryn_one_offer_per_day; do
+           modryn_day_waitlist_modryn_one_offer_per_day \
+           modryn_queue_entry_modryn_open_phone_uniq; do
   if ! psql -d "$SLUG" -tAc "select to_regclass('$idx')" | grep -q .; then
     echo "!! $SLUG cloned from a $TEMPLATE that has no $idx."
     echo "   Rebuild the template: dropdb $TEMPLATE && ./scripts/build_template.sh"

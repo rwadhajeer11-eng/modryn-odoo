@@ -106,3 +106,37 @@ test('act 6 — a walk-in appears on the board without a reload @writes', async 
     await walkin.close();
   }
 });
+
+test('act 6b — the same number cannot hold two places, and she is told so once @writes', async ({ page }) => {
+  // The whole flow twice with ONE number. The de-dupe used to be silent; now
+  // the second pass must land on the SAME ticket wearing a one-shot notice.
+  const phone = qaPhone();
+
+  const checkIn = async (name) => {
+    await page.goto('/queue/checkin');
+    await page.fill('input[name="name"]', name);
+    await page.fill('input[name="phone"]', phone);
+    await submitFormWith(page, 'name');
+    await expect(page).toHaveURL(/\/queue\/verify/);
+    // Two codes on one number per run — within the 3-per-hour budget, and
+    // qaPhone() is per-run-unique so consecutive runs never share a budget.
+    await page.fill('input[name="code"]', readOtp(TENANT, phone));
+    await submitFormWith(page, 'code');
+    await expect(page).toHaveURL(/\/q\//);
+    return page.url();
+  };
+
+  const first = await checkIn(`QA Walkin ${Date.now() % 100000}`);
+  const second = await checkIn(`QA Walkin Again ${Date.now() % 100000}`);
+
+  // Same access token — the line holds one place for this number, and it is
+  // hers, not a rival ticket that would cost her her real spot.
+  expect(second, 'a re-check-in minted a second ticket URL').toBe(first);
+
+  // The notice is session-borne and popped on render: visible now, gone on a
+  // plain reload — so a forwarded ticket link never carries it either.
+  const notice = page.locator('[role="status"]');
+  await expect(notice, 'the already-in-line notice did not render').toBeVisible();
+  await page.reload();
+  await expect(notice, 'the notice survived a reload — the session pop is broken').toHaveCount(0);
+});

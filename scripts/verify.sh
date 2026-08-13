@@ -327,6 +327,108 @@ head_ "6. walk-in queue"
 QR=$(code "$BELLA/report/barcode/?barcode_type=QR&value=test&width=200&height=200")
 [ "$QR" = "200" ] && ok "QR image renders" || bad "QR image renders" "got $QR (rlPyCairo installed?)"
 
+head_ "6-bis. the line cannot hold one number twice"
+# The whole check-in flow, driven end to end, with row counts as the truth —
+# deploy.sh gates rollback on this suite, and until this section existed the
+# flow between a walk-in and the queue had no deploy-time check at all.
+#
+# noga ONLY: modryn.otp.code.issue() texts the code SYNCHRONOUSLY, and bella
+# holds live Twilio credentials — this section must never cost money. noga has
+# none, so _send_now falls through to the log. The phone is random per run so
+# two consecutive runs stay under the 3-codes-per-hour budget, and every row
+# this section creates is deleted at the end.
+if ! echo " $TENANTS " | grep -q " noga "; then
+  skip "6-bis" "noga is not among the served tenants here"
+else
+  QPHONE="+9725088$(printf '%05d' $((RANDOM % 100000)))"
+  QROWS() { psql -d noga -tAc "select count(*) from modryn_queue_entry where phone='$QPHONE'"; }
+  QJAR=$(mktemp)
+  CT=$(curl -sg -c "$QJAR" "$NOGA/queue/checkin" | grep -oE 'name="csrf_token" value="[^"]*"' | sed 's/.*value="//;s/"//')
+  SUBMIT=$(curl -sg -b "$QJAR" -c "$QJAR" -o /dev/null -w '%{http_code}' -X POST "$NOGA/queue/checkin/submit" \
+    --data-urlencode "name=Verify Dupe" --data-urlencode "phone=$QPHONE" \
+    --data-urlencode "client_type=bride" --data-urlencode "csrf_token=$CT")
+  [ "$SUBMIT" = "303" ] && ok "submit answers 303 to the code step" || bad "submit" "got $SUBMIT, not 303"
+  [ "$(QROWS)" = "0" ] && ok "submit alone creates no row" || bad "submit created a row" "$(QROWS) row(s) before any code was typed"
+
+  CT2=$(curl -sg -b "$QJAR" -c "$QJAR" "$NOGA/queue/verify" | grep -oE 'name="csrf_token" value="[^"]*"' | sed 's/.*value="//;s/"//')
+  CODE=$(./scripts/otp_code.sh noga "$QPHONE" 2>/dev/null)
+  if [ -z "$CODE" ]; then
+    bad "6-bis code recovery" "otp_code.sh found no live code for $QPHONE — did issue() fail?"
+  else
+    WRONG=$(printf '%06d' $(( (10#$CODE + 1) % 1000000 )))
+    curl -sg -b "$QJAR" -c "$QJAR" -o /dev/null -X POST "$NOGA/queue/verify" \
+      --data-urlencode "code=$WRONG" --data-urlencode "csrf_token=$CT2"
+    [ "$(QROWS)" = "0" ] && ok "a wrong code creates no row" || bad "wrong code" "$(QROWS) row(s) after a wrong code"
+    REDIR1=$(curl -sg -b "$QJAR" -c "$QJAR" -o /dev/null -w '%{redirect_url}' -X POST "$NOGA/queue/verify" \
+      --data-urlencode "code=$CODE" --data-urlencode "csrf_token=$CT2")
+    TOKEN1="${REDIR1##*/q/}"
+    [ "$(QROWS)" = "1" ] && ok "the right code creates exactly one row" || bad "right code" "$(QROWS) row(s), not 1"
+    STATE1=$(psql -d noga -tAc "select state from modryn_queue_entry where phone='$QPHONE'")
+    [ "$STATE1" = "waiting" ] && ok "and it lands at waiting" || bad "landing state" "got '$STATE1', not waiting"
+    case "$REDIR1" in */q/*) ok "verify redirects to her ticket" ;; *) bad "verify redirect" "got '$REDIR1'" ;; esac
+
+    # The de-dupe, driven the way a real re-scan drives it: the entire flow
+    # again with the same number. One row, same ticket, one code spent.
+    CT3=$(curl -sg -b "$QJAR" -c "$QJAR" "$NOGA/queue/checkin" | grep -oE 'name="csrf_token" value="[^"]*"' | sed 's/.*value="//;s/"//')
+    curl -sg -b "$QJAR" -c "$QJAR" -o /dev/null -X POST "$NOGA/queue/checkin/submit" \
+      --data-urlencode "name=Verify Dupe Again" --data-urlencode "phone=$QPHONE" \
+      --data-urlencode "client_type=bride" --data-urlencode "csrf_token=$CT3"
+    CT4=$(curl -sg -b "$QJAR" -c "$QJAR" "$NOGA/queue/verify" | grep -oE 'name="csrf_token" value="[^"]*"' | sed 's/.*value="//;s/"//')
+    CODE2=$(./scripts/otp_code.sh noga "$QPHONE" 2>/dev/null)
+    REDIR2=$(curl -sg -b "$QJAR" -c "$QJAR" -o /dev/null -w '%{redirect_url}' -X POST "$NOGA/queue/verify" \
+      --data-urlencode "code=$CODE2" --data-urlencode "csrf_token=$CT4")
+    TOKEN2="${REDIR2##*/q/}"
+    [ "$(QROWS)" = "1" ] && ok "a re-check-in adds no second row" || bad "re-check-in" "$(QROWS) row(s) for one number"
+    [ -n "$TOKEN1" ] && [ "$TOKEN1" = "$TOKEN2" ] && ok "and she gets the SAME ticket back" \
+      || bad "ticket identity" "first flow gave '$TOKEN1', second gave '$TOKEN2'"
+  fi
+
+  # The referee itself, poked directly: a raw INSERT must be refused BY NAME,
+  # with an own-tenant control so this cannot pass because inserts are broken
+  # generally.
+  QIDX="modryn_queue_entry_modryn_open_phone_uniq"
+  DUPERR=$(psql -d noga -c "insert into modryn_queue_entry (name, phone, client_type, state, create_uid, write_uid, create_date, write_date)
+    values ('dupe probe', '$QPHONE', 'bride', 'waiting', 1, 1, now(), now())" 2>&1)
+  echo "$DUPERR" | grep -q "$QIDX" && ok "Postgres refuses a second open row, naming $QIDX" \
+    || bad "duplicate INSERT went through" "no $QIDX in: $(echo "$DUPERR" | head -1)"
+  CPHONE="+9725077$(printf '%05d' $((RANDOM % 100000)))"
+  psql -d noga -qc "insert into modryn_queue_entry (name, phone, client_type, state, create_uid, write_uid, create_date, write_date)
+    values ('dupe control', '$CPHONE', 'bride', 'waiting', 1, 1, now(), now())" 2>/dev/null \
+    && ok "control: a fresh number inserts cleanly" \
+    || bad "control insert failed" "the refusal above may be a broken table, not the index"
+
+  # Leave the tenant as found: entries, codes and the outbox rows the join
+  # text queued. SQL on purpose — the ORM path would text the day-waitlist.
+  psql -d noga -qc "delete from modryn_queue_entry where phone in ('$QPHONE', '$CPHONE');
+    delete from modryn_otp_code where phone='$QPHONE';
+    delete from modryn_sms_outbox where phone='$QPHONE';"
+  rm -f "$QJAR"
+
+  # Install-and-upgrade wiring, same trap §18/§19 guard as modryn_portal.
+  grep -q "'pre_init_hook': 'pre_init_hook'" addons/modryn_queue_poc/__manifest__.py \
+    && grep -q "'post_init_hook': 'post_init_hook'" addons/modryn_queue_poc/__manifest__.py \
+    && ok "queue manifest declares both install hooks" \
+    || bad "queue install hooks" "only migrations/ is wired — every cloned boutique would skip the dedupe and the index check"
+  grep -q "from .schema_guard import post_init_hook, pre_init_hook" addons/modryn_queue_poc/__init__.py \
+    && ok "queue hooks are attributes of the package, where getattr() looks" \
+    || bad "queue hook export" "hooks not re-exported from __init__.py"
+  QMANIFEST_V=$(grep -oE "19\.0\.[0-9.]+" addons/modryn_queue_poc/__manifest__.py | tail -1)
+  QMIG_V=$(basename "$(ls -d addons/modryn_queue_poc/migrations/19.0.* | sort -V | tail -1)")
+  [ "$QMANIFEST_V" = "$QMIG_V" ] && ok "queue manifest $QMANIFEST_V matches migrations/$QMIG_V" \
+    || bad "queue migration version" "manifest is $QMANIFEST_V but the newest migration dir is $QMIG_V"
+  for db in $TENANTS; do
+    QREC=$(psql -d "$db" -tAc "select latest_version from ir_module_module where name='modryn_queue_poc'")
+    QNEWEST=$(printf '%s\n%s\n' "$QREC" "$QMIG_V" | sort -V | tail -1)
+    if [ "$QREC" = "$QMIG_V" ]; then
+      ok "$db: recorded $QREC — queue migrations/$QMIG_V has been applied"
+    elif [ "$QNEWEST" = "$QMIG_V" ]; then
+      ok "$db: recorded $QREC — queue migrations/$QMIG_V is pending and will run"
+    else
+      bad "$db queue migration can never run" "ir_module_module records $QREC, already past migrations/$QMIG_V"
+    fi
+  done
+fi
+
 head_ "7. staff layer"
 # Per tenant, not bella alone: a boutique whose staff never seeded has no one who
 # can open the floor board, and that is invisible from the other tenant's data.
@@ -1212,7 +1314,8 @@ head_ "17. the unique indexes are really there"
 for db in $TENANTS modryn_template; do
   for idx in calendar_event_modryn_one_live_booking_per_slot \
              modryn_day_waitlist_modryn_one_offer_per_day \
-             modryn_day_waitlist_phone_day_uniq; do
+             modryn_day_waitlist_phone_day_uniq \
+             modryn_queue_entry_modryn_open_phone_uniq; do
     HAVE=$(psql -d "$db" -tAc "select to_regclass('$idx')" 2>/dev/null)
     [ -n "$HAVE" ] && ok "$db: $idx present" \
       || bad "$db: $idx ABSENT" "the run that should have created it exited 0 — this tenant can sell one fitting room twice"
