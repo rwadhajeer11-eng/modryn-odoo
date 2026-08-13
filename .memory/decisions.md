@@ -72,13 +72,30 @@ handles waiting (the Waitwhile pattern): three warm states — checked in, you'r
 and the shop absorbs the waiting rather than displaying it. "You are 7th" is a supermarket deli
 counter.
 
-**The acceptance gate is invisible.** Staff accept an arrival into the line or suggest booking
-instead. She is never told she was turned away — her page simply becomes a warm invitation to
-book. Rejection is never surfaced.
+**~~The acceptance gate is invisible.~~ REVERSED 2026-08-13 — the gate is gone.** It read: *staff
+accept an arrival into the line or suggest booking instead; she is never told she was turned away.*
+A verified check-in now joins the line directly, because the thing the gate was really screening
+for — is this a real person who will actually come back — is answered far better by a code sent to
+her handset than by a manager reading a name off a board. Holding her at `pending` while she stands
+in the shop bought nothing the code does not buy.
 
-**Two SMS per walk-in, maximum:** one at you're-next, one at your-turn naming her stylist. Both
-idempotent via notified-at fields. Checking in twice with the same number resumes the same
-ticket rather than issuing a second.
+What this cost, stated plainly: **a manager can no longer hold someone before they join the line.**
+Redirect survives (`modryn_redirect` always accepted `waiting`) and its button moved onto the
+waiting card, so *invite to book* still works — but it now happens to someone already in the queue
+rather than to someone who never entered it. The `pending` state itself stays in the selection:
+bella and noga hold live rows in it, and the arrivals panel is the only way to clear them.
+
+**~~Two SMS per walk-in, maximum.~~ REVERSED 2026-08-13 — three, plus the code.** It read: *one at
+you're-next, one at your-turn naming her stylist.* She is now also told she is in the line, because
+with the gate gone nothing else confirms it, and because a bride checked in at the desk by a staff
+member may otherwise never see her own ticket link at all — the join text carries it.
+
+The arithmetic, honestly: **solo bride 3, busy shop 4.** Code → join → (you're next) → your turn.
+`_notify_joined` folds join and you're-next into one message when she is first in the line and
+stamps `next_notified_at` so the promotion sweep skips her — without that fold an empty boutique
+fired two texts one second apart. Both still idempotent via the notified-at fields, and checking in
+twice with the same number still resumes the same ticket rather than issuing a second — it now
+costs one code to do so, which is the price of the number being proven rather than merely typed.
 
 **The advance waitlist is per DAY, not per slot.** Most cancellations will not match anyone's
 exact requested hour, so a per-slot list would almost never fire. She said "Tuesday works"; the

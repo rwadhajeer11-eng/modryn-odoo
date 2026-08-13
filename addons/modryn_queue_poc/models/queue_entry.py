@@ -31,9 +31,17 @@ class ModrynQueueEntry(models.Model):
         default='bride',
         required=True,
     )
-    # pending is the new front door: a scan puts her here, and a staff member
-    # accepts her into the line. She never sees this gate — from her side the
-    # boutique simply says "we'll be with you soon" either way.
+    # A verified check-in joins the line directly. The old `pending` front door —
+    # a scan parked her here until a staff member accepted her — is gone: proving
+    # she holds the number is now the gate, and it is a better one than a human
+    # glancing at a name.
+    #
+    # `pending` STAYS in the selection, and the reason is the readers, not the
+    # rows: OPEN_STATES, modryn_accept, modryn_redirect, /floor's arrivals panel
+    # and four branches of the ticket template all still name it. The rows are
+    # the weaker argument and would have misled — noga holds none at all, and
+    # bella's two are in OPEN_STATES, so the closing cron rewrites them to
+    # `expired` on its next run.
     state = fields.Selection(
         selection=[
             ('pending', 'Pending'),
@@ -43,7 +51,7 @@ class ModrynQueueEntry(models.Model):
             ('redirected', 'Invited to book'),
             ('expired', 'Expired'),
         ],
-        default='pending',
+        default='waiting',
         required=True,
         index=True,
     )
@@ -86,11 +94,16 @@ class ModrynQueueEntry(models.Model):
     # --------------------------------------------------------------- lifecycle
     @api.model
     def modryn_check_in(self, name, phone, client_type='bride'):
-        """Take a walk-in, or hand back the ticket she already has.
+        """Take a verified walk-in, or hand back the ticket she already has.
 
         Re-scanning the sign, or a second person typing the same number, must
         never create a rival ticket — she would appear twice in the line and
         lose her real place.
+
+        Handing back an existing ticket used to be a way to READ a stranger's:
+        type her number, get her access_token. Every caller now proves it is her
+        number before reaching this method, so the same line is safe. It costs
+        one code on a re-scan, which is the price of that.
         """
         normalized = normalize_il_phone(phone) if phone else None
         if normalized:
@@ -99,11 +112,13 @@ class ModrynQueueEntry(models.Model):
             ], limit=1)
             if existing:
                 return existing
-        return self.sudo().create({
+        entry = self.sudo().create({
             'name': name,
             'phone': normalized or (phone or '').strip(),
             'client_type': client_type,
         })
+        entry._notify_joined()
+        return entry
 
     def modryn_accept(self):
         """Staff let her into the line. Idempotent: two managers, one transition."""
@@ -120,6 +135,10 @@ class ModrynQueueEntry(models.Model):
                 entry._send(_(
                     "We're fully booked today. Book a fitting with us here: %(link)s"
                 ) % {'link': '%s/book' % entry._base_url()})
+        # Sending the front of the line home promotes whoever was behind her, so
+        # her heads-up goes out now. Every other exit from the line already does
+        # this; redirect did not, and acceptance used to cover for it.
+        self._notify_next_in_line()
         return self
 
     # ------------------------------------------------------------------- comms
@@ -142,6 +161,32 @@ class ModrynQueueEntry(models.Model):
         ok, detail = self.env['modryn.sms'].send_async(self.phone, body)
         if not ok:
             _logger.warning('[modryn.queue] sms not sent for %s: %s', self.id, detail)
+
+    def _notify_joined(self):
+        """Tell her she is in the line, and fold "you're next" in when she is.
+
+        An empty boutique would otherwise fire two texts one second apart: the
+        join, and then whoever next promotes the queue finding her already at
+        the front. Stamping next_notified_at makes _notify_next_in_line's
+        once-ever guard skip her, so the fold is the only thing she gets.
+
+        The ticket link is always included. Since the floor terminal can check
+        her in, this SMS may be the only place she ever sees it.
+        """
+        self.ensure_one()
+        first = self.sudo().search(
+            [('state', '=', 'waiting')], order='create_date asc', limit=1)
+        if first == self:
+            self._send(_(
+                "You're in the queue — and you're next. We'll be with you in a "
+                "moment. Your ticket: %(link)s"
+            ) % {'link': self._ticket_url()})
+            self.next_notified_at = fields.Datetime.now()
+        else:
+            self._send(_(
+                "You're in the queue. We'll text you when you're next. "
+                "Your ticket: %(link)s"
+            ) % {'link': self._ticket_url()})
 
     @api.model
     def _notify_next_in_line(self):

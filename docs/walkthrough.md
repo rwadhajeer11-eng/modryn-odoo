@@ -172,11 +172,20 @@ where ce.modryn_is_booking and ce.modryn_employee_id is not null"
 **4.1 The sign in the lounge.** `/queue/sign` shows a QR code. It points at
 `/queue/checkin`. (The QR itself is Odoo's built-in barcode endpoint — no custom code.)
 
-**4.2 She checks in.** Open `/queue/checkin` on a phone-sized window: name `דנה אברהם`,
-phone, כלה. Submit.
+**4.2 She checks in — and proves the number is hers.** Open `/queue/checkin` on a
+phone-sized window: name `דנה אברהם`, phone, כלה. Submit.
 
-*Expect:* she is told her position in the queue. The position is computed when read, never
-stored — a stored number goes stale the moment someone ahead of her is served.
+*Expect:* not a ticket. A **code**, and `/queue/verify` asking for six digits. Nothing has
+been created yet — that is the point of the step. Recover the code and finish:
+
+```bash
+./scripts/otp_code.sh bella +972501234567   # whatever number you typed, in E.164
+```
+
+*Expect, after the code:* the ticket page, saying we will be with her soon. **No number and
+no position** — the shop absorbs the waiting rather than displaying it. And one text: *you
+are in the queue*, carrying the ticket link, folded with *you're next* if the line was
+empty.
 
 **4.3 The board already knows.** Without touching Sara's `/floor` tab, look at it.
 
@@ -191,6 +200,15 @@ CSRF=$(curl -s -c q.txt "http://bella.localtest.me:8069/queue/checkin" \
 curl -s -b q.txt -X POST "http://bella.localtest.me:8069/queue/checkin/submit" \
   --data-urlencode "name=לקוחה מהרחוב" --data-urlencode "phone=053-1112222" \
   --data-urlencode "client_type=evening" --data-urlencode "csrf_token=$CSRF" -o /dev/null
+
+# Submitting the form creates NOTHING now — it issues a code. Without these three
+# lines the board never moves, and this act reads as a broken websocket.
+VCSRF=$(curl -s -b q.txt -c q.txt "http://bella.localtest.me:8069/queue/verify" \
+  | grep -oE 'name="csrf_token"[^>]*value="[^"]*"' \
+  | grep -oE 'value="[^"]*"' | sed 's/value="//;s/"//' | head -1)
+curl -s -b q.txt -X POST "http://bella.localtest.me:8069/queue/verify" \
+  --data-urlencode "code=$(./scripts/otp_code.sh bella +972531112222)" \
+  --data-urlencode "csrf_token=$VCSRF" -o /dev/null
 ```
 
 ---
@@ -341,13 +359,18 @@ record — the boutique keeps its no-show history. A forged token 404s.
 with her soon. No number, no position, no queue mechanics — the premium pattern, where the
 shop absorbs the waiting rather than displaying it.
 
-**11.2 The gate she never sees.** As `sara` → `/floor` shows an **arrivals** panel above
-the queue. **Accept** puts her in line; **Suggest booking** turns her page into a warm
-invitation to book instead. She is never told she was turned away.
+**11.2 The gate is gone; the discretion is not.** Until 2026-08-13 an arrivals panel sat
+above the queue and a manager accepted her into the line. A verified check-in now joins
+directly — the code answers the question the gate was really asking. **Invite to book** moved
+onto her card in the queue, so the manager can still turn a full day into a warm invitation,
+and she is still never told she was turned away. The arrivals panel remains for legacy
+`pending` rows and is empty on a healthy tenant.
 
-**11.3 Two texts, never more.** She gets one when she is next and one when it is her turn,
-the second naming the stylist. Checking in twice with the same number resumes the same
-ticket rather than issuing a second.
+**11.3 Three texts, plus the code.** She gets one when she joins the line (carrying her
+ticket link), one when she is next, and one when it is her turn naming the stylist — and the
+first two are **folded into one** when she arrives into an empty line, so a quiet boutique
+sends two, not three. Checking in twice with the same number still resumes the same ticket
+rather than issuing a second; it now costs one code to do so.
 
 **11.4 The day is full — get in line for it anyway.** Fill a day, reload `/book`: the full
 day stays visible with a waitlist form instead of a time picker. Join it, then cancel a

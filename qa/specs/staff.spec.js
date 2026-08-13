@@ -3,7 +3,7 @@ const { test, expect } = require('@playwright/test');
 const { submitFormWith } = require('../lib/form.js');
 
 const { requirePeople } = require('../lib/people.js');
-const { qaPhone } = require('../lib/otp.js');
+const { qaPhone, readOtp } = require('../lib/otp.js');
 
 const PASSWORD = process.env.MODRYN_DEMO_PASSWORD;
 // dbfilter = ^%d$ takes the first hostname label as the database name.
@@ -69,16 +69,26 @@ test('act 6 — a walk-in appears on the board without a reload @writes', async 
     const before = await board.evaluate(() => document.body.innerText);
 
     const name = `QA Walkin ${Date.now() % 100000}`;
+    const phone = qaPhone();
     const p = await walkin.newPage();
     await p.goto('/queue/checkin');
     await p.fill('input[name="name"]', name);
     // qaPhone(), not a constant. A hardcoded number makes this spec run
-    // exactly once: the walk-in it created is still PENDING on the board next
+    // exactly once: the walk-in it created is still OPEN on the board next
     // time, the second check-in is refused as a duplicate, and the assertion
     // then fails with the board unchanged — which reads as "the websocket is
     // broken" when the socket was never given anything to deliver.
-    await p.fill('input[name="phone"]', qaPhone());
+    await p.fill('input[name="phone"]', phone);
     await submitFormWith(p, 'name');
+
+    // A code now stands between the form and the line, so submitting the form
+    // creates NOTHING — asserting on the board straight after it would fail on
+    // a perfectly healthy socket. readOtp recomputes the six digits from
+    // database.secret exactly as scripts/verify.sh reverses a booking token;
+    // the row only ever holds the HMAC.
+    await expect(p).toHaveURL(/\/queue\/verify/);
+    await p.fill('input[name="code"]', readOtp(TENANT, phone));
+    await submitFormWith(p, 'code');
 
     // NO RELOAD of the board. If this needs one, bus.bus is not reaching the
     // browser — and in production that means modryn-site.conf's

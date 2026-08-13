@@ -472,6 +472,47 @@ export function customerLogin(base, phone) {
   return { ok: verify.status === 303, reason: 'verify', status: verify.status };
 }
 
+// ---------------------------------------------------------------- walk-in otp
+
+// The second half of a walk-in check-in, since 2026-08-13.
+//
+// /queue/checkin/submit no longer issues a ticket — it issues a CODE, and
+// creates nothing. The 303 it still answers with points at /queue/verify, so a
+// scenario that stops at the redirect measures a form post and no queue row at
+// all, while every check on it stays green. That is the shape this harness
+// exists to catch, so it is worth stating: `status === 303` is no longer
+// evidence that a walk-in joined the line.
+//
+// BUDGET. This puts the walk-in path on modryn.otp.code's three-issues-per-
+// phone-per-rolling-hour limit (otp.py:13), which it was never on before. A
+// scenario that reuses one number per VU will be refused on its fourth
+// check-in and quietly stop creating rows for the rest of the hour, so callers
+// MUST vary the number per check-in, not per VU.
+export function queueVerify(base, phone, params) {
+  const code = fetchOtp(base, phone, LOADTEST_SECRET);
+  if (!code) {
+    return { ok: false, reason: 'no_code' };
+  }
+  const verifyUrl = base + '/queue/verify';
+  const form = getForm(verifyUrl, 'queue', params);
+  if (!form.csrf) {
+    return { ok: false, reason: 'no_csrf' };
+  }
+  const post = http.post(
+    verifyUrl,
+    { code: code, csrf_token: form.csrf },
+    Object.assign({ tags: formTags('queue'), redirects: 0 }, params || {})
+  );
+  return {
+    ok: post.status === 303,
+    reason: 'verify',
+    status: post.status,
+    // Where the ticket actually lives. Staff-mode sends this to /floor instead,
+    // but every load scenario posts anonymously, so this is /q/<token>.
+    location: post.headers['Location'] || '',
+  };
+}
+
 // ------------------------------------------------------------------- booking
 
 export const bookingCreated = new Counter('booking_created');

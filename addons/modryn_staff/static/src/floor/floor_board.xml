@@ -153,6 +153,18 @@
                                     </select>
                                     <button class="btn btn-sm btn-primary"
                                             t-on-click="() => this.finish(entry.id)">Done</button>
+                                    <!-- "Invite to book" used to live only in the arrivals
+                                         panel, which a verified check-in now skips entirely —
+                                         dropping the acceptance gate would otherwise have
+                                         taken this capability with it, silently.
+                                         modryn_redirect already accepts 'waiting', so only
+                                         the button had to move. 'called' is excluded: she is
+                                         already with a stylist and the model would no-op. -->
+                                    <button t-if="entry.state === 'waiting'"
+                                            class="btn btn-sm btn-outline-dark"
+                                            t-on-click="() => this.redirectPending(entry.id)">
+                                        Invite to book
+                                    </button>
                                 </div>
                             </div>
                         </div>

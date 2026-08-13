@@ -23,6 +23,14 @@
                        href="/atelier" class="modryn_admin_link">Workshop</a>
                     <a t-if="request.env.user.has_group('modryn_staff.group_boutique_owner')"
                        href="/manage/staff" class="modryn_admin_link">Manage staff</a>
+                    <!-- The QR sign was the only door into the queue, which left a
+                         bride with a dead phone standing at the desk with nowhere to
+                         go. Ungated: unlike Workshop and Manage staff, checking
+                         someone in is front-desk work, and this whole shell already
+                         renders for staff only. Placed BEFORE the language toggle
+                         because .modryn_admin_who carries margin-inline-start:auto,
+                         so anything after it is flung to the far end of the nav. -->
+                    <a href="/queue/checkin" class="modryn_admin_link">Walk-in check-in</a>
                     <t t-call="modryn_staff.lang_toggle"/>
                     <span class="modryn_admin_who">
                         <t t-out="request.env.user.name"/>

@@ -268,7 +268,12 @@ class ModrynFloor(http.Controller):
         entry = request.env['modryn.queue.entry'].sudo().browse(int(entry_id)).exists()
         if not entry:
             return {'error': 'not_found'}
-        entry.write({'state': 'done'})
+        # action_done(), not a bare write: it makes the same state change AND
+        # promotes whoever is now at the front. This route wrote the state
+        # directly, so finishing a customer on the floor terminal never sent the
+        # next bride her "you're next". It went unnoticed because every
+        # acceptance also swept the queue — and acceptance is now gone.
+        entry.action_done()
 
         variants = request.env['product.product'].sudo().search([
             ('product_tmpl_id.is_published', '=', True),

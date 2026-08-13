@@ -1,10 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <!-- Walk-in check-in: the QR target. Three fields, nothing else. -->
+    <!-- Walk-in check-in: the QR target, and the floor terminal's own door.
+         Three fields, nothing else — and then a code, because until she proves
+         she holds the number this form was a way to read a stranger's ticket.
+
+         The shell is chosen by the controller: website.layout for a bride with
+         a phone, modryn_staff.staff_layout for a staff member at the desk, who
+         gets the real nav and a way back to /floor. staff_layout opens its own
+         `<div id="wrap">`, so ours stands down rather than duplicate the id. -->
     <template id="checkin_form" name="MODRYN walk-in check-in">
-        <t t-call="website.layout">
-            <div id="wrap" class="oe_structure">
+        <t t-call="{{ layout }}">
+            <div t-att-id="not staff and 'wrap'" t-att-class="not staff and 'oe_structure'">
                 <div class="container py-5" style="max-width: 520px;">
                     <h1 class="mb-4">Welcome</h1>
 
@@ -22,19 +29,67 @@
                         <div class="mb-3">
                             <label class="form-label" for="phone">Phone</label>
                             <input type="tel" id="phone" name="phone" class="form-control" dir="ltr"
-                                   placeholder="050-1234567" t-att-value="values.get('phone', '')"/>
+                                   placeholder="050-1234567" autocomplete="tel"
+                                   t-att-value="values.get('phone', '')"/>
+                            <!-- This error was set in the controller and never rendered:
+                                 a bad number came back as a blank form with no reason. -->
+                            <div t-if="errors.get('phone')" class="text-danger small mt-1"
+                                 t-out="errors['phone']"/>
                         </div>
 
                         <div class="mb-4">
                             <label class="form-label" for="client_type">Client type</label>
                             <select id="client_type" name="client_type" class="form-select">
-                                <option value="bride">Bride</option>
-                                <option value="evening">Evening</option>
+                                <option value="bride"
+                                        t-att-selected="'selected' if values.get('client_type') == 'bride' else None">Bride</option>
+                                <option value="evening"
+                                        t-att-selected="'selected' if values.get('client_type') == 'evening' else None">Evening</option>
                             </select>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-lg w-100">Send me a code</button>
+                    </form>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- The code. Nothing has been created yet at this point — abandoning here
+         leaves no row, which is the whole reason the step sits before the
+         ticket rather than after it. -->
+    <template id="verify_form" name="MODRYN walk-in verification">
+        <t t-call="{{ layout }}">
+            <div t-att-id="not staff and 'wrap'" t-att-class="not staff and 'oe_structure'">
+                <div class="container py-5" style="max-width: 520px;">
+                    <h1 class="mb-2">Enter your code</h1>
+                    <p class="text-muted mb-4">
+                        We sent a 6-digit code to <span dir="ltr" t-out="phone"/>.
+                    </p>
+
+                    <div t-if="error" class="modryn_field_error mb-3" role="alert" t-out="error"/>
+
+                    <form action="/queue/verify" method="post">
+                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+
+                        <div class="mb-4">
+                            <label class="form-label" for="code">Code</label>
+                            <!-- inputmode numeric so phones show a keypad; one-time-code
+                                 lets iOS and Android offer the SMS autofill. -->
+                            <input type="text" id="code" name="code" class="form-control"
+                                   dir="ltr" inputmode="numeric" autocomplete="one-time-code"
+                                   maxlength="6" autofocus="autofocus"/>
                         </div>
 
                         <button type="submit" class="btn btn-primary btn-lg w-100">Join the queue</button>
                     </form>
+
+                    <!-- "Start again", not the portal's "Use a different number": every
+                         error on this page ends in "start again to get a new code", and a
+                         link offering something else is the only way back. It returns to
+                         the check-in form, where the number can be kept or changed. -->
+                    <p class="text-muted small mt-3 mb-0">
+                        <a href="/queue/checkin">Start again</a>
+                    </p>
                 </div>
             </div>
         </t>

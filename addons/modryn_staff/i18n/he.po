@@ -46,6 +46,7 @@ msgid "Actions"
 msgstr "פעולות"
 
 #. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manage_hours
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manage_roles
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manage_rooms
 msgid "Add"
@@ -79,6 +80,12 @@ msgstr "הסתדר"
 #: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
 msgid "Alterations for"
 msgstr "תיקונים עבור"
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "Amount (₪)"
+msgstr "סכום (₪)"
 
 #. module: modryn_staff
 #. odoo-javascript
@@ -146,6 +153,12 @@ msgstr "כלה"
 #. module: modryn_staff
 #. odoo-javascript
 #: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "Budget (₪)"
+msgstr "תקציב (₪)"
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manage_staff_list
 msgid "Busy"
 msgstr "תפוסה"
@@ -173,6 +186,12 @@ msgstr "ביטול"
 #: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
 msgid "Create task"
 msgstr "יצירת משימה"
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "Currently recorded:"
+msgstr "רשום כרגע:"
 
 #. module: modryn_staff
 #: model:ir.model,name:modryn_staff.model_modryn_room_occupant_mixin
@@ -244,10 +263,28 @@ msgid "Fitting rooms"
 msgstr "חדרי מדידה"
 
 #. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "Fittings closed"
+msgstr "מדידות שנסגרו"
+
+#. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manage_layout
 #: model_terms:ir.ui.view,arch_db:modryn_staff.staff_layout
 msgid "Floor board"
 msgstr "מסך משמרת"
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "Follow-ups open"
+msgstr "מעקבים פתוחים"
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "Gown, veil, alterations…"
+msgstr "שמלה, הינומה, תיקונים…"
 
 #. module: modryn_staff
 #. odoo-javascript
@@ -261,6 +298,12 @@ msgstr "טופל"
 #: model:ir.model.fields,field_description:modryn_staff.field_modryn_queue_entry__modryn_helper_ids
 msgid "Helpers"
 msgstr "עוזרות"
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "How did it end for"
+msgstr "איך זה הסתיים עבור"
 
 #. module: modryn_staff
 #. odoo-javascript
@@ -294,6 +337,12 @@ msgid "Just arrived"
 msgstr "הגיעו עכשיו"
 
 #. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "Loved the second gown, thinking it over…"
+msgstr "אהבה את השמלה השנייה, חושבת על זה…"
+
+#. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.staff_login
 msgid "MODRYN"
 msgstr "MODRYN"
@@ -311,8 +360,26 @@ msgstr "ניהול צוות"
 #. module: modryn_staff
 #. odoo-javascript
 #: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "Measurements"
+msgstr "מידות"
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "Mother + two bridesmaids…"
+msgstr "אמא + שתי שושבינות…"
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
 msgid "My alterations"
 msgstr "התיקונים שלי"
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "My month"
+msgstr "החודש שלי"
 
 #. module: modryn_staff
 #: model:ir.model.fields,field_description:modryn_staff.field_modryn_fitting_room__name
@@ -362,6 +429,12 @@ msgstr "אין לקוחות בתור."
 #. module: modryn_staff
 #. odoo-javascript
 #: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "No profile yet — saving starts one."
+msgstr "אין עדיין כרטיס — שמירה תפתח אחד."
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
 msgid "No team members have been set up yet."
 msgstr "אין עובדות מוגדרות."
 
@@ -369,6 +442,38 @@ msgstr "אין עובדות מוגדרות."
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manage_staff_list
 msgid "No team members yet."
 msgstr "עדיין אין עובדות."
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.js:0
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "No-show"
+msgstr "לא הגיעה"
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "Not purchased yet"
+msgstr "טרם רכשה"
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.js:0
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "Not sold"
+msgstr "לא נמכר"
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "Note (optional)"
+msgstr "הערה (לא חובה)"
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "Notes"
+msgstr "הערות"
 
 #. module: modryn_staff
 #: model:ir.model.fields,field_description:modryn_staff.field_hr_employee__modryn_is_occupied
@@ -399,6 +504,12 @@ msgstr "בעלים"
 #: model:ir.model.fields,help:modryn_staff.field_hr_employee__modryn_role_id
 msgid "Owner-defined job role, for example Sales or Seamstress."
 msgstr "תפקיד שהבעלים מגדירה, למשל מוכרת או תופרת."
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "Party"
+msgstr "מלוות"
 
 #. module: modryn_staff
 #. odoo-javascript
@@ -475,6 +586,18 @@ msgstr "ראשית"
 #. module: modryn_staff
 #. odoo-javascript
 #: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "Profile"
+msgstr "כרטיס לקוחה"
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "Purchased"
+msgstr "רכשה"
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
 msgid "Ready"
 msgstr "מוכן"
 
@@ -505,6 +628,7 @@ msgstr "חדרים"
 #. module: modryn_staff
 #. odoo-javascript
 #: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manage_hours
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manage_staff_form
 msgid "Save"
 msgstr "שמירה"
@@ -524,6 +648,18 @@ msgstr "רואה את השיוכים שלה במסך המשמרת."
 #: model:ir.model.fields,field_description:modryn_staff.field_hr_employee__modryn_occupied_with
 msgid "Serving"
 msgstr "מטפלת ב"
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "She'll receive a feedback text."
+msgstr "היא תקבל הודעת משוב."
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "She'll receive a warm text with a link to rebook."
+msgstr "היא תקבל הודעה חמה עם קישור לתיאום מחדש."
 
 #. module: modryn_staff
 #. odoo-python
@@ -549,6 +685,13 @@ msgstr "יציאה"
 #: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
 msgid "Skip"
 msgstr "דילוג"
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.js:0
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "Sold"
+msgstr "נמכר"
 
 #. module: modryn_staff
 #. odoo-javascript
@@ -640,6 +783,12 @@ msgid "Today's appointments"
 msgstr "תורים להיום"
 
 #. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "Today's tasks"
+msgstr "המשימות של היום"
+
+#. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manage_staff_form
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manage_staff_list
 #: model_terms:ir.ui.view,arch_db:modryn_staff.staff_login
@@ -659,6 +808,11 @@ msgid "Waiting for someone to answer…"
 msgstr "ממתינה שמישהי תענה…"
 
 #. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.staff_layout
+msgid "Walk-in check-in"
+msgstr "רישום לתור"
+
+#. module: modryn_staff
 #. odoo-javascript
 #: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
 msgid "Walk-in queue"
@@ -667,8 +821,20 @@ msgstr "תור בכניסה"
 #. module: modryn_staff
 #. odoo-javascript
 #: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "Wedding date"
+msgstr "תאריך החתונה"
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
 msgid "What do you need? (optional)"
 msgstr "מה צריך? (לא חובה)"
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "What she bought"
+msgstr "מה היא קנתה"
 
 #. module: modryn_staff
 #. odoo-javascript
@@ -700,10 +866,22 @@ msgid "more waiting."
 msgstr "נוספות ממתינות."
 
 #. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "open"
+msgstr "פתוחות"
+
+#. module: modryn_staff
 #. odoo-python
 #: code:addons/modryn_staff/controllers/manage.py:0
 msgid "staff"
 msgstr "עובדת"
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "to close"
+msgstr "לסגירה"
 
 #. module: modryn_staff
 #. odoo-javascript
@@ -745,174 +923,3 @@ msgstr "— בהמשך —"
 #: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
 msgid "— No room —"
 msgstr "— ללא חדר —"
-
-#. module: modryn_staff
-#. odoo-javascript
-#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
-msgid "Amount (₪)"
-msgstr "סכום (₪)"
-
-#. module: modryn_staff
-#. odoo-javascript
-#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
-msgid "Budget (₪)"
-msgstr "תקציב (₪)"
-
-#. module: modryn_staff
-#. odoo-javascript
-#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
-msgid "Currently recorded:"
-msgstr "רשום כרגע:"
-
-#. module: modryn_staff
-#. odoo-javascript
-#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
-msgid "Fittings closed"
-msgstr "מדידות שנסגרו"
-
-#. module: modryn_staff
-#. odoo-javascript
-#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
-msgid "Follow-ups open"
-msgstr "מעקבים פתוחים"
-
-#. module: modryn_staff
-#. odoo-javascript
-#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
-msgid "Gown, veil, alterations…"
-msgstr "שמלה, הינומה, תיקונים…"
-
-#. module: modryn_staff
-#. odoo-javascript
-#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
-msgid "How did it end for"
-msgstr "איך זה הסתיים עבור"
-
-#. module: modryn_staff
-#. odoo-javascript
-#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
-msgid "Loved the second gown, thinking it over…"
-msgstr "אהבה את השמלה השנייה, חושבת על זה…"
-
-#. module: modryn_staff
-#. odoo-javascript
-#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
-msgid "Measurements"
-msgstr "מידות"
-
-#. module: modryn_staff
-#. odoo-javascript
-#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
-msgid "Mother + two bridesmaids…"
-msgstr "אמא + שתי שושבינות…"
-
-#. module: modryn_staff
-#. odoo-javascript
-#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
-msgid "My month"
-msgstr "החודש שלי"
-
-#. module: modryn_staff
-#. odoo-javascript
-#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
-msgid "No profile yet — saving starts one."
-msgstr "אין עדיין כרטיס — שמירה תפתח אחד."
-
-#. module: modryn_staff
-#. odoo-javascript
-#: code:addons/modryn_staff/static/src/floor/floor_board.js:0
-#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
-msgid "No-show"
-msgstr "לא הגיעה"
-
-#. module: modryn_staff
-#. odoo-javascript
-#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
-msgid "Not purchased yet"
-msgstr "טרם רכשה"
-
-#. module: modryn_staff
-#. odoo-javascript
-#: code:addons/modryn_staff/static/src/floor/floor_board.js:0
-#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
-msgid "Not sold"
-msgstr "לא נמכר"
-
-#. module: modryn_staff
-#. odoo-javascript
-#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
-msgid "Note (optional)"
-msgstr "הערה (לא חובה)"
-
-#. module: modryn_staff
-#. odoo-javascript
-#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
-msgid "Notes"
-msgstr "הערות"
-
-#. module: modryn_staff
-#. odoo-javascript
-#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
-msgid "Party"
-msgstr "מלוות"
-
-#. module: modryn_staff
-#. odoo-javascript
-#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
-msgid "Profile"
-msgstr "כרטיס לקוחה"
-
-#. module: modryn_staff
-#. odoo-javascript
-#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
-msgid "Purchased"
-msgstr "רכשה"
-
-#. module: modryn_staff
-#. odoo-javascript
-#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
-msgid "She'll receive a feedback text."
-msgstr "היא תקבל הודעת משוב."
-
-#. module: modryn_staff
-#. odoo-javascript
-#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
-msgid "She'll receive a warm text with a link to rebook."
-msgstr "היא תקבל הודעה חמה עם קישור לתיאום מחדש."
-
-#. module: modryn_staff
-#. odoo-javascript
-#: code:addons/modryn_staff/static/src/floor/floor_board.js:0
-#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
-msgid "Sold"
-msgstr "נמכר"
-
-#. module: modryn_staff
-#. odoo-javascript
-#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
-msgid "Today's tasks"
-msgstr "המשימות של היום"
-
-#. module: modryn_staff
-#. odoo-javascript
-#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
-msgid "Wedding date"
-msgstr "תאריך החתונה"
-
-#. module: modryn_staff
-#. odoo-javascript
-#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
-msgid "What she bought"
-msgstr "מה היא קנתה"
-
-#. module: modryn_staff
-#. odoo-javascript
-#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
-msgid "open"
-msgstr "פתוחות"
-
-#. module: modryn_staff
-#. odoo-javascript
-#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
-msgid "to close"
-msgstr "לסגירה"

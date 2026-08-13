@@ -22,6 +22,7 @@ import {
   staffLogin,
   staffOfLevel,
   staffPassword,
+  queueVerify,
 } from '../lib/session.js';
 
 const SESSION_MS = 60000;
@@ -47,8 +48,14 @@ let walkin = 0;
 // publish sites, and only these two floor routes reach one:
 //
 //   /floor/accept  modryn_accept() sets state -> queue_entry.write() publishes
-//                  because 'state' is in vals (queue_entry.py:82)
-//   /floor/finish  writes state='done' -> same guard
+//                  because 'state' is in vals (queue_entry.py:82). DEAD since
+//                  2026-08-13: a verified check-in goes straight to 'waiting',
+//                  so board.pending is empty for every entry this harness
+//                  creates and the accept branch below never fires. Left in
+//                  place because legacy pending rows still reach it, but it is
+//                  NO LONGER a source of ws_rt samples.
+//   /floor/finish  action_done() writes state='done' -> same guard. Now the
+//                  only clocked publish site this scenario actually reaches.
 //
 // /floor/room was clocked here too and publishes NOTHING: it writes only
 // modryn_room_id, which appears in no guard at any of the three sites. Its clock
@@ -238,7 +245,23 @@ function checkInWalkIn(t) {
     },
     { jar: jar, tags: formTags('queue'), redirects: 0 }
   );
-  check(res, { '/queue/checkin/submit issued a ticket': (r) => r.status === 303 }, {
+  // NOT "issued a ticket": since 2026-08-13 this 303 goes to /queue/verify and
+  // creates nothing. Left at the redirect, this function would post two forms
+  // per iteration, write ZERO rows, and keep every check green — so the
+  // write-heavy manager role would report a healthy floor board with an empty
+  // queue behind it.
+  check(res, { '/queue/checkin/submit issued a code': (r) => r.status === 303 }, {
+    class: 'form',
+    surface: 'queue',
+  });
+  if (res.status !== 303) {
+    return;
+  }
+
+  // Same jar: /queue/verify reads the half-finished check-in out of the session
+  // that /queue/checkin/submit wrote it to.
+  const verified = queueVerify(t.baseUrl, phone, { jar: jar });
+  check(verified, { '/queue/verify joined the line': (v) => v.ok }, {
     class: 'form',
     surface: 'queue',
   });

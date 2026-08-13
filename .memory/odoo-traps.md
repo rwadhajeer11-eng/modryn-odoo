@@ -270,6 +270,37 @@ are correct for that reason.
 
 ---
 
+## 15. A `.po` entry with no `#:` reference bricks `-u` for the whole database
+
+**Symptom.** `-u <module>` dies with `Failed to load registry` and a bare
+`AttributeError: 'NoneType' object has no attribute 'groups'`. The traceback names no module,
+no msgid and no file — the deepest frame you get is `ir_module.py:_load_module_terms`. The
+module's Python and XML are fine; the server had been starting a minute earlier.
+
+**Cause.** Odoo parses each entry's `#:` reference line with a regex to decide what the term
+belongs to (`model_terms:ir.ui.view,arch_db:module.view`, `code:addons/…`, `model:…`). An entry
+with **no occurrences** has no reference line, the regex returns `None`, and `.groups()` is
+called on it. It costs the whole registry, not the one term.
+
+`polib.POEntry(msgid=..., msgstr=...)` produces exactly that entry. So hand-appending a
+translation — the obvious way to add one string — is the way to break the database.
+
+**Fix.** Never leave a hand-added entry unreferenced. Add it, then run
+`scripts/sync_translations.py <db>`, which rebuilds every entry from the exported POT and
+carries the occurrences with it. Check the result before upgrading:
+
+```python
+polib.pofile('addons/<mod>/i18n/he.po').find('Your string').occurrences   # must not be []
+```
+
+**And the ordering that makes this bite twice.** `sync_translations.py` exports the POT from the
+**database**, not from your working tree, and it DROPS any entry the POT does not contain. So a
+new template string must be loaded into the database *before* the sync can key a translation to
+it. The sequence is `-u` → `sync` → `-u`, and getting it wrong silently discards the translation
+you just wrote — it does not warn, it reports one more "untranslated".
+
+---
+
 ## Renamed or moved in Odoo 19
 
 | Was | Now |

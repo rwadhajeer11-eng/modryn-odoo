@@ -14,7 +14,7 @@ The QR image itself is Odoo's built-in /report/barcode endpoint — zero custom
 code, which is part of the finding.
 """,
     'category': 'Website',
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.1.0',
         # modryn_portal owns the SMS sender port. Depending on it is safe — portal
     # reaches website/booking/theme and never the queue, so there is no cycle —
     # and it is what lets a walk-in be texted when she is next and when it is

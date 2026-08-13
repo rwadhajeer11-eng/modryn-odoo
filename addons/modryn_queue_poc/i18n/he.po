@@ -12,19 +12,6 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. module: modryn_queue_poc
-#: model_terms:ir.ui.view,arch_db:modryn_queue_poc.checkin_form
-msgid ""
-"<select id=\"client_type\" name=\"client_type\" class=\"form-select\">\n"
-"                                <option value=\"bride\">Bride</option>\n"
-"                                <option value=\"evening\">Evening</option>\n"
-"                            </select>"
-msgstr ""
-"<select id=\"client_type\" name=\"client_type\" class=\"form-select\">\n"
-"                                <option value=\"bride\">כלה</option>\n"
-"                                <option value=\"evening\">ערב</option>\n"
-"                            </select>"
-
-#. module: modryn_queue_poc
 #: model_terms:ir.ui.view,arch_db:modryn_queue_poc.ticket
 msgid "Book a fitting"
 msgstr "קביעת תור"
@@ -33,6 +20,7 @@ msgstr "קביעת תור"
 #. odoo-javascript
 #: code:addons/modryn_queue_poc/static/src/queue_board/queue_board.xml:0
 #: model:ir.model.fields.selection,name:modryn_queue_poc.selection__modryn_queue_entry__client_type__bride
+#: model_terms:ir.ui.view,arch_db:modryn_queue_poc.checkin_form
 msgid "Bride"
 msgstr "כלה"
 
@@ -60,15 +48,26 @@ msgid "Client type"
 msgstr "סוג לקוחה"
 
 #. module: modryn_queue_poc
+#: model_terms:ir.ui.view,arch_db:modryn_queue_poc.verify_form
+msgid "Code"
+msgstr "קוד"
+
+#. module: modryn_queue_poc
 #. odoo-javascript
 #: code:addons/modryn_queue_poc/static/src/queue_board/queue_board.xml:0
 msgid "Done"
 msgstr "סיום"
 
 #. module: modryn_queue_poc
+#: model_terms:ir.ui.view,arch_db:modryn_queue_poc.verify_form
+msgid "Enter your code"
+msgstr "הזיני את הקוד"
+
+#. module: modryn_queue_poc
 #. odoo-javascript
 #: code:addons/modryn_queue_poc/static/src/queue_board/queue_board.xml:0
 #: model:ir.model.fields.selection,name:modryn_queue_poc.selection__modryn_queue_entry__client_type__evening
+#: model_terms:ir.ui.view,arch_db:modryn_queue_poc.checkin_form
 msgid "Evening"
 msgstr "ערב"
 
@@ -93,8 +92,8 @@ msgid "Invited to book"
 msgstr "הוזמנה לקבוע תור"
 
 #. module: modryn_queue_poc
-#: model_terms:ir.ui.view,arch_db:modryn_queue_poc.checkin_form
 #: model_terms:ir.ui.view,arch_db:modryn_queue_poc.queue_sign
+#: model_terms:ir.ui.view,arch_db:modryn_queue_poc.verify_form
 msgid "Join the queue"
 msgstr "כניסה לתור"
 
@@ -165,6 +164,28 @@ msgid "Scan the code to join the queue"
 msgstr "סרקי את הקוד כדי להצטרף לתור"
 
 #. module: modryn_queue_poc
+#: model_terms:ir.ui.view,arch_db:modryn_queue_poc.checkin_form
+msgid "Send me a code"
+msgstr "שלחו לי קוד"
+
+#. module: modryn_queue_poc
+#. odoo-python
+#: code:addons/modryn_queue_poc/controllers/main.py:0
+msgid "Something went wrong."
+msgstr "משהו השתבש."
+
+#. module: modryn_queue_poc
+#: model_terms:ir.ui.view,arch_db:modryn_queue_poc.verify_form
+msgid "Start again"
+msgstr "התחלה מחדש"
+
+#. module: modryn_queue_poc
+#. odoo-python
+#: code:addons/modryn_queue_poc/controllers/main.py:0
+msgid "Start again to get a new code."
+msgstr "יש להתחיל מחדש כדי לקבל קוד חדש."
+
+#. module: modryn_queue_poc
 #. odoo-javascript
 #: code:addons/modryn_queue_poc/static/src/queue_board/queue_board.xml:0
 msgid "Status"
@@ -176,9 +197,33 @@ msgid "Thank you for visiting"
 msgstr "תודה שביקרת"
 
 #. module: modryn_queue_poc
+#. odoo-python
+#: code:addons/modryn_queue_poc/controllers/main.py:0
+msgid "That code has expired. Start again to get a new one."
+msgstr "תוקף הקוד פג. יש להתחיל מחדש כדי לקבל קוד חדש."
+
+#. module: modryn_queue_poc
+#. odoo-python
+#: code:addons/modryn_queue_poc/controllers/main.py:0
+msgid "That code is not right."
+msgstr "הקוד אינו נכון."
+
+#. module: modryn_queue_poc
 #: model_terms:ir.ui.view,arch_db:modryn_queue_poc.ticket
 msgid "Today is a busy day"
 msgstr "היום יום עמוס"
+
+#. module: modryn_queue_poc
+#. odoo-python
+#: code:addons/modryn_queue_poc/controllers/main.py:0
+msgid "Too many codes sent to that number. Try again in an hour."
+msgstr "נשלחו יותר מדי קודים למספר הזה. אפשר לנסות שוב בעוד שעה."
+
+#. module: modryn_queue_poc
+#. odoo-python
+#: code:addons/modryn_queue_poc/controllers/main.py:0
+msgid "Too many wrong codes. Start again to get a new one."
+msgstr "יותר מדי קודים שגויים. יש להתחיל מחדש כדי לקבל קוד חדש."
 
 #. module: modryn_queue_poc
 #. odoo-javascript
@@ -208,9 +253,20 @@ msgid "Walk-in queue"
 msgstr "תור בכניסה"
 
 #. module: modryn_queue_poc
+#. odoo-python
+#: code:addons/modryn_queue_poc/controllers/main.py:0
+msgid "We couldn't send the code. Check the number and try again."
+msgstr "לא הצלחנו לשלוח את הקוד. כדאי לבדוק את המספר ולנסות שוב."
+
+#. module: modryn_queue_poc
 #: model_terms:ir.ui.view,arch_db:modryn_queue_poc.ticket
 msgid "We hope to see you again soon."
 msgstr "נשמח לראותך שוב בקרוב."
+
+#. module: modryn_queue_poc
+#: model_terms:ir.ui.view,arch_db:modryn_queue_poc.verify_form
+msgid "We sent a 6-digit code to"
+msgstr "שלחנו קוד בן 6 ספרות אל"
 
 #. module: modryn_queue_poc
 #: model_terms:ir.ui.view,arch_db:modryn_queue_poc.ticket
@@ -256,6 +312,21 @@ msgstr "אנחנו מוכנים בשבילך — נא לגשת לדלפק."
 #: model_terms:ir.ui.view,arch_db:modryn_queue_poc.checkin_form
 msgid "Welcome"
 msgstr "ברוכה הבאה"
+
+#. module: modryn_queue_poc
+#. odoo-python
+#: code:addons/modryn_queue_poc/models/queue_entry.py:0
+msgid ""
+"You're in the queue — and you're next. We'll be with you in a moment. Your "
+"ticket: %(link)s"
+msgstr "את בתור — ואת הבאה בתור. נהיה איתך עוד רגע. הכרטיס שלך: %(link)s"
+
+#. module: modryn_queue_poc
+#. odoo-python
+#: code:addons/modryn_queue_poc/models/queue_entry.py:0
+msgid ""
+"You're in the queue. We'll text you when you're next. Your ticket: %(link)s"
+msgstr "את בתור. נעדכן אותך בהודעה כשיגיע תורך. הכרטיס שלך: %(link)s"
 
 #. module: modryn_queue_poc
 #: model_terms:ir.ui.view,arch_db:modryn_queue_poc.ticket

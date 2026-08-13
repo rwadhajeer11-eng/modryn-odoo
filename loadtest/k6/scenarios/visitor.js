@@ -16,6 +16,7 @@ import {
   slotValues,
   optionsIn,
   submitBooking,
+  queueVerify,
 } from '../lib/session.js';
 import exec from 'k6/execution';
 
@@ -152,24 +153,43 @@ function queueCheckin(t) {
   }
   think();
 
+  // One number, used by BOTH halves: /queue/verify looks the code up by phone,
+  // so a second call to iterationPhone() here would verify against a number
+  // that was never sent a code.
+  const phone = iterationPhone(t);
   const res = http.post(
     t.baseUrl + '/queue/checkin/submit',
     {
       name: `LoadTest walk-in V${exec.vu.idInTest}`,
-      phone: iterationPhone(t),
+      phone: phone,
       client_type: 'bride',
       csrf_token: form.csrf,
     },
     { tags: formTags('queue'), redirects: 0 }
   );
-  const ticketPath = res.headers['Location'] || '';
-  check(res, { '/queue/checkin/submit issued a ticket': () => res.status === 303 }, {
+  // NOT "issued a ticket" any more — this 303 goes to /queue/verify and no row
+  // exists yet. Renaming it matters: the old label plus the old assertion stayed
+  // green through the entire verification change while measuring nothing.
+  check(res, { '/queue/checkin/submit issued a code': () => res.status === 303 }, {
     class: 'form',
     surface: 'queue',
   });
   if (res.status !== 303) {
     return;
   }
+  think();
+
+  const verified = queueVerify(t.baseUrl, phone);
+  check(verified, { '/queue/verify joined the line': (v) => v.ok }, {
+    class: 'form',
+    surface: 'queue',
+  });
+  if (!verified.ok) {
+    // Do NOT retry. Three issues per phone per hour is the whole budget, and a
+    // hot loop here burns it for every VU sharing the number.
+    return;
+  }
+  const ticketPath = verified.location;
 
   // She watches her place in the queue. A few polls, not a hot loop.
   const polls = 2 + Math.floor(Math.random() * 3);
