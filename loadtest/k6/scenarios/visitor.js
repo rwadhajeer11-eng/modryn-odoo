@@ -112,9 +112,9 @@ function browseAndBook(t) {
     surface: 'booking',
   });
 
-  if (booked.eventId) {
+  if (booked.ref) {
     think();
-    const conf = http.get(`${t.baseUrl}/book/confirmed/${booked.eventId}`, {
+    const conf = http.get(`${t.baseUrl}/book/confirmed/${booked.ref}`, {
       tags: pageTags('booking'),
     });
     check(conf, { '/book/confirmed rendered': (r) => r.status === 200 }, {

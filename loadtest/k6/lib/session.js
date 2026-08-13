@@ -629,8 +629,14 @@ export function submitBooking(base, slot, fields, surface) {
   if (res.status === 303) {
     bookingCreated.add(1);
     const loc = res.headers['Location'] || '';
-    const m = /\/book\/confirmed\/(\d+)/.exec(loc);
-    return { ok: true, lost: false, eventId: m ? parseInt(m[1], 10) : null, res: res };
+    // The confirmed page is TOKEN-addressed ('<id>-<hmac>') since the
+    // harvesting fix — a digits-only regex here silently kept only the id
+    // prefix, and every /book/confirmed GET 404'd against a healthy server.
+    // `ref` is what the confirmation page accepts; eventId (parseInt stops at
+    // the dash) is for the id-addressed portal routes like /my/cancel.
+    const m = /\/book\/confirmed\/([^/?#]+)/.exec(loc);
+    const ref = m ? m[1] : null;
+    return { ok: true, lost: false, ref: ref, eventId: ref ? parseInt(ref, 10) || null : null, res: res };
   }
 
   if (res.status === 200 && slotFieldRejected(res.body)) {

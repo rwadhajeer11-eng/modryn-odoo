@@ -164,7 +164,6 @@ class ModrynManage(http.Controller):
         if not errors:
             employee = request.env['hr.employee'].sudo().create({
                 'name': name,
-                'work_phone': (post.get('phone') or '').strip(),
                 'modryn_role_id': int(role_id),
                 'modryn_level': level,
             })
@@ -176,6 +175,17 @@ class ModrynManage(http.Controller):
                 # remove it and let the owner correct the field.
                 employee.unlink()
                 errors['username'] = str(exc)
+            else:
+                # AFTER provisioning, never in create(): work_phone lives on
+                # the employee's work contact, and provision_login relinks
+                # that contact to the new portal user's partner — a phone
+                # written at create is silently dropped. Every walkthrough
+                # hire made through this form lost her number exactly here,
+                # and a staff member with no phone is one the assignment SMS
+                # can only log-and-skip for.
+                phone = (post.get('phone') or '').strip()
+                if phone:
+                    employee.work_phone = phone
 
         if errors:
             return request.render('modryn_staff.manage_staff_form', {

@@ -90,11 +90,14 @@ for name, job, level, username, phone in PEOPLE[SLUG]:
 
     employee = Employee.create({
         'name': name,
-        'work_phone': phone,
         'modryn_role_id': job.id,
         'modryn_level': level,
     })
     employee.modryn_provision_login(username, DEMO_PASSWORD)
+    # AFTER provisioning, not in create(): provision relinks the work contact
+    # to the new portal user's partner, dropping any phone written at create.
+    # bella's and noga's original staff lost their numbers exactly this way.
+    employee.work_phone = phone
     created.append((name, level, username, 'portal'))
 
 env.cr.commit()

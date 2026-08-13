@@ -203,11 +203,16 @@ for name, job, level, username in PEOPLE:
 
     employee = Employee.create({
         'name': name,
-        'work_phone': '052-555%s%02d' % (TENANT_INDEX, people_made),
         'modryn_role_id': job.id,
         'modryn_level': level,
     })
     employee.modryn_provision_login(username, DEMO_PASSWORD)
+    # AFTER provisioning, not in create(): hr.employee.work_phone lives on the
+    # work contact, and provision_login relinks that contact to the new portal
+    # user's partner — a phone written at create is silently dropped on the
+    # floor. That is how every load tenant's staff ended up phoneless and the
+    # assignment SMS path logged 55 skips per smoke instead of queueing.
+    employee.work_phone = '052-555%s%02d' % (TENANT_INDEX, people_made)
     people_made += 1
 
 # --------------------------------------------------------------------- rooms

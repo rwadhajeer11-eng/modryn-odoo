@@ -301,6 +301,28 @@ you just wrote — it does not warn, it reports one more "untranslated".
 
 ---
 
+## 16. `work_phone` written at create is dropped by `modryn_provision_login`
+
+**Symptom.** The owner hires someone through `/manage/staff`, types her phone, and the employee
+row ends up phoneless. Every portal-level hire ever made through that form — and every seeded
+manager and staff member on every tenant — had no number. Nothing errored.
+
+**Cause.** `hr.employee.work_phone` lives on the employee's *work contact*. Provisioning a login
+links a new `res.users`, and hr relinks the work contact to that user's partner — whose phone is
+empty. A phone written in the same `create()` call is silently replaced by the relink. The owner
+kept hers everywhere because the seeders `write()` her phone onto an employee whose user already
+existed.
+
+**Why it stayed invisible.** Nothing *read* staff phones until the assignment-SMS build — the
+notifier's log-and-skip (`[modryn.staff] no phone for …`) is what finally surfaced it, 55 times
+per load smoke.
+
+**Fix.** Write `work_phone` AFTER `modryn_provision_login()`, never in the `create()` values.
+`manage.py` (the form), `seed_staff.py` and `loadtest/seed/seed_tenant.py` all do this now;
+existing phoneless rows on bella/noga/lt* were backfilled by SQL.
+
+---
+
 ## Renamed or moved in Odoo 19
 
 | Was | Now |

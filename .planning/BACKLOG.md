@@ -120,6 +120,9 @@ Deliberate ceilings, each marked with a `ponytail:` comment at the site. None is
 - **Untranslated long-tail strings.** The build translated the 37 user-facing new strings
   (he, plus ar for the ticket notice); `sync_translations.py`'s "no translation for" report
   still lists backend field labels and older gaps nobody sees from the themed pages.
+- **lt02 saw no manager traffic in the smoke.** The single manager VU pins to one tenant, so
+  the workshop engine exercised under load on lt01 only. The ramp stages run more VUs and
+  spread; nothing to fix unless a smoke-only signal is wanted per tenant.
 
 ## Housekeeping worth knowing
 
