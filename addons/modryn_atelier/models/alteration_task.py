@@ -102,8 +102,42 @@ class ModrynAlterationTask(models.Model):
     @api.model_create_multi
     def create(self, vals_list):
         tasks = super().create(vals_list)
+        # Born assigned — the manager picked her in the finish modal. The
+        # auto-assigned path texts through the write hook instead, so the two
+        # never double up: _modryn_assign_idle only touches unassigned rows.
+        for task in tasks.filtered(lambda t: t.seamstress_id and t.state in OPEN_STATES):
+            task._modryn_notify_assigned()
         tasks._modryn_assign_idle()
         return tasks
+
+    def write(self, vals):
+        old_assignee = {}
+        if 'seamstress_id' in vals:
+            old_assignee = {t.id: t.seamstress_id.id for t in self}
+        result = super().write(vals)
+        if old_assignee:
+            for task in self:
+                if task.seamstress_id and \
+                        task.seamstress_id.id != old_assignee.get(task.id):
+                    task._modryn_notify_assigned()
+        return result
+
+    def _modryn_notify_assigned(self):
+        self.ensure_one()
+        notify = self.env['modryn.staff.notify']
+        body = self.with_context(
+            lang=notify.modryn_lang(self.seamstress_id),
+        )._modryn_assignment_body()
+        notify.modryn_assigned(self.seamstress_id, body)
+
+    def _modryn_assignment_body(self):
+        self.ensure_one()
+        parts = [_("New alteration for you: %s") % self.customer_name]
+        if self.variant_id:
+            parts.append(self.variant_id.product_tmpl_id.name)
+        if self.due_date:
+            parts.append(_("due %s") % self.due_date.strftime('%d.%m.%Y'))
+        return ' — '.join(parts)
 
     def _modryn_pool(self):
         """Who takes the workshop queue: active employees holding a role the

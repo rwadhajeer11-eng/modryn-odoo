@@ -82,6 +82,42 @@ class ModrynTask(models.Model):
         for task in self:
             task.is_overdue = bool(task.due_at and task.due_at < now and task.state == 'open')
 
+    # ---------------------------------------------------------- assignment SMS
+    @api.model_create_multi
+    def create(self, vals_list):
+        tasks = super().create(vals_list)
+        # Born assigned — the outcome flow hands follow-ups to the stylist who
+        # owns the relationship, and she may be nowhere near a screen.
+        for task in tasks.filtered(lambda t: t.employee_id and t.state == 'open'):
+            task._modryn_notify_assigned()
+        return tasks
+
+    def write(self, vals):
+        old_assignee = {}
+        if 'employee_id' in vals:
+            old_assignee = {t.id: t.employee_id.id for t in self}
+        result = super().write(vals)
+        if old_assignee:
+            for task in self:
+                if task.employee_id and task.employee_id.id != old_assignee.get(task.id):
+                    task._modryn_notify_assigned()
+        return result
+
+    def _modryn_notify_assigned(self):
+        self.ensure_one()
+        notify = self.env['modryn.staff.notify']
+        body = self.with_context(
+            lang=notify.modryn_lang(self.employee_id),
+        )._modryn_assignment_body()
+        notify.modryn_assigned(self.employee_id, body)
+
+    def _modryn_assignment_body(self):
+        self.ensure_one()
+        if self.customer_name:
+            return _("New task for you: %(name)s — %(customer)s") % {
+                'name': self.name, 'customer': self.customer_name}
+        return _("New task for you: %s") % self.name
+
     # ------------------------------------------------------------------ done
     def action_done(self, employee):
         """Idempotent: two staff ticking the same checklist box is one tick."""

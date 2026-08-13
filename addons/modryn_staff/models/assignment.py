@@ -1,4 +1,4 @@
-from odoo import api, fields, models
+from odoo import _, api, fields, models
 
 
 class ModrynFloorHelper(models.Model):
@@ -106,6 +106,11 @@ class CalendarEvent(models.Model):
         return bool(self.stop) and self.stop >= fields.Datetime.now()
 
     def write(self, vals):
+        # Old primaries, captured before the write — the SMS fires only on a
+        # CHANGE to a non-null assignee, never on a re-drop of the same person.
+        old_primary = {}
+        if 'modryn_employee_id' in vals:
+            old_primary = {e.id: e.modryn_employee_id.id for e in self}
         result = super().write(vals)
         # Assignment changes must reach every open floor board. The queue model
         # already owns the bus channel; bookings piggyback on the same one so
@@ -117,7 +122,20 @@ class CalendarEvent(models.Model):
                     'modryn_queue', 'modryn_queue/update',
                     {'kind': 'booking_assignment', 'ids': bookings.ids},
                 )
+            if old_primary:
+                for event in bookings:
+                    employee = event.modryn_employee_id
+                    if employee and employee.id != old_primary.get(event.id):
+                        notify = self.env['modryn.staff.notify']
+                        body = event.with_context(
+                            lang=notify.modryn_lang(employee),
+                        )._modryn_assignment_body()
+                        notify.modryn_assigned(employee, body)
         return result
+
+    def _modryn_assignment_body(self):
+        self.ensure_one()
+        return _("New customer for you: %s") % (self.name or '')
 
 
 class ModrynQueueEntry(models.Model):
@@ -152,12 +170,28 @@ class ModrynQueueEntry(models.Model):
         return {'modryn_employee_id', 'modryn_helper_ids'}
 
     def write(self, vals):
+        old_primary = {}
+        if 'modryn_employee_id' in vals:
+            old_primary = {e.id: e.modryn_employee_id.id for e in self}
         result = super().write(vals)
         # The base model only notifies on state changes; assignment changes are
         # just as visible on the board, so they push too.
         if self._assignment_changed_fields() & set(vals):
             self._notify_board()
+        if old_primary:
+            for entry in self:
+                employee = entry.modryn_employee_id
+                if employee and employee.id != old_primary.get(entry.id):
+                    notify = self.env['modryn.staff.notify']
+                    body = entry.with_context(
+                        lang=notify.modryn_lang(employee),
+                    )._modryn_assignment_body()
+                    notify.modryn_assigned(employee, body)
         return result
+
+    def _modryn_assignment_body(self):
+        self.ensure_one()
+        return _("New customer for you: %s") % (self.name or '')
 
     def modryn_assign(self, employee):
         """Dispatch this walk-in to a member of staff (legacy single-assign).
