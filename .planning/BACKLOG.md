@@ -95,12 +95,31 @@ to make. Full context in [`epics/walkin-verification.md`](epics/walkin-verificat
   locked out for an hour with a staff member standing in front of her. Recovery below that
   works — restarting from `/queue/checkin` issues a fresh code and it is accepted. The fix is a
   `purpose` column plus two domain leaves; it was skipped on purpose and this is its trigger.
-- **`scripts/verify.sh` asserts nothing about the check-in flow.** Its 328/0/2 was unchanged
-  across the whole build, which is a *control*, not evidence. Coverage today is the specs'
-  manual acceptance tables plus `qa/` act 6 in a browser. Since `deploy.sh` gates rollback on
-  `verify.sh`, the flow that now stands between a walk-in and the queue has no deploy-time
-  check. Worth a §-block: submit creates no row, a wrong code creates no row, the right one
-  creates exactly one at `waiting`.
+- ~~**`scripts/verify.sh` asserts nothing about the check-in flow.**~~ **CLOSED 2026-08-13** by
+  the access/workshop build: §6-bis runs exactly the three checks this item asked for, plus the
+  de-dupe extension (same phone twice → one row, same token) and a named-index INSERT refusal
+  with its own-tenant control. The suite stands at 354/0/2.
+
+## Left open by the access/workshop build (2026-08-13) · S each
+
+Deliberate ceilings, each marked with a `ponytail:` comment at the site. None is a bug.
+
+- **A garbled `/manage/roles/pages` POST revokes everything.** Replace-set semantics: what is
+  ticked when Save lands is what stands, so a POST carrying no valid `pages` tokens legally
+  clears every grant. The real form always posts the full grid and the route is owner-gated +
+  CSRF, so reaching this takes deliberate effort — but there is no confirmation and no undo.
+  Cheap insurance if it ever bites: refuse an empty grid, or snapshot to the audit log.
+- **The create-side idle race can double-book one seamstress.** Two tasks created in the same
+  instant may both pick her; bounded by human hands at one terminal. Upgrade: `FOR UPDATE` on
+  the `hr_employee` row.
+- **A freed-by-reassign seamstress does not auto-pull**, and an archived employee's open tasks
+  wait for manual reassignment.
+- **A→B→A assignment shuffles send three texts.** No cooldown stamp on purpose — a stamp would
+  eat a *real* reassignment. Upgrade: per-record `modryn_assign_notified_at`.
+- **The staff home refreshes by a 60-second visibility-guarded reload**, not over `bus.bus`.
+- **Untranslated long-tail strings.** The build translated the 37 user-facing new strings
+  (he, plus ar for the ticket notice); `sync_translations.py`'s "no translation for" report
+  still lists backend field labels and older gaps nobody sees from the themed pages.
 
 ## Housekeeping worth knowing
 
