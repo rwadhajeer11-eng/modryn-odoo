@@ -442,9 +442,40 @@ for db in $TENANTS; do
 done
 [ "$(code "$BELLA/staff/login")" = "200" ] && ok "staff login page" || bad "staff login page" "not 200"
 # Unauthenticated access to staff surfaces must not be 200.
-for path in /floor /manage/staff /manage/roles; do
+for path in /floor /staff/home /manage/staff /manage/roles; do
   C=$(code "$BELLA$path")
   [ "$C" != "200" ] && ok "$path refuses anonymous access ($C)" || bad "$path refuses anonymous access" "returned 200 while logged out"
+done
+
+# --- the role→page matrix -------------------------------------------------
+# The grant table must exist everywhere, and on the template — the one
+# database no owner ever hand-edits — every role must carry its seeded
+# defaults, because every future boutique is a clone of exactly that state.
+for db in $TENANTS modryn_template; do
+  RP=$(psql -d "$db" -tAc "select count(*) from information_schema.tables where table_name='modryn_role_page'")
+  [ "$RP" = "1" ] && ok "$db: role→page table exists" || bad "$db role→page table" "missing — the matrix has nowhere to live"
+done
+UNGRANTED=$(psql -d modryn_template -tAc "select count(*) from modryn_staff_role r
+  where not exists (select 1 from modryn_role_page p where p.role_id = r.id)" 2>/dev/null)
+[ "${UNGRANTED:-1}" = "0" ] && ok "template: every role carries page grants" \
+  || bad "template role grants" "${UNGRANTED:-?} role(s) with no rows — cloned boutiques would strand that role on its home page"
+# Page routes ask the matrix, not just a group — greppable teeth, the slot-
+# snapshot style. If one of these disappears, the matrix silently stops
+# meaning anything for that page.
+grep -q "access.can_view('floor')" addons/modryn_staff/controllers/floor.py \
+  && grep -q "access.can_view('roster')" addons/modryn_roster/controllers/roster.py \
+  && grep -q "access.can_view('atelier')" addons/modryn_atelier/controllers/atelier.py \
+  && grep -q "access.can_view('reports')" addons/modryn_ops/controllers/reports.py \
+  && ok "all four matrix-gated pages ask can_view()" \
+  || bad "matrix gates" "a page route no longer consults the matrix"
+# The three xpath nav injections are gone FROM THE DATABASE, not merely from
+# the source — a forgotten -u leaves the stale inherit view pointing at an
+# anchor that no longer exists, and every staff page dies at view load.
+for db in $TENANTS; do
+  STALE=$(psql -d "$db" -tAc "select count(*) from ir_ui_view where key in
+    ('modryn_ops.manage_nav_audit','modryn_ops.staff_nav_reports','modryn_roster.manage_nav_shifts')")
+  [ "$STALE" = "0" ] && ok "$db: no stale nav-injection views" \
+    || bad "$db stale nav views" "$STALE inherit view(s) still target anchors the unified nav removed — run -u modryn_ops,modryn_roster"
 done
 
 head_ "8. customer portal"

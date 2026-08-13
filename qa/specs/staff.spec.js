@@ -51,6 +51,21 @@ test('act 5b — staff-level access stops where it should', async ({ page }) => 
   ).toBeTruthy();
 });
 
+test('act 5c — plain staff land on their own page, and the floor is not theirs by default', async ({ page }) => {
+  await signIn(page, PEOPLE.staff);
+
+  // The landing IS the product decision: her day, not the whole room.
+  await expect(page).toHaveURL(/\/staff\/home/);
+  const painted = await page.evaluate(() => document.body.innerText.trim().length);
+  expect(painted, '/staff/home returned 200 and rendered nothing').toBeGreaterThan(60);
+
+  // A direct URL to a page her role was not granted: the themed refusal
+  // wearing the nav — never the board, and never a bare error page.
+  const res = await page.goto('/floor');
+  expect(res && res.status(), 'the floor board answered a staff member the matrix refuses').toBe(403);
+  await expect(page.locator('owl-component[name="modryn_staff.floor_board"]')).toHaveCount(0);
+});
+
 test('act 6 — a walk-in appears on the board without a reload @writes', async ({ browser }) => {
   // Two contexts, deliberately: one watching, one acting. A single page that
   // navigated away and back would prove the QUERY works and say nothing at all

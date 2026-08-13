@@ -157,6 +157,16 @@ PEOPLE += [('מוכרת %s-%02d' % (TENANT_INDEX, n),
             'staff', 'staff%02d' % n)
            for n in range(1, STAFF + 1)]
 
+# The k6 staff scenario signs in as plain staff and asserts the floor board
+# renders — under the matrix's default grants (roster + check-in) it would see
+# the themed refusal instead. This tenant models a boutique whose owner
+# granted the floor to every role, which keeps the scenario honest without
+# special-casing it.
+Grant = env['modryn.role.page'].sudo()
+for job in (sales, seamstress, reception):
+    if not Grant.search_count([('role_id', '=', job.id), ('page_key', '=', 'floor')]):
+        Grant.create({'role_id': job.id, 'page_key': 'floor'})
+
 people_made = 0
 for name, job, level, username in PEOPLE:
     if Employee.with_context(active_test=False).search_count([('name', '=', name)]):
