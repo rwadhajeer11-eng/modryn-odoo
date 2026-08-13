@@ -3,7 +3,7 @@ from odoo.http import request
 
 from odoo.addons.modryn_staff.controllers.floor import ModrynFloor
 
-from ..models.alteration_task import OPEN_STATES, STATES
+from ..models.alteration_task import OPEN_STATES, PRIORITIES, STATES
 
 GROUP_STAFF = 'modryn_staff.group_boutique_staff'
 GROUP_MANAGER = 'modryn_staff.group_shift_manager'
@@ -72,6 +72,12 @@ class ModrynAtelier(http.Controller):
         for key, label in STATES:
             by_state[key] = [t._row() for t in Task.search([('state', '=', key)])]
 
+        # The queue: open work nobody holds yet, in the exact order the
+        # auto-assigner will hand it out (priority, then the clock) — so what
+        # the manager sees IS what the next free seamstress gets.
+        queue = [t._row() for t in Task.search([
+            ('seamstress_id', '=', False), ('state', 'in', OPEN_STATES)])]
+
         # Load per seamstress counts only OPEN work — delivered gowns are not a
         # burden on anybody.
         load = []
@@ -89,7 +95,7 @@ class ModrynAtelier(http.Controller):
                 'overdue': len([t for t in open_tasks if t.is_overdue]),
             })
         load.sort(key=lambda r: (-r['open'], r['name']))
-        return {'by_state': by_state, 'states': STATES, 'load': load}
+        return {'by_state': by_state, 'states': STATES, 'load': load, 'queue': queue}
 
     # ------------------------------------------------------------- dashboard
     @http.route('/atelier', type='http', auth='user', website=True, sitemap=False)
@@ -155,24 +161,35 @@ class ModrynAtelier(http.Controller):
 
     @http.route('/atelier/task/create', type='jsonrpc', auth='user')
     def task_create(self, customer_name, customer_phone=None, variant_id=None,
-                    piece_ids=None, note=None, seamstress_id=None, due_date=None):
+                    piece_ids=None, note=None, seamstress_id=None, due_date=None,
+                    priority=None):
         """The finish-screen handoff: fitting done, alteration work begins.
 
         Always lands in 'intake' even when a seamstress is chosen — being
         assigned is not the same as having started, and the workshop dashboard
         reads intake as "on the pile".
+
+        Priority and due date are REQUIRED here, at the single creation door:
+        the queue orders by them, and a task without either would sit wherever
+        the defaults happened to drop it, invisible to the manager who thought
+        she had said how urgent it was.
         """
         if not self._is_manager():
             return {'error': 'forbidden'}
         name = (customer_name or '').strip()
         if not name:
             return {'error': 'missing_customer'}
+        if priority not in [p[0] for p in PRIORITIES]:
+            return {'error': 'missing_priority'}
+        if not due_date:
+            return {'error': 'missing_due'}
 
         values = {
             'customer_name': name,
             'customer_phone': (customer_phone or '').strip(),
             'note': (note or '').strip(),
             'state': 'intake',
+            'priority': priority,
         }
         if variant_id:
             variant = request.env['product.product'].sudo().browse(int(variant_id)).exists()

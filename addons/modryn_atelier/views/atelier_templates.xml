@@ -31,6 +31,51 @@
                 </div>
             </section>
 
+            <!-- The queue: open work nobody holds yet, in the exact order the
+                 auto-assigner hands it out — what the manager sees here IS what
+                 the next free seamstress gets. -->
+            <section class="modryn_panel mb-4">
+                <header class="modryn_panel_head">
+                    <h2>Queue</h2>
+                    <span class="modryn_count" t-out="len(board['queue'])"/>
+                </header>
+                <p t-if="not board['queue']" class="modryn_empty">
+                    Nothing waiting — every open task has hands on it.
+                </p>
+                <table t-else="" class="table modryn_table align-middle">
+                    <tbody>
+                        <tr t-foreach="board['queue']" t-as="task">
+                            <td style="width: 1%;">
+                                <span t-if="task['priority'] == '2'" class="modryn_badge is_busy">High</span>
+                                <span t-elif="task['priority'] == '0'" class="modryn_badge is_muted">Low</span>
+                                <span t-else="" class="modryn_badge is_free">Normal</span>
+                            </td>
+                            <td>
+                                <div class="modryn_strong" t-out="task['customer']"/>
+                                <div class="modryn_sub" dir="ltr" t-out="task['phone']"/>
+                            </td>
+                            <td>
+                                <div t-if="task['dress']" class="modryn_sub">
+                                    <t t-out="task['dress']"/>
+                                    <t t-if="task['size']"> · <t t-out="task['size']"/></t>
+                                </div>
+                                <div class="modryn_sub">
+                                    <t t-foreach="task['pieces']" t-as="p">
+                                        <span class="modryn_badge is_muted me-1" t-out="p"/>
+                                    </t>
+                                </div>
+                            </td>
+                            <td>
+                                <span t-if="task['due']"
+                                      t-attf-class="modryn_badge #{'is_busy' if task['overdue'] else 'is_muted'}">
+                                    <t t-out="task['due']"/>
+                                </span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+
             <!-- One panel per state: the workshop reads left to right as work moves. -->
             <section t-foreach="board['states']" t-as="st" class="modryn_panel mb-4">
                 <header class="modryn_panel_head">
@@ -43,6 +88,10 @@
                 <table t-else="" class="table modryn_table align-middle">
                     <tbody>
                         <tr t-foreach="board['by_state'][st[0]]" t-as="task">
+                            <td style="width: 1%;">
+                                <span t-if="task['priority'] == '2'" class="modryn_badge is_busy">High</span>
+                                <span t-elif="task['priority'] == '0'" class="modryn_badge is_muted">Low</span>
+                            </td>
                             <td>
                                 <div class="modryn_strong" t-out="task['customer']"/>
                                 <div class="modryn_sub" dir="ltr" t-out="task['phone']"/>

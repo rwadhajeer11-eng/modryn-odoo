@@ -325,6 +325,8 @@
                             <tbody>
                                 <tr t-foreach="state.myTasks" t-as="task" t-key="task.id">
                                     <td>
+                                        <span t-if="task.priority === '2'" class="modryn_badge is_busy me-1">High</span>
+                                        <span t-elif="task.priority === '0'" class="modryn_badge is_muted me-1">Low</span>
                                         <div class="modryn_strong"><t t-esc="task.customer"/></div>
                                         <div t-if="task.dress" class="modryn_sub">
                                             <t t-esc="task.dress"/><t t-if="task.size"> · <t t-esc="task.size"/></t>
@@ -689,9 +691,22 @@
                             </select>
                         </div>
                         <div>
-                            <label class="form-label">Due</label>
-                            <input type="date" class="form-control" t-model="state.finish.form.due_date"/>
+                            <label class="form-label">Priority</label>
+                            <select class="form-select" t-model="state.finish.form.priority">
+                                <option value="2">High</option>
+                                <option value="1">Normal</option>
+                                <option value="0">Low</option>
+                            </select>
                         </div>
+                        <div>
+                            <label class="form-label">Due</label>
+                            <input type="date" class="form-control" required="required"
+                                   t-model="state.finish.form.due_date"/>
+                        </div>
+                    </div>
+
+                    <div t-if="state.finish.error" class="alert alert-danger" role="alert">
+                        <t t-esc="state.finish.error"/>
                     </div>
 
                     <div class="d-flex gap-2">

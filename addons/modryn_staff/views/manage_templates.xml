@@ -207,8 +207,23 @@
                 <tbody>
                     <tr t-foreach="roles" t-as="role"
                         t-attf-class="#{'modryn_archived' if not role.active else ''}">
-                        <td t-out="role.name"/>
+                        <td>
+                            <t t-out="role.name"/>
+                            <span t-if="role.is_workshop" class="badge text-bg-dark ms-2">Workshop</span>
+                        </td>
                         <td class="text-end">
+                            <!-- Whether this role's members take the workshop's
+                                 auto-assigned queue. A toggle, not a checkbox-and-
+                                 save: one decision, one press, same as Archive. -->
+                            <form t-attf-action="/manage/roles/workshop/#{role.id}" method="post"
+                                  class="d-inline me-1">
+                                <input type="hidden" name="csrf_token"
+                                       t-att-value="request.csrf_token()"/>
+                                <button type="submit" class="btn btn-sm btn-outline-dark">
+                                    <t t-if="role.is_workshop">Not workshop</t>
+                                    <t t-else="">Workshop</t>
+                                </button>
+                            </form>
                             <form t-attf-action="/manage/roles/archive/#{role.id}" method="post"
                                   class="d-inline">
                                 <input type="hidden" name="csrf_token"

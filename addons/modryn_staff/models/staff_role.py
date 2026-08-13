@@ -23,6 +23,11 @@ class ModrynStaffRole(models.Model):
     # Archive rather than delete: employees keep pointing at a retired role, so
     # historical assignments stay readable.
     active = fields.Boolean(default=True)
+    # Members of this role take the workshop's auto-assigned alteration queue.
+    # A flag on the ROLE, not the employee: the owner already curates roles,
+    # and "the seamstresses do workshop work" is a fact about the job, not
+    # about Rivka. The atelier reads it through hr.employee.modryn_role_id.
+    is_workshop = fields.Boolean(default=False)
 
     # A PYTHON constraint, not a SQL one. Two reasons, both learned the hard way:
     #  1. Odoo 19 removed `_sql_constraints` outright — a model still declaring

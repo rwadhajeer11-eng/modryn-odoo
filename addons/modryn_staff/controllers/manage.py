@@ -305,6 +305,18 @@ class ModrynManage(http.Controller):
             role.active = not role.active
         return request.redirect('/manage/roles')
 
+    @http.route('/manage/roles/workshop/<int:role_id>', type='http', auth='user',
+                website=True, methods=['POST'], csrf=True, sitemap=False)
+    def roles_workshop(self, role_id, **post):
+        """Toggle whether this role's members take the workshop's task queue."""
+        if not self._require_owner():
+            return request.not_found()
+        role = request.env['modryn.staff.role'].sudo().with_context(
+            active_test=False).browse(role_id).exists()
+        if role:
+            role.is_workshop = not role.is_workshop
+        return request.redirect('/manage/roles')
+
     # -------------------------------------------------------- fitting rooms
     @http.route('/manage/rooms', type='http', auth='user', website=True, sitemap=False)
     def rooms_list(self, error=None, **kw):

@@ -1,3 +1,7 @@
+from datetime import datetime
+
+import pytz
+
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
 
@@ -9,13 +13,28 @@ STATES = [
 ]
 OPEN_STATES = ('intake', 'in_progress', 'ready')
 
+# Digit keys ON PURPOSE: Selection columns are varchar, so the _order below
+# compares text — '2' > '1' > '0' sorts High first, where 'high' > 'low' would
+# sort alphabetically and put Low above Normal.
+PRIORITIES = [
+    ('0', "Low"),
+    ('1', "Normal"),
+    ('2', "High"),
+]
+
+# "Today" for the rota gate. Israeli boutiques and a UTC server disagree about
+# the date for three hours every evening (.memory/odoo-traps.md §14).
+TZ = pytz.timezone('Asia/Jerusalem')
+
 
 class ModrynAlterationTask(models.Model):
     """One piece of alteration work on one customer's garment."""
 
     _name = 'modryn.alteration.task'
     _description = 'Alteration task'
-    _order = 'due_date asc, id asc'
+    # Priority first, then the clock. Postgres puts NULL due dates last under
+    # ASC, so legacy no-due tasks fall to the back of their priority band.
+    _order = 'priority desc, due_date asc, id asc'
 
     # Who it is for. Phone is denormalised on purpose: the workshop calls the
     # customer directly, and a partner record may be merged or renamed later.
@@ -33,6 +52,11 @@ class ModrynAlterationTask(models.Model):
     seamstress_id = fields.Many2one('hr.employee', string="Seamstress",
                                     index=True, ondelete='set null')
     state = fields.Selection(selection=STATES, default='intake', required=True, index=True)
+    # Required by the shift manager at creation (the controller refuses a task
+    # without it); the default only backfills rows that predate the field.
+    priority = fields.Selection(PRIORITIES, default='1', required=True, index=True)
+    # Nullable at the DB level — legacy rows have no due date and inventing one
+    # would be data fiction — but required at the single creation door.
     due_date = fields.Date(string="Due")
     delivered_at = fields.Datetime(readonly=True)
 
@@ -67,8 +91,95 @@ class ModrynAlterationTask(models.Model):
         values = {'state': target}
         if target == 'delivered':
             values['delivered_at'] = fields.Datetime.now()
+        seamstress = self.seamstress_id
         self.write(values)
+        if target == 'delivered' and seamstress:
+            # Delivering may have freed her — the queue decides.
+            self._modryn_pull_next(seamstress)
         return True
+
+    # --------------------------------------------------------- auto-assignment
+    @api.model_create_multi
+    def create(self, vals_list):
+        tasks = super().create(vals_list)
+        tasks._modryn_assign_idle()
+        return tasks
+
+    def _modryn_pool(self):
+        """Who takes the workshop queue: active employees holding a role the
+        owner flagged as workshop — narrowed to today's published rota when one
+        exists. modryn_rostered_on answers None both for "no published rota"
+        and "published, nobody named", and both waive the gate: a boutique that
+        never opens /roster must still get its alterations sewn.
+        """
+        pool = self.env['hr.employee'].sudo().search([
+            ('modryn_role_id.is_workshop', '=', True),
+            ('modryn_level', 'in', ['manager', 'staff']),
+        ])
+        # Soft registry lookup, not a manifest dependency: the atelier stays
+        # installable without the roster, same conditional-coupling style as
+        # hr_employee.py's `'modryn_cancelled_at' in Event._fields`.
+        if pool and 'modryn.shift.slot' in self.env:
+            rostered = self.env['modryn.shift.slot'].modryn_rostered_on(
+                datetime.now(TZ).date())
+            if rostered is not None:
+                pool = pool.filtered(lambda e: e.id in rostered)
+        return pool
+
+    def _modryn_open_count(self, employee):
+        return self.sudo().search_count([
+            ('seamstress_id', '=', employee.id), ('state', 'in', OPEN_STATES)])
+
+    def _modryn_assign_idle(self):
+        """Create-side: a newborn unassigned task goes to an idle pool member.
+
+        Idle means ZERO open tasks — 'ready' still counts as open, so only a
+        seamstress whose rail is actually empty is handed new work here;
+        everyone else queues the task for _modryn_pull_next.
+        """
+        for task in self:
+            if task.seamstress_id or task.state not in OPEN_STATES:
+                continue
+            idle = task._modryn_pool().filtered(
+                lambda e: self._modryn_open_count(e) == 0)
+            if not idle:
+                continue
+            # ponytail: every idle member carries zero load, so "least-loaded
+            # idle" degenerates to a deterministic lowest-id pick. Two tasks
+            # created in the same instant may also both pick the same member —
+            # bounded by human hands at one terminal; the upgrade is FOR UPDATE
+            # on the hr_employee row.
+            task.seamstress_id = idle.sorted('id')[0]
+
+    def _modryn_pull_next(self, employee):
+        """Finish-side: the seamstress who just freed up takes the queue's top.
+
+        Only when she now holds zero open tasks, only when she is in the pool.
+        The pick runs FOR UPDATE SKIP LOCKED: two simultaneous finishers each
+        lock a DIFFERENT row, so no task is handed out twice — and no unique
+        index could referee this race, because a manager assigning by hand may
+        legitimately give one seamstress several open tasks.
+        """
+        if not employee or not employee.active:
+            return None
+        if employee not in self._modryn_pool():
+            return None
+        if self._modryn_open_count(employee):
+            return None
+        self.env.cr.execute("""
+            SELECT id FROM modryn_alteration_task
+             WHERE seamstress_id IS NULL
+               AND state IN ('intake', 'in_progress', 'ready')
+             ORDER BY priority DESC, due_date ASC NULLS LAST, id ASC
+               FOR UPDATE SKIP LOCKED
+             LIMIT 1
+        """)
+        row = self.env.cr.fetchone()
+        if not row:
+            return None
+        task = self.sudo().browse(row[0])
+        task.seamstress_id = employee
+        return task
 
     def _row(self):
         """Plain dict for a template or a JSON route.
@@ -90,6 +201,7 @@ class ModrynAlterationTask(models.Model):
             'seamstress_id': self.seamstress_id.id or False,
             'seamstress': self.seamstress_id.name or '',
             'state': self.state,
+            'priority': self.priority,
             'due': self.due_date.strftime('%d.%m.%Y') if self.due_date else '',
             'overdue': self.is_overdue,
         }

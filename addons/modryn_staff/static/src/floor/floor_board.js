@@ -184,7 +184,8 @@ export class FloorBoard extends Component {
                 customer: board.finished.customer,
                 phone: board.finished.phone,
                 variants: board.finished.variants,
-                form: { variant_id: "", piece_ids: [], note: "", due_date: "", seamstress_id: "" },
+                form: { variant_id: "", piece_ids: [], note: "", due_date: "", seamstress_id: "", priority: "1" },
+                error: "",
             };
         }
     }
@@ -424,6 +425,13 @@ export class FloorBoard extends Component {
     async createTask() {
         const finish = this.state.finish;
         const form = finish.form;
+        // The queue orders by priority and due date, so a task without a due
+        // date is refused server-side — catch it here first, before the typed
+        // form is at risk.
+        if (!form.due_date) {
+            finish.error = this.errorText("missing_due");
+            return;
+        }
         const result = await rpc("/atelier/task/create", {
             customer_name: finish.customer,
             customer_phone: finish.phone,
@@ -431,11 +439,13 @@ export class FloorBoard extends Component {
             piece_ids: form.piece_ids,
             note: form.note,
             seamstress_id: form.seamstress_id ? parseInt(form.seamstress_id, 10) : null,
-            due_date: form.due_date || null,
+            due_date: form.due_date,
+            priority: form.priority,
         });
         if (result && result.error) {
-            // The modal stays open so nothing typed is lost; the one realistic
-            // error here is a missing customer, which cannot happen from this path.
+            // The modal stays open so nothing typed is lost — and the reason
+            // is shown, not swallowed.
+            finish.error = this.errorText(result.error);
             return;
         }
         this.state.finish = null;
@@ -452,6 +462,8 @@ export class FloorBoard extends Component {
             cancelled: _t("This booking was cancelled — it doesn't get an outcome."),
             invalid_amount: _t("Please enter a valid amount."),
             invalid_date: _t("Please enter a valid date."),
+            missing_due: _t("Please pick a due date — the workshop queue runs on it."),
+            missing_priority: _t("Please pick a priority."),
             invalid_budget: _t("Please enter a valid budget."),
         }[code] || code;
     }
