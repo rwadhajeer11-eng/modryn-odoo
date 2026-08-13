@@ -80,6 +80,28 @@ verification in hand.
 
 ---
 
+## Left open by the walk-in verification build (2026-08-13) · S each
+
+Three things that build deliberately did not decide. None is a bug; each is a call somebody has
+to make. Full context in [`epics/walkin-verification.md`](epics/walkin-verification.md).
+
+- **A redirected walk-in now reads a contradiction.** She gets *"you're in the queue"* on
+  check-in, then — if a manager taps **Invite to book** — *"We're fully booked today"* minutes
+  later. Before the gate was dropped, redirect happened from `pending`, before any join text
+  existed. The button is worth keeping; the second body needs wording that acknowledges the
+  first. It is customer-facing copy in he + ar, so it is a product decision, not a patch.
+- **Three codes per hour is a real ceiling at the desk.** `modryn.otp.code` counts per phone
+  across *all* flows (`otp.py:13`), so a bride who mistypes her way through three codes is
+  locked out for an hour with a staff member standing in front of her. Recovery below that
+  works — restarting from `/queue/checkin` issues a fresh code and it is accepted. The fix is a
+  `purpose` column plus two domain leaves; it was skipped on purpose and this is its trigger.
+- **`scripts/verify.sh` asserts nothing about the check-in flow.** Its 328/0/2 was unchanged
+  across the whole build, which is a *control*, not evidence. Coverage today is the specs'
+  manual acceptance tables plus `qa/` act 6 in a browser. Since `deploy.sh` gates rollback on
+  `verify.sh`, the flow that now stands between a walk-in and the queue has no deploy-time
+  check. Worth a §-block: submit creates no row, a wrong code creates no row, the right one
+  creates exactly one at `waiting`.
+
 ## Housekeeping worth knowing
 
 - `.memory/` and `.planning/` are **committed**. They existed as untracked scratch earlier and
