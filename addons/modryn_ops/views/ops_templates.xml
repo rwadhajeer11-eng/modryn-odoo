@@ -1,26 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <template id="manage_nav_audit" inherit_id="modryn_staff.manage_layout">
-        <xpath expr="//a[@href='/manage/rooms']" position="after">
-            <a href="/manage/checklists"
-               t-attf-class="modryn_admin_link #{'is_active' if active_tab == 'checklists' else ''}">Checklists</a>
-            <a href="/manage/reports"
-               t-attf-class="modryn_admin_link #{'is_active' if active_tab == 'reports' else ''}">Reports</a>
-            <a href="/manage/audit"
-               t-attf-class="modryn_admin_link #{'is_active' if active_tab == 'audit' else ''}">Audit</a>
-        </xpath>
-    </template>
-
-    <!-- Shift managers reach the numbers from the staff shell; the link is
-         role-gated the same way the Workshop link above it already is. -->
-    <template id="staff_nav_reports" inherit_id="modryn_staff.staff_layout">
-        <xpath expr="//a[@href='/atelier']" position="after">
-            <a t-if="request.env.user.has_group('modryn_staff.group_shift_manager')"
-               href="/manage/reports"
-               t-attf-class="modryn_admin_link #{'is_active' if active_tab == 'reports' else ''}">Reports</a>
-        </xpath>
-    </template>
+    <!-- The nav links live in modryn_staff/nav.py now — registered from
+         controllers/reports.py, tasks.py and audit.py, rendered by the one
+         unified staff_layout. The two xpath-injection templates that used to
+         live here raced modryn_roster's for the same anchor, and their order
+         was decided by module load rather than by anything declared. -->
 
     <!-- ========================== owner: checklists ========================== -->
     <template id="manage_checklists" name="Checklists">

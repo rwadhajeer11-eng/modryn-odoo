@@ -1,13 +1,41 @@
 from odoo import _, http
 from odoo.http import request
+from odoo.tools.translate import LazyTranslate
 
+from odoo.addons.modryn_staff import nav
+from odoo.addons.modryn_staff.controllers import access
 from odoo.addons.modryn_staff.controllers.floor import ModrynFloor
+from odoo.addons.modryn_staff.controllers.home import ModrynHome
 
 from ..models.alteration_task import OPEN_STATES, PRIORITIES, STATES
+
+_lt = LazyTranslate(__name__)
 
 GROUP_STAFF = 'modryn_staff.group_boutique_staff'
 GROUP_MANAGER = 'modryn_staff.group_shift_manager'
 GROUP_OWNER = 'modryn_staff.group_boutique_owner'
+
+nav.register('atelier', '/atelier', _lt("Workshop"), 30)
+nav.register('pieces', '/manage/pieces', _lt("Pieces"), 30, 'manage')
+
+
+def my_open_task_rows():
+    """The signed-in employee's own open queue.
+
+    ONE source for its three readers — /atelier/my, the floor board panel and
+    the staff home page — so the views cannot drift apart. Module-level
+    because the readers live on three different controller classes.
+    """
+    user = request.env.user
+    if not user or user._is_public():
+        return []
+    mine = request.env['hr.employee'].sudo().search(
+        [('user_id', '=', user.id)], limit=1)
+    if not mine:
+        return []
+    tasks = request.env['modryn.alteration.task'].sudo().search([
+        ('seamstress_id', '=', mine.id), ('state', 'in', OPEN_STATES)])
+    return [t._row() for t in tasks]
 
 
 class ModrynFloorAtelier(ModrynFloor):
@@ -19,15 +47,7 @@ class ModrynFloorAtelier(ModrynFloor):
         board = super()._board()
 
         # The signed-in employee's own open work — the seamstress panel.
-        user = request.env.user
-        mine = request.env['hr.employee'].sudo().search(
-            [('user_id', '=', user.id)], limit=1) if user and not user._is_public() else None
-        my_tasks = []
-        if mine:
-            tasks = request.env['modryn.alteration.task'].sudo().search([
-                ('seamstress_id', '=', mine.id), ('state', 'in', OPEN_STATES)])
-            my_tasks = [t._row() for t in tasks]
-        board['my_tasks'] = my_tasks
+        board['my_tasks'] = my_open_task_rows()
 
         # What the finish modal needs to build a task without extra round-trips.
         board['atelier'] = {
@@ -35,6 +55,15 @@ class ModrynFloorAtelier(ModrynFloor):
                        for p in request.env['modryn.garment.piece'].sudo().search([])],
         }
         return board
+
+
+class ModrynHomeAtelier(ModrynHome):
+    """Her alterations, on her own page — the same rows the floor panel shows."""
+
+    def _home(self):
+        home = super()._home()
+        home['my_tasks'] = my_open_task_rows()
+        return home
 
 
 class ModrynAtelier(http.Controller):
@@ -100,8 +129,11 @@ class ModrynAtelier(http.Controller):
     # ------------------------------------------------------------- dashboard
     @http.route('/atelier', type='http', auth='user', website=True, sitemap=False)
     def dashboard(self, **kw):
-        if not self._is_manager():
-            return request.not_found()
+        # Matrix-gated: managers and owner always pass; a staff role reaches
+        # this only when the owner ticks Workshop for it — which is exactly how
+        # a seamstress gets her dashboard without becoming a manager.
+        if not access.can_view('atelier'):
+            return access.deny()
         board = self._board()
         return request.render('modryn_atelier.dashboard', {
             'board': board,
@@ -142,22 +174,12 @@ class ModrynAtelier(http.Controller):
         task.seamstress_id = employee
         return {'ok': True, 'task': task._row()}
 
-    def _my_open_tasks(self):
-        """The signed-in employee's own open queue. Shared by /atelier/my and
-        the floor board's payload so both views cannot drift apart."""
-        mine = self._my_employee()
-        if not mine:
-            return []
-        tasks = request.env['modryn.alteration.task'].sudo().search([
-            ('seamstress_id', '=', mine.id), ('state', 'in', OPEN_STATES)])
-        return [t._row() for t in tasks]
-
     @http.route('/atelier/my', type='jsonrpc', auth='user')
     def my_tasks(self):
         """A seamstress's own open queue — rendered inside /floor."""
         if not self._is_staff():
             return {'error': 'forbidden'}
-        return {'tasks': self._my_open_tasks()}
+        return {'tasks': my_open_task_rows()}
 
     @http.route('/atelier/task/create', type='jsonrpc', auth='user')
     def task_create(self, customer_name, customer_phone=None, variant_id=None,

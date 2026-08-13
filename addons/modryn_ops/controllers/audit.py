@@ -1,8 +1,15 @@
 from odoo import http
 from odoo.http import request
+from odoo.tools.translate import LazyTranslate
+
+from odoo.addons.modryn_staff import nav
+
+_lt = LazyTranslate(__name__)
 
 GROUP_OWNER = 'modryn_staff.group_boutique_owner'
 PAGE_SIZE = 50
+
+nav.register('audit', '/manage/audit', _lt("Audit"), 80, 'manage')
 
 
 class ModrynOpsAudit(http.Controller):

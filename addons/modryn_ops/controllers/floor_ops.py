@@ -6,10 +6,27 @@ from odoo import http
 from odoo.http import request
 
 from odoo.addons.modryn_staff.controllers.floor import ModrynFloor
+from odoo.addons.modryn_staff.controllers.home import ModrynHome
 
 from ..models.calendar_event import UNCLOSED_WINDOW_DAYS
 
 TZ = pytz.timezone('Asia/Jerusalem')
+
+
+class ModrynHomeOps(ModrynHome):
+    """Her open follow-ups, on her own page — the same rows the board shows
+    her (staff see only their own; the manager-wide view stays on /floor)."""
+
+    def _home(self):
+        home = super()._home()
+        me = self._my_employee()
+        home['ops_tasks'] = []
+        if me:
+            Task = request.env['modryn.task'].sudo()
+            home['ops_tasks'] = [t._row() for t in Task.search([
+                ('state', '=', 'open'), ('template_id', '=', False),
+                ('employee_id', '=', me.id)])]
+        return home
 
 
 class ModrynFloorOps(ModrynFloor):

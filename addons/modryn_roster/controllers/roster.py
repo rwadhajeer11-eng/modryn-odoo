@@ -2,12 +2,20 @@ from datetime import datetime, timedelta
 
 from odoo import _, http
 from odoo.http import request
+from odoo.tools.translate import LazyTranslate
+
+from odoo.addons.modryn_staff import nav
+from odoo.addons.modryn_staff.controllers import access
 
 from ..models.shift_slot import next_week_start, week_start
+
+_lt = LazyTranslate(__name__)
 
 GROUP_OWNER = 'modryn_staff.group_boutique_owner'
 GROUP_MANAGER = 'modryn_staff.group_shift_manager'
 GROUP_STAFF = 'modryn_staff.group_boutique_staff'
+
+nav.register('shifts', '/manage/shifts', _lt("Shifts"), 60, 'manage')
 
 
 class ModrynRoster(http.Controller):
@@ -50,8 +58,8 @@ class ModrynRoster(http.Controller):
     # ------------------------------------------------------------------ page
     @http.route('/roster', type='http', auth='user', website=True, sitemap=False)
     def roster(self, week=None, **kw):
-        if not self._is_staff():
-            return request.not_found()
+        if not access.can_view('roster'):
+            return access.deny()
         try:
             offset = int(week or 0)
         except ValueError:

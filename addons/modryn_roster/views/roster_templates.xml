@@ -1,12 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <template id="manage_nav_shifts" inherit_id="modryn_staff.manage_layout">
-        <xpath expr="//a[@href='/manage/rooms']" position="after">
-            <a href="/manage/shifts"
-               t-attf-class="modryn_admin_link #{'is_active' if active_tab == 'shifts' else ''}">Shifts</a>
-        </xpath>
-    </template>
+    <!-- The Shifts nav link lives in modryn_staff/nav.py now — registered from
+         controllers/roster.py, rendered by the one unified staff_layout. -->
 
     <!-- ================= next week's rota ================= -->
     <template id="roster_page" name="Roster">

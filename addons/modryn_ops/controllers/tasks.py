@@ -1,9 +1,16 @@
 from odoo import _, http
 from odoo.http import request
+from odoo.tools.translate import LazyTranslate
+
+from odoo.addons.modryn_staff import nav
+
+_lt = LazyTranslate(__name__)
 
 GROUP_STAFF = 'modryn_staff.group_boutique_staff'
 GROUP_MANAGER = 'modryn_staff.group_shift_manager'
 GROUP_OWNER = 'modryn_staff.group_boutique_owner'
+
+nav.register('checklists', '/manage/checklists', _lt("Checklists"), 70, 'manage')
 
 
 class ModrynOpsTasks(http.Controller):

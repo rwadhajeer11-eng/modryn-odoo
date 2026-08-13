@@ -20,37 +20,13 @@
         </form>
     </template>
 
-    <!-- Shared owner shell: staff screens get the theme's CSS but none of the
-         storefront's header, cart or footer. -->
+    <!-- A thin alias now: every page that dressed itself in the "owner shell"
+         gets the ONE unified nav instead (the portal_layout → frontend_layout
+         body-forwarding idiom). Kept as a name so ten templates across four
+         modules did not have to change their t-call. -->
     <template id="manage_layout" name="MODRYN owner layout">
-        <t t-call="web.frontend_layout">
-            <t t-set="no_header" t-value="true"/>
-            <t t-set="no_footer" t-value="true"/>
-            <!-- dir follows the user's language: staff screens are he (rtl) or
-                 en (ltr) by per-user preference. -->
-            <div id="wrap" t-att-dir="'ltr' if (request.env.lang or 'he_IL').startswith('en') else 'rtl'"
-                 class="modryn_admin">
-                <nav class="modryn_admin_nav">
-                    <span class="modryn_admin_brand">MODRYN</span>
-                    <a href="/manage/staff"
-                       t-attf-class="modryn_admin_link #{'is_active' if active_tab == 'staff' else ''}">Team</a>
-                    <a href="/manage/roles"
-                       t-attf-class="modryn_admin_link #{'is_active' if active_tab == 'roles' else ''}">Roles</a>
-                    <a href="/manage/pieces"
-                       t-attf-class="modryn_admin_link #{'is_active' if active_tab == 'pieces' else ''}">Pieces</a>
-                    <a href="/manage/rooms"
-                       t-attf-class="modryn_admin_link #{'is_active' if active_tab == 'rooms' else ''}">Rooms</a>
-                    <a href="/manage/hours"
-                       t-attf-class="modryn_admin_link #{'is_active' if active_tab == 'hours' else ''}">Hours</a>
-                    <a href="/atelier" class="modryn_admin_link">Workshop</a>
-                    <a href="/floor" class="modryn_admin_link">Floor board</a>
-                    <t t-call="modryn_staff.lang_toggle"/>
-                    <a href="/staff/logout" class="modryn_admin_link modryn_admin_logout">Sign out</a>
-                </nav>
-                <main class="modryn_admin_main">
-                    <t t-out="0"/>
-                </main>
-            </div>
+        <t t-call="modryn_staff.staff_layout">
+            <t t-out="0"/>
         </t>
     </template>
 
@@ -237,6 +213,41 @@
                     </tr>
                 </tbody>
             </table>
+
+            <!-- The access matrix. Rows are HER roles, columns are the staff
+                 pages — she decides that seamstresses see the workshop and
+                 reception sees the floor, with no developer in the loop.
+                 Managers and the owner always see every staff page; "My day"
+                 has no column because no matrix state may strand anyone. -->
+            <h2 class="mt-5 mb-2">Page access</h2>
+            <p class="text-muted mb-3">
+                Tick the pages each role may open. Shift managers always see
+                every page here; every staff member always has her own
+                <em>My day</em> page.
+            </p>
+            <form action="/manage/roles/pages" method="post">
+                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                <table class="table modryn_table align-middle" style="max-width: 720px;">
+                    <thead>
+                        <tr>
+                            <th/>
+                            <th t-foreach="pages" t-as="pg" class="text-center" t-out="pg['label']"/>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr t-foreach="roles" t-as="role"
+                            t-attf-class="#{'modryn_archived' if not role.active else ''}">
+                            <td t-out="role.name"/>
+                            <td t-foreach="pages" t-as="pg" class="text-center">
+                                <input type="checkbox" name="pages"
+                                       t-att-value="'%s:%s' % (role.id, pg['key'])"
+                                       t-att-checked="'checked' if pg['key'] in (granted.get(role.id) or []) else None"/>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <button type="submit" class="btn btn-primary">Save page access</button>
+            </form>
         </t>
     </template>
 

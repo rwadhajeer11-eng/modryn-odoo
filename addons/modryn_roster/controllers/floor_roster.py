@@ -2,8 +2,31 @@ from odoo import _, http
 from odoo.http import request
 
 from odoo.addons.modryn_staff.controllers.floor import ModrynFloor
+from odoo.addons.modryn_staff.controllers.home import ModrynHome
 
 from ..models.shift_slot import today
+
+
+def _clock(hour_float):
+    return '%02d:%02d' % (int(hour_float), round((hour_float % 1) * 60))
+
+
+class ModrynHomeRoster(ModrynHome):
+    """Today's shift, on her own page: is she on the published rota, and when."""
+
+    def _home(self):
+        home = super()._home()
+        me = self._my_employee()
+        home['shift'] = []
+        if me:
+            slots = request.env['modryn.shift.slot'].sudo().search([
+                ('day', '=', today()), ('published', '=', True),
+                ('employee_ids', 'in', me.id)])
+            home['shift'] = [{
+                'name': slot.name,
+                'hours': '%s–%s' % (_clock(slot.start_hour), _clock(slot.end_hour)),
+            } for slot in slots]
+        return home
 
 
 class ModrynFloorRoster(ModrynFloor):

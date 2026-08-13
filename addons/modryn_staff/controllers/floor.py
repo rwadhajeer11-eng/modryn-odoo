@@ -6,6 +6,8 @@ from odoo import http
 from odoo.exceptions import ValidationError
 from odoo.http import request
 
+from . import access
+
 TZ = pytz.timezone('Asia/Jerusalem')
 
 GROUP_STAFF = 'modryn_staff.group_boutique_staff'
@@ -137,8 +139,9 @@ class ModrynFloor(http.Controller):
     # ------------------------------------------------------------------ page
     @http.route('/floor', type='http', auth='user', website=True, sitemap=False)
     def floor(self, **kw):
-        if not self._is_staff():
-            return request.not_found()
+        # The PAGE asks the matrix; every ACTION below keeps its level gate.
+        if not access.can_view('floor'):
+            return access.deny()
         return request.render('modryn_staff.floor_page', {
             'board': self._board(),
             'is_manager': self._is_manager(),
@@ -147,7 +150,9 @@ class ModrynFloor(http.Controller):
     # ------------------------------------------------------------------ data
     @http.route('/floor/data', type='jsonrpc', auth='user')
     def floor_data(self):
-        if not self._is_staff():
+        # 'forbidden', the code the board's errorText already translates — a
+        # new code would render verbatim in the error banner.
+        if not access.can_view('floor'):
             return {'error': 'forbidden'}
         return self._board()
 

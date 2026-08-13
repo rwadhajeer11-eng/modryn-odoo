@@ -1,45 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <!-- The chrome every staff-terminal page wears. Extracted so a second page
-         (the roster) does not have to copy the nav and drift out of step with
-         it — the links, the language toggle and the RTL rule live in one place.
-         Callers set `active_tab`. -->
+    <!-- THE chrome — every staff and owner page wears this one shell. There
+         used to be two navs (this one and manage_layout's), plus three xpath
+         injections racing for the same anchor, and which nav you got depended
+         on the template the controller happened to pick — a manager clicking
+         "Workshop" landed on the owner's links, every one a 404 for her. Now
+         one template loops over the page registry (modryn_staff/nav.py),
+         filtered per user by the owner's role→page matrix, and the nav is the
+         same fixed thing on every page. Callers still set `active_tab`. -->
     <template id="staff_layout" name="MODRYN staff layout">
         <t t-call="web.frontend_layout">
             <t t-set="no_header" t-value="true"/>
             <t t-set="no_footer" t-value="true"/>
+            <t t-set="modryn_nav" t-value="request.env['modryn.role.page'].modryn_nav()"/>
             <!-- dir follows the user's language: staff screens are he (rtl) or
                  en (ltr) by per-user preference. -->
             <div id="wrap" t-att-dir="'ltr' if (request.env.lang or 'he_IL').startswith('en') else 'rtl'"
                  class="modryn_admin">
                 <nav class="modryn_admin_nav">
                     <span class="modryn_admin_brand">MODRYN</span>
-                    <a href="/floor"
-                       t-attf-class="modryn_admin_link #{'is_active' if active_tab == 'floor' else ''}">Floor board</a>
-                    <a href="/roster"
-                       t-attf-class="modryn_admin_link #{'is_active' if active_tab == 'roster' else ''}">Roster</a>
-                    <a t-if="request.env.user.has_group('modryn_staff.group_shift_manager')"
-                       href="/atelier" class="modryn_admin_link">Workshop</a>
-                    <a t-if="request.env.user.has_group('modryn_staff.group_boutique_owner')"
-                       href="/manage/staff" class="modryn_admin_link">Manage staff</a>
-                    <!-- The QR sign was the only door into the queue, which left a
-                         bride with a dead phone standing at the desk with nowhere to
-                         go. Ungated: unlike Workshop and Manage staff, checking
-                         someone in is front-desk work, and this whole shell already
-                         renders for staff only. Placed BEFORE the language toggle
-                         because .modryn_admin_who carries margin-inline-start:auto,
-                         so anything after it is flung to the far end of the nav. -->
-                    <a href="/queue/checkin" class="modryn_admin_link">Walk-in check-in</a>
+                    <a t-foreach="modryn_nav['staff']" t-as="entry"
+                       t-att-href="entry['url']"
+                       t-attf-class="modryn_admin_link #{'is_active' if active_tab == entry['key'] else ''}"
+                       t-out="entry['label']"/>
                     <t t-call="modryn_staff.lang_toggle"/>
                     <span class="modryn_admin_who">
                         <t t-out="request.env.user.name"/>
                     </span>
                     <a href="/staff/logout" class="modryn_admin_link modryn_admin_logout">Sign out</a>
                 </nav>
+                <!-- The owner's second row. Renders only when the manage section
+                     returned entries — i.e. for the owner, and for nobody else. -->
+                <nav t-if="modryn_nav['manage']" class="modryn_admin_nav">
+                    <span class="modryn_admin_brand" aria-hidden="true" style="visibility:hidden;">MODRYN</span>
+                    <a t-foreach="modryn_nav['manage']" t-as="entry"
+                       t-att-href="entry['url']"
+                       t-attf-class="modryn_admin_link #{'is_active' if active_tab == entry['key'] else ''}"
+                       t-out="entry['label']"/>
+                </nav>
                 <main class="modryn_admin_main">
                     <t t-out="0"/>
                 </main>
+            </div>
+        </t>
+    </template>
+
+    <!-- The themed refusal. Wears the unified nav ON PURPOSE: the message that
+         says "not this page" also shows exactly which pages she does have. -->
+    <template id="no_access" name="MODRYN no access">
+        <t t-call="modryn_staff.staff_layout">
+            <div class="container py-5 text-center" style="max-width: 520px;">
+                <h1 class="mb-3">This page isn't yours to open</h1>
+                <p class="text-muted">
+                    Your role doesn't include this page. The links above are the
+                    ones that belong to you — if this page should be one of them,
+                    ask the owner to grant it to your role.
+                </p>
             </div>
         </t>
     </template>

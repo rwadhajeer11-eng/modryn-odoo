@@ -1,6 +1,8 @@
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
 
+from .role_page import DEFAULT_PAGE_KEYS
+
 
 class ModrynStaffRole(models.Model):
     """A job role, defined by the boutique owner rather than by us.
@@ -28,6 +30,20 @@ class ModrynStaffRole(models.Model):
     # and "the seamstresses do workshop work" is a fact about the job, not
     # about Rivka. The atelier reads it through hr.employee.modryn_role_id.
     is_workshop = fields.Boolean(default=False)
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        roles = super().create(vals_list)
+        # Every new role starts with the same modest grants (see
+        # DEFAULT_PAGE_KEYS for why not the floor board). Seeded at create so
+        # both doors are covered: the XML seed roles at install, and every
+        # role the owner invents later. Roles that PREDATE the matrix get the
+        # same rows once, from migrations/19.0.1.6.0/post-migrate.py.
+        Page = self.env['modryn.role.page'].sudo()
+        for role in roles:
+            for key in DEFAULT_PAGE_KEYS:
+                Page.create({'role_id': role.id, 'page_key': key})
+        return roles
 
     # A PYTHON constraint, not a SQL one. Two reasons, both learned the hard way:
     #  1. Odoo 19 removed `_sql_constraints` outright — a model still declaring

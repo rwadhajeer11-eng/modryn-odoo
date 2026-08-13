@@ -1,6 +1,8 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_modryn_staff_role_owner,modryn.staff.role.owner,model_modryn_staff_role,modryn_staff.group_boutique_owner,1,1,1,1
 access_modryn_staff_role_internal,modryn.staff.role.internal.read,model_modryn_staff_role,base.group_user,1,0,0,0
+access_modryn_role_page_owner,modryn.role.page.owner,model_modryn_role_page,modryn_staff.group_boutique_owner,1,1,1,1
+access_modryn_role_page_internal,modryn.role.page.internal.read,model_modryn_role_page,base.group_user,1,0,0,0
 access_modryn_floor_helper_internal,modryn.floor.helper.internal,model_modryn_floor_helper,base.group_user,1,1,1,1
 access_modryn_fitting_room_owner,modryn.fitting.room.owner,model_modryn_fitting_room,modryn_staff.group_boutique_owner,1,1,1,1
 access_modryn_fitting_room_internal,modryn.fitting.room.internal,model_modryn_fitting_room,base.group_user,1,0,0,0

@@ -22,7 +22,7 @@ reads through sudo(), handing the template only the fields it needs. Portal user
 therefore never touch hr.employee directly.
 """,
     'category': 'Website',
-    'version': '19.0.1.5.0',
+    'version': '19.0.1.6.0',
     'depends': [
         'hr',
         'portal',
@@ -39,6 +39,7 @@ therefore never touch hr.employee directly.
         'views/auth_templates.xml',
         'views/manage_templates.xml',
         'views/floor_templates.xml',
+        'views/home_templates.xml',
     ],
     'assets': {
         # A glob so the OWL component's .xml template is picked up alongside its
@@ -46,6 +47,7 @@ therefore never touch hr.employee directly.
         # into an empty box with no error.
         'web.assets_frontend': [
             'modryn_staff/static/src/floor/**/*',
+            'modryn_staff/static/src/home/**/*',
         ],
     },
     'author': 'MODRYN',

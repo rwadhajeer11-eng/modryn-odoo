@@ -2,15 +2,19 @@ import odoo
 from odoo import _, http
 from odoo.http import request
 
-# Where each level lands after signing in. The owner configures, everyone else works.
+# Where each level lands after signing in. The owner configures, the manager
+# runs the room, and plain staff get their own day — not the whole floor.
 LANDING_OWNER = '/manage/staff'
 LANDING_FLOOR = '/floor'
+LANDING_HOME = '/staff/home'
 
 
 def landing_for(user):
     if user.has_group('modryn_staff.group_boutique_owner'):
         return LANDING_OWNER
-    return LANDING_FLOOR
+    if user.has_group('modryn_staff.group_shift_manager'):
+        return LANDING_FLOOR
+    return LANDING_HOME
 
 
 class ModrynStaffAuth(http.Controller):

@@ -1,4 +1,5 @@
 from . import staff_role
+from . import role_page
 from . import fitting_room
 from . import hr_employee
 from . import notify

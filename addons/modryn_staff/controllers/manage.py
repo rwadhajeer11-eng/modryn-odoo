@@ -8,6 +8,8 @@ from odoo.exceptions import ValidationError
 from odoo.http import request
 from odoo.tools import mute_logger
 
+from .. import nav
+
 MIN_PASSWORD = 8
 # The most fittings an owner can claim to run in one hour. Not a business rule
 # so much as a typo guard — see _to_capacity.
@@ -271,9 +273,49 @@ class ModrynManage(http.Controller):
             return request.not_found()
         roles = request.env['modryn.staff.role'].sudo().with_context(
             active_test=False).search([])
+        # The access matrix: staff-section pages only. 'home' is never a
+        # column (it cannot be configured away) and manage pages never enter
+        # the matrix at all — see nav.py.
+        pages = [p for p in nav.PAGES
+                 if p['section'] == 'staff' and p['key'] != 'home']
+        granted = {}
+        for grant in request.env['modryn.role.page'].sudo().search(
+                [('role_id', 'in', roles.ids)]):
+            granted.setdefault(grant.role_id.id, []).append(grant.page_key)
         return request.render('modryn_staff.manage_roles', {
             'roles': roles, 'error': error, 'active_tab': 'roles',
+            'pages': pages, 'granted': granted,
         })
+
+    @http.route('/manage/roles/pages', type='http', auth='user', website=True,
+                methods=['POST'], csrf=True, sitemap=False)
+    def roles_pages(self, **post):
+        """Replace-set semantics: what is ticked when Save lands is what
+        stands. Simpler to reason about than per-checkbox toggles, and the
+        whole grid travels in one POST."""
+        if not self._require_owner():
+            return request.not_found()
+        valid_keys = {p['key'] for p in nav.PAGES
+                      if p['section'] == 'staff' and p['key'] != 'home'}
+        Role = request.env['modryn.staff.role'].sudo().with_context(
+            active_test=False)
+        role_ids = set(Role.search([]).ids)
+        wanted = set()
+        for token in request.httprequest.form.getlist('pages'):
+            role_str, _sep, key = token.partition(':')
+            if key in valid_keys and role_str.isdigit() \
+                    and int(role_str) in role_ids:
+                wanted.add((int(role_str), key))
+        Grant = request.env['modryn.role.page'].sudo()
+        have = {(g.role_id.id, g.page_key): g
+                for g in Grant.search([('role_id', 'in', list(role_ids))])}
+        for pair, grant in have.items():
+            if pair not in wanted:
+                grant.unlink()
+        for pair in wanted:
+            if pair not in have:
+                Grant.create({'role_id': pair[0], 'page_key': pair[1]})
+        return request.redirect('/manage/roles')
 
     @http.route('/manage/roles/new', type='http', auth='user', website=True,
                 methods=['POST'], csrf=True, sitemap=False)

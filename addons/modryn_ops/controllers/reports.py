@@ -4,11 +4,19 @@ import pytz
 
 from odoo import http
 from odoo.http import request
+from odoo.tools.translate import LazyTranslate
+
+from odoo.addons.modryn_staff import nav
+from odoo.addons.modryn_staff.controllers import access
+
+_lt = LazyTranslate(__name__)
 
 TZ = pytz.timezone('Asia/Jerusalem')
 
 GROUP_STAFF = 'modryn_staff.group_boutique_staff'
 GROUP_MANAGER = 'modryn_staff.group_shift_manager'
+
+nav.register('reports', '/manage/reports', _lt("Reports"), 40)
 
 
 def _pct(part, whole):
@@ -152,8 +160,10 @@ class ModrynOpsReports(http.Controller):
 
     @http.route('/manage/reports', type='http', auth='user', website=True, sitemap=False)
     def reports(self, **kw):
-        if not self._is_manager():
-            return request.not_found()
+        # Staff-section page despite the URL: managers always pass, and the
+        # owner may grant it to a role. Registered as 'reports' in nav.py.
+        if not access.can_view('reports'):
+            return access.deny()
         start, end, dfrom, dto = self._parse_range(kw.get('from'), kw.get('to'))
         cr = request.env.cr
         stats = _range_stats(cr, dfrom, dto)

@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Her day, not the room's. Sections render only when their module
+         injected the key — the floor board's precedent for ops keys — so this
+         page never 500s in a database missing the atelier or the roster. -->
+    <template id="staff_home" name="MODRYN staff home">
+        <t t-call="modryn_staff.staff_layout">
+            <div class="d-flex align-items-baseline justify-content-between mb-1">
+                <h1 class="mb-0" t-out="home['name']"/>
+                <span t-if="home['role']" class="modryn_sub" t-out="home['role']"/>
+            </div>
+
+            <div t-if="home['no_role'] or home['no_employee']"
+                 class="alert alert-warning my-3" role="status">
+                Your role isn't set yet — ask the owner to pick one for you
+                on the Team page. Until then this page shows only what is
+                assigned to you by name.
+            </div>
+
+            <!-- Today's shift (modryn_roster) -->
+            <section t-if="home.get('shift') is not None" class="modryn_panel mb-4">
+                <header class="modryn_panel_head"><h2>Today's shift</h2></header>
+                <p t-if="not home['shift']" class="modryn_empty">
+                    You're not on today's published rota.
+                </p>
+                <div t-else="" class="p-3">
+                    <t t-foreach="home['shift']" t-as="s">
+                        <div>
+                            <span class="modryn_strong" t-out="s['name']"/>
+                            <span class="modryn_sub ms-2" t-out="s['hours']"/>
+                        </div>
+                    </t>
+                </div>
+            </section>
+
+            <!-- My customers right now -->
+            <section class="modryn_panel mb-4">
+                <header class="modryn_panel_head">
+                    <h2>My customers</h2>
+                    <span class="modryn_count" t-out="len(home['walkins']) + len(home['bookings'])"/>
+                </header>
+                <p t-if="not home['walkins'] and not home['bookings']" class="modryn_empty">
+                    Nobody is assigned to you right now.
+                </p>
+                <table t-else="" class="table modryn_table align-middle">
+                    <tbody>
+                        <tr t-foreach="home['walkins']" t-as="w">
+                            <td><span class="modryn_strong" t-out="w['name']"/></td>
+                            <td><span class="modryn_badge is_free">Walk-in</span></td>
+                            <td>
+                                <span t-if="w['state'] == 'called'" class="modryn_badge is_busy">With you now</span>
+                                <span t-else="" class="modryn_badge is_muted">Waiting</span>
+                            </td>
+                        </tr>
+                        <tr t-foreach="home['bookings']" t-as="b">
+                            <td><span class="modryn_strong" t-out="b['title']"/></td>
+                            <td><span class="modryn_badge is_muted" t-out="b['time']"/></td>
+                            <td>
+                                <span t-if="b['helper']" class="modryn_badge is_muted">Helping</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <!-- My alterations (modryn_atelier) -->
+            <section t-if="home.get('my_tasks') is not None" class="modryn_panel mb-4"
+                     id="modryn_home_alterations">
+                <header class="modryn_panel_head">
+                    <h2>My alterations</h2>
+                    <span class="modryn_count" t-out="len(home['my_tasks'])"/>
+                </header>
+                <p t-if="not home['my_tasks']" class="modryn_empty">
+                    Your rail is clear — new work is assigned automatically when it lands.
+                </p>
+                <table t-else="" class="table modryn_table align-middle">
+                    <tbody>
+                        <tr t-foreach="home['my_tasks']" t-as="task">
+                            <td style="width: 1%;">
+                                <span t-if="task['priority'] == '2'" class="modryn_badge is_busy">High</span>
+                                <span t-elif="task['priority'] == '0'" class="modryn_badge is_muted">Low</span>
+                            </td>
+                            <td>
+                                <div class="modryn_strong" t-out="task['customer']"/>
+                                <div t-if="task['dress']" class="modryn_sub">
+                                    <t t-out="task['dress']"/>
+                                    <t t-if="task['size']"> · <t t-out="task['size']"/></t>
+                                </div>
+                                <div t-if="task['note']" class="modryn_sub" t-out="task['note']"/>
+                            </td>
+                            <td>
+                                <span t-if="task['due']"
+                                      t-attf-class="modryn_badge #{'is_busy' if task['overdue'] else 'is_muted'}"
+                                      t-out="task['due']"/>
+                            </td>
+                            <td class="text-end">
+                                <button t-if="task['state'] == 'intake'"
+                                        class="btn btn-sm btn-primary"
+                                        t-att-data-task-advance="task['id']"
+                                        data-target="in_progress">Start</button>
+                                <button t-if="task['state'] == 'in_progress'"
+                                        class="btn btn-sm btn-primary"
+                                        t-att-data-task-advance="task['id']"
+                                        data-target="ready">Ready</button>
+                                <span t-if="task['state'] == 'ready'" class="modryn_badge is_free">Ready</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <!-- My follow-ups (modryn_ops) -->
+            <section t-if="home.get('ops_tasks') is not None" class="modryn_panel mb-4"
+                     id="modryn_home_followups">
+                <header class="modryn_panel_head">
+                    <h2>My follow-ups</h2>
+                    <span class="modryn_count" t-out="len(home['ops_tasks'])"/>
+                </header>
+                <p t-if="not home['ops_tasks']" class="modryn_empty">Nothing to chase.</p>
+                <table t-else="" class="table modryn_table align-middle">
+                    <tbody>
+                        <tr t-foreach="home['ops_tasks']" t-as="task">
+                            <td>
+                                <div class="modryn_strong" t-out="task['name']"/>
+                                <div t-if="task.get('customer')" class="modryn_sub" t-out="task['customer']"/>
+                            </td>
+                            <td>
+                                <span t-if="task.get('due')"
+                                      t-attf-class="modryn_badge #{'is_busy' if task.get('overdue') else 'is_muted'}"
+                                      t-out="task['due']"/>
+                            </td>
+                            <td class="text-end">
+                                <button class="btn btn-sm btn-outline-dark"
+                                        t-att-data-task-done="task['id']">Done</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <!-- One error line for the action buttons; home.js fills it. -->
+            <div id="modryn_home_error" class="alert alert-danger d-none" role="alert"/>
+        </t>
+    </template>
+
+</odoo>
