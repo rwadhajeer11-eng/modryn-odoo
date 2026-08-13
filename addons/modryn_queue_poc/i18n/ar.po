@@ -325,3 +325,8 @@ msgstr "أنت التالية — سنكون معك بعد لحظات."
 #: model_terms:ir.ui.view,arch_db:modryn_queue_poc.ticket
 msgid "is waiting for you."
 msgstr "بانتظارك."
+
+#. module: modryn_queue_poc
+#: model_terms:ir.ui.view,arch_db:modryn_queue_poc.ticket
+msgid "This number is already in the line — this is your place."
+msgstr "هذا الرقم موجود بالفعل في الطابور — هذا هو مكانك."

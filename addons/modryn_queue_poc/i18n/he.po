@@ -343,3 +343,8 @@ msgstr "את הבאה בתור — נהיה איתך עוד רגע."
 #: model_terms:ir.ui.view,arch_db:modryn_queue_poc.ticket
 msgid "is waiting for you."
 msgstr "מחכה לך."
+
+#. module: modryn_queue_poc
+#: model_terms:ir.ui.view,arch_db:modryn_queue_poc.ticket
+msgid "This number is already in the line — this is your place."
+msgstr "המספר הזה כבר בתור — זה המקום שלך."

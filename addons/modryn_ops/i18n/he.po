@@ -12,64 +12,6 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. module: modryn_ops
-#. odoo-python
-#: code:addons/modryn_ops/models/calendar_event.py:0
-msgid "Follow up: %s"
-msgstr "מעקב: %s"
-
-#. module: modryn_ops
-#. odoo-python
-#: code:addons/modryn_ops/models/task.py:0
-msgid "Overdue on the floor board: %(names)s"
-msgstr "משימות באיחור בלוח הרצפה: %(names)s"
-
-#. module: modryn_ops
-#. odoo-python
-#: code:addons/modryn_ops/models/calendar_event.py:0
-msgid "Rebook after no-show: %s"
-msgstr "תיאום מחדש אחרי אי-הגעה: %s"
-
-#. module: modryn_ops
-#. odoo-python
-#: code:addons/modryn_ops/models/task.py:0
-msgid "Task done: %s"
-msgstr "משימה בוצעה: %s"
-
-#. module: modryn_ops
-#. odoo-python
-#: code:addons/modryn_ops/models/task.py:0
-msgid "Task reopened: %s"
-msgstr "משימה נפתחה מחדש: %s"
-
-#. module: modryn_ops
-#. odoo-python
-#: code:addons/modryn_ops/models/calendar_event.py:0
-msgid ""
-"Thank you for visiting %(boutique)s! We'd love to hear how it went — just "
-"reply to this message."
-msgstr ""
-"תודה שביקרת ב%(boutique)s! נשמח לשמוע איך היה — פשוט השיבי להודעה הזו."
-
-#. module: modryn_ops
-#. odoo-python
-#: code:addons/modryn_ops/models/calendar_event.py:0
-msgid ""
-"Thank you for visiting %(boutique)s! We're so happy for you — we'll be in "
-"touch about the next steps."
-msgstr ""
-"תודה שביקרת ב%(boutique)s! אנחנו כל כך שמחות בשבילך — נהיה בקשר לגבי ההמשך."
-
-#. module: modryn_ops
-#. odoo-python
-#: code:addons/modryn_ops/models/calendar_event.py:0
-msgid ""
-"We missed you today at %(boutique)s. Life happens! Book a new time here: "
-"%(book_link)s"
-msgstr ""
-"התגעגענו אלייך היום ב%(boutique)s. קורה! אפשר לקבוע תור חדש כאן: "
-"%(book_link)s"
-
-#. module: modryn_ops
 #: model_terms:ir.ui.view,arch_db:modryn_ops.manage_checklists
 msgid "Add"
 msgstr "הוספה"
@@ -80,7 +22,8 @@ msgid "Archive"
 msgstr "לארכיון"
 
 #. module: modryn_ops
-#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_nav_audit
+#. odoo-python
+#: code:addons/modryn_ops/controllers/audit.py:0
 msgid "Audit"
 msgstr "יומן שינויים"
 
@@ -116,8 +59,9 @@ msgid "Checklist items done"
 msgstr "משימות צ'קליסט שבוצעו"
 
 #. module: modryn_ops
+#. odoo-python
+#: code:addons/modryn_ops/controllers/tasks.py:0
 #: model_terms:ir.ui.view,arch_db:modryn_ops.manage_checklists
-#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_nav_audit
 msgid "Checklists"
 msgstr "צ'קליסטים"
 
@@ -152,6 +96,12 @@ msgstr "שעה"
 #: model_terms:ir.ui.view,arch_db:modryn_ops.manage_reports
 msgid "Feedback texts sent"
 msgstr "הודעות משוב שנשלחו"
+
+#. module: modryn_ops
+#. odoo-python
+#: code:addons/modryn_ops/models/calendar_event.py:0
+msgid "Follow up: %s"
+msgstr "מעקב: %s"
 
 #. module: modryn_ops
 #: model_terms:ir.ui.view,arch_db:modryn_ops.manage_reports
@@ -220,14 +170,26 @@ msgid "Opening"
 msgstr "פתיחה"
 
 #. module: modryn_ops
+#. odoo-python
+#: code:addons/modryn_ops/models/task.py:0
+msgid "Overdue on the floor board: %(names)s"
+msgstr "משימות באיחור בלוח הרצפה: %(names)s"
+
+#. module: modryn_ops
 #: model:ir.model.fields.selection,name:modryn_ops.selection__res_partner__modryn_category__purchased
 msgid "Purchased"
 msgstr "רכשה"
 
 #. module: modryn_ops
-#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_nav_audit
+#. odoo-python
+#: code:addons/modryn_ops/models/calendar_event.py:0
+msgid "Rebook after no-show: %s"
+msgstr "תיאום מחדש אחרי אי-הגעה: %s"
+
+#. module: modryn_ops
+#. odoo-python
+#: code:addons/modryn_ops/controllers/reports.py:0
 #: model_terms:ir.ui.view,arch_db:modryn_ops.manage_reports
-#: model_terms:ir.ui.view,arch_db:modryn_ops.staff_nav_reports
 msgid "Reports"
 msgstr "דוחות"
 
@@ -258,6 +220,36 @@ msgid "Stylist"
 msgstr "סטייליסטית"
 
 #. module: modryn_ops
+#. odoo-python
+#: code:addons/modryn_ops/models/task.py:0
+msgid "Task done: %s"
+msgstr "משימה בוצעה: %s"
+
+#. module: modryn_ops
+#. odoo-python
+#: code:addons/modryn_ops/models/task.py:0
+msgid "Task reopened: %s"
+msgstr "משימה נפתחה מחדש: %s"
+
+#. module: modryn_ops
+#. odoo-python
+#: code:addons/modryn_ops/models/calendar_event.py:0
+msgid ""
+"Thank you for visiting %(boutique)s! We'd love to hear how it went — just "
+"reply to this message."
+msgstr ""
+"תודה שביקרת ב%(boutique)s! נשמח לשמוע איך היה — פשוט השיבי להודעה הזו."
+
+#. module: modryn_ops
+#. odoo-python
+#: code:addons/modryn_ops/models/calendar_event.py:0
+msgid ""
+"Thank you for visiting %(boutique)s! We're so happy for you — we'll be in "
+"touch about the next steps."
+msgstr ""
+"תודה שביקרת ב%(boutique)s! אנחנו כל כך שמחות בשבילך — נהיה בקשר לגבי ההמשך."
+
+#. module: modryn_ops
 #: model_terms:ir.ui.view,arch_db:modryn_ops.manage_checklists
 msgid ""
 "The opening and closing routine, as data. Every morning the floor board\n"
@@ -265,6 +257,16 @@ msgid ""
 msgstr ""
 "שגרת הפתיחה והסגירה, כנתונים. בכל בוקר לוח הרצפה יוצר את רשימת היום; מי "
 "שבמשמרת מסמנת את הפריטים."
+
+#. module: modryn_ops
+#. odoo-python
+#: code:addons/modryn_ops/models/calendar_event.py:0
+msgid ""
+"We missed you today at %(boutique)s. Life happens! Book a new time here: "
+"%(book_link)s"
+msgstr ""
+"התגעגענו אלייך היום ב%(boutique)s. קורה! אפשר לקבוע תור חדש כאן: "
+"%(book_link)s"
 
 #. module: modryn_ops
 #: model_terms:ir.ui.view,arch_db:modryn_ops.manage_audit
@@ -326,3 +328,15 @@ msgstr "נמכרו /"
 #: model_terms:ir.ui.view,arch_db:modryn_ops.manage_reports
 msgid "unique brides who bought"
 msgstr "כלות ייחודיות שרכשו"
+
+#. module: modryn_ops
+#. odoo-python
+#: code:addons/modryn_ops/models/task.py:0
+msgid "New task for you: %(name)s — %(customer)s"
+msgstr "משימה חדשה עבורך: %(name)s — %(customer)s"
+
+#. module: modryn_ops
+#. odoo-python
+#: code:addons/modryn_ops/models/task.py:0
+msgid "New task for you: %s"
+msgstr "משימה חדשה עבורך: %s"

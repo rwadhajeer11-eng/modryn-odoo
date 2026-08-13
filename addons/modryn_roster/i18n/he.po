@@ -184,7 +184,8 @@ msgid "Shift name"
 msgstr "שם המשמרת"
 
 #. module: modryn_roster
-#: model_terms:ir.ui.view,arch_db:modryn_roster.manage_nav_shifts
+#. odoo-python
+#: code:addons/modryn_roster/controllers/roster.py:0
 #: model_terms:ir.ui.view,arch_db:modryn_roster.manage_shifts
 msgid "Shifts"
 msgstr "משמרות"

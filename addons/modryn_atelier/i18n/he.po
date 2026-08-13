@@ -114,6 +114,8 @@ msgid "Nothing here."
 msgstr "אין פריטים."
 
 #. module: modryn_atelier
+#. odoo-python
+#: code:addons/modryn_atelier/controllers/atelier.py:0
 #: model:ir.model.fields,field_description:modryn_atelier.field_modryn_alteration_task__piece_ids
 msgid "Pieces"
 msgstr "חלקים"
@@ -179,6 +181,8 @@ msgid "Workload"
 msgstr "עומס עבודה"
 
 #. module: modryn_atelier
+#. odoo-python
+#: code:addons/modryn_atelier/controllers/atelier.py:0
 #: model_terms:ir.ui.view,arch_db:modryn_atelier.dashboard
 msgid "Workshop"
 msgstr "סדנה"
@@ -192,3 +196,48 @@ msgstr "פתוחות"
 #: model_terms:ir.ui.view,arch_db:modryn_atelier.dashboard
 msgid "overdue"
 msgstr "באיחור"
+
+#. module: modryn_atelier
+#: model:ir.model.fields.selection,name:modryn_atelier.selection__modryn_alteration_task__priority__2
+#: model_terms:ir.ui.view,arch_db:modryn_atelier.dashboard
+msgid "High"
+msgstr "גבוהה"
+
+#. module: modryn_atelier
+#: model:ir.model.fields.selection,name:modryn_atelier.selection__modryn_alteration_task__priority__0
+#: model_terms:ir.ui.view,arch_db:modryn_atelier.dashboard
+msgid "Low"
+msgstr "נמוכה"
+
+#. module: modryn_atelier
+#. odoo-python
+#: code:addons/modryn_atelier/models/alteration_task.py:0
+msgid "New alteration for you: %s"
+msgstr "תיקון חדש עבורך: %s"
+
+#. module: modryn_atelier
+#: model:ir.model.fields.selection,name:modryn_atelier.selection__modryn_alteration_task__priority__1
+#: model_terms:ir.ui.view,arch_db:modryn_atelier.dashboard
+msgid "Normal"
+msgstr "רגילה"
+
+#. module: modryn_atelier
+#: model_terms:ir.ui.view,arch_db:modryn_atelier.dashboard
+msgid "Nothing waiting — every open task has hands on it."
+msgstr "אין עבודות ממתינות — לכל עבודה פתוחה יש ידיים."
+
+#. module: modryn_atelier
+#: model:ir.model.fields,field_description:modryn_atelier.field_modryn_alteration_task__priority
+msgid "Priority"
+msgstr "עדיפות"
+
+#. module: modryn_atelier
+#: model_terms:ir.ui.view,arch_db:modryn_atelier.dashboard
+msgid "Queue"
+msgstr "תור העבודות"
+
+#. module: modryn_atelier
+#. odoo-python
+#: code:addons/modryn_atelier/models/alteration_task.py:0
+msgid "due %s"
+msgstr "ליום %s"
