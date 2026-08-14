@@ -6,6 +6,10 @@
 #
 #   sudo /opt/modryn/deploy/scripts/new_boutique_prod.sh bella "Bella Bridal"
 #
+# MODRYN_SMS_DISABLED=1 provisions a tenant that can never text a real person —
+# how a QA tenant is made on a box whose environment holds live credentials. See
+# the fixup that sets modryn.twilio.disabled below.
+#
 # This is the production twin of scripts/new_boutique.sh. Every guard in that
 # script is reproduced here for the same reason it exists there; the additions
 # are marked PROD. If you change one script, read the other.
@@ -123,6 +127,7 @@ BASE_URL="https://$SLUG.$DOMAIN"
 sudo -u "$SERVICE_USER" \
   PATH="$APP_ROOT/.venv/bin:/usr/local/bin:/usr/bin:/bin" TZ=UTC LANG=C.UTF-8 \
   MODRYN_NAME="$NAME" MODRYN_BASE="$BASE_URL" \
+  MODRYN_SMS_DISABLED="${MODRYN_SMS_DISABLED:-}" \
   "$APP_ROOT/.venv/bin/python" "$APP_ROOT/odoo/odoo-bin" shell \
     -c "$ODOO_CONF" -d "$SLUG" --db-filter="^$SLUG\$" --no-http <<'PY'
 import os, uuid
@@ -146,24 +151,41 @@ env.company.name = name
 site = env['website'].search([], limit=1)
 site.write({'name': name, 'domain': base})
 
+# PROD: a tenant used to be UNABLE to text anyone until someone configured it,
+# and the QA harnesses leaned on exactly that — zero modryn.twilio.* parameters
+# was their proof that a database could not dial out. That property is gone:
+# the sender falls back to the four TWILIO_* variables in the odoo
+# service's own environment, which on this box are LIVE, so a fresh clone can
+# text a real bride the moment it exists. This flag is the only thing that still
+# makes a tenant safe, and it is set here, at creation, rather than in a
+# follow-up command someone runs after the first seeder has already dialled out.
+if os.environ.get('MODRYN_SMS_DISABLED'):
+    ICP.set_param('modryn.twilio.disabled', '1')
+
 env.cr.commit()
 print('TENANT_READY %s -> %s' % (name, base))
 PY
 
 # ---------------------------------------------------------------------------
-say "configuring Twilio for $SLUG"
+say "seeding tenant defaults for $SLUG"
 # ---------------------------------------------------------------------------
-# Credentials come from /etc/modryn/deploy.env (0600 root:root), never the repo.
-# With none present the sender LOGS the message and returns success rather than
-# raising, so a tenant provisioned without credentials silently texts nobody
-# instead of 500ing. Deliberate — and worth knowing before someone reads
-# "logged" as "delivered".
+# This used to copy the four TWILIO_* values out of /etc/modryn/deploy.env into
+# this tenant's own parameters. It deliberately no longer does, and the four
+# blanks below stop them being inherited from the `set -a; . "$ENV_FILE"` above:
+# the odoo service now carries those credentials in its own environment and
+# every database inherits them, while a tenant's OWN modryn.twilio.* params
+# OUTRANK that fallback. A per-tenant copy written here would therefore shadow
+# the platform sender and SURVIVE the next credential rotation — every boutique
+# provisioned before the rotation would keep texting from the retired sender,
+# invisibly, while the rotation looked complete. Setting a tenant's own sender
+# is now a deliberate act: run configure_twilio.py by hand.
+#
+# The call stays because it also seeds modryn.cancellation_terms. It will print
+# SENDER=log; that describes this tenant's own params, not the box.
 sudo -u "$SERVICE_USER" \
   PATH="$APP_ROOT/.venv/bin:/usr/local/bin:/usr/bin:/bin" TZ=UTC LANG=C.UTF-8 \
-  TWILIO_ACCOUNT_SID="${TWILIO_ACCOUNT_SID:-}" \
-  TWILIO_API_KEY_SID="${TWILIO_API_KEY_SID:-}" \
-  TWILIO_API_KEY_SECRET="${TWILIO_API_KEY_SECRET:-}" \
-  TWILIO_FROM_NUMBER="${TWILIO_FROM_NUMBER:-}" \
+  TWILIO_ACCOUNT_SID= TWILIO_API_KEY_SID= \
+  TWILIO_API_KEY_SECRET= TWILIO_FROM_NUMBER= \
   "$APP_ROOT/.venv/bin/python" "$APP_ROOT/odoo/odoo-bin" shell \
     -c "$ODOO_CONF" -d "$SLUG" --db-filter="^$SLUG\$" --no-http \
     < "$APP_ROOT/scripts/configure_twilio.py"

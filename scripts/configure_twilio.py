@@ -1,13 +1,25 @@
-# Loads Twilio credentials from the environment into this tenant's config.
-# Runs inside `odoo-bin shell`. Credentials live in the gitignored .env and are
-# NEVER committed:
+# Gives ONE boutique its own Twilio sender identity. This is the override tool,
+# not the provisioning step it once was: the platform's own TWILIO_* environment
+# already gives every database a sender, and new_boutique_prod.sh now calls this
+# script with those four variables deliberately blanked (it still wants the
+# cancellation-terms default below).
+#
+# Run it by hand only for the boutique whose number belongs on the caller ID and
+# whose Twilio bill is its own. A tenant's four params OUTRANK the platform
+# environment, and it is all four or nothing — a partial set falls through to the
+# platform sender rather than pairing a tenant SID with a platform From number.
+# That precedence is also the cost: an override survives the next platform
+# credential rotation, so whoever writes one owns rotating it too.
+#
+# Credentials live in the gitignored .env and are NEVER committed:
 #
 #   set -a && . ./.env && set +a
 #   ./odoo/odoo-bin shell -c odoo.conf -d bella --db-filter='^bella$' --no-http \
 #       < scripts/configure_twilio.py
 #
-# With no credentials present the sender falls back to logging the message, so
-# development and tests work unconfigured and never text a real person.
+# The TWILIO_CONFIGURED / SENDER lines printed below describe THIS TENANT's own
+# parameters only. "SENDER=log" means no override is set here, which is the
+# normal state — it does not mean the box cannot text.
 
 import os
 

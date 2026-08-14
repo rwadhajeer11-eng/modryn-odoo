@@ -58,21 +58,43 @@ if [ "$CONNS" != "0" ]; then
   exit 1
 fi
 
-# BEFORE the first clone, because the template is what every tenant is copied
-# from: one contaminated template hands live SMS credentials to all thirty, and
-# the per-tenant check at the bottom of the loop below could only notice that
-# after tenant one was already created, seeded and left on disk with the capture
-# flag set. A check downstream of the thing it guards is not a guard.
-twilio_params() {
-  psql -d "$1" -tAc "select count(*) from ir_config_parameter where key like 'modryn.twilio.%'" 2>/dev/null || echo 0
-}
-TW=$(twilio_params "$TEMPLATE")
-if [ "$TW" != "0" ]; then
-  echo "!! REFUSING: clone source '$TEMPLATE' has $TW modryn.twilio.* parameter(s)."
-  echo "   Every tenant cloned from it would inherit live SMS credentials."
-  echo "   Clear them from the template first. Nothing created."
+# BEFORE the first clone, and no longer about the template. What stood here
+# refused a clone source carrying modryn.twilio.* — one contaminated template
+# hands live SMS credentials to all thirty, and the per-tenant check inside the
+# loop could only notice after tenant one was already created, seeded and left on
+# disk with the capture flag set. A check downstream of the thing it guards is
+# not a guard.
+#
+# That argument died with the credentials moving into the server's environment,
+# where EVERY database inherits them and the template's own parameters decide
+# nothing. Demanding the mute flag ON the template instead would be worse than
+# useless: scripts/new_boutique.sh clones real boutiques from that same template
+# and they would all be born unable to text a customer.
+#
+# What is still worth knowing at second one is that the mute flag means anything
+# at all. Every gate below reads modryn.twilio.disabled and trusts
+# _twilio_config() to honour it ahead of everything else; against a checkout that
+# predates that branch the parameter is inert decoration and thirty "safe"
+# tenants send for real. Grep is the bash form of what seed_tenant.py does by
+# importing the grid constants: bind to the definition instead of restating it.
+P_DISABLED=modryn.twilio.disabled
+if ! grep -qF "$P_DISABLED" addons/modryn_portal/models/sms.py; then
+  echo "!! REFUSING: addons/modryn_portal/models/sms.py never mentions"
+  echo "   $P_DISABLED, so setting that parameter mutes nothing and every tenant"
+  echo "   this script creates would send through the environment's credentials."
   exit 1
 fi
+
+# A value, not a count. The count was the whole property until credentials became
+# process-wide: zero modryn.twilio.* rows used to mean "cannot send", and it now
+# describes a database that sends perfectly well. _twilio_config() reads this key
+# through ir.config_parameter.get_param, so it sees the stored string and any
+# non-empty string is truthy in Python — '0' included. Absent, empty or
+# unreadable is the refusal, so a database that never heard of the key fails
+# closed.
+twilio_disabled() {
+  psql -d "$1" -tAc "select value from ir_config_parameter where key='$P_DISABLED'" 2>/dev/null || echo ''
+}
 
 # One secret for the whole fleet: the harness carries a single LOADTEST_SECRET
 # and per-tenant secrets would buy nothing that the enabled flag does not.
@@ -90,14 +112,24 @@ for n in $(seq "$FROM" $((FROM + COUNT - 1))); do
 
   if psql -d postgres -tAc "select 1 from pg_database where datname='$SLUG'" | grep -q 1; then
     # An existing database is about to have the capture addon installed and load
-    # fixtures written into it. Refuse before either write if it holds SMS
-    # credentials: that is a real boutique reached by a slug collision, and
-    # installing modryn_loadtest into it is the accident this repo keeps three
-    # gates to prevent.
-    TW=$(twilio_params "$SLUG")
-    if [ "$TW" != "0" ]; then
-      echo "!! REFUSING: '$SLUG' already exists and has $TW modryn.twilio.* parameter(s)."
-      echo "   That is a live boutique, not a load tenant. Nothing written to it."
+    # fixtures written into it. Refuse before either write unless it says, in one
+    # row, that it cannot send. Silence stopped being evidence when the
+    # credentials moved into the environment: "holds no modryn.twilio.*" now
+    # describes a live boutique as accurately as it describes a load tenant, so
+    # the flag has to be positively there. An unflagged database is a real
+    # boutique reached by a slug collision, and installing modryn_loadtest into it
+    # is the accident this repo keeps three gates to prevent.
+    #
+    # Refuse, deliberately, rather than set the flag and carry on. Setting it here
+    # would mute a working boutique's SMS on the way to seeding invented brides
+    # over its floor — the same damage, done politely. Tenants this script creates
+    # carry the flag from birth (MODRYN_SMS_DISABLED below); one that predates
+    # this change is adopted by hand, by someone who knows which it is.
+    if [ -z "$(twilio_disabled "$SLUG")" ]; then
+      echo "!! REFUSING: '$SLUG' already exists and carries no $P_DISABLED, so it"
+      echo "   can still send. That is a live boutique unless you know otherwise."
+      echo "   Nothing written to it. To adopt it as a load tenant, say so:"
+      echo "     psql -d $SLUG -c \"insert into ir_config_parameter (key, value, create_uid, write_uid, create_date, write_date) values ('$P_DISABLED', '1', 1, 1, now(), now())\""
       exit 1
     fi
     echo "==> $SLUG exists; skipping clone+fixups"
@@ -107,7 +139,14 @@ for n in $(seq "$FROM" $((FROM + COUNT - 1))); do
     # database.uuid, web.base.url, the freeze, company + website name). Those
     # fixups are the tenancy-ops evidence and duplicating them here would let the
     # copy rot.
-    PORT="$PORT" ./scripts/new_boutique.sh "$SLUG" "Load Tenant $IDX"
+    #
+    # MODRYN_SMS_DISABLED belongs to it for the same reason: it writes the mute
+    # flag inside the fixup transaction, so the tenant is never on disk in a state
+    # where the environment's credentials would reach it. A psql UPDATE here would
+    # leave that window open and would be a second place to keep the key spelt
+    # right. The assertion at the bottom of the loop is what notices if that
+    # script ever stops honouring the variable.
+    PORT="$PORT" MODRYN_SMS_DISABLED=1 ./scripts/new_boutique.sh "$SLUG" "Load Tenant $IDX"
   fi
 
   # modryn_loadtest is installed PER TENANT rather than into modryn_template.
@@ -150,23 +189,27 @@ for n in $(seq "$FROM" $((FROM + COUNT - 1))); do
       < loadtest/seed/seed_tenant.py
   fi
 
-  # The pre-flight check above is the one that can refuse; this one runs after
-  # seeding because seeding is the last step that could set a parameter, and it
-  # can only stop the REMAINING tenants. Zero modryn.twilio.* is the property
-  # modryn.sms._send_now branches on: with no config it logs the body and returns
-  # ('logged'), so the whole flow runs at no cost and no delivery.
+  # The pre-flight checks above are the ones that can refuse; this one runs after
+  # seeding because seeding is the last step that could clear the flag, and it can
+  # only stop the REMAINING tenants. A truthy modryn.twilio.disabled is the
+  # property modryn.sms._twilio_config() looks at first: with it set the config is
+  # None, so _send_now logs the body and returns ('logged') and the whole flow
+  # runs at no cost and no delivery. Without it this tenant reaches the four
+  # TWILIO_* variables in the server's environment exactly like every other
+  # database in the process — which is the point of the change and the reason
+  # this assertion is no longer checking for an absence.
   #
   # Note what this is NOT protecting against: the seeded numbers are
   # +97252TTVVVV — 11 digits, one short of a deliverable Israeli mobile (see
-  # seed_tenant.py's assert_phone_scheme). A tenant that inherited credentials
-  # would get Twilio 21211 rejects, not delivered texts. That makes this a
-  # correctness gate, not the last line before the phone bill — and it stays
-  # exactly as strict, because the day someone makes the numbers deliverable is
-  # the day it becomes the latter.
-  TW=$(twilio_params "$SLUG")
-  if [ "$TW" != "0" ]; then
-    echo "!! $SLUG has $TW modryn.twilio.* parameter(s) after seeding. REFUSING."
-    echo "   Seeding wrote them; clear them before running against this tenant."
+  # seed_tenant.py's assert_phone_scheme). A tenant missing the flag would get
+  # Twilio 21211 rejects, not delivered texts. That makes this a correctness
+  # gate, not the last line before the phone bill — and it stays exactly as
+  # strict, because the day someone makes the numbers deliverable is the day it
+  # becomes the latter.
+  if [ -z "$(twilio_disabled "$SLUG")" ]; then
+    echo "!! $SLUG carries no $P_DISABLED after seeding. REFUSING."
+    echo "   new_boutique.sh sets it from MODRYN_SMS_DISABLED=1 — check that it"
+    echo "   still honours the variable. This tenant would text for real."
     exit 1
   fi
 

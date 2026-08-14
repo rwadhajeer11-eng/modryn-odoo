@@ -1,0 +1,40 @@
+; Railway demo config TEMPLATE — entrypoint.sh substitutes the @TOKENS@ and
+; writes the result to /tmp/odoo.conf on every boot (never stale, never on the
+; volume). Derived from deploy/odoo.conf.prod; deltas and why:
+;
+;   db_* over TCP        Railway Postgres is TCP+password, not a peer socket.
+;   db_name/dbfilter     pinned to the single demo tenant: the free Railway
+;                        domain has no wildcard, so ANY Host must resolve to
+;                        te. ^te$ contains no %d/%h -> host-independent ->
+;                        one db -> Odoo's monodb fallback serves it.
+;                        db_name also bounds the cron enumerator so it never
+;                        touches Railway's own `railway` maintenance db.
+;   workers = 0          threaded mode. With workers>0 the websocket lives on
+;                        a second gevent port Railway cannot route; threaded
+;                        serves /websocket on the one $PORT.
+;   http 0.0.0.0         Railway's edge connects directly — the prod loopback
+;                        bind existed only because nginx was the ingress.
+;   no x_sendfile        it emits X-Accel-Redirect for nginx; without nginx
+;                        every attachment would be an empty body.
+;   no memory limits     one threaded process; the container cgroup governs.
+[options]
+addons_path = /app/odoo/addons,/app/addons
+data_dir = /data
+db_host = @PGHOST@
+db_port = @PGPORT@
+db_user = @PGUSER@
+db_password = @PGPASSWORD@
+db_name = te
+dbfilter = ^te$
+db_maxconn = 12
+list_db = False
+admin_passwd = @ADMIN_PASSWD@
+http_interface = 0.0.0.0
+http_port = @PORT@
+proxy_mode = True
+workers = 0
+max_cron_threads = 1
+limit_time_cpu = 60
+limit_time_real = 120
+limit_time_real_cron = 300
+log_level = info

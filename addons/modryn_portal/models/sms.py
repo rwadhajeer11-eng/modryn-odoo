@@ -1,4 +1,5 @@
 import logging
+import os
 import re
 
 import requests
@@ -10,12 +11,21 @@ _logger = logging.getLogger(__name__)
 TWILIO_BASE = 'https://api.twilio.com/2010-04-01'
 SEND_TIMEOUT = 10
 
-# Config keys. Per-database, so each boutique could eventually carry its own
-# sender identity without a code change.
+# Config keys, still per-database — but these are now the OVERRIDE, not the
+# default. The platform's own Twilio account lives in the process environment
+# (see _twilio_config) and every database inherits it, so a boutique carries its
+# own four here only when it wants its own sender identity.
 P_ACCOUNT_SID = 'modryn.twilio.account_sid'
 P_KEY_SID = 'modryn.twilio.api_key_sid'
 P_KEY_SECRET = 'modryn.twilio.api_key_secret'
 P_FROM = 'modryn.twilio.from_number'
+# The per-tenant OFF switch, and it has to be its own key: get_param returns the
+# default for a stored empty string, so a blanked-out credential reads exactly
+# like one that was never set. There is no value you can write into the four
+# above that means "off" rather than "unconfigured". Any non-empty value here
+# counts — including the string '0', so turn a tenant back on by clearing the
+# parameter, never by writing a falsey-looking value into it.
+P_DISABLED = 'modryn.twilio.disabled'
 
 
 def normalize_il_phone(raw):
@@ -81,8 +91,14 @@ class ModrynSms(models.AbstractModel):
     """The sender port.
 
     One seam, two implementations: Twilio when credentials exist, a logger
-    otherwise. Nothing else in the codebase knows which one is live, so tests
-    and demos never text a real person and never need an account.
+    otherwise. Nothing else in the codebase knows which one is live.
+
+    That used to end "so tests and demos never text a real person and never
+    need an account", and it was true only because credentials were per-database
+    and a fresh one held none. They now live in the server's environment and
+    every database inherits them, so the sentence is inverted: a test or demo
+    database is safe only if it carries modryn.twilio.disabled. On a process
+    that exports TWILIO_*, an unflagged fixture texts a real handset.
     """
 
     _name = 'modryn.sms'
@@ -90,12 +106,48 @@ class ModrynSms(models.AbstractModel):
 
     @api.model
     def _twilio_config(self):
+        """The four credentials to send with, or None meaning "log instead".
+
+        Three levels, in order: the tenant's OFF switch, the tenant's own four
+        parameters, the platform's four environment variables.
+
+        Each level is all-or-nothing, and a half-filled tenant falls through
+        whole rather than borrowing the pieces it is missing. Mixing this
+        boutique's account_sid with the platform's from_number produces a send
+        that authenticates as one boutique and arrives from another — and the
+        recipient sees only the second, so the wrong salon gets the reply.
+
+        The environment is read here, per call, rather than captured at import,
+        so scripts/verify.sh can flip it in the running process and walk every
+        branch without a restart.
+        """
         icp = self.env['ir.config_parameter'].sudo()
+        if icp.get_param(P_DISABLED):
+            # Until the environment fallback existed, "this database holds zero
+            # modryn.twilio.* parameters" WAS the property that made a tenant
+            # unable to text a real person, and qa/lib/guard.js plus the two
+            # loadtest seeders that hold the gate (gen_tenants.sh and
+            # reset_tenants.sh; seed_tenant.py's own guard is the 11-digit phone
+            # scheme, a separate defence) each refused to run on it. A platform-wide
+            # default empties that count of meaning — every database can send
+            # now — so the guards key on this flag instead. Name the direction
+            # change rather than let someone rediscover it: a tenant used to be
+            # safe until somebody opted it in, and is live until somebody opts
+            # it out.
+            return None
         cfg = {
             'account_sid': icp.get_param(P_ACCOUNT_SID),
             'key_sid': icp.get_param(P_KEY_SID),
             'key_secret': icp.get_param(P_KEY_SECRET),
             'from': icp.get_param(P_FROM),
+        }
+        if all(cfg.values()):
+            return cfg
+        cfg = {
+            'account_sid': os.environ.get('TWILIO_ACCOUNT_SID'),
+            'key_sid': os.environ.get('TWILIO_API_KEY_SID'),
+            'key_secret': os.environ.get('TWILIO_API_KEY_SECRET'),
+            'from': os.environ.get('TWILIO_FROM_NUMBER'),
         }
         return cfg if all(cfg.values()) else None
 

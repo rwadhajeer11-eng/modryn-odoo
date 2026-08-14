@@ -156,6 +156,14 @@ class ModrynDayWaitlist(models.Model):
             'hours': CLAIM_WINDOW_HOURS,
             'link': '%s/claim/%s' % (self._base_url(), self.offer_token),
         }
+        # One shared Twilio number across every boutique now, so a claim link
+        # from an unknown number is unattributable — and this one asks her to act
+        # within two hours. Prefixed rather than woven into the sentence for the
+        # reason queue_entry._send spells out. Read here, under the with_context
+        # above, and not before it: res.company.name is related to
+        # res.partner.name, which is translate=True, so composing it in the
+        # cron's language would put an English boutique name on a Hebrew text.
+        body = '%s: %s' % (self.env.company.name, body)
         # Queued: _make_offer sits on the customer-facing cancel path
         # (modryn_cancel -> modryn_offer_next), so the bride cancelling would
         # otherwise pay Twilio's latency to text a stranger.

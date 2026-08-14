@@ -199,6 +199,16 @@ class ModrynQueueEntry(models.Model):
         self.ensure_one()
         if not self.phone:
             return
+        # Every boutique now sends from ONE shared Twilio number, so an
+        # unbranded text arrives from a number she does not know and that may
+        # also be texting her about a different store. booking_comms.py weaves
+        # %(boutique)s into each sentence; here it is a prefix, because changing
+        # these msgids invalidates their existing he and ar translations, and
+        # sync_translations.py rewrites all eight addons on every run — seven of
+        # them would then need `git checkout --`. A prefix touches no .po at all.
+        # ponytail: prefix, not woven — weave it into each sentence if the copy
+        # ever needs to read better.
+        body = '%s: %s' % (self.env.company.name, body)
         # The one chokepoint every queue text goes through — redirect, you're
         # next, and your turn — so queueing here covers all three at once.
         # Staff clicking "call next" is an HTTP request like any other, and the

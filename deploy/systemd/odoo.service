@@ -25,6 +25,29 @@ Environment=LC_ALL=C.UTF-8
 # NOTHING logs an error.
 Environment=PATH=/opt/modryn/.venv/bin:/usr/local/bin:/usr/bin:/bin
 
+# Twilio lives in the platform environment now: _twilio_config() reads
+# TWILIO_ACCOUNT_SID and its three siblings at call time and every database
+# inherits them. NOTHING ELSE puts them in this process, so without this line
+# that fallback is dead code in production and every tenant quietly logs its
+# messages instead of sending them. The leading '-' keeps a missing file
+# non-fatal, so a box provisioned before deploy.env existed still starts.
+#
+# THE TRAP: this file is NOT sourced by a shell. provision.sh, restore.sh and
+# gen_tenants_map.sh read it with `set -a; . file`; systemd parses the same
+# bytes as plain KEY=value (provision.sh:88-104 writes exactly that). No
+# export, no $-expansion, and quoting means something different on each side —
+# a value containing a space or a $ will not reach this process the way it
+# reaches those scripts. Also note EnvironmentFile OVERRIDES Environment=
+# regardless of order: a PATH= added to deploy.env replaces the line above and
+# takes rtlcss with it.
+#
+# 0600 root:root against User=odoo is correct, not a permission bug to fix:
+# systemd reads this as PID 1, before dropping privileges. Widening it would
+# hand the credentials to every process the odoo user runs. deploy.env also
+# carries DOMAIN, the backup settings and LOADGEN_IP; those become process
+# environment too, which is harmless but not a secret to be surprised by.
+EnvironmentFile=-/etc/modryn/deploy.env
+
 ExecStart=/opt/modryn/.venv/bin/python /opt/modryn/odoo/odoo-bin server -c /etc/odoo/odoo.conf
 
 # Prefork forks 53 children (48 http + 4 cron + 1 gevent). KillMode=mixed sends

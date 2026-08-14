@@ -84,27 +84,36 @@ fi
 # anything; it only announced the damage.
 #
 # Two sources, both checked here:
-#  - the GOLD: every restored tenant is a byte copy of it, so one contaminated
-#    gold propagates credentials to all thirty in one command;
-#  - each EXISTING target: a database carrying modryn.twilio.* is by definition
-#    not a load tenant, and this script would drop it and its filestore. That is
-#    the db_name guard's failure mode caught a second way, before the damage.
-twilio_params() {
-  psql -d "$1" -tAc "select count(*) from ir_config_parameter where key like 'modryn.twilio.%'" 2>/dev/null || echo 0
+#  - the GOLD: every restored tenant is a byte copy of it, so one unmuted gold
+#    hands thirty tenants a working sender in one command;
+#  - each EXISTING target: a database that does not say it is muted is by
+#    definition not a load tenant, and this script would drop it and its
+#    filestore. That is the db_name guard's failure mode caught a second way,
+#    before the damage.
+#
+# The test used to be "holds zero modryn.twilio.* parameters", and that was the
+# same sentence read the other way round: no credentials in the database meant no
+# credentials at all. Credentials now live in the server's environment and every
+# database inherits them, so an empty ir_config_parameter proves nothing and the
+# tenant has to carry an explicit modryn.twilio.disabled instead. Absent, empty
+# or unreadable refuses — a database that never heard of the key fails closed,
+# which is the only safe reading when the default is now "can send".
+P_DISABLED=modryn.twilio.disabled
+twilio_disabled() {
+  psql -d "$1" -tAc "select value from ir_config_parameter where key='$P_DISABLED'" 2>/dev/null || echo ''
 }
-TW=$(twilio_params "$GOLD")
-if [ "$TW" != "0" ]; then
-  echo "!! REFUSING: gold snapshot '$GOLD' has $TW modryn.twilio.* parameter(s)."
-  echo "   Restoring from it would give every tenant live SMS credentials."
-  echo "   Rebuild the gold from a clean tenant."
+if [ -z "$(twilio_disabled "$GOLD")" ]; then
+  echo "!! REFUSING: gold snapshot '$GOLD' carries no $P_DISABLED."
+  echo "   Every tenant restored from it would send through the environment's"
+  echo "   Twilio credentials. Re-cut the gold from a muted load tenant."
   exit 1
 fi
 for SLUG in "${SLUGS[@]}"; do
   psql -d postgres -tAc "select 1 from pg_database where datname='$SLUG'" | grep -q 1 || continue
-  TW=$(twilio_params "$SLUG")
-  if [ "$TW" != "0" ]; then
-    echo "!! REFUSING: '$SLUG' has $TW modryn.twilio.* parameter(s) — it is not a"
-    echo "   load tenant. This script drops it and its filestore. Nothing dropped."
+  if [ -z "$(twilio_disabled "$SLUG")" ]; then
+    echo "!! REFUSING: '$SLUG' carries no $P_DISABLED, so it can still send — it is"
+    echo "   not a load tenant. This script drops it and its filestore. Nothing"
+    echo "   dropped."
     exit 1
   fi
 done
@@ -179,12 +188,18 @@ SQL
   # still refuse. This one can only report, because the tenant is already
   # restored by the time it runs. It is kept because it is one round trip on a
   # ~2 s operation and it covers the one case the pre-check cannot see: a future
-  # edit to the SQL block above that starts writing modryn.twilio.* itself.
-  TW=$(twilio_params "$SLUG")
-  if [ "$TW" != "0" ]; then
-    echo "!! $SLUG has $TW modryn.twilio.* parameter(s) AFTER restore, though the"
-    echo "   gold was clean — this script wrote them. STOPPING; $SLUG is restored"
-    echo "   and unsafe. Clear the parameters before starting the server."
+  # edit to the SQL block above that drops the flag the gold carried.
+  #
+  # Which is also why that block does NOT re-assert modryn.twilio.disabled the way
+  # it re-asserts the loadtest keys. The flag arrives with the byte copy and the
+  # pre-loop check already proved the gold has one; leaving it alone is what lets
+  # this line test the restore rather than test its own INSERT from one statement
+  # earlier.
+  if [ -z "$(twilio_disabled "$SLUG")" ]; then
+    echo "!! $SLUG carries no $P_DISABLED AFTER restore, though the gold did —"
+    echo "   this script cleared it. STOPPING; $SLUG is restored and would send"
+    echo "   through the environment's Twilio credentials. Set the parameter"
+    echo "   before starting the server."
     exit 1
   fi
 done

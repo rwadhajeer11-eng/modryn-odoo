@@ -24,31 +24,52 @@ loadtest/
 
 ## Three rules that do not bend
 
-1. **Never run load against `bella`.** It holds live Twilio credentials, so
-   `modryn.sms._send_now` takes the Twilio branch for every OTP, booking
-   confirmation and waitlist offer instead of logging the body — at ten seconds
-   a blocking call.
+1. **Never run load against `bella`.** Twilio credentials live in the server's
+   *environment* (`TWILIO_ACCOUNT_SID` and its three companions), inherited by
+   every database in the process, so `modryn.sms._send_now` takes the Twilio
+   branch for every OTP, booking confirmation and waitlist offer instead of
+   logging the body — at ten seconds a blocking call.
+
+   **The default inverted on 2026-08-14, and this rule is the reason to care.**
+   A database used to be unable to send until someone gave it four
+   `modryn.twilio.*` parameters, so a fresh load tenant was safe by having
+   nothing in it. Now every database can send until someone says otherwise, and
+   the only thing that says otherwise is one config parameter:
+
+   ```
+   modryn.twilio.disabled = 1     # any truthy value
+   ```
+
+   `_twilio_config()` checks it before anything else and returns `None`, so
+   `_send_now` logs the body and returns `('logged')` — the whole flow exercises
+   at no cost. Safety is now something a tenant must *hold*, not something it
+   lacks.
 
    **What actually stands there, and what does not.** `gen_tenants.sh` and
-   `reset_tenants.sh` both refuse any database carrying a `modryn.twilio.*`
-   parameter, but *neither script runs during `k6 run`*. They are pre-flight
-   assertions of a property, not a runtime guard. At run time there are two:
+   `reset_tenants.sh` both refuse any database that does not carry a truthy
+   `modryn.twilio.disabled` (absent, empty or unreadable all refuse), and
+   `gen_tenants.sh` sets it on every tenant it creates via
+   `MODRYN_SMS_DISABLED=1 ./scripts/new_boutique.sh`. But *neither script runs
+   during `k6 run`*. They are pre-flight assertions of a property, not a runtime
+   guard. At run time there are two:
 
    | | what it is |
    |---|---|
    | `guardTenants()` in `k6/lib/session.js` | the only thing that aborts a **run**; fails the test if any tenant's slug or baseUrl contains `bella`. Name-matched, so it does not catch a *different* live boutique. |
-   | zero `modryn.twilio.*` on the tenant | the actual mechanism. With no config `_send_now` logs the body and returns `('logged')` — the whole flow exercises at no cost. The seeders' checks are what assert this held at seed time. |
+   | `modryn.twilio.disabled` on the tenant | the actual mechanism, checked first in `_twilio_config()`. The seeders' checks are what assert this held at seed time. |
 
    And one thing that is **not** a guard, though this file used to imply it was:
    the seeded numbers are not deliverable. `+97252TTVVVV` is eleven digits where
    a real Israeli mobile in E.164 is twelve, so Twilio answers them with a 21211
    (invalid `To`) — unbilled, undelivered. It is *not* a carrier prefix and a run
-   against a contaminated tenant would not text strangers. That overstatement is
+   against an unmuted tenant would not text strangers. That overstatement is
    worth naming because it did damage: it made the Twilio checks feel frightening
    enough to leave alone, and both of them spent their whole life running *after*
    the destruction they were supposed to prevent. `seed_tenant.py`'s
    `assert_phone_scheme()` now pins the digit count so nobody makes the numbers
-   real without also re-reading this table.
+   real without also re-reading this table — and it is the one line of defence
+   that survives a *missing* row, which matters more now that a missing row is
+   what "can send" looks like.
 2. **Stop the Odoo server before `gen_tenants.sh`, `make_gold.sh` or
    `reset_tenants.sh`.** `createdb -T` demands zero connections to the source,
    and `dropdb` blocks on connections Odoo's pool holds open past the request

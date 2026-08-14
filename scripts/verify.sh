@@ -42,7 +42,7 @@ turl() { printf '%s://%s.%s%s' "$BASE_SCHEME" "$1" "$BASE_HOST" "${BASE_PORT:+:$
 # certificate, a wrong-name certificate and the self-signed placeholder
 # provision.sh installs at bootstrap all look identical to a healthy one. A
 # certificate fault must present as section 0 failing, loudly, rather than as
-# 217 quiet passes. deploy/scripts/verify_edge.sh inspects the certificate on
+# 364 quiet passes. deploy/scripts/verify_edge.sh inspects the certificate on
 # purpose, which is why it is the only file here that may pass -k.
 BELLA="$(turl bella)"
 NOGA="$(turl noga)"
@@ -163,7 +163,7 @@ TENANTS="${TENANTS# }"
 #
 # So both names must be IN the resolved list, and the suite refuses to continue
 # otherwise. NOT skip() — a suite that cannot see its own subjects has verified
-# nothing, and 217 green lines under those conditions is the single most
+# nothing, and 364 green lines under those conditions is the single most
 # dangerous output this file can produce.
 #
 # DELIBERATELY NOT DERIVED POSITIONALLY. `BELLA=$(nth 1)` / `NOGA=$(nth 2)`
@@ -1155,6 +1155,258 @@ grep -q "PERMANENT_TWILIO_CODES" "$SMS" \
 # From number is misconfigured" (21606) — both are 400.
 grep -q "twilio_%s_%s" "$SMS" \
   && ok "twilio error code is carried on the failure detail" || bad "twilio detail" "only the HTTP status is recorded — 400 cannot be disambiguated"
+
+head_ "10k-quinquies. one Twilio account behind every database, and a tenant that can still refuse it"
+# Credentials moved out of each database and into the process environment, which
+# quietly retired the property four harnesses were built on: qa/lib/guard.js and
+# the three loadtest seeders each refuse to run until they have counted ZERO
+# modryn.twilio.* parameters, because "this tenant holds none" USED to mean "this
+# tenant cannot reach a real handset". Every database inherits the platform
+# account now, so that count proves nothing and an explicit
+# modryn.twilio.disabled is the only thing standing between a load test and a
+# stranger's phone. Nothing else in this suite ever executes _twilio_config, so
+# the whole precedence ladder could ship on a grep and a hope.
+#
+# Below runs the REAL _twilio_config — stubbing it, as the two _send_now checks
+# above deliberately do, is exactly what cannot be done here — against a REAL
+# tenant database, through the same ir.config_parameter reads Odoo makes.
+#
+# It PLANTS parameters to do it. They go in inside a transaction that is never
+# committed, the trick detects() uses: restoration is not a cleanup step that
+# could itself fail on the way out, it is the absence of a commit, so a crash
+# anywhere in the middle still leaves the tenant exactly as it was. bella carries
+# four live override parameters and altering them would be a real regression.
+for db in $TENANTS; do
+  MODRYN_VERIFY_DB="$db" .venv/bin/python - <<'PY' && ok "$db: the off switch, then the tenant's own four, then the platform's" \
+    || bad "$db twilio precedence" "the sender resolves the wrong credentials, or none — see the failing states above"
+import logging, os, re, sys
+
+import psycopg2
+import requests
+
+# Obvious fakes. A real credential written here would land in every transcript
+# this suite is ever pasted into.
+ENVVAR = {'account_sid': 'TWILIO_ACCOUNT_SID', 'key_sid': 'TWILIO_API_KEY_SID',
+          'key_secret': 'TWILIO_API_KEY_SECRET', 'from': 'TWILIO_FROM_NUMBER'}
+PLATFORM = {'account_sid': 'ACplatform', 'key_sid': 'SKplatform',
+            'key_secret': 'splatform', 'from': '+972500000001'}
+TENANT = {'account_sid': 'ACtenant', 'key_sid': 'SKtenant',
+          'key_secret': 'stenant', 'from': '+972500000002'}
+
+src = open('addons/modryn_portal/models/sms.py').read()
+ns = {'os': os, 're': re, 'requests': requests, '_logger': logging.getLogger('v')}
+# The module's OWN constants, never re-declared here: a renamed parameter key
+# then fails this check instead of being quietly redefined as correct. Both
+# slices stop short of `from odoo import`, which a bare interpreter cannot load.
+exec(src[src.index('TWILIO_BASE ='):src.index('def normalize_il_phone')], ns)
+exec(src[src.index('def normalize_il_phone'):src.index('class ModrynSms')], ns)
+# Should a later edit ever post before reading the config, this sends it at a
+# name that cannot resolve rather than at Twilio, on a suite that runs unattended.
+ns['TWILIO_BASE'] = 'https://example.invalid'
+ns['SEND_TIMEOUT'] = 1
+for decl in ("def _twilio_config(self):", "def _send_now(self, to, body):"):
+    exec(decl + src.split("    " + decl)[1].split("\n    @api.model")[0], ns)
+
+PARAM = {'account_sid': ns['P_ACCOUNT_SID'], 'key_sid': ns['P_KEY_SID'],
+         'key_secret': ns['P_KEY_SECRET'], 'from': ns['P_FROM']}
+
+
+class Icp:
+    def __init__(self, cur):
+        self.cur = cur
+
+    def sudo(self):
+        return self
+
+    # Odoo's own signature: absent parameter means the default, not None, and
+    # `all(cfg.values())` reads False and None alike — so a wrong default here
+    # would hide a missing credential rather than reveal it.
+    def get_param(self, key, default=False):
+        self.cur.execute("SELECT value FROM ir_config_parameter WHERE key = %s", (key,))
+        row = self.cur.fetchone()
+        return row[0] if row else default
+
+
+class Sms:
+    _twilio_config = ns['_twilio_config']
+    _send_now = ns['_send_now']
+
+    def __init__(self, cur):
+        self.env = {'ir.config_parameter': Icp(cur)}
+
+
+ORIGIN = dict([(v, 'platform') for v in PLATFORM.values()]
+              + [(v, 'tenant') for v in TENANT.values()])
+
+
+# Never the values, only where each one came from — 'other' means a credential
+# this check did not plant, i.e. the tenant's real one, named without printing it.
+def shape(cfg):
+    if cfg is None:
+        return 'None'
+    return '{%s}' % ', '.join('%s=%s' % (f, ORIGIN.get(cfg[f], 'other')) for f in sorted(cfg))
+
+
+# Inside this process only. Exporting these from the shell would hand the
+# platform's real credentials' slot to a fake for the rest of the suite.
+def platform_env(on):
+    for var in ENVVAR.values():
+        os.environ.pop(var, None)
+    if on:
+        for field, var in ENVVAR.items():
+            os.environ[var] = PLATFORM[field]
+
+
+def clear(cur, keys):
+    cur.execute("DELETE FROM ir_config_parameter WHERE key = ANY(%s)", (list(keys),))
+
+
+def put(cur, key, value):
+    clear(cur, [key])
+    cur.execute("INSERT INTO ir_config_parameter (key, value, create_uid, write_uid,"
+                " create_date, write_date) VALUES (%s, %s, 1, 1, now(), now())", (key, value))
+
+
+fails = []
+# The key string is contract, not detail: qa/lib/guard.js and the loadtest
+# seeders read it by name from outside Python and cannot follow a rename.
+if ns.get('P_DISABLED') != 'modryn.twilio.disabled':
+    fails.append("sms.py does not define P_DISABLED = 'modryn.twilio.disabled'")
+DISABLED = 'modryn.twilio.disabled'
+
+conn = psycopg2.connect(dbname=os.environ['MODRYN_VERIFY_DB'])
+try:
+    cur = conn.cursor()
+    sms = Sms(cur)
+
+    # 1. THE CONTROL, and the reason it is first: states 3 and 5 both assert
+    # against a build that reads no environment at all, and on such a build 3
+    # passes for free. This one fixes what "nothing configured" looks like, and
+    # state 2 immediately proves this harness CAN produce a config, so the Nones
+    # below mean the off switch rather than a dead code path.
+    clear(cur, list(PARAM.values()) + [DISABLED])
+    platform_env(False)
+    cfg = sms._twilio_config()
+    if cfg is not None:
+        fails.append('1 (control): nothing configured anywhere, resolved %s' % shape(cfg))
+    sent = sms._send_now('+972521234567', 'planted')
+    if sent != (True, 'logged'):
+        fails.append('1 (control): unconfigured send returned %r, not the log fallback' % (sent,))
+
+    # 2. The platform default, which is the whole point of the change.
+    platform_env(True)
+    cfg = sms._twilio_config()
+    if not cfg or cfg.get('from') != PLATFORM['from']:
+        fails.append('2: a tenant with no parameters of its own resolved %s, '
+                     'not the platform environment' % shape(cfg))
+
+    # 3. The switch that replaced "holds no parameters" as the way to keep a
+    # database off the wire. It must beat a fully configured environment.
+    put(cur, DISABLED, '1')
+    cfg = sms._twilio_config()
+    if cfg is not None:
+        fails.append('3: %s is set and the platform environment still won (%s)' % (DISABLED, shape(cfg)))
+    sent = sms._send_now('+972521234567', 'planted')
+    if sent != (True, 'logged'):
+        fails.append('3: a disabled tenant returned %r — it just texted someone' % (sent,))
+    clear(cur, [DISABLED])
+
+    # 4. The override survives. A boutique that pays its own Twilio bill keeps
+    # its own caller ID even once the platform has one.
+    for field, key in PARAM.items():
+        put(cur, key, TENANT[field])
+    cfg = sms._twilio_config()
+    if not cfg or cfg.get('from') != TENANT['from']:
+        fails.append('4: the tenant\'s own four did not outrank the platform, resolved %s' % shape(cfg))
+
+    # 5. All four or none. A half-filled tenant that borrows the platform's
+    # missing pieces sends authenticated as this boutique and arriving from
+    # another — and the recipient sees only the second, so her reply goes to the
+    # wrong salon. This is the state a field-by-field `or` fallback passes 4 on.
+    clear(cur, [PARAM['from']])
+    cfg = sms._twilio_config()
+    if not cfg or any(cfg.get(field) != PLATFORM[field] for field in PLATFORM):
+        fails.append('5: three tenant parameters were mixed with the platform '
+                     'environment instead of falling through whole: %s' % shape(cfg))
+finally:
+    conn.rollback()
+    conn.close()
+
+for f in fails:
+    print('  ', f, file=sys.stderr)
+sys.exit(1 if fails else 0)
+PY
+done
+# Every check above asks one tenant about itself, which is precisely how a shared
+# database.secret survived 263 green checks (section 1, and .memory/odoo-traps.md
+# §13). "One account behind every database" is not a claim any single tenant can
+# make: it is only true if two of them, asked separately, answer the same. A
+# per-tenant environment read that accidentally keyed off the database name would
+# satisfy all five states above and fail only here.
+.venv/bin/python - <<'PY' && ok "bella and noga inherit the same platform sender" \
+  || bad "cross-tenant twilio inheritance" "the two tenants resolved different senders from one environment — a per-database credential is back"
+import os
+import sys
+
+import psycopg2
+
+PLATFORM = {'TWILIO_ACCOUNT_SID': 'ACplatform', 'TWILIO_API_KEY_SID': 'SKplatform',
+            'TWILIO_API_KEY_SECRET': 'splatform', 'TWILIO_FROM_NUMBER': '+972500000001'}
+os.environ.update(PLATFORM)
+
+src = open('addons/modryn_portal/models/sms.py').read()
+ns = {'os': os}
+exec(src[src.index('TWILIO_BASE ='):src.index('def normalize_il_phone')], ns)
+exec("def _twilio_config(self):" + src.split("    def _twilio_config(self):")[1]
+     .split("\n    @api.model")[0], ns)
+KEYS = [ns['P_ACCOUNT_SID'], ns['P_KEY_SID'], ns['P_KEY_SECRET'], ns['P_FROM'],
+        'modryn.twilio.disabled']
+
+
+class Icp:
+    def __init__(self, cur):
+        self.cur = cur
+
+    def sudo(self):
+        return self
+
+    def get_param(self, key, default=False):
+        self.cur.execute("SELECT value FROM ir_config_parameter WHERE key = %s", (key,))
+        row = self.cur.fetchone()
+        return row[0] if row else default
+
+
+class Sms:
+    _twilio_config = ns['_twilio_config']
+
+    def __init__(self, cur):
+        self.env = {'ir.config_parameter': Icp(cur)}
+
+
+# bella and noga BY NAME, like every other cross-tenant assertion in this file —
+# and bella's four live override parameters are cleared inside the same
+# uncommitted transaction, because an override is the one thing that legitimately
+# makes two tenants differ and would hide the failure this check exists for.
+senders = {}
+for db in ('bella', 'noga'):
+    conn = psycopg2.connect(dbname=db)
+    try:
+        cur = conn.cursor()
+        cur.execute("DELETE FROM ir_config_parameter WHERE key = ANY(%s)", (KEYS,))
+        cfg = Sms(cur)._twilio_config()
+        senders[db] = cfg and cfg.get('from')
+    finally:
+        conn.rollback()
+        conn.close()
+
+# Both None would be "the same" too, and would mean the environment is never read
+# — so the platform's own From number is required, not merely agreement.
+wrong = {db: v for db, v in senders.items() if v != PLATFORM['TWILIO_FROM_NUMBER']}
+for db, v in wrong.items():
+    print('  %s resolved %s' % (db, 'nothing' if not v else 'a sender that is not the platform\'s'),
+          file=sys.stderr)
+sys.exit(1 if wrong else 0)
+PY
 
 head_ "10k-ter. one bad number must not end the day's queue"
 .venv/bin/python - <<'PY' && ok "normalize_il_phone output is always E.164 and idempotent" \

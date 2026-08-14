@@ -109,9 +109,18 @@ def assert_phone_scheme():
 
     So: pin the fact rather than the prose. Lengthening the scheme to a real
     number is a legitimate change — it would make the fixture more faithful —
-    but it must not happen quietly, because from that moment the modryn.twilio.*
-    checks really are the last thing before the phone bill, and the harness's
-    own `phonePrefix + 4 digits` (k6/lib/session.js) has to move with it.
+    but it must not happen quietly, because from that moment the
+    modryn.twilio.disabled checks really are the last thing before the phone
+    bill, and the harness's own `phonePrefix + 4 digits` (k6/lib/session.js) has
+    to move with it.
+
+    And eleven digits counts for MORE since the credentials moved into the
+    server's environment, not less. A load tenant used to be safe by holding
+    nothing: no modryn.twilio.* rows, nothing to send with. It is safe now only
+    by holding something — one modryn.twilio.disabled row, which a hand-edited
+    gold, a restore predating the flag, or a database created some other way can
+    each fail to carry. This defence needs no row present at all: Twilio answers
+    a 21211 whether or not anybody remembered to set anything.
     """
     sample = phone_for(0)
     digits = sum(c.isdigit() for c in sample)
@@ -124,8 +133,10 @@ def assert_phone_scheme():
             "     harness books for numbers no VU owns;\n"
             "  2. update the `length(phone) = 12` renumbering SQL in\n"
             "     reset_tenants.sh, which silently matches nothing otherwise;\n"
-            "  3. treat the modryn.twilio.* checks in gen_tenants.sh and\n"
-            "     reset_tenants.sh as delivery-critical, not merely hygiene."
+            "  3. treat the modryn.twilio.disabled checks in gen_tenants.sh and\n"
+            "     reset_tenants.sh as delivery-critical, not merely hygiene —\n"
+            "     the credentials sit in the server's environment now, so a\n"
+            "     tenant missing that flag is one that really can reach her."
             % (sample, digits))
 
 

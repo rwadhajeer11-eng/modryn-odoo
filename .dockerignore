@@ -1,0 +1,28 @@
+# Build context for deploy/railway/Dockerfile. Kept in lockstep with
+# .railwayignore — railway up --no-gitignore uploads this tree, then Docker
+# builds from it, so both filters must agree.
+#
+# odoo/ is excluded on purpose: 1.2 GB would 413 at Railway's edge — the
+# Dockerfile clones the pinned SHA instead. The seed filestore/dump live in
+# deploy/railway/seed/ (NOT .odoo-data, and not gitignored: the uploader
+# honors .git/info/exclude and .gitignore even with --no-gitignore).
+.git
+odoo
+.venv
+.worktrees
+.spartan
+.env
+.claude
+.planning
+qa
+loadtest
+docs
+deploy/fail2ban
+deploy/nginx
+deploy/postgresql
+deploy/systemd
+.odoo-data
+**/__pycache__
+**/*.pyc
+**/node_modules
+*.log

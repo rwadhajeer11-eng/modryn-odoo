@@ -1,0 +1,19 @@
+# Railway service config for the TEMPORARY single-tenant demo
+# (deploy/railway/). Deploy with:  railway up --no-gitignore
+# — plain `railway up` honors .gitignore, and odoo/ is gitignored, so it would
+# upload a repo WITHOUT Odoo itself. .railwayignore does the real filtering.
+
+[build]
+builder = "DOCKERFILE"
+dockerfilePath = "deploy/railway/Dockerfile"
+
+[deploy]
+# /web/health is auth=none and needs no database — the service goes healthy
+# even before the tenant is restored, which is what bootstrap_restore.sh needs.
+healthcheckPath = "/web/health"
+# 600, not 300: the ~2 GB image takes minutes to push/pull before the app can
+# even boot — a 300s window expired while a perfectly healthy container was
+# still being scheduled, and Railway killed it.
+healthcheckTimeout = 600
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 10

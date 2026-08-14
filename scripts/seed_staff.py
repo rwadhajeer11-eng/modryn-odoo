@@ -47,6 +47,13 @@ PEOPLE = {
         ('יעל בר',      sales,      'manager', 'yael',  '053-5550001'),
         ('דנה שמש',     seamstress, 'staff',   'dana',  '053-5550002'),
     ],
+    # The public Railway demo tenant. Seed it with a ROTATED password, never
+    # the shared dev one — this database ends up on a public URL.
+    'te': [
+        ('טל אבן',      sales,      'owner',   'tal',   '054-5550001'),
+        ('עדן לוי',     sales,      'manager', 'eden',  '054-5550002'),
+        ('גל שרון',     seamstress, 'staff',   'gal',   '054-5550003'),
+    ],
 }
 
 created = []

@@ -7,6 +7,10 @@
 # work that MODRYN's RLS model gets for free.
 #
 # Usage: ./scripts/new_boutique.sh bella "Bella Bridal"
+#
+# MODRYN_SMS_DISABLED=1 ./scripts/new_boutique.sh qa "QA Bridal" provisions a
+# tenant that can never text a real person — this is how QA and loadtest
+# databases are made. See the fixup that sets modryn.twilio.disabled below.
 set -euo pipefail
 
 SLUG="${1:?usage: new_boutique.sh <slug> \"<Display Name>\"}"
@@ -68,6 +72,7 @@ fi
 
 echo "==> applying per-tenant fixups"
 MODRYN_SLUG="$SLUG" MODRYN_NAME="$NAME" MODRYN_PORT="$PORT" \
+MODRYN_SMS_DISABLED="${MODRYN_SMS_DISABLED:-}" \
 ./odoo/odoo-bin shell -c odoo.conf -d "$SLUG" --db-filter="^$SLUG\$" --no-http <<'PY'
 import os, uuid
 slug = os.environ['MODRYN_SLUG']
@@ -98,6 +103,18 @@ ICP.set_param('web.base.url.freeze', 'True')
 env.company.name = name
 site = env['website'].search([], limit=1)
 site.write({'name': name, 'domain': base})
+
+# A tenant used to be UNABLE to text anyone until someone ran
+# configure_twilio.py against it, and qa/lib/guard.js leaned on exactly that —
+# zero modryn.twilio.* parameters was its proof that a database could not dial
+# out. That property is gone. The sender now falls back to the four
+# TWILIO_* variables in the server's own environment, so a fresh clone can text
+# a real bride the moment it exists, and an empty parameter table proves
+# nothing. This flag is the only thing that still makes a tenant safe, which is
+# why it is set here, at creation, and not left to a follow-up command someone
+# runs after the loadtest seeder has already dialled out.
+if os.environ.get('MODRYN_SMS_DISABLED'):
+    ICP.set_param('modryn.twilio.disabled', '1')
 
 env.cr.commit()
 print('TENANT_READY %s -> %s' % (name, base))
