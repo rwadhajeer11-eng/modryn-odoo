@@ -68,9 +68,19 @@ msgid "Book a fitting"
 msgstr "קביעת תור למדידה"
 
 #. module: modryn_booking
+#: model:website.menu,name:modryn_booking.menu_book
+msgid "Book an appointment"
+msgstr "קביעת תור"
+
+#. module: modryn_booking
 #: model:ir.model.fields,field_description:modryn_booking.field_calendar_event__modryn_booking_type
 msgid "Booking type"
 msgstr "סוג התור"
+
+#. module: modryn_booking
+#: model_terms:ir.ui.view,arch_db:modryn_booking.booking_form
+msgid "Call us and we'll find you a time"
+msgstr "התקשרו אלינו ונמצא לכן זמן"
 
 #. module: modryn_booking
 #: model_terms:ir.ui.view,arch_db:modryn_booking.booking_form
@@ -129,6 +139,11 @@ msgstr "הצטרפי לרשימת ההמתנה"
 #: model_terms:ir.ui.view,arch_db:modryn_booking.booking_form
 msgid "Leave your number and we'll text you first if a place opens up."
 msgstr "השאירי מספר טלפון ונעדכן אותך ראשונה אם יתפנה מקום."
+
+#. module: modryn_booking
+#: model_terms:ir.ui.view,arch_db:modryn_booking.booking_form
+msgid "Online booking isn't open right now"
+msgstr "קביעת תורים אונליין סגורה כרגע"
 
 #. module: modryn_booking
 #: model_terms:ir.ui.view,arch_db:modryn_booking.booking_form

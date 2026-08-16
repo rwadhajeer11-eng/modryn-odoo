@@ -36,6 +36,16 @@ test('act 5 — a manager lands on the floor board, and it paints', async ({ pag
   // A 200 carrying a JS exception that leaves an empty div is exactly the shape
   // of the bug §10a was written after, and §10a still cannot see it.
   await expect(page.locator('body')).toBeVisible();
+  // WAIT for the paint instead of sampling the instant after load: the board
+  // is an OWL component that fetches before it renders, and over a WAN the
+  // sample landed at 86 chars on a healthy server (SMOKE_REPORT.md, act 5).
+  // The check's teeth are intact — a JS exception leaves the div empty
+  // forever, and an empty div never crosses the threshold.
+  await page.waitForFunction(
+    () => document.body.innerText.trim().length > 120,
+    undefined,
+    { timeout: 15000 },
+  ).catch(() => {});
   const painted = await page.evaluate(() => document.body.innerText.trim().length);
   expect(painted, '/floor returned 200 and rendered nothing — a JS exception left the board empty').toBeGreaterThan(120);
 });

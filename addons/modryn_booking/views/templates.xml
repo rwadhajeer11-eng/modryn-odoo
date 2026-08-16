@@ -23,7 +23,12 @@
                         </div>
                     </div>
 
-                    <form action="/book/submit" method="post">
+                    <!-- No open day means no grid: hours unset, every day closed, or
+                         a rota that sells nothing. The stock behaviour rendered the
+                         full form around an empty select and let her submit into
+                         "Please choose a time" with no explanation. -->
+                    <t t-set="open_days" t-value="[d for d in days if not d.get('full')]"/>
+                    <form t-if="open_days" action="/book/submit" method="post">
                         <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
                         <input t-if="dress" type="hidden" name="dress_id" t-att-value="dress.id"/>
 
@@ -93,6 +98,13 @@
 
                         <button type="submit" class="btn btn-primary btn-lg">Confirm appointment</button>
                     </form>
+                    <div t-else="" class="p-4" style="background:#F6F0E6; border-radius:8px;">
+                        <h2 class="h5 mb-2">Online booking isn't open right now</h2>
+                        <p class="mb-0">
+                            Call us and we'll find you a time<t t-if="res_company.phone"> —
+                            <a t-att-href="'tel:%s' % res_company.phone"><span dir="ltr" t-out="res_company.phone"/></a></t>.
+                        </p>
+                    </div>
 
                     <!-- Fully-booked days. She leaves a number and gets first
                          refusal the moment somebody cancels. -->

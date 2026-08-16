@@ -12,6 +12,41 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. module: modryn_atelier
+#: model_terms:ir.ui.view,arch_db:modryn_atelier.dashboard
+msgid "<option value=\"\">Auto-assign</option>"
+msgstr "<option value=\"\">שיבוץ אוטומטי</option>"
+
+#. module: modryn_atelier
+#: model_terms:ir.ui.view,arch_db:modryn_atelier.dashboard
+msgid "<option value=\"\">Unassigned</option>"
+msgstr "לא משויך"
+
+#. module: modryn_atelier
+#: model_terms:ir.ui.view,arch_db:modryn_atelier.dashboard
+msgid "<option value=\"\">—</option>"
+msgstr "<option value=\"\">—</option>"
+
+#. module: modryn_atelier
+#: model_terms:ir.ui.view,arch_db:modryn_atelier.dashboard
+msgid ""
+"<select id=\"task_priority\" name=\"priority\" class=\"form-select\">\n"
+"                                    <option value=\"0\">Low</option>\n"
+"                                    <option value=\"1\" selected=\"selected\">Normal</option>\n"
+"                                    <option value=\"2\">High</option>\n"
+"                                </select>"
+msgstr ""
+"<select id=\"task_priority\" name=\"priority\" class=\"form-select\">\n"
+"                                    <option value=\"0\">נמוכה</option>\n"
+"                                    <option value=\"1\" selected=\"selected\">רגילה</option>\n"
+"                                    <option value=\"2\">גבוהה</option>\n"
+"                                </select>"
+
+#. module: modryn_atelier
+#: model_terms:ir.ui.view,arch_db:modryn_atelier.dashboard
+msgid "<span class=\"form-label d-block\">Pieces</span>"
+msgstr "חלקים"
+
+#. module: modryn_atelier
 #. odoo-python
 #: code:addons/modryn_atelier/models/garment_piece.py:0
 msgid "A garment piece needs a name."
@@ -33,6 +68,16 @@ msgid "Archive"
 msgstr "ארכיון"
 
 #. module: modryn_atelier
+#: model_terms:ir.ui.view,arch_db:modryn_atelier.dashboard
+msgid "Assign"
+msgstr "שיבוץ"
+
+#. module: modryn_atelier
+#: model_terms:ir.ui.view,arch_db:modryn_atelier.dashboard
+msgid "Create task"
+msgstr "יצירת משימה"
+
+#. module: modryn_atelier
 #: model:ir.model.fields,field_description:modryn_atelier.field_modryn_alteration_task__partner_id
 msgid "Customer"
 msgstr "לקוחה"
@@ -48,6 +93,11 @@ msgid "Customer Phone"
 msgstr "טלפון הלקוחה"
 
 #. module: modryn_atelier
+#: model_terms:ir.ui.view,arch_db:modryn_atelier.dashboard
+msgid "Customer name"
+msgstr "שם הלקוחה"
+
+#. module: modryn_atelier
 #: model:ir.model.fields.selection,name:modryn_atelier.selection__modryn_alteration_task__state__delivered
 msgid "Delivered"
 msgstr "נמסר"
@@ -56,6 +106,11 @@ msgstr "נמסר"
 #: model:ir.model.fields,field_description:modryn_atelier.field_modryn_alteration_task__delivered_at
 msgid "Delivered At"
 msgstr "נמסר בתאריך"
+
+#. module: modryn_atelier
+#: model_terms:ir.ui.view,arch_db:modryn_atelier.dashboard
+msgid "Dress"
+msgstr "שמלה"
 
 #. module: modryn_atelier
 #: model:ir.model.fields,field_description:modryn_atelier.field_modryn_alteration_task__variant_id
@@ -68,6 +123,11 @@ msgid "Due"
 msgstr "תאריך יעד"
 
 #. module: modryn_atelier
+#: model_terms:ir.ui.view,arch_db:modryn_atelier.dashboard
+msgid "Due date"
+msgstr "תאריך יעד"
+
+#. module: modryn_atelier
 #: model:ir.model,name:modryn_atelier.model_modryn_garment_piece
 msgid "Garment piece"
 msgstr "חלק בגד"
@@ -77,6 +137,12 @@ msgstr "חלק בגד"
 #: model_terms:ir.ui.view,arch_db:modryn_atelier.manage_pieces
 msgid "Garment pieces"
 msgstr "חלקי הבגד"
+
+#. module: modryn_atelier
+#: model:ir.model.fields.selection,name:modryn_atelier.selection__modryn_alteration_task__priority__2
+#: model_terms:ir.ui.view,arch_db:modryn_atelier.dashboard
+msgid "High"
+msgstr "גבוהה"
 
 #. module: modryn_atelier
 #: model:ir.model.fields.selection,name:modryn_atelier.selection__modryn_alteration_task__state__in_progress
@@ -99,9 +165,26 @@ msgid "Is Overdue"
 msgstr "באיחור"
 
 #. module: modryn_atelier
+#: model:ir.model.fields.selection,name:modryn_atelier.selection__modryn_alteration_task__priority__0
+#: model_terms:ir.ui.view,arch_db:modryn_atelier.dashboard
+msgid "Low"
+msgstr "נמוכה"
+
+#. module: modryn_atelier
+#. odoo-python
+#: code:addons/modryn_atelier/models/alteration_task.py:0
+msgid "New alteration for you: %s"
+msgstr "תיקון חדש עבורך: %s"
+
+#. module: modryn_atelier
 #: model_terms:ir.ui.view,arch_db:modryn_atelier.manage_pieces
 msgid "New piece"
 msgstr "חלק חדש"
+
+#. module: modryn_atelier
+#: model_terms:ir.ui.view,arch_db:modryn_atelier.dashboard
+msgid "New task"
+msgstr "משימה חדשה"
 
 #. module: modryn_atelier
 #: model_terms:ir.ui.view,arch_db:modryn_atelier.dashboard
@@ -109,9 +192,30 @@ msgid "No staff to show."
 msgstr "אין עובדות להצגה."
 
 #. module: modryn_atelier
+#: model:ir.model.fields.selection,name:modryn_atelier.selection__modryn_alteration_task__priority__1
+#: model_terms:ir.ui.view,arch_db:modryn_atelier.dashboard
+msgid "Normal"
+msgstr "רגילה"
+
+#. module: modryn_atelier
+#: model_terms:ir.ui.view,arch_db:modryn_atelier.dashboard
+msgid "Note"
+msgstr "הערה"
+
+#. module: modryn_atelier
 #: model_terms:ir.ui.view,arch_db:modryn_atelier.dashboard
 msgid "Nothing here."
 msgstr "אין פריטים."
+
+#. module: modryn_atelier
+#: model_terms:ir.ui.view,arch_db:modryn_atelier.dashboard
+msgid "Nothing waiting — every open task has hands on it."
+msgstr "אין עבודות ממתינות — לכל עבודה פתוחה יש ידיים."
+
+#. module: modryn_atelier
+#: model_terms:ir.ui.view,arch_db:modryn_atelier.dashboard
+msgid "Phone"
+msgstr "טלפון"
 
 #. module: modryn_atelier
 #. odoo-python
@@ -123,8 +227,37 @@ msgstr "חלקים"
 #. module: modryn_atelier
 #. odoo-python
 #: code:addons/modryn_atelier/controllers/atelier.py:0
+msgid "Please choose a due date"
+msgstr "נא לבחור תאריך יעד"
+
+#. module: modryn_atelier
+#. odoo-python
+#: code:addons/modryn_atelier/controllers/atelier.py:0
+msgid "Please choose a priority"
+msgstr "נא לבחור עדיפות"
+
+#. module: modryn_atelier
+#. odoo-python
+#: code:addons/modryn_atelier/controllers/atelier.py:0
 msgid "Please enter a name"
 msgstr "נא להזין שם"
+
+#. module: modryn_atelier
+#. odoo-python
+#: code:addons/modryn_atelier/controllers/atelier.py:0
+msgid "Please enter the customer's name"
+msgstr "נא להזין את שם הלקוחה"
+
+#. module: modryn_atelier
+#: model:ir.model.fields,field_description:modryn_atelier.field_modryn_alteration_task__priority
+#: model_terms:ir.ui.view,arch_db:modryn_atelier.dashboard
+msgid "Priority"
+msgstr "עדיפות"
+
+#. module: modryn_atelier
+#: model_terms:ir.ui.view,arch_db:modryn_atelier.dashboard
+msgid "Queue"
+msgstr "תור העבודות"
 
 #. module: modryn_atelier
 #: model:ir.model.fields.selection,name:modryn_atelier.selection__modryn_alteration_task__state__ready
@@ -137,9 +270,21 @@ msgid "Restore"
 msgstr "שחזור"
 
 #. module: modryn_atelier
+#: model_terms:ir.ui.view,arch_db:modryn_atelier.dashboard
+msgid "Save"
+msgstr "שמירה"
+
+#. module: modryn_atelier
 #: model:ir.model.fields,field_description:modryn_atelier.field_modryn_alteration_task__seamstress_id
+#: model_terms:ir.ui.view,arch_db:modryn_atelier.dashboard
 msgid "Seamstress"
 msgstr "תופרת"
+
+#. module: modryn_atelier
+#. odoo-python
+#: code:addons/modryn_atelier/controllers/atelier.py:0
+msgid "Something went wrong."
+msgstr "משהו השתבש."
 
 #. module: modryn_atelier
 #: model:ir.model.fields,field_description:modryn_atelier.field_modryn_alteration_task__state
@@ -188,6 +333,12 @@ msgid "Workshop"
 msgstr "סדנה"
 
 #. module: modryn_atelier
+#. odoo-python
+#: code:addons/modryn_atelier/models/alteration_task.py:0
+msgid "due %s"
+msgstr "ליום %s"
+
+#. module: modryn_atelier
 #: model_terms:ir.ui.view,arch_db:modryn_atelier.dashboard
 msgid "open"
 msgstr "פתוחות"
@@ -196,48 +347,3 @@ msgstr "פתוחות"
 #: model_terms:ir.ui.view,arch_db:modryn_atelier.dashboard
 msgid "overdue"
 msgstr "באיחור"
-
-#. module: modryn_atelier
-#: model:ir.model.fields.selection,name:modryn_atelier.selection__modryn_alteration_task__priority__2
-#: model_terms:ir.ui.view,arch_db:modryn_atelier.dashboard
-msgid "High"
-msgstr "גבוהה"
-
-#. module: modryn_atelier
-#: model:ir.model.fields.selection,name:modryn_atelier.selection__modryn_alteration_task__priority__0
-#: model_terms:ir.ui.view,arch_db:modryn_atelier.dashboard
-msgid "Low"
-msgstr "נמוכה"
-
-#. module: modryn_atelier
-#. odoo-python
-#: code:addons/modryn_atelier/models/alteration_task.py:0
-msgid "New alteration for you: %s"
-msgstr "תיקון חדש עבורך: %s"
-
-#. module: modryn_atelier
-#: model:ir.model.fields.selection,name:modryn_atelier.selection__modryn_alteration_task__priority__1
-#: model_terms:ir.ui.view,arch_db:modryn_atelier.dashboard
-msgid "Normal"
-msgstr "רגילה"
-
-#. module: modryn_atelier
-#: model_terms:ir.ui.view,arch_db:modryn_atelier.dashboard
-msgid "Nothing waiting — every open task has hands on it."
-msgstr "אין עבודות ממתינות — לכל עבודה פתוחה יש ידיים."
-
-#. module: modryn_atelier
-#: model:ir.model.fields,field_description:modryn_atelier.field_modryn_alteration_task__priority
-msgid "Priority"
-msgstr "עדיפות"
-
-#. module: modryn_atelier
-#: model_terms:ir.ui.view,arch_db:modryn_atelier.dashboard
-msgid "Queue"
-msgstr "תור העבודות"
-
-#. module: modryn_atelier
-#. odoo-python
-#: code:addons/modryn_atelier/models/alteration_task.py:0
-msgid "due %s"
-msgstr "ליום %s"

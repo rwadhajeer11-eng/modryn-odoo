@@ -50,6 +50,7 @@ Deliberately NOT in scope for the PoC (each is a Phase-2 line item):
         'security/ir.model.access.csv',
         'views/calendar_views.xml',
         'views/templates.xml',
+        'data/website_menu_data.xml',
     ],
     'author': 'MODRYN',
     'license': 'LGPL-3',

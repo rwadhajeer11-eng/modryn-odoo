@@ -10,6 +10,87 @@
                 <a href="/manage/pieces" class="btn btn-outline-dark btn-sm">Garment pieces</a>
             </div>
 
+            <div t-if="error" class="modryn_field_error mb-3" role="alert" t-out="error"/>
+
+            <!-- The dashboard's own creation door. Native details/summary — no JS.
+                 Rendered for managers only; /atelier/task/new re-checks the group
+                 server-side, because hiding a panel is not a permission. -->
+            <section t-if="is_manager" class="modryn_panel mb-4">
+                <details t-att-open="'open' if error else None">
+                    <summary class="modryn_panel_head" style="cursor:pointer;">
+                        <h2 class="d-inline">New task</h2>
+                    </summary>
+                    <form action="/atelier/task/new" method="post" class="mt-3"
+                          style="max-width: 680px;">
+                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label" for="task_customer">Customer name</label>
+                                <input type="text" id="task_customer" name="customer_name"
+                                       class="form-control" required="required"/>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label" for="task_phone">Phone</label>
+                                <input type="tel" id="task_phone" name="customer_phone"
+                                       class="form-control" dir="ltr"/>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label" for="task_variant">Dress</label>
+                                <select id="task_variant" name="variant_id" class="form-select">
+                                    <option value="">—</option>
+                                    <t t-foreach="variants" t-as="v">
+                                        <option t-att-value="v.id">
+                                            <t t-out="v.product_tmpl_id.name"/><t t-if="v.product_template_attribute_value_ids"> · <t t-out="v.product_template_attribute_value_ids[:1].name"/></t>
+                                        </option>
+                                    </t>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label" for="task_seamstress">Seamstress</label>
+                                <select id="task_seamstress" name="seamstress_id" class="form-select">
+                                    <option value="">Auto-assign</option>
+                                    <t t-foreach="seamstresses" t-as="s">
+                                        <option t-att-value="s.id" t-out="s.name"/>
+                                    </t>
+                                </select>
+                            </div>
+                            <div class="col-12">
+                                <span class="form-label d-block">Pieces</span>
+                                <div class="d-flex flex-wrap gap-3">
+                                    <div t-foreach="pieces" t-as="p" class="form-check">
+                                        <input class="form-check-input" type="checkbox"
+                                               name="piece_ids" t-att-value="p.id"
+                                               t-attf-id="task_piece_#{p.id}"/>
+                                        <label class="form-check-label" t-attf-for="task_piece_#{p.id}"
+                                               t-out="p.name"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label" for="task_priority">Priority</label>
+                                <select id="task_priority" name="priority" class="form-select">
+                                    <option value="0">Low</option>
+                                    <option value="1" selected="selected">Normal</option>
+                                    <option value="2">High</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label" for="task_due">Due date</label>
+                                <input type="date" id="task_due" name="due_date"
+                                       class="form-control" required="required"/>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label" for="task_note">Note</label>
+                                <input type="text" id="task_note" name="note" class="form-control"/>
+                            </div>
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-primary">Create task</button>
+                            </div>
+                        </div>
+                    </form>
+                </details>
+            </section>
+
             <!-- Who is carrying what. Open work only — a delivered gown is not a load. -->
             <section class="modryn_panel mb-4">
                 <header class="modryn_panel_head">
@@ -71,6 +152,22 @@
                                     <t t-out="task['due']"/>
                                 </span>
                             </td>
+                            <td t-if="is_manager" class="text-end">
+                                <form action="/atelier/assign" method="post"
+                                      class="d-inline-flex gap-1 align-items-center">
+                                    <input type="hidden" name="csrf_token"
+                                           t-att-value="request.csrf_token()"/>
+                                    <input type="hidden" name="task_id" t-att-value="task['id']"/>
+                                    <select name="seamstress_id" class="form-select form-select-sm"
+                                            style="width:auto;">
+                                        <option value="">Unassigned</option>
+                                        <t t-foreach="seamstresses" t-as="s">
+                                            <option t-att-value="s.id" t-out="s.name"/>
+                                        </t>
+                                    </select>
+                                    <button type="submit" class="btn btn-sm btn-outline-dark">Assign</button>
+                                </form>
+                            </td>
                         </tr>
                     </tbody>
                 </table>
@@ -111,8 +208,29 @@
                                 <div t-if="task['note']" class="modryn_sub" t-out="task['note']"/>
                             </td>
                             <td>
-                                <span t-if="task['seamstress']" t-out="task['seamstress']"/>
-                                <span t-else="" class="modryn_sub">Unassigned</span>
+                                <!-- Managers reassign inline; delivered work is settled
+                                     history and stays read-only. -->
+                                <form t-if="is_manager and st[0] != 'delivered'"
+                                      action="/atelier/assign" method="post"
+                                      class="d-inline-flex gap-1 align-items-center">
+                                    <input type="hidden" name="csrf_token"
+                                           t-att-value="request.csrf_token()"/>
+                                    <input type="hidden" name="task_id" t-att-value="task['id']"/>
+                                    <select name="seamstress_id" class="form-select form-select-sm"
+                                            style="width:auto;">
+                                        <option value="">Unassigned</option>
+                                        <t t-foreach="seamstresses" t-as="s">
+                                            <option t-att-value="s.id"
+                                                    t-att-selected="'selected' if task['seamstress_id'] == s.id else None"
+                                                    t-out="s.name"/>
+                                        </t>
+                                    </select>
+                                    <button type="submit" class="btn btn-sm btn-outline-dark">Save</button>
+                                </form>
+                                <t t-else="">
+                                    <span t-if="task['seamstress']" t-out="task['seamstress']"/>
+                                    <span t-else="" class="modryn_sub">Unassigned</span>
+                                </t>
                             </td>
                             <td>
                                 <span t-if="task['due']"

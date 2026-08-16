@@ -53,6 +53,11 @@ msgid "Code"
 msgstr "الرمز"
 
 #. module: modryn_queue_poc
+#: model_terms:ir.ui.view,arch_db:modryn_queue_poc.verify_form
+msgid "Demo mode — your code is"
+msgstr "وضع العرض التجريبي — الرمز الخاص بك هو"
+
+#. module: modryn_queue_poc
 #. odoo-javascript
 #: code:addons/modryn_queue_poc/static/src/queue_board/queue_board.xml:0
 msgid "Done"
@@ -187,6 +192,11 @@ msgstr "انتهت صلاحية الرمز. ابدئي من جديد للحصو�
 #: code:addons/modryn_queue_poc/controllers/main.py:0
 msgid "That code is not right."
 msgstr "الرمز غير صحيح."
+
+#. module: modryn_queue_poc
+#: model_terms:ir.ui.view,arch_db:modryn_queue_poc.ticket
+msgid "This number is already in the line — this is your place."
+msgstr "هذا الرقم موجود بالفعل في الطابور — هذا هو مكانك."
 
 #. module: modryn_queue_poc
 #: model_terms:ir.ui.view,arch_db:modryn_queue_poc.ticket
@@ -325,8 +335,3 @@ msgstr "أنت التالية — سنكون معك بعد لحظات."
 #: model_terms:ir.ui.view,arch_db:modryn_queue_poc.ticket
 msgid "is waiting for you."
 msgstr "بانتظارك."
-
-#. module: modryn_queue_poc
-#: model_terms:ir.ui.view,arch_db:modryn_queue_poc.ticket
-msgid "This number is already in the line — this is your place."
-msgstr "هذا الرقم موجود بالفعل في الطابور — هذا هو مكانك."

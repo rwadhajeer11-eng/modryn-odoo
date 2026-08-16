@@ -128,7 +128,7 @@ class ModrynAtelier(http.Controller):
 
     # ------------------------------------------------------------- dashboard
     @http.route('/atelier', type='http', auth='user', website=True, sitemap=False)
-    def dashboard(self, **kw):
+    def dashboard(self, error=None, **kw):
         # Matrix-gated: managers and owner always pass; a staff role reaches
         # this only when the owner ticks Workshop for it — which is exactly how
         # a seamstress gets her dashboard without becoming a manager.
@@ -137,9 +137,13 @@ class ModrynAtelier(http.Controller):
         board = self._board()
         return request.render('modryn_atelier.dashboard', {
             'board': board,
+            'is_manager': self._is_manager(),
+            'error': error,
             'seamstresses': request.env['hr.employee'].sudo().search(
                 [('modryn_level', 'in', ['manager', 'staff'])]),
             'pieces': request.env['modryn.garment.piece'].sudo().search([]),
+            'variants': request.env['product.product'].sudo().search(
+                [('product_tmpl_id.is_published', '=', True)]),
         })
 
     @http.route('/atelier/advance', type='jsonrpc', auth='user')
@@ -163,16 +167,30 @@ class ModrynAtelier(http.Controller):
             return {'error': 'invalid_transition'}
         return {'ok': True, 'task': task._row()}
 
-    @http.route('/atelier/assign', type='jsonrpc', auth='user')
-    def assign(self, task_id, seamstress_id):
+    @http.route('/atelier/assign', type='http', auth='user', website=True,
+                methods=['POST'], csrf=True, sitemap=False)
+    def assign(self, **post):
+        """Reassign from the dashboard's inline per-row form.
+
+        Was a jsonrpc route that NOTHING ever called — the dashboard rendered
+        the seamstress as plain text and the only assignment door was the floor
+        finish modal. Converted to a plain form POST rather than wiring JS:
+        an empty seamstress puts the task back on the auto-assign queue.
+        """
         if not self._is_manager():
-            return {'error': 'forbidden'}
-        task = request.env['modryn.alteration.task'].sudo().browse(int(task_id)).exists()
-        employee = request.env['hr.employee'].sudo().browse(int(seamstress_id)).exists()
-        if not task or not employee:
-            return {'error': 'not_found'}
-        task.seamstress_id = employee
-        return {'ok': True, 'task': task._row()}
+            return access.deny()
+        task = request.env['modryn.alteration.task'].sudo().browse(
+            int(post.get('task_id', 0) or 0)).exists()
+        if not task:
+            return request.redirect('/atelier')
+        seamstress_id = post.get('seamstress_id')
+        if seamstress_id:
+            employee = request.env['hr.employee'].sudo().browse(
+                int(seamstress_id)).exists()
+            task.seamstress_id = employee or False
+        else:
+            task.seamstress_id = False
+        return request.redirect('/atelier')
 
     @http.route('/atelier/my', type='jsonrpc', auth='user')
     def my_tasks(self):
@@ -228,6 +246,45 @@ class ModrynAtelier(http.Controller):
 
         task = request.env['modryn.alteration.task'].sudo().create(values)
         return {'ok': True, 'task': task._row()}
+
+    def _task_error(self, key):
+        # Per request, not module level: _() around a LOOKUP would hide the
+        # literals from the extractor (.memory/odoo-traps.md #9).
+        labels = {
+            'missing_customer': _("Please enter the customer's name"),
+            'missing_priority': _("Please choose a priority"),
+            'missing_due': _("Please choose a due date"),
+        }
+        return labels.get(key, _("Something went wrong."))
+
+    @http.route('/atelier/task/new', type='http', auth='user', website=True,
+                methods=['POST'], csrf=True, sitemap=False)
+    def task_new(self, **post):
+        """The dashboard's own creation door.
+
+        Until now a task could only be born from the floor finish modal —
+        closing a walk-in or a sold booking. A garment that arrives any other
+        way (brought in for alterations, phoned in) had no entry point at all.
+
+        Calls task_create() directly: a decorated route method is still a plain
+        callable, so the validation and creation stay single-sourced with the
+        jsonrpc contract that qa act 6c and the k6 manager scenario pin.
+        """
+        if not self._is_manager():          # hiding the panel is not a permission
+            return access.deny()
+        result = self.task_create(
+            customer_name=post.get('customer_name'),
+            customer_phone=post.get('customer_phone'),
+            variant_id=post.get('variant_id') or None,
+            piece_ids=request.httprequest.form.getlist('piece_ids'),
+            note=post.get('note'),
+            seamstress_id=post.get('seamstress_id') or None,
+            due_date=post.get('due_date') or None,
+            priority=post.get('priority'))
+        if result.get('error'):
+            return request.redirect(
+                '/atelier?error=%s' % self._task_error(result['error']))
+        return request.redirect('/atelier')
 
     # ------------------------------------------------------- garment pieces
     @http.route('/manage/pieces', type='http', auth='user', website=True, sitemap=False)

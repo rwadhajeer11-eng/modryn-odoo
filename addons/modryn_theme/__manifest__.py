@@ -19,6 +19,8 @@ Token source of truth: Frontend/packages/ui/src/theme.css in the MODRYN repo.
         'views/product_views.xml',
         'views/website_sale_templates.xml',
         'views/website_templates.xml',
+        'views/homepage_templates.xml',
+        'views/footer_templates.xml',
     ],
     'assets': {
         # Colors + font registration. This bundle is where Odoo expects a theme

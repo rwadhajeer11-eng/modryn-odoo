@@ -66,6 +66,10 @@
                         We sent a 6-digit code to <span dir="ltr" t-out="phone"/>.
                     </p>
 
+                    <div t-if="demo_code" class="alert alert-info" role="status">
+                        Demo mode — your code is <b dir="ltr" t-out="demo_code"/>
+                    </div>
+
                     <div t-if="error" class="modryn_field_error mb-3" role="alert" t-out="error"/>
 
                     <form action="/queue/verify" method="post">

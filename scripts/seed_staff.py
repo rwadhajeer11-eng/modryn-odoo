@@ -26,12 +26,39 @@ Users = env['res.users'].sudo()
 
 
 def role(name):
-    return Role.search([('name', '=', name)], limit=1) or Role.create({'name': name})
+    # Search in he_IL: after the translation fixup below, the en_US value is an
+    # English label, and a bare search (shell default lang) would miss the role
+    # and create a duplicate on re-run. Before the fixup he_IL falls back to
+    # the stored value, so this finds the role in both states.
+    found = Role.with_context(lang='he_IL').search([('name', '=', name)], limit=1)
+    return found or Role.create({'name': name})
 
 
 sales = role('מוכרת')
 seamstress = role('תופרת')
 reception = role('קבלת קהל')
+
+# Always-run fixups, BEFORE the per-person existence skip — they repair tenants
+# whose staff were seeded by earlier versions of this script. All idempotent.
+#
+# 1. The workshop auto-assign pool reads modryn_role_id.is_workshop; nothing
+#    ever set it, so auto-assignment was dead on every seeded tenant.
+seamstress.is_workshop = True
+# 2. The seamstress needs the Workshop page in the role->page matrix, or she
+#    cannot open /atelier at all. Guarded: _role_page_uniq makes a blind
+#    create raise on a tenant where the owner already ticked it.
+RolePage = env['modryn.role.page'].sudo()
+if not RolePage.search_count([('role_id', '=', seamstress.id),
+                              ('page_key', '=', 'atelier')]):
+    RolePage.create({'role_id': seamstress.id, 'page_key': 'atelier'})
+# 3. Roles were created with no language context, landing the Hebrew name under
+#    the en_US jsonb key — Hebrew role names on /en pages, untranslatable.
+#    update_field_translations sets each language directly, no source-lang
+#    write-sync surprises.
+for rec, en_name in ((sales, 'Sales'), (seamstress, 'Seamstress'),
+                     (reception, 'Reception')):
+    he_name = rec.with_context(lang='he_IL').name
+    rec.update_field_translations('name', {'en_US': en_name, 'he_IL': he_name})
 
 # (name, role, level, username, work_phone)
 PEOPLE = {

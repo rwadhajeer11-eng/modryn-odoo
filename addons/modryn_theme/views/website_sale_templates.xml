@@ -40,4 +40,20 @@
         </xpath>
     </template>
 
+    <!--
+        The stock empty shop is "No product defined" and a dead end. A boutique
+        whose catalog is not published yet still takes appointments — say so.
+        The xpath targets the empty-state container (both its no-product and
+        no-results branches render inside it).
+    -->
+    <template id="shop_empty_book_cta"
+              inherit_id="website_sale.products"
+              name="MODRYN: empty shop books a consultation">
+        <xpath expr="//div[hasclass('mt128')][hasclass('mb256')]" position="inside">
+            <div class="mt-4">
+                <a href="/book" class="btn btn-primary">Book a consultation</a>
+            </div>
+        </xpath>
+    </template>
+
 </odoo>

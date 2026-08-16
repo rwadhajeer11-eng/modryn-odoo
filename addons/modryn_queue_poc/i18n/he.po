@@ -53,6 +53,11 @@ msgid "Code"
 msgstr "קוד"
 
 #. module: modryn_queue_poc
+#: model_terms:ir.ui.view,arch_db:modryn_queue_poc.verify_form
+msgid "Demo mode — your code is"
+msgstr "מצב הדגמה — הקוד שלך הוא"
+
+#. module: modryn_queue_poc
 #. odoo-javascript
 #: code:addons/modryn_queue_poc/static/src/queue_board/queue_board.xml:0
 msgid "Done"
@@ -210,6 +215,11 @@ msgstr "הקוד אינו נכון."
 
 #. module: modryn_queue_poc
 #: model_terms:ir.ui.view,arch_db:modryn_queue_poc.ticket
+msgid "This number is already in the line — this is your place."
+msgstr "המספר הזה כבר בתור — זה המקום שלך."
+
+#. module: modryn_queue_poc
+#: model_terms:ir.ui.view,arch_db:modryn_queue_poc.ticket
 msgid "Today is a busy day"
 msgstr "היום יום עמוס"
 
@@ -343,8 +353,3 @@ msgstr "את הבאה בתור — נהיה איתך עוד רגע."
 #: model_terms:ir.ui.view,arch_db:modryn_queue_poc.ticket
 msgid "is waiting for you."
 msgstr "מחכה לך."
-
-#. module: modryn_queue_poc
-#: model_terms:ir.ui.view,arch_db:modryn_queue_poc.ticket
-msgid "This number is already in the line — this is your place."
-msgstr "המספר הזה כבר בתור — זה המקום שלך."

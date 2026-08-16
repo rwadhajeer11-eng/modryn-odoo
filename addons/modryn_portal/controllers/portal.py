@@ -18,6 +18,9 @@ _lt = LazyTranslate(__name__)
 TZ = pytz.timezone('Asia/Jerusalem')
 SESSION_KEY = 'modryn_customer_partner_id'
 SESSION_PHONE = 'modryn_customer_phone'
+# The plaintext code, present ONLY in demo mode (no SMS provider configured +
+# modryn.sms_demo set) — the verify page shows it so the flow stays enterable.
+SESSION_DEMO = 'modryn_customer_demo_code'
 
 ERRORS = {
     'invalid_number': _lt("That does not look like a valid phone number."),
@@ -104,12 +107,16 @@ class ModrynCustomerPortal(http.Controller):
                 methods=['POST'], csrf=True, sitemap=False)
     def login_submit(self, **post):
         phone = (post.get('phone') or '').strip()
-        ok, error, e164 = request.env['modryn.otp.code'].sudo().issue(phone)
+        ok, error, e164, demo_code = request.env['modryn.otp.code'].sudo().issue(phone)
         if not ok:
             return request.render('modryn_portal.login', {
                 'error': ERRORS.get(error, FALLBACK_ERROR), 'phone': phone,
             })
         request.session[SESSION_PHONE] = e164
+        if demo_code:
+            request.session[SESSION_DEMO] = demo_code
+        else:
+            request.session.pop(SESSION_DEMO, None)
         return request.redirect('/my/verify')
 
     # ----------------------------------------------------------------- verify
@@ -121,6 +128,7 @@ class ModrynCustomerPortal(http.Controller):
         request.session.touch()
         return request.render('modryn_portal.verify', {
             'error': None, 'phone': request.session.get(SESSION_PHONE),
+            'demo_code': request.session.get(SESSION_DEMO),
         })
 
     @http.route('/my/verify', type='http', auth='public', website=True,
@@ -134,7 +142,9 @@ class ModrynCustomerPortal(http.Controller):
         if not ok:
             return request.render('modryn_portal.verify', {
                 'error': ERRORS.get(error, FALLBACK_ERROR), 'phone': phone,
+                'demo_code': request.session.get(SESSION_DEMO),
             })
+        request.session.pop(SESSION_DEMO, None)
 
         Partner = request.env['res.partner'].sudo()
         partner = Partner.search([('phone', 'in', phone_variants(phone))], limit=1)
@@ -207,4 +217,5 @@ class ModrynCustomerPortal(http.Controller):
     def logout(self, **kw):
         request.session.pop(SESSION_KEY, None)
         request.session.pop(SESSION_PHONE, None)
+        request.session.pop(SESSION_DEMO, None)
         return request.redirect('/')

@@ -29,6 +29,16 @@ test('act 1 — Hebrew storefront is RTL, and the palette actually applied', asy
   expect(body).toMatch(/Assistant/);
 });
 
+test('act 1d — the homepage is a page, not an empty div', async ({ page }) => {
+  // Odoo's stock homepage is literally `<div class="oe_structure oe_empty"/>`,
+  // and a fresh tenant greeted every visitor with it until the demo-web build.
+  // The hero must be SERVED (COW propagation can silently stop) and the core
+  // product must be reachable from the nav.
+  await page.goto('/');
+  await expect(page.locator('.modryn_home')).toBeVisible();
+  await expect(page.locator('a[href="/book"]').first()).toBeVisible();
+});
+
 test('act 1b — the gold is the MODRYN gold, and it carries readable text', async ({ page }) => {
   await page.goto('/shop');
 

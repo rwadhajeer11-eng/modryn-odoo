@@ -30,6 +30,16 @@ CATALOGS = {
         ('שמלת כלה נועה', 6500.0, {'36': 1, '38': 2}, True),
         ('שמלת ערב תמר', 3800.0, {'38': 0, '40': 2, '42': 1}, True),
     ],
+    # The public Railway demo. Five dresses so /shop, the size matrix, the
+    # out-of-stock label and the price-on-request toggle all have something to
+    # show; one hidden price and one zero-quantity size on purpose.
+    'te': [
+        ('שמלת כלה אורורה', 9800.0, {'36': 2, '38': 1, '40': 1}, True),
+        ('שמלת כלה ליבי', 7400.0, {'34': 1, '36': 2, '38': 2}, True),
+        ('שמלת ערב מיקה', 3900.0, {'36': 3, '38': 1, '42': 1}, True),
+        ('שמלת כלה שירה', 11900.0, {'36': 1, '38': 1}, False),
+        ('שמלת ערב רומי', 4600.0, {'38': 0, '40': 2}, True),
+    ],
 }
 
 

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <!--
+    Odoo's stock homepage is literally an empty div: website.homepage is
+    `<div id="wrap" class="oe_structure oe_empty"/>` and _bootstrap_homepage
+    COWs that emptiness per website. A fresh tenant therefore greets every
+    visitor with header + boilerplate footer + nothing.
+
+    position="inside", NOT "replace": on a tenant whose owner has edited the
+    homepage in the builder, the COW'd arch holds her content, and replace
+    would destroy it on the next upgrade. Inside appends after whatever she
+    built — on an untouched tenant (the empty div) it IS the homepage.
+
+    Reaches existing tenant DBs on -u: _create_all_specific_views copies a new
+    generic child under every website-specific COW tree.
+  -->
+  <template id="homepage_hero" inherit_id="website.homepage" name="MODRYN: homepage">
+    <xpath expr="//div[@id='wrap']" position="inside">
+      <section class="modryn_home" style="background:#FDFBF7;">
+        <div class="container py-5 text-center" style="max-width: 760px;">
+          <div class="pt-5 pb-2"
+               style="color:#C5A059; letter-spacing:.18em; text-transform:uppercase; font-size:.85rem;"
+               t-out="res_company.name"/>
+          <h1 class="mb-3">The dress is waiting for you</h1>
+          <p class="text-muted mb-4" style="font-size:1.15rem;">
+            Browse the collection, book a private fitting, and leave the rest to us.
+          </p>
+          <div class="d-flex justify-content-center gap-3 pb-5 flex-wrap">
+            <a href="/book" class="btn btn-primary btn-lg">Book a fitting</a>
+            <a href="/shop" class="btn btn-outline-dark btn-lg">Browse the collection</a>
+          </div>
+        </div>
+      </section>
+      <section style="background:#F6F0E6;">
+        <div class="container py-5">
+          <div class="row text-center g-4 mx-auto" style="max-width: 960px;">
+            <div class="col-md-4">
+              <div class="mb-1" style="color:#C5A059; font-weight:600;">1</div>
+              <div class="mb-1" style="font-weight:600;">Browse the collection</div>
+              <div class="text-muted small">Every dress, every size, at your pace.</div>
+            </div>
+            <div class="col-md-4">
+              <div class="mb-1" style="color:#C5A059; font-weight:600;">2</div>
+              <div class="mb-1" style="font-weight:600;">Book a private fitting</div>
+              <div class="text-muted small">Pick a time that suits you — it takes a minute.</div>
+            </div>
+            <div class="col-md-4">
+              <div class="mb-1" style="color:#C5A059; font-weight:600;">3</div>
+              <div class="mb-1" style="font-weight:600;">Walk in — we're ready</div>
+              <div class="text-muted small">Your stylist and your dress will be waiting.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </xpath>
+  </template>
+
+</odoo>

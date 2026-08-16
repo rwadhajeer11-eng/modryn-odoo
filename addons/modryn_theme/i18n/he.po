@@ -16,3 +16,80 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:modryn_theme.products_item_price_visibility
 msgid "<span>Price on request</span>"
 msgstr "מחיר בתיאום"
+
+#. module: modryn_theme
+#: model_terms:ir.ui.view,arch_db:modryn_theme.shop_empty_book_cta
+msgid "Book a consultation"
+msgstr "קביעת פגישת ייעוץ"
+
+#. module: modryn_theme
+#: model_terms:ir.ui.view,arch_db:modryn_theme.footer_modryn
+#: model_terms:ir.ui.view,arch_db:modryn_theme.homepage_hero
+msgid "Book a fitting"
+msgstr "קביעת תור למדידה"
+
+#. module: modryn_theme
+#: model_terms:ir.ui.view,arch_db:modryn_theme.homepage_hero
+msgid "Book a private fitting"
+msgstr "קביעת תור למדידה אישית"
+
+#. module: modryn_theme
+#: model_terms:ir.ui.view,arch_db:modryn_theme.homepage_hero
+msgid "Browse the collection"
+msgstr "לצפייה בקולקציה"
+
+#. module: modryn_theme
+#: model_terms:ir.ui.view,arch_db:modryn_theme.homepage_hero
+msgid ""
+"Browse the collection, book a private fitting, and leave the rest to us."
+msgstr "הציצו בקולקציה, קבעו תור למדידה אישית — ואת כל השאר תשאירו לנו."
+
+#. module: modryn_theme
+#: model_terms:ir.ui.view,arch_db:modryn_theme.footer_modryn
+msgid "Contact us"
+msgstr "צרו קשר"
+
+#. module: modryn_theme
+#: model_terms:ir.ui.view,arch_db:modryn_theme.homepage_hero
+msgid "Every dress, every size, at your pace."
+msgstr "כל שמלה, כל מידה, בקצב שלך."
+
+#. module: modryn_theme
+#: model_terms:ir.ui.view,arch_db:modryn_theme.footer_modryn
+msgid "Home"
+msgstr "דף הבית"
+
+#. module: modryn_theme
+#: model_terms:ir.ui.view,arch_db:modryn_theme.footer_modryn
+msgid "My appointments"
+msgstr "התורים שלי"
+
+#. module: modryn_theme
+#: model_terms:ir.ui.view,arch_db:modryn_theme.homepage_hero
+msgid "Pick a time that suits you — it takes a minute."
+msgstr "בחרי זמן שנוח לך — זה לוקח דקה."
+
+#. module: modryn_theme
+#: model_terms:ir.ui.view,arch_db:modryn_theme.footer_modryn
+msgid "The collection"
+msgstr "הקולקציה"
+
+#. module: modryn_theme
+#: model_terms:ir.ui.view,arch_db:modryn_theme.homepage_hero
+msgid "The dress is waiting for you"
+msgstr "השמלה שלך כבר מחכה"
+
+#. module: modryn_theme
+#: model_terms:ir.ui.view,arch_db:modryn_theme.homepage_hero
+msgid "Walk in — we're ready"
+msgstr "הגיעי — אנחנו מוכנות"
+
+#. module: modryn_theme
+#: model_terms:ir.ui.view,arch_db:modryn_theme.footer_modryn
+msgid "Wedding and evening dresses, fitted to you."
+msgstr "שמלות כלה וערב, מותאמות בדיוק לך."
+
+#. module: modryn_theme
+#: model_terms:ir.ui.view,arch_db:modryn_theme.homepage_hero
+msgid "Your stylist and your dress will be waiting."
+msgstr "הסטייליסטית והשמלה כבר יחכו לך."

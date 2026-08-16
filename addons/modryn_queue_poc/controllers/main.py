@@ -103,7 +103,7 @@ class ModrynQueue(http.Controller):
         # Deliberately NOT short-circuiting the de-dupe here. Asking "is this
         # number already in the queue?" before the code, and redirecting to the
         # ticket it finds, is exactly the hijack this step exists to close.
-        ok, error, e164 = request.env['modryn.otp.code'].sudo().issue(phone)
+        ok, error, e164, demo_code = request.env['modryn.otp.code'].sudo().issue(phone)
         if not ok:
             return request.render('modryn_queue_poc.checkin_form', dict(
                 self._shell(), errors={'phone': self._error_for(error)}, values=post))
@@ -112,6 +112,10 @@ class ModrynQueue(http.Controller):
             'name': name,
             'phone': e164,
             'client_type': post.get('client_type') or 'bride',
+            # Set only in demo mode (no SMS provider + modryn.sms_demo): the
+            # verify page shows it, because a code that went to the server log
+            # is a dead end for a public visitor.
+            'demo_code': demo_code,
         }
         return request.redirect('/queue/verify')
 
@@ -124,7 +128,8 @@ class ModrynQueue(http.Controller):
             return request.redirect('/queue/checkin')
         request.session.touch()
         return request.render('modryn_queue_poc.verify_form',
-                              dict(self._shell(), error=None, phone=pending['phone']))
+                              dict(self._shell(), error=None, phone=pending['phone'],
+                                   demo_code=pending.get('demo_code')))
 
     @http.route('/queue/verify', type='http', auth='public', website=True,
                 methods=['POST'], csrf=True, sitemap=False)
@@ -137,7 +142,8 @@ class ModrynQueue(http.Controller):
             pending['phone'], post.get('code'))
         if not ok:
             return request.render('modryn_queue_poc.verify_form', dict(
-                self._shell(), error=self._error_for(error), phone=pending['phone']))
+                self._shell(), error=self._error_for(error), phone=pending['phone'],
+                demo_code=pending.get('demo_code')))
 
         # Create BEFORE popping the session. If the check-in raises, the whole
         # request rolls back — including verify()'s used_at burn — so the code

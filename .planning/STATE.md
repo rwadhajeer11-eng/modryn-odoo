@@ -1,6 +1,25 @@
 # Where this project stands
 
-_Last updated 2026-08-13, on branch `feature/staff-access-and-workshop`._
+_Last updated 2026-08-14, on branch `feature/railway-demo-deploy`._
+
+**Latest: the demo-web build (2026-08-14).** The Railway demo greeted visitors with Odoo's
+empty-div homepage, boilerplate footer ("Powered by Odoo", yourcompany.example.com), an empty
+shop and phone-code flows that dead-ended into a server log. Now shipped: a real homepage +
+per-tenant footer in `modryn_theme` (COW-propagating inherits of `website.homepage` /
+`website.footer_custom`, brand promotion removed), `/book` in the nav (`modryn_booking` menu
+data, seq 30; per-website copies re-translated by `scripts/seed_demo_web.py` because .po never
+reaches them), an empty-state for a slotless `/book` and a book-a-consultation CTA on an empty
+`/shop`, **OTP demo mode** (`modryn.sms_demo` param + send()'s `'logged'` no-provider branch —
+both must hold — shows the code on the verify pages so the demo is enterable; off everywhere but
+`te`), and the workshop's own **add-task form + inline reassign** on `/atelier` (the dead
+`/atelier/assign` jsonrpc route became the form POST; `/atelier/task/new` reuses `task_create`'s
+validation body, so the qa-pinned contract stays single-sourced). `seed_staff.py` now always
+fixes what earlier seeds broke: `is_workshop` on the seamstress role (the auto-assign pool was
+dead on every tenant), the `atelier` page grant, and role names that sat Hebrew-under-`en_US`
+in the jsonb. `te` got five dresses (`seed_catalog.py`), atelier board content, and company
+identity for the footer. verify.sh grew §25 (21 checks: served homepage/footer/nav per tenant,
+menu-copy translations, sms_demo default-off + the `'logged'`-gate grep, anonymous-POST
+refusals, manager re-check greps, workshop pool on tenants and template).
 
 One question, answered with evidence: **should MODRYN be rebuilt on Odoo?** The answer is no —
 see [`../docs/scorecard.md`](../docs/scorecard.md). Everything below exists to make that answer
@@ -10,9 +29,9 @@ defensible rather than theoretical.
 
 | | |
 |---|---|
-| `qa/` (Playwright) | **21 passed** against `noga` — act 5c proves plain staff land on `/staff/home` and meet a themed 403 (never the board) at `/floor`, act 6b proves one number cannot hold two places and the one-shot notice dies on reload, act 6c pins the workshop create contract (priority and due date refused by name when missing). Previously: **18 passed** twice consecutively. Browser assertions `verify.sh` structurally cannot make: that the bundle **applied** (LibSass dies silently and takes the whole stylesheet), that `/floor` **paints**, that the walk-in board updates over `bus.bus` **without a reload** — act 6 now drives the full check-in including the six-digit code, reading it back by recomputing the HMAC from `database.secret` (`qa/lib/otp.js`), the same trick `verify.sh` uses to reverse a booking token — and launch gate 6's own stated method. `@writes` acts run only against a tenant with zero `modryn.twilio.*` — `lib/guard.js` refuses `bella`, which holds four |
+| `qa/` (Playwright) | **22 passed** against `noga` (dev) and **15 passed** against the Railway `te` demo (prod) as of 2026-08-14 — act 1d asserts the homepage hero is served and `/book` is in the nav; act 5 now *waits* for the board paint instead of sampling the instant after load (the 86-chars-over-WAN false alarm from SMOKE_REPORT act 5 — the teeth are intact, an empty div never crosses the threshold). Previously: **21 passed** against `noga` — act 5c proves plain staff land on `/staff/home` and meet a themed 403 (never the board) at `/floor`, act 6b proves one number cannot hold two places and the one-shot notice dies on reload, act 6c pins the workshop create contract (priority and due date refused by name when missing). Previously: **18 passed** twice consecutively. Browser assertions `verify.sh` structurally cannot make: that the bundle **applied** (LibSass dies silently and takes the whole stylesheet), that `/floor` **paints**, that the walk-in board updates over `bus.bus` **without a reload** — act 6 now drives the full check-in including the six-digit code, reading it back by recomputing the HMAC from `database.secret` (`qa/lib/otp.js`), the same trick `verify.sh` uses to reverse a booking token — and launch gate 6's own stated method. `@writes` acts run only against a tenant carrying `modryn.twilio.disabled` — since 2026-08-14 credentials live in the process environment, so holding zero parameters no longer proves anything and `lib/guard.js` now refuses **both** `bella` and `noga`. Provision a throwaway with `MODRYN_SMS_DISABLED=1` |
 | `deploy/scripts/verify_edge.sh` | **12 nginx-layer checks**, the ones `verify.sh` cannot reach: catch-all, database manager under every language prefix, rate limits with a positive control, TLS chain and expiry, HSTS, `fail2ban-regex`. `--remote-only` runs 8 and `skip()`s 4 with reasons |
-| `scripts/verify.sh` | **361 passed, 0 failed, 2 skipped** (354 twice consecutively before the review round added §9's engine teeth). The access/workshop build closed the backlog's stated gap: §6-bis now drives the whole check-in twice with one number and counts rows (submit 0 → wrong code 0 → right code exactly 1 at `waiting` → re-check-in still 1, same token), pokes the new unique index by name with an own-tenant control, and §7 asserts the role→page matrix (table everywhere, seeded defaults on the template, the four `can_view` gates by grep, no stale nav-injection views in `ir_ui_view`). Before this build: **328 passed, 0 failed, 2 skipped** — unchanged across the walk-in verification build, which was the point: it asserted nothing about the check-in flow, so its steadiness was a control rather than evidence. The claims about verification live in the acceptance tables of `.planning/specs/walkin-*.md` and in `qa/` act 6. +2 over the availability build: a `bella`/`noga` membership gate that refuses to run against a server missing either name, and §15 no longer false-positiving on portal logins. Takes `BASE_HOST`/`BASE_SCHEME`/`ODOO_CONF`, so it now runs **through nginx** against production hostnames rather than bypassing nginx via `/etc/hosts`. The new ground: cross-tenant product URLs in three languages and the shared `database.secret` (§1), the `.ics` export (§10b-bis), and §24 for the whole availability engine — opening hours seeded identically across all three databases, closures, the one-booking index proven to key on `(start, modryn_slot_seat)` **and** proven to still reject a duplicate seat, and the rota cap proven not to empty a grid. The total moves with the demo data rather than being fixed: three of §10b-bis's checks need a future booking on bella. Both skips are fixture age, not gaps in the code — bella holds no future booking and no cancelled future booking, so those two branches have no subject. They fire again the moment anyone books ahead |
+| `scripts/verify.sh` | **385 passed, 0 failed, 2 skipped** as of 2026-08-14 (demo-web build): +21 in the new §25 (demo web presence — homepage/footer/nav on the served page per tenant, menu-copy translations, `modryn.sms_demo` default-off with the `detail == 'logged'` gate grep, anonymous atelier-POST refusals, `_is_manager` re-check greps, workshop pool live on tenants and template), and the noga orphan-partner rows from 2026-08-13's QA runs were cleared. Before this build: **363 passed, 1 failed, 2 skipped** as of 2026-08-14. The +3 are §10k-quinquies: the five-state precedence ladder run against a real tenant on each of bella and noga, plus the cross-tenant probe that they inherit the *same* sender. The 1 failure is **not code** — it is four orphan `res_partner` rows on noga created by public-route QA runs on 2026-08-13, one day before any file in this build existed; §15's check is untouched by it. Clear them and it is 364/0/2. Before this build: **361 passed, 0 failed, 2 skipped** (354 twice consecutively before the review round added §9's engine teeth). The access/workshop build closed the backlog's stated gap: §6-bis now drives the whole check-in twice with one number and counts rows (submit 0 → wrong code 0 → right code exactly 1 at `waiting` → re-check-in still 1, same token), pokes the new unique index by name with an own-tenant control, and §7 asserts the role→page matrix (table everywhere, seeded defaults on the template, the four `can_view` gates by grep, no stale nav-injection views in `ir_ui_view`). Before this build: **328 passed, 0 failed, 2 skipped** — unchanged across the walk-in verification build, which was the point: it asserted nothing about the check-in flow, so its steadiness was a control rather than evidence. The claims about verification live in the acceptance tables of `.planning/specs/walkin-*.md` and in `qa/` act 6. +2 over the availability build: a `bella`/`noga` membership gate that refuses to run against a server missing either name, and §15 no longer false-positiving on portal logins. Takes `BASE_HOST`/`BASE_SCHEME`/`ODOO_CONF`, so it now runs **through nginx** against production hostnames rather than bypassing nginx via `/etc/hosts`. The new ground: cross-tenant product URLs in three languages and the shared `database.secret` (§1), the `.ics` export (§10b-bis), and §24 for the whole availability engine — opening hours seeded identically across all three databases, closures, the one-booking index proven to key on `(start, modryn_slot_seat)` **and** proven to still reject a duplicate seat, and the rota cap proven not to empty a grid. The total moves with the demo data rather than being fixed: three of §10b-bis's checks need a future booking on bella. Both skips are fixture age, not gaps in the code — bella holds no future booking and no cancelled future booking, so those two branches have no subject. They fire again the moment anyone books ahead |
 | Odoo | 19.0 **Community**, shallow gitignored clone at `odoo/`, never edited |
 | Tenants | `bella` and `noga` — one Postgres database each, routed by `dbfilter = ^%d$` |
 | Custom code | ~10,250 non-blank lines across eight addons (+1,300 in the access/workshop build) |
@@ -87,8 +106,19 @@ proves credentials, adapter and error handling all work. **No message has ever b
 a second handset.** That needs a destination phone number. Until then, treat the comms engine as
 integrated, not delivered.
 
-Only `bella` has Twilio credentials. `noga` logs `(no Twilio configured)` — the honest fallback,
-deliberately not a silent success.
+**Since 2026-08-14 every tenant sends through one Twilio account.** The four credentials moved out
+of each database and into the Odoo process environment (`EnvironmentFile` on the unit in prod,
+`set -a; . ./.env` in dev); `_twilio_config()` resolves the tenant's off switch, then the tenant's
+own four parameters, then the platform's four variables — each level all-or-nothing. bella's private
+copy was deleted by `scripts/migrate_twilio_to_platform.sh`, so **no database holds a credential
+now** and both tenants provably resolve the same sender (§10k-quinquies asks them separately and
+compares — a claim no single tenant can make about itself).
+
+What that cost, stated plainly: **the guarantee inverted from opt-in to opt-out.** "This database
+holds zero `modryn.twilio.*`" used to mean "this database cannot reach a handset", and four
+harnesses were built on it. It now means only that the tenant has no override. A tenant is safe
+because someone set `modryn.twilio.disabled`, not because nobody set credentials — so `noga` is
+live, and `qa/lib/guard.js` refuses `@writes` against it until a flagged throwaway exists.
 
 ## Run it
 
@@ -133,7 +163,8 @@ After editing an addon, upgrade it or nothing changes:
 | `76119af` | More than one fitting an hour, still decided by Postgres |
 | `8602551` | The rota caps what the grid can sell |
 | `a45f3b6` | The walk-in queue learns who is holding the phone — SMS verification, a staff door, and the text that says you are in the line |
-| _this_ | One navbar, an owner-run role→page matrix, a staff home page, a workshop queue that hands out its own work by priority, an SMS on every assignment — and one open place per phone number, decided by Postgres |
+| `d6c9cc1` | One navbar, an owner-run role→page matrix, a staff home page, a workshop queue that hands out its own work by priority, an SMS on every assignment — and one open place per phone number, decided by Postgres |
+| _this_ | One Twilio account behind every database: credentials move to the process environment, the per-tenant copies are deleted, and the four harnesses that keyed on their absence learn an explicit off switch instead. Customer texts now name the boutique, because one shared number cannot |
 
 ## Before changing anything
 

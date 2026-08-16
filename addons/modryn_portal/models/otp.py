@@ -47,17 +47,24 @@ class ModrynOtpCode(models.Model):
     # ------------------------------------------------------------------- issue
     @api.model
     def issue(self, raw_phone):
-        """Create and text a code. Returns (ok, error_key, phone_e164)."""
+        """Create and text a code. Returns (ok, error_key, phone_e164, demo_code).
+
+        demo_code is the plaintext code, returned ONLY when the SMS went to the
+        server log instead of a phone ('logged' is send()'s no-provider branch)
+        AND the tenant opted in with modryn.sms_demo. Both must hold: a tenant
+        with working Twilio can never leak a real code onto a page, and a
+        credential-less tenant shows nothing unless somebody chose demo mode.
+        """
         phone = normalize_il_phone(raw_phone)
         if not phone:
-            return False, 'invalid_number', None
+            return False, 'invalid_number', None, None
 
         recent = self.sudo().search_count([
             ('phone', '=', phone),
             ('create_date', '>=', datetime.utcnow() - timedelta(hours=1)),
         ])
         if recent >= MAX_SENDS_PER_HOUR:
-            return False, 'rate_limited', phone
+            return False, 'rate_limited', phone, None
 
         code = ''.join(secrets.choice('0123456789') for _i in range(CODE_DIGITS))
         self.sudo().create({
@@ -69,8 +76,12 @@ class ModrynOtpCode(models.Model):
         body = _("%(code)s is your MODRYN code. It expires in %(minutes)s minutes.") % {
             'code': code, 'minutes': CODE_TTL_MINUTES,
         }
-        ok, _detail = self.env['modryn.sms'].send(phone, body)
-        return (True, None, phone) if ok else (False, 'send_failed', phone)
+        ok, detail = self.env['modryn.sms'].send(phone, body)
+        if not ok:
+            return False, 'send_failed', phone, None
+        demo = detail == 'logged' and bool(
+            self.env['ir.config_parameter'].sudo().get_param('modryn.sms_demo'))
+        return True, None, phone, (code if demo else None)
 
     # ------------------------------------------------------------------ verify
     @api.model

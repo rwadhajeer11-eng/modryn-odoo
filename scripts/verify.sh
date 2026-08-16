@@ -2143,5 +2143,70 @@ SQL
   fi
 done
 
+head_ "25. demo web presence"
+# The fresh-tenant demo taught this the hard way: Odoo's stock homepage is an
+# empty div, the stock footer is yourcompany.example.com boilerplate, and /book
+# was never in the nav. These checks pin the replacements ON THE SERVED PAGE —
+# a template that exists but stopped propagating through the COW tree would
+# pass a psql check and still greet visitors with the empty div.
+for db in $TENANTS; do
+  fetch "$(turl "$db")/"
+  grep -q "modryn_home" "$PAGE" && ok "$db: homepage hero is served" \
+    || bad "$db homepage" "modryn_home marker missing from / — the hero did not reach this website's COW tree"
+  grep -q 'href="/book"' "$PAGE" && ok "$db: /book is in the page" \
+    || bad "$db nav" "no /book link on / — the menu record did not fan out to this website"
+  grep -q "o_brand_promotion" "$PAGE" \
+    && bad "$db brand promotion" "'Powered by Odoo' is back on the page" \
+    || ok "$db: no Odoo brand promotion"
+  grep -qiE "disruptive products|yourcompany\.example\.com|555-555-5556|Copyright (&amp;copy;|©) Company name" "$PAGE" \
+    && bad "$db footer" "stock Odoo placeholder chrome is served (footer copy, placeholder phone, or 'Company name' copyright)" \
+    || ok "$db: stock placeholder chrome is gone"
+  # Both website.menu rows (generic + this website's copy) must exist, and the
+  # copy must carry Hebrew — the .po only reaches the generic record.
+  BOOKMENUS=$(psql -d "$db" -tAc "select count(*) from website_menu where url='/book'")
+  [ "${BOOKMENUS:-0}" -ge 2 ] && ok "$db: /book menu rows exist ($BOOKMENUS)" \
+    || bad "$db /book menu" "expected generic + per-website rows, found ${BOOKMENUS:-0}"
+  HEMENU=$(psql -d "$db" -tAc "select count(*) from website_menu where url='/book' and website_id is not null and name->>'he_IL' is not null")
+  [ "${HEMENU:-0}" -ge 1 ] && ok "$db: the website's /book menu copy is translated" \
+    || bad "$db /book menu he" "the per-website copy has no he_IL — seed_demo_web.py has not run here"
+done
+# OTP demo mode is a per-tenant opt-in for credential-less demos ONLY. Neither
+# dev tenant may carry it, and the gate must remain the send()'s own 'logged'
+# no-provider branch — the one condition that cannot hold when Twilio sent.
+for db in $TENANTS; do
+  DEMO=$(psql -d "$db" -tAc "select count(*) from ir_config_parameter where key='modryn.sms_demo'")
+  [ "${DEMO:-0}" = "0" ] && ok "$db: modryn.sms_demo is not set" \
+    || bad "$db sms demo" "modryn.sms_demo is set on a tenant that can text real phones"
+done
+grep -q "detail == 'logged'" addons/modryn_portal/models/otp.py \
+  && ok "demo-code gate reads send()'s 'logged' branch" \
+  || bad "demo-code gate" "otp.issue no longer keys on detail == 'logged' — a configured tenant could leak a real code"
+# The workshop's own creation door: manager-gated server-side, closed to the
+# anonymous world. 303 (to login) and 403/404 both count as refused; 200 means
+# the gate is gone.
+ATELIER_ANON=$(curl -sg -o /dev/null -w '%{http_code}' -X POST "$(turl bella)/atelier/task/new" -d "customer_name=x")
+[ "$ATELIER_ANON" != "200" ] && ok "anonymous POST /atelier/task/new refused ($ATELIER_ANON)" \
+  || bad "atelier task/new gate" "anonymous POST returned 200"
+ASSIGN_ANON=$(curl -sg -o /dev/null -w '%{http_code}' -X POST "$(turl bella)/atelier/assign" -d "task_id=1")
+[ "$ASSIGN_ANON" != "200" ] && ok "anonymous POST /atelier/assign refused ($ASSIGN_ANON)" \
+  || bad "atelier assign gate" "anonymous POST returned 200"
+# -A20: both methods open with a docstring; the guard is the first statement
+# after it, well within twenty lines but far past two.
+grep -A20 "def task_new" addons/modryn_atelier/controllers/atelier.py | grep -q "_is_manager" \
+  && grep -A20 "def assign" addons/modryn_atelier/controllers/atelier.py | grep -q "_is_manager" \
+  && ok "task_new and assign re-check the manager group server-side" \
+  || bad "atelier group re-check" "a route lost its _is_manager() guard — hiding the panel is not a permission"
+# The auto-assign pool must be non-empty by construction on a seeded tenant:
+# seed_staff.py sets is_workshop on the seamstress role, and the template ships
+# it for fresh installs.
+for db in $TENANTS; do
+  POOL=$(psql -d "$db" -tAc "select count(*) from modryn_staff_role where is_workshop")
+  [ "${POOL:-0}" -ge 1 ] && ok "$db: a workshop role exists (pool is live)" \
+    || bad "$db workshop pool" "no role has is_workshop — auto-assignment is dead again"
+done
+psql -d modryn_template -tAc "select count(*) from modryn_staff_role where is_workshop" | grep -q "^[1-9]" \
+  && ok "template ships a workshop role" \
+  || bad "template workshop role" "modryn_template's seamstress lost is_workshop — fresh boutiques start with a dead pool"
+
 printf "\n\033[1m%d passed, %d failed, %d skipped\033[0m\n" "$PASS" "$FAIL" "$SKIP"
 [ "$FAIL" -eq 0 ] || exit 1

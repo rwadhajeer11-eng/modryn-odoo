@@ -111,6 +111,11 @@ msgstr "המשך"
 
 #. module: modryn_portal
 #: model_terms:ir.ui.view,arch_db:modryn_portal.verify
+msgid "Demo mode — your code is"
+msgstr "מצב הדגמה — הקוד שלך הוא"
+
+#. module: modryn_portal
+#: model_terms:ir.ui.view,arch_db:modryn_portal.verify
 msgid "Enter your code"
 msgstr "הזיני את הקוד"
 

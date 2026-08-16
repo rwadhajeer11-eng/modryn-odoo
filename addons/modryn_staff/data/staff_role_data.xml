@@ -8,6 +8,11 @@
         <record id="role_seamstress" model="modryn.staff.role">
             <field name="name">תופרת</field>
             <field name="sequence">20</field>
+            <!-- In the workshop auto-assign pool from day one. Without it, no
+                 tenant had ANY workshop role until the owner found the toggle,
+                 and the atelier's auto-assignment was silently dead. noupdate
+                 means existing DBs are fixed by seed_staff.py, not by -u. -->
+            <field name="is_workshop" eval="True"/>
         </record>
         <record id="role_reception" model="modryn.staff.role">
             <field name="name">קבלת קהל</field>

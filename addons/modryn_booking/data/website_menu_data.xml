@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- The core product was not in the nav: /book existed only as a URL
+             and as the button on a product page. Sequence 30 lands it between
+             Shop (20) and Contact us (60). website.menu.create() copies a
+             website-less menu onto every existing website, so this reaches
+             already-provisioned tenants on -u — but those COPIES get no .po
+             translations (verified live: the copy's he_IL is null), which is
+             why seed_demo_web.py re-translates them per tenant. -->
+        <record id="menu_book" model="website.menu">
+            <field name="name">Book an appointment</field>
+            <field name="url">/book</field>
+            <field name="parent_id" ref="website.main_menu"/>
+            <field name="sequence">30</field>
+        </record>
+    </data>
+</odoo>

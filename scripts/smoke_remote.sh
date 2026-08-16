@@ -71,6 +71,20 @@ C=$(code "$BASE/queue/checkin"); [ "$C" = "200" ] && ok "/queue/checkin renders"
 C=$(code "$BASE/my/login"); [ "$C" = "200" ] && ok "/my/login (portal OTP) renders" || bad "/my/login" "got $C"
 fetch "$BASE/"
 grep -q 'dir="rtl"' "$PAGE" && ok "storefront is RTL (Hebrew default)" || bad "RTL" 'no dir="rtl" on /'
+# The demo-web build: a real homepage, /book in the nav, and none of Odoo's
+# placeholder chrome. Checked on the SERVED page — a view that exists but
+# stopped propagating through the COW tree passes every psql check and still
+# greets visitors with the empty div.
+grep -q "modryn_home" "$PAGE" && ok "homepage hero is served" \
+  || bad "homepage" "modryn_home marker missing — the empty-div homepage is back"
+grep -q 'href="/book"' "$PAGE" && ok "/book is in the nav" \
+  || bad "nav /book" "no /book link on /"
+grep -q "o_brand_promotion" "$PAGE" \
+  && bad "brand promotion" "'Powered by Odoo' is served" \
+  || ok "no Odoo brand promotion"
+grep -qiE "yourcompany\.example\.com|disruptive products|555-555-5556|Copyright (&amp;copy;|©) Company name" "$PAGE" \
+  && bad "stock chrome" "placeholder boilerplate is served (footer copy, header phone, or 'Company name' copyright)" \
+  || ok "stock placeholder chrome is gone"
 C=$(code "$BASE/en"); [ "$C" = "200" ] && ok "/en language toggle target" || bad "/en" "got $C"
 
 head_ "2. assets & filestore"

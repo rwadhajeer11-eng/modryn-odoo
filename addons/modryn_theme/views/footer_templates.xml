@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <!--
+    The stock footer (website.footer_custom) ships dead "#" links, marketing
+    copy about disruptive products, info@yourcompany.example.com and a US
+    phone number — placeholder text no tenant ever edits. Replaced wholesale
+    with a footer that reads its identity from res.company, so it is
+    per-tenant automatically and empty fields simply do not render.
+    new_boutique.sh sets only the company NAME; phone/email/street are
+    optional and guarded with t-if.
+  -->
+  <template id="footer_modryn" inherit_id="website.footer_custom" name="MODRYN: footer">
+    <xpath expr="//div[@id='footer']" position="replace">
+      <div id="footer" class="oe_structure oe_structure_solo" t-ignore="true"
+           t-if="not no_footer" style="background:#2B2118; color:#FDFBF7;">
+        <div class="container py-5">
+          <div class="row gy-4">
+            <div class="col-lg-5">
+              <div class="mb-2"
+                   style="color:#C5A059; letter-spacing:.14em; text-transform:uppercase; font-weight:600;"
+                   t-out="res_company.name"/>
+              <p class="mb-0" style="color:#F6F0E6; opacity:.85;">
+                Wedding and evening dresses, fitted to you.
+              </p>
+            </div>
+            <div class="col-lg-3 col-6">
+              <ul class="list-unstyled mb-0">
+                <li class="mb-2"><a href="/" style="color:#FDFBF7;">Home</a></li>
+                <li class="mb-2"><a href="/shop" style="color:#FDFBF7;">The collection</a></li>
+                <li class="mb-2"><a href="/book" style="color:#FDFBF7;">Book a fitting</a></li>
+                <li class="mb-2"><a href="/my/bookings" style="color:#FDFBF7;">My appointments</a></li>
+                <li><a href="/contactus" style="color:#FDFBF7;">Contact us</a></li>
+              </ul>
+            </div>
+            <div class="col-lg-4 col-6">
+              <ul class="list-unstyled mb-0" style="color:#F6F0E6;">
+                <li t-if="res_company.phone" class="mb-2">
+                  <a t-att-href="'tel:%s' % res_company.phone" style="color:#FDFBF7;">
+                    <span dir="ltr" t-out="res_company.phone"/>
+                  </a>
+                </li>
+                <li t-if="res_company.email" class="mb-2">
+                  <a t-att-href="'mailto:%s' % res_company.email" style="color:#FDFBF7;"
+                     t-out="res_company.email"/>
+                </li>
+                <li t-if="res_company.street">
+                  <span t-out="res_company.street"/><t t-if="res_company.city">, <span t-out="res_company.city"/></t>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </xpath>
+  </template>
+
+  <!--
+    "Powered by Odoo" in the copyright bar. MATCHED ON THE t-call, NOT ON
+    POSITION — same philosophy as no_google_font_preconnect: if Odoo moves or
+    renames the call, the upgrade fails loudly instead of the removal silently
+    ceasing to apply. The copyright line itself stays: it renders the real
+    company name.
+  -->
+  <template id="no_brand_promotion" inherit_id="website.layout"
+            name="MODRYN: no Odoo brand promotion">
+    <xpath expr="//t[@t-call='web.brand_promotion']" position="replace"/>
+  </template>
+
+  <!--
+    The header's "call us" element ships +1 555-555-5556 and
+    info@yourcompany.example.com as LITERAL text in five anchors across
+    website.header_text_element's branches. Replaced with the company's real
+    contact, hidden entirely when unset. The same xpath is repeated on
+    purpose: each replace consumes the first remaining match, and the
+    replacements carry t-att-href so they can never re-match. If Odoo adds a
+    sixth placeholder anchor, the page shows it again and the smoke's
+    boilerplate grep fails loudly.
+  -->
+  <template id="header_contact_modryn" inherit_id="website.header_text_element"
+            name="MODRYN: real contact in the header">
+    <xpath expr="//a[starts-with(@href,'tel:')]" position="replace">
+      <a t-if="res_company.phone" t-att-href="'tel:%s' % res_company.phone"
+         class="nav-link o_nav-link_secondary p-2">
+        <small><i class="fa fa-1x fa-fw fa-phone me-1"/><span class="o_force_ltr" t-out="res_company.phone"/></small>
+      </a>
+    </xpath>
+    <xpath expr="//a[starts-with(@href,'tel:')]" position="replace">
+      <a t-if="res_company.phone" t-att-href="'tel:%s' % res_company.phone"
+         class="nav-link o_nav-link_secondary p-2">
+        <small><i class="fa fa-1x fa-fw fa-phone me-1"/><span class="o_force_ltr" t-out="res_company.phone"/></small>
+      </a>
+    </xpath>
+    <xpath expr="//a[starts-with(@href,'tel:')]" position="replace">
+      <a t-if="res_company.phone" t-att-href="'tel:%s' % res_company.phone"
+         class="nav-link o_nav-link_secondary p-2">
+        <small><i class="fa fa-1x fa-fw fa-phone me-1"/><span class="o_force_ltr" t-out="res_company.phone"/></small>
+      </a>
+    </xpath>
+    <xpath expr="//a[starts-with(@href,'mailto:')]" position="replace">
+      <a t-if="res_company.email" t-att-href="'mailto:%s' % res_company.email"
+         class="nav-link o_nav-link_secondary p-2">
+        <small><i class="fa fa-1x fa-fw fa-envelope me-1"/><t t-out="res_company.email"/></small>
+      </a>
+    </xpath>
+    <xpath expr="//a[starts-with(@href,'mailto:')]" position="replace">
+      <a t-if="res_company.email" t-att-href="'mailto:%s' % res_company.email"
+         class="nav-link o_nav-link_secondary p-2">
+        <small><i class="fa fa-1x fa-fw fa-envelope me-1"/><t t-out="res_company.email"/></small>
+      </a>
+    </xpath>
+  </template>
+
+  <!--
+    website.footer_copyright_company_name (priority 15) replaces the copyright
+    span with LITERAL "Copyright © Company name". This runs after it (default
+    priority 16) and puts the real company back.
+  -->
+  <template id="footer_copyright_modryn" inherit_id="website.layout"
+            name="MODRYN: real copyright name">
+    <xpath expr="//span[hasclass('o_footer_copyright_name')]" position="replace">
+      <span class="o_footer_copyright_name me-2 small">© <t t-out="res_company.name"/></span>
+    </xpath>
+  </template>
+
+</odoo>
