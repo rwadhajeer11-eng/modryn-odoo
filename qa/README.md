@@ -5,8 +5,12 @@ Browser QA. **The assertions curl cannot make.**
 ```bash
 cd qa && npm install && npx playwright install chromium
 
-# dev — MUST be a tenant with no Twilio credentials (see below)
-MODRYN_DEMO_PASSWORD='…' BASE_URL=http://noga.localtest.me:8069 npm test
+# dev — MUST be a tenant carrying modryn.twilio.disabled (see below).
+# `noga` is NO LONGER one: credentials moved into the process environment, so
+# every database inherits them and holding none proves nothing. Provision a
+# throwaway once and point BASE_URL at it:
+#   MODRYN_SMS_DISABLED=1 ./scripts/new_boutique.sh qa "QA — not a boutique"
+MODRYN_DEMO_PASSWORD='…' BASE_URL=http://qa.localtest.me:8069 npm test
 
 # production, read-only
 BASE_URL=https://qa.$DOMAIN QA_TENANTS=qa QA_SSH=root@box npm run test:prod
@@ -38,12 +42,18 @@ with correct HTML and zero styling. Only a browser reports a computed value.
 
 ## Three rules that do not bend
 
-**1. Never run `@writes` against a tenant holding `modryn.twilio.*`.**
+**1. Never run `@writes` against a tenant without `modryn.twilio.disabled`.**
 `lib/guard.js` enforces this in **every** environment and refuses the run. This
-is not theoretical: `bella` carries four live parameters, and the first run of
-this suite made real Twilio API calls from a laptop through act 3's booking
-confirmation and act 4's OTP. `noga` carries zero and is the log-only tenant —
-with no config, `modryn.sms._send_now` logs the body and returns `('logged')`.
+is not theoretical: the first run of this suite made real Twilio API calls from
+a laptop through act 3's booking confirmation and act 4's OTP.
+
+That rule used to read "a tenant holding `modryn.twilio.*`", and `noga` was the
+safe target because it held none. **That is no longer true.** The credentials
+moved into the Odoo process environment, so every database inherits them and
+holding no parameters proves only that this tenant has no *override*. The
+guarantee is now opt-**out**: a tenant is safe because somebody set the flag, not
+because nobody set the credentials. Provision the throwaway with
+`MODRYN_SMS_DISABLED=1` and the guard will permit it.
 
 **2. Never hardcode a phone number.** `lib/otp.js::qaPhone()` derives one from
 the millisecond clock. A constant makes every writing spec run exactly once: the
@@ -90,7 +100,7 @@ value, because they are precisely the ones curl cannot do — so run them agains
 a **dedicated throwaway tenant** instead:
 
 ```bash
-sudo TWILIO_ACCOUNT_SID= TWILIO_API_KEY_SID= TWILIO_API_KEY_SECRET= TWILIO_FROM_NUMBER= \
+sudo MODRYN_SMS_DISABLED=1 \
   /opt/modryn/deploy/scripts/new_boutique_prod.sh qa "QA — not a boutique"
 ```
 

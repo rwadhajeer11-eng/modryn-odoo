@@ -87,10 +87,15 @@ exports.readOtp = (db, phoneE164) => {
  * renders. A malformed number does not make the OTP path safe to test — it
  * makes it impossible to test.
  *
- * Safety here is guard.js asserting the tenant holds zero modryn.twilio.*,
+ * Safety here is guard.js asserting the tenant carries modryn.twilio.disabled,
  * which makes _send_now log the body and return ('logged') without a message
  * leaving the box. That is a property of the TENANT, checked before the run,
  * rather than a property of the number, hoped for during it.
+ *
+ * It read "holds zero modryn.twilio.*" until 2026-08-14. The credentials moved
+ * into the Odoo process environment, so every database inherits them and an
+ * empty parameter table stopped being proof of anything — a tenant is now quiet
+ * only because somebody set the flag.
  */
 // MILLISECOND resolution, not minute. Minute resolution was the first attempt
 // and it failed on the second consecutive run: two runs inside the same minute

@@ -660,7 +660,7 @@ gen_tenants.sh <count> [--parallel 4] [--prefix lt]
 | **C. clone** | per tenant: `createdb -T modryn_gold lt07`; `cp -R .odoo-data/filestore/modryn_gold .odoo-data/filestore/lt07`. | yes | ~2–4 s each (80 MB) |
 | **D. per-tenant fixups** | the body of `new_boutique.sh` — regenerate `database.uuid`, set `web.base.url` to `http://lt07.localtest.me:8069`, freeze it, set company + website name. **Reuse the script**, do not re-implement it; it is the tenancy-ops evidence. | yes (4) | ~10–15 s each (registry load dominates) |
 | **E. per-tenant people** | `MODRYN_SLUG=lt07 MODRYN_TENANT_INDEX=07 MODRYN_DEMO_PASSWORD=… seed_tenant.py` | yes (4) | ~10–15 s each |
-| **F. gate** | assert zero `modryn.twilio.%` params (§4); set `modryn.loadtest.enabled=1` and `modryn.loadtest.secret`; write `k6/config/tenants.json` | yes | seconds |
+| **F. gate** | assert `modryn.twilio.disabled` is set (§4 — was "zero `modryn.twilio.%` params" until 2026-08-14, when credentials moved into the process environment and an empty parameter table stopped proving anything); set `modryn.loadtest.enabled=1` and `modryn.loadtest.secret`; write `k6/config/tenants.json` | yes | seconds |
 
 **The zero-connections rule.** `new_boutique.sh` lines 38–43 already refuse to run when anything is
 connected to the source database, with a message that says why:

@@ -32,8 +32,15 @@ The API key SID, secret and phone SID were pasted into a chat transcript on 2026
 live in the gitignored `.env` and have never been committed, but a transcript is not a secret
 store.
 
-Rotate in the Twilio console, update `.env`, re-run `scripts/configure_twilio.py`, and confirm
-with a send. Do this whenever the PoC ends, sooner if the transcript is shared.
+Rotate in the Twilio console, update `.env` (dev) or `/etc/modryn/deploy.env` (prod), restart Odoo,
+and confirm with a send. Do this whenever the PoC ends, sooner if the transcript is shared.
+
+**Since 2026-08-14 that is the whole procedure.** It used to end "re-run
+`scripts/configure_twilio.py`" — once per tenant, which is exactly the failure this build removed:
+a tenant provisioned before a rotation kept sending on the revoked key until it was revoked, with
+no configuration having changed anywhere a person would look. Credentials now live only in the
+process environment. Run `scripts/migrate_twilio_to_platform.sh` (dry run first) if any database
+ever acquires a private copy again — `_twilio_config()` prefers it over the environment.
 
 ---
 
@@ -123,6 +130,37 @@ Deliberate ceilings, each marked with a `ponytail:` comment at the site. None is
 - **lt02 saw no manager traffic in the smoke.** The single manager VU pins to one tenant, so
   the workshop engine exercised under load on lt01 only. The ramp stages run more VUs and
   spread; nothing to fix unless a smoke-only signal is wanted per tenant.
+
+## Left open by the shared-sender build (2026-08-14) · S each
+
+One Twilio account now stands behind every database. These are the edges that left.
+
+- **Dev QA has no target tenant.** `qa/lib/guard.js` correctly refuses `noga` now, so the
+  Playwright suite cannot run in dev until a flagged throwaway exists:
+  `MODRYN_SMS_DISABLED=1 ./scripts/new_boutique.sh qa "QA — not a boutique"`, then add `qa` to
+  `db_name` in `odoo.conf`. Needs the server stopped — `createdb -T` refuses while the template
+  has open connections, and it had 3.
+- **`MODRYN_SMS_DISABLED` is read, not exercised.** The flag's *semantics* are proven (the guard
+  refuses without it and permits with it, both checked); the *provisioning* path that writes it in
+  `new_boutique.sh:116` and `new_boutique_prod.sh:162` has never actually created a tenant. It is
+  two lines and it is the only untested link in this build. Say so rather than let it read green.
+- **STOP is now platform-wide.** Twilio scopes opt-out to (account, From). A bride replying STOP to
+  one boutique stops receiving *every* boutique's texts, and each store's send to her returns
+  `21610` — which `is_permanent_rejection` calls permanent, so `day_waitlist` burns her entry
+  (`sms.py:64-77`). The cost of one number, and it is not recoverable per-boutique.
+- **One long code is ~1 SMS/sec, shared.** Every tenant's outbox drain now queues behind the same
+  Twilio throughput ceiling. Fine at PoC scale; the first thing to hit if two boutiques run a
+  campaign on one evening. The fix is a Messaging Service, which the adapter does not speak.
+- **`calendar_event.py:261` says "just reply to this message"** and there is no inbound webhook
+  anywhere in the repo. Replies now land in one shared Twilio console inbox for all stores and
+  nobody reads them. Pre-existing; a shared number makes it worse. Either build the webhook or
+  change the copy.
+- **`_send_now`'s log line still reads `(no Twilio configured)`.** For a tenant that is deliberately
+  switched off, that is the wrong sentence — it *is* configured, platform-wide, and was silenced on
+  purpose. Cheap, and it is the line someone will read while debugging a QA run.
+- **Four orphan `res_partner` rows on noga fail §15**, left by public-route QA runs on 2026-08-13.
+  Fixture residue, not a savepoint leak — but it masks the check that would catch a real one, so
+  clear them.
 
 ## Housekeeping worth knowing
 

@@ -63,6 +63,12 @@ except with the Twilio variables empty. Zero `modryn.twilio.*` parameters is the
 message leaves the box. That is the same mechanism `loadtest/README.md` documents as "the actual
 mechanism" — reused, not reinvented.
 
+> **SUPERSEDED 2026-08-14.** The credentials moved into the Odoo process environment, so every
+> database inherits them and an empty parameter table proves nothing. Provision the throwaway with
+> `MODRYN_SMS_DISABLED=1` instead of blank Twilio variables, and `guard.js` now requires
+> `modryn.twilio.disabled` rather than a zero count. The paragraph above is kept as written because
+> it records what was true when this spec shipped. See `.planning/plans/shared-twilio-sender.md`.
+
 **Assert it, do not assume it.** `globalSetup` refuses to run `@writes` against a tenant that could
 text a real person and against any tenant not named in `QA_TENANTS`, and fails **closed**: a
 missing `QA_TENANTS` refuses everything rather than allowing everything.
