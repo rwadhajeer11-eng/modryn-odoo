@@ -108,3 +108,29 @@ No per-test teardown, deliberately: the tenant is dropped after launch, and
 `deploy/scripts/restore.sh` resets it from the previous night's dump in ~30s.
 Teardown code that deletes bookings would have to be as correct as the product,
 to undo rows nobody will ever look at.
+
+## The one test that texts a real phone: `@realsms`
+
+`specs/realsms.spec.js` is the deliberate exception to rule 1. On a
+Twilio-live tenant it requests a login code to a REAL handset, reads the
+message back from Twilio's Messages API (SID + sent/delivered status), types
+the 6-digit code from the delivered body into `/my/verify`, and asserts the
+login lands on `/my/bookings`. One passing run is the whole delivery proof —
+form → Twilio → carrier → code → session.
+
+It never runs by accident: the spec skips unless BOTH `QA_ALLOW_REAL_SMS=1`
+and `QA_REAL_PHONE` are set, plus the three `TWILIO_*` read credentials. It is
+NOT tagged `@writes` — the guard would rightly refuse it, and its double env
+gate is the informed-consent version of the same rule.
+
+```bash
+cd qa && CI=1 QA_ALLOW_REAL_SMS=1 QA_REAL_PHONE=05XXXXXXXX \
+  TWILIO_ACCOUNT_SID=… TWILIO_API_KEY_SID=… TWILIO_API_KEY_SECRET=… \
+  BASE_URL=https://<the-demo-host> npx playwright test realsms --project=prod
+```
+
+`CI=1` matters: without it guard.js tries to read the tenant's flag through a
+local psql that does not exist for a remote tenant and kills the run in
+globalSetup. Each run costs a few cents, consumes one of the phone's 3
+codes/hour, and leaves a partner + used-OTP row behind — acceptable demo
+residue, same no-teardown philosophy as above.

@@ -4,6 +4,7 @@ import secrets
 from datetime import datetime, timedelta
 
 from odoo import _, api, fields, models
+from odoo.http import request
 
 from .sms import normalize_il_phone
 
@@ -11,6 +12,13 @@ CODE_DIGITS = 6
 CODE_TTL_MINUTES = 5
 MAX_VERIFY_ATTEMPTS = 5
 MAX_SENDS_PER_HOUR = 3
+# Second dimension, per client IP across ALL phone numbers. The per-phone cap
+# stops nuisance to one victim; only this stops one visitor turning a public
+# form on a Twilio-live tenant into an SMS-bomb relay by rotating numbers.
+# 30 keeps repeated local qa runs breathing (each run issues a handful from
+# 127.0.0.1) while capping a public IP at 30 texts/hour. Railway runs with
+# proxy_mode on, so remote_addr is the real client, not the edge proxy.
+IP_MAX_SENDS_PER_HOUR = 30
 # Codes older than this are pruned by cron; kept briefly past expiry so a user
 # who is a minute late gets "that code expired" instead of "wrong code".
 RETENTION_HOURS = 24
@@ -33,6 +41,10 @@ class ModrynOtpCode(models.Model):
     expires_at = fields.Datetime(required=True, index=True)
     attempts = fields.Integer(default=0)
     used_at = fields.Datetime()
+    # The requesting client, for the per-IP cap. Nullable on purpose: codes
+    # issued outside an HTTP request (shell, tests) carry no IP and are not
+    # IP-limited.
+    ip = fields.Char(index=True)
 
     # ------------------------------------------------------------------ crypto
     @api.model
@@ -66,11 +78,23 @@ class ModrynOtpCode(models.Model):
         if recent >= MAX_SENDS_PER_HOUR:
             return False, 'rate_limited', phone, None
 
+        # request is None outside HTTP (shell, crons, tests) — those callers
+        # are trusted and not IP-limited.
+        ip = request.httprequest.remote_addr if request else None
+        if ip:
+            recent_ip = self.sudo().search_count([
+                ('ip', '=', ip),
+                ('create_date', '>=', datetime.utcnow() - timedelta(hours=1)),
+            ])
+            if recent_ip >= IP_MAX_SENDS_PER_HOUR:
+                return False, 'rate_limited', phone, None
+
         code = ''.join(secrets.choice('0123456789') for _i in range(CODE_DIGITS))
         self.sudo().create({
             'phone': phone,
             'code_hash': self._hash(phone, code),
             'expires_at': datetime.utcnow() + timedelta(minutes=CODE_TTL_MINUTES),
+            'ip': ip,
         })
 
         body = _("%(code)s is your MODRYN code. It expires in %(minutes)s minutes.") % {

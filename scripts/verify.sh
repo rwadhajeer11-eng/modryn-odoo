@@ -2181,6 +2181,18 @@ done
 grep -q "detail == 'logged'" addons/modryn_portal/models/otp.py \
   && ok "demo-code gate reads send()'s 'logged' branch" \
   || bad "demo-code gate" "otp.issue no longer keys on detail == 'logged' — a configured tenant could leak a real code"
+# The per-IP dimension: with real Twilio behind anonymous forms, the per-phone
+# cap alone leaves an SMS-bomb relay (rotate numbers, same IP). Structural,
+# plus the column that must exist for it to count anything.
+grep -q "IP_MAX_SENDS_PER_HOUR" addons/modryn_portal/models/otp.py \
+  && grep -q "recent_ip" addons/modryn_portal/models/otp.py \
+  && ok "OTP issue carries a per-IP cap" \
+  || bad "OTP per-IP cap" "IP_MAX_SENDS_PER_HOUR gate missing from otp.issue"
+for db in $TENANTS; do
+  psql -d "$db" -tAc "select 1 from information_schema.columns where table_name='modryn_otp_code' and column_name='ip'" | grep -q 1 \
+    && ok "$db: modryn_otp_code.ip column exists" \
+    || bad "$db otp ip column" "the per-IP cap counts a column that is not there"
+done
 # The workshop's own creation door: manager-gated server-side, closed to the
 # anonymous world. 303 (to login) and 403/404 both count as refused; 200 means
 # the gate is gone.

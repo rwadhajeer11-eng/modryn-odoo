@@ -7,22 +7,25 @@ Sizes: **S** ≤ half a day · **M** ≤ 2 days · **L** ≤ a week · **XL** mo
 
 ---
 
-## 1. Prove SMS actually reaches a phone — **blocked on you** · S
+## ~~1. Prove SMS actually reaches a phone~~ — **CLOSED 2026-08-16** · was blocked on a number
 
-Everything in the comms engine is written and integrated; nothing has been **delivered**. A live
-Twilio call returned error `21266` ("'To' and 'From' cannot be the same"), which proves the
-credentials, the adapter and the error handling all work — and proves nothing about delivery.
+Delivered, carrier-confirmed, on **production**: the owner supplied a real handset,
+`TWILIO_*` went onto the Railway service (the env is the credential source since the
+shared-sender build), and `qa/specs/realsms.spec.js` drove the whole chain through a browser —
+`/my/login` with the real number, no demo-code box (so the send left the building), Twilio's
+Messages API reporting **`status=delivered`** for `SMad8b061c8679619d227031398580bcac`, and the
+6-digit code from the delivered body completing the login to `/my/bookings`. 23.6 seconds,
+end to end, repeatable: the spec is opt-in (`QA_ALLOW_REAL_SMS=1` + `QA_REAL_PHONE` +
+`TWILIO_*`; invocation in `qa/README.md`).
 
-**Needs from you:** a destination mobile number that is **not** the Twilio sender — sending to
-the sender is what produced error 21266. The sender is `TWILIO_FROM_NUMBER` in the gitignored
-`.env`; it is deliberately not repeated here, because git history is forever.
+What this build added around it: a **per-IP cap** on OTP issuance (30/hour/IP,
+`IP_MAX_SENDS_PER_HOUR` + `modryn_otp_code.ip`, `proxy_mode` gives real client IPs on Railway) —
+without it, real Twilio behind anonymous public forms is an SMS-bomb relay across rotated
+numbers. Verified live: 31 requests from one IP, the 31st refused.
 
-**Then:** book on `bella`, confirm the confirmation SMS arrives, open the `/b/<token>` link from
-it, cancel, and confirm the claim link reaches the next person on that day's waitlist. That one
-run exercises the whole chain.
-
-Until this is done, the scorecard and `STATE.md` must keep saying delivery is unproven. They
-currently do.
+Still narrower than the original ask: the booking-confirmation / cancel / waitlist-claim chain
+has not had a handset run — the OTP path proves the transport, not every template. Cheap to do
+now that texts arrive.
 
 ---
 
@@ -34,6 +37,11 @@ store.
 
 Rotate in the Twilio console, update `.env` (dev) or `/etc/modryn/deploy.env` (prod), restart Odoo,
 and confirm with a send. Do this whenever the PoC ends, sooner if the transcript is shared.
+**Since 2026-08-16 the same four values also live as Railway service variables on `odoo-demo`**
+(the public demo now sends real SMS) — a rotation must update those too:
+`railway variables --service odoo-demo --set TWILIO_…` then `railway redeploy --yes`. The
+owner chose to go live on the current (leaked-in-transcript) key knowingly; that makes this
+item MORE urgent, not less.
 
 **Since 2026-08-14 that is the whole procedure.** It used to end "re-run
 `scripts/configure_twilio.py`" — once per tenant, which is exactly the failure this build removed:
