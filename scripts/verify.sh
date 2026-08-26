@@ -622,6 +622,22 @@ if [ "$SESSION" = "200" ]; then
     --data-urlencode "week=0")
   [ "$WR" != "404" ] && ok "a manager may set the submission window ($WR)" \
     || bad "window rule for a manager" "got 404 — the manager gate is refusing the manager"
+  # ...but NOT for a week her team is already standing. Asserted on the DATA
+  # and not on the status code: both routes answer a refusal with the same 303
+  # they answer a success with, so a status check stays green over exactly the
+  # defect this exists to catch. That defect was real: the guard was pasted
+  # twice into one route and left out of the other entirely, and nothing in the
+  # suite noticed.
+  CUR=$(psql -d bella -tAc "select to_char((now() at time zone 'Asia/Jerusalem')::date - ((extract(dow from (now() at time zone 'Asia/Jerusalem')::date))::int), 'YYYY-MM-DD')")
+  psql -d bella -qc "insert into modryn_roster_week (week_start) values ('$CUR') on conflict (week_start) do nothing;" >/dev/null 2>&1
+  psql -d bella -qc "update modryn_roster_week set opens_at=null, closes_at=null where week_start='$CUR';" >/dev/null 2>&1
+  curl -sg -b "$JAR" -o /dev/null -X POST "$BELLA/roster/window/week" \
+    --data-urlencode "csrf_token=$CT" --data-urlencode "week=-1" \
+    --data-urlencode "opens_date=$CUR" --data-urlencode "opens_time=09:00" \
+    --data-urlencode "closes_date=$CUR" --data-urlencode "closes_time=21:00"
+  LEAK=$(psql -d bella -tAc "select count(*) from modryn_roster_week where week_start='$CUR' and opens_at is not null")
+  [ "${LEAK:-1}" = "0" ] && ok "the window refuses a week already being worked" \
+    || bad "window on a worked week" "a POST with week=-1 wrote onto $CUR - the guard is missing from /roster/window/week"
   for path in /floor /atelier /roster; do
     C=$(curl -sg -b "$JAR" -o /dev/null -w "%{http_code}" "$BELLA$path")
     [ "$C" = "200" ] && ok "$path renders for a manager" || bad "$path for a manager" "got $C"

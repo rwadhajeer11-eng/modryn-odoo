@@ -3,6 +3,8 @@ from datetime import datetime, timedelta
 import pytz
 
 from odoo import _, api, fields, models
+
+from .shift_template import weekday_name
 from odoo.exceptions import ValidationError
 
 TZ = pytz.timezone('Asia/Jerusalem')
@@ -200,7 +202,7 @@ class ModrynShiftSlot(models.Model):
             'name': self.name,
             'day': self.day.strftime('%Y-%m-%d'),
             'day_label': self.day.strftime('%d.%m'),
-            'weekday': self.day.strftime('%A'),
+            'weekday': weekday_name(self.day),
             'hours': '%s–%s' % (_fmt(self.start_hour), _fmt(self.end_hour)),
             # Which part of the day this is, so the page can lay the week out as
             # a 7x3 grid without asking the template model a second time per slot.

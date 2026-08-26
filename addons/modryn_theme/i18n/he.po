@@ -40,8 +40,7 @@ msgstr "לצפייה בקולקציה"
 
 #. module: modryn_theme
 #: model_terms:ir.ui.view,arch_db:modryn_theme.homepage_hero
-msgid ""
-"Browse the collection, book a private fitting, and leave the rest to us."
+msgid "Browse the collection, book a private fitting, and leave the rest to us."
 msgstr "הציצו בקולקציה, קבעו תור למדידה אישית — ואת כל השאר תשאירו לנו."
 
 #. module: modryn_theme
@@ -70,6 +69,12 @@ msgid "Pick a time that suits you — it takes a minute."
 msgstr "בחרי זמן שנוח לך — זה לוקח דקה."
 
 #. module: modryn_theme
+#: model:ir.model.fields,field_description:modryn_theme.field_product_product__modryn_price_visible
+#: model:ir.model.fields,field_description:modryn_theme.field_product_template__modryn_price_visible
+msgid "Show price on website"
+msgstr "הצגת המחיר באתר"
+
+#. module: modryn_theme
 #: model_terms:ir.ui.view,arch_db:modryn_theme.footer_modryn
 msgid "The collection"
 msgstr "הקולקציה"
@@ -88,6 +93,12 @@ msgstr "הגיעי — אנחנו מוכנות"
 #: model_terms:ir.ui.view,arch_db:modryn_theme.footer_modryn
 msgid "Wedding and evening dresses, fitted to you."
 msgstr "שמלות כלה וערב, מותאמות בדיוק לך."
+
+#. module: modryn_theme
+#: model:ir.model.fields,help:modryn_theme.field_product_product__modryn_price_visible
+#: model:ir.model.fields,help:modryn_theme.field_product_template__modryn_price_visible
+msgid "When off, the storefront shows 'Price on request' instead of the price."
+msgstr "כשהאפשרות כבויה, האתר מציג 'מחיר בתיאום' במקום המחיר."
 
 #. module: modryn_theme
 #: model_terms:ir.ui.view,arch_db:modryn_theme.homepage_hero

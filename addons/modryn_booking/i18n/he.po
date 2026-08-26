@@ -47,6 +47,30 @@ msgid "<strong>Time:</strong>"
 msgstr "<strong>שעה:</strong>"
 
 #. module: modryn_booking
+#. odoo-python
+#: code:addons/modryn_booking/models/opening_hours.py:0
+msgid "A boutique has to close after it opens."
+msgstr "הבוטיק חייב להיסגר אחרי שהוא נפתח."
+
+#. module: modryn_booking
+#. odoo-python
+#: code:addons/modryn_booking/models/closure.py:0
+msgid "A closure has to end on or after the day it starts."
+msgstr "סגירה חייבת להסתיים ביום שהיא מתחילה או אחריו."
+
+#. module: modryn_booking
+#. odoo-python
+#: code:addons/modryn_booking/models/closure.py:0
+msgid "A part-day closure has to end after it starts."
+msgstr "סגירה חלקית חייבת להסתיים אחרי שהיא מתחילה."
+
+#. module: modryn_booking
+#. odoo-python
+#: code:addons/modryn_booking/models/opening_hours.py:0
+msgid "An open window has to take at least one fitting."
+msgstr "חלון פתוח חייב לקלוט לפחות מדידה אחת."
+
+#. module: modryn_booking
 #: model_terms:ir.ui.view,arch_db:modryn_booking.booking_form
 msgid "Appointment time"
 msgstr "מועד"
@@ -78,9 +102,34 @@ msgid "Booking type"
 msgstr "סוג התור"
 
 #. module: modryn_booking
+#: model:ir.model.fields,field_description:modryn_booking.field_calendar_event__modryn_is_booking
+msgid "Boutique booking"
+msgstr "תור בוטיק"
+
+#. module: modryn_booking
 #: model_terms:ir.ui.view,arch_db:modryn_booking.booking_form
 msgid "Call us and we'll find you a time"
 msgstr "התקשרו אלינו ונמצא לכן זמן"
+
+#. module: modryn_booking
+#: model:ir.model.fields,field_description:modryn_booking.field_modryn_closure__full_day
+msgid "Closed all day"
+msgstr "סגור כל היום"
+
+#. module: modryn_booking
+#: model:ir.model.fields,field_description:modryn_booking.field_modryn_closure__start_hour
+msgid "Closed from"
+msgstr "סגור משעה"
+
+#. module: modryn_booking
+#: model:ir.model.fields,field_description:modryn_booking.field_modryn_closure__end_hour
+msgid "Closed until"
+msgstr "סגור עד שעה"
+
+#. module: modryn_booking
+#: model:ir.model,name:modryn_booking.model_modryn_closure
+msgid "Closure"
+msgstr "סגירה"
 
 #. module: modryn_booking
 #: model_terms:ir.ui.view,arch_db:modryn_booking.booking_form
@@ -104,6 +153,16 @@ msgid "Customer phone"
 msgstr "טלפון הלקוחה"
 
 #. module: modryn_booking
+#: model:ir.model.fields,field_description:modryn_booking.field_modryn_closure__date_from
+msgid "Date From"
+msgstr "מתאריך"
+
+#. module: modryn_booking
+#: model:ir.model.fields,field_description:modryn_booking.field_modryn_closure__date_to
+msgid "Date To"
+msgstr "עד תאריך"
+
+#. module: modryn_booking
 #: model:ir.model.fields,field_description:modryn_booking.field_calendar_event__modryn_variant_id
 msgid "Dress / size"
 msgstr "שמלה / מידה"
@@ -114,10 +173,26 @@ msgid "Dress fitting"
 msgstr "מדידה"
 
 #. module: modryn_booking
+#: model:ir.model.fields,field_description:modryn_booking.field_modryn_opening_hours__end_hour
+msgid "End Hour"
+msgstr "שעת סגירה"
+
+#. module: modryn_booking
 #. odoo-python
 #: code:addons/modryn_booking/controllers/main.py:0
 msgid "Fitting: %s"
 msgstr "מדידה: %s"
+
+#. module: modryn_booking
+#: model:ir.model.fields,field_description:modryn_booking.field_modryn_opening_hours__capacity
+msgid "Fittings at once"
+msgstr "מדידות במקביל"
+
+#. module: modryn_booking
+#. odoo-python
+#: code:addons/modryn_booking/models/opening_hours.py:0
+msgid "Friday"
+msgstr "שישי"
 
 #. module: modryn_booking
 #: model_terms:ir.ui.view,arch_db:modryn_booking.booking_form
@@ -125,9 +200,13 @@ msgid "Full name"
 msgstr "שם מלא"
 
 #. module: modryn_booking
+#: model:ir.model.fields,help:modryn_booking.field_modryn_opening_hours__capacity
+msgid "How many customers this boutique can take at the same time in this window."
+msgstr "כמה לקוחות הבוטיק יכול לקלוט בו-זמנית בחלון הזה."
+
+#. module: modryn_booking
 #: model_terms:ir.ui.view,arch_db:modryn_booking.booking_form
-msgid ""
-"I've read and accept the boutique's cancellation, lateness and no-show terms"
+msgid "I've read and accept the boutique's cancellation, lateness and no-show terms"
 msgstr "קראתי ואני מאשרת את תנאי הביטול, האיחור ואי-ההגעה של הבוטיק"
 
 #. module: modryn_booking
@@ -141,9 +220,26 @@ msgid "Leave your number and we'll text you first if a place opens up."
 msgstr "השאירי מספר טלפון ונעדכן אותך ראשונה אם יתפנה מקום."
 
 #. module: modryn_booking
+#. odoo-python
+#: code:addons/modryn_booking/models/opening_hours.py:0
+msgid "Monday"
+msgstr "שני"
+
+#. module: modryn_booking
 #: model_terms:ir.ui.view,arch_db:modryn_booking.booking_form
 msgid "Online booking isn't open right now"
 msgstr "קביעת תורים אונליין סגורה כרגע"
+
+#. module: modryn_booking
+#: model:ir.model,name:modryn_booking.model_modryn_opening_hours
+msgid "Opening hours"
+msgstr "שעות פתיחה"
+
+#. module: modryn_booking
+#. odoo-python
+#: code:addons/modryn_booking/models/opening_hours.py:0
+msgid "Opening hours must be within a single day."
+msgstr "שעות הפתיחה חייבות להיות בתוך יום אחד."
 
 #. module: modryn_booking
 #: model_terms:ir.ui.view,arch_db:modryn_booking.booking_form
@@ -181,14 +277,46 @@ msgid "Please enter your full name"
 msgstr "נא למלא שם מלא"
 
 #. module: modryn_booking
+#. odoo-python
+#: code:addons/modryn_booking/models/opening_hours.py:0
+msgid "Saturday"
+msgstr "שבת"
+
+#. module: modryn_booking
+#: model:ir.model.fields,help:modryn_booking.field_calendar_event__modryn_is_booking
+msgid "Set on events created from the public storefront booking pages."
+msgstr "מסומן באירועים שנוצרו בעמודי קביעת התורים באתר."
+
+#. module: modryn_booking
 #: model_terms:ir.ui.view,arch_db:modryn_booking.booking_form
 msgid "Size"
 msgstr "מידה"
 
 #. module: modryn_booking
+#: model:ir.model.fields,field_description:modryn_booking.field_calendar_event__modryn_slot_seat
+msgid "Slot seat"
+msgstr "מקום במועד"
+
+#. module: modryn_booking
+#: model:ir.model.fields,field_description:modryn_booking.field_modryn_opening_hours__start_hour
+msgid "Start Hour"
+msgstr "שעת פתיחה"
+
+#. module: modryn_booking
+#. odoo-python
+#: code:addons/modryn_booking/models/opening_hours.py:0
+msgid "Sunday"
+msgstr "ראשון"
+
+#. module: modryn_booking
 #: model:ir.model.fields,field_description:modryn_booking.field_calendar_event__modryn_terms_accepted_at
 msgid "Terms accepted at"
 msgstr "תנאים אושרו בתאריך"
+
+#. module: modryn_booking
+#: model:ir.model.constraint,message:modryn_booking.constraint_modryn_opening_hours_weekday_start_uniq
+msgid "That day already has a window starting at that time."
+msgstr "כבר יש ביום הזה חלון שמתחיל בשעה הזו."
 
 #. module: modryn_booking
 #. odoo-python
@@ -208,6 +336,23 @@ msgid "The day you wanted is full?"
 msgstr "היום שרצית תפוס?"
 
 #. module: modryn_booking
+#. odoo-python
+#: code:addons/modryn_booking/models/opening_hours.py:0
+msgid "Thursday"
+msgstr "חמישי"
+
+#. module: modryn_booking
+#. odoo-python
+#: code:addons/modryn_booking/models/opening_hours.py:0
+msgid "Tuesday"
+msgstr "שלישי"
+
+#. module: modryn_booking
+#: model:ir.model.fields,help:modryn_booking.field_modryn_closure__full_day
+msgid "Uncheck to close only part of the day; the day still appears with its remaining hours."
+msgstr "בטלי את הסימון כדי לסגור רק חלק מהיום; היום ימשיך להופיע עם השעות שנותרו."
+
+#. module: modryn_booking
 #: model_terms:ir.ui.view,arch_db:modryn_booking.booking_form
 msgid "We'll hold this dress for your appointment"
 msgstr "השמלה תשוריין לפגישה"
@@ -216,6 +361,17 @@ msgstr "השמלה תשוריין לפגישה"
 #: model_terms:ir.ui.view,arch_db:modryn_booking.booking_confirmed
 msgid "We've sent you a confirmation by text"
 msgstr "שלחנו לך אישור בהודעה"
+
+#. module: modryn_booking
+#. odoo-python
+#: code:addons/modryn_booking/models/opening_hours.py:0
+msgid "Wednesday"
+msgstr "רביעי"
+
+#. module: modryn_booking
+#: model:ir.model.fields,field_description:modryn_booking.field_modryn_opening_hours__weekday
+msgid "Weekday"
+msgstr "יום בשבוע"
 
 #. module: modryn_booking
 #: model_terms:ir.ui.view,arch_db:modryn_booking.booking_confirmed

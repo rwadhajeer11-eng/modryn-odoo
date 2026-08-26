@@ -77,6 +77,11 @@ msgid "Evening"
 msgstr "سهرة"
 
 #. module: modryn_queue_poc
+#: model:ir.model.fields.selection,name:modryn_queue_poc.selection__modryn_queue_entry__state__expired
+msgid "Expired"
+msgstr "منتهية الصلاحية"
+
+#. module: modryn_queue_poc
 #: model:ir.model.fields.selection,name:modryn_queue_poc.selection__modryn_queue_entry__state__done
 msgid "Finished"
 msgstr "انتهت"
@@ -85,6 +90,16 @@ msgstr "انتهت"
 #: model_terms:ir.ui.view,arch_db:modryn_queue_poc.checkin_form
 msgid "Full name"
 msgstr "الاسم الكامل"
+
+#. module: modryn_queue_poc
+#: model:ir.model.fields.selection,name:modryn_queue_poc.selection__modryn_queue_entry__state__redirected
+msgid "Invited to book"
+msgstr "دُعيت للحجز"
+
+#. module: modryn_queue_poc
+#: model_terms:ir.ui.view,arch_db:modryn_queue_poc.ticket
+msgid "is waiting for you."
+msgstr "بانتظارك."
 
 #. module: modryn_queue_poc
 #: model_terms:ir.ui.view,arch_db:modryn_queue_poc.queue_sign
@@ -97,8 +112,17 @@ msgstr "الانضمام إلى الطابور"
 msgid ""
 "Make yourself at home — feel free to browse while you wait.\n"
 "                            We'll text you when we're ready."
-msgstr ""
-"اعتبري نفسك في بيتك — تجوّلي بحرية بينما تنتظرين. سنراسلك عندما نكون جاهزين."
+msgstr "اعتبري نفسك في بيتك — تجوّلي بحرية بينما تنتظرين. سنراسلك عندما نكون جاهزين."
+
+#. module: modryn_queue_poc
+#: model:ir.ui.menu,name:modryn_queue_poc.menu_modryn_queue_root
+msgid "MODRYN"
+msgstr "MODRYN"
+
+#. module: modryn_queue_poc
+#: model:ir.actions.server,name:modryn_queue_poc.ir_cron_expire_tickets_ir_actions_server
+msgid "MODRYN: close the floor for the day"
+msgstr "MODRYN: إغلاق البوتيك في نهاية اليوم"
 
 #. module: modryn_queue_poc
 #. odoo-javascript
@@ -108,10 +132,20 @@ msgid "Name"
 msgstr "الاسم"
 
 #. module: modryn_queue_poc
+#: model:ir.model.fields,field_description:modryn_queue_poc.field_modryn_queue_entry__next_notified_at
+msgid "Next Notified At"
+msgstr "وقت إشعار الدور التالي"
+
+#. module: modryn_queue_poc
 #. odoo-javascript
 #: code:addons/modryn_queue_poc/static/src/queue_board/queue_board.xml:0
 msgid "No one is waiting right now."
 msgstr "لا توجد عميلات في الطابور حالياً."
+
+#. module: modryn_queue_poc
+#: model:ir.model.fields.selection,name:modryn_queue_poc.selection__modryn_queue_entry__state__pending
+msgid "Pending"
+msgstr "بانتظار القبول"
 
 #. module: modryn_queue_poc
 #. odoo-javascript
@@ -194,6 +228,11 @@ msgid "That code is not right."
 msgstr "الرمز غير صحيح."
 
 #. module: modryn_queue_poc
+#: model:ir.model.constraint,message:modryn_queue_poc.constraint_modryn_queue_entry_modryn_open_phone_uniq
+msgid "That number is already in the line."
+msgstr "هذا الرقم موجود بالفعل في الطابور."
+
+#. module: modryn_queue_poc
 #: model_terms:ir.ui.view,arch_db:modryn_queue_poc.ticket
 msgid "This number is already in the line — this is your place."
 msgstr "هذا الرقم موجود بالفعل في الطابور — هذا هو مكانك."
@@ -214,6 +253,11 @@ msgstr "تم إرسال رموز كثيرة إلى هذا الرقم. حاولي
 #: code:addons/modryn_queue_poc/controllers/main.py:0
 msgid "Too many wrong codes. Start again to get a new one."
 msgstr "رموز خاطئة كثيرة. ابدئي من جديد للحصول على رمز جديد."
+
+#. module: modryn_queue_poc
+#: model:ir.model.fields,field_description:modryn_queue_poc.field_modryn_queue_entry__turn_notified_at
+msgid "Turn Notified At"
+msgstr "وقت إشعار حلول الدور"
 
 #. module: modryn_queue_poc
 #. odoo-javascript
@@ -241,6 +285,11 @@ msgstr "في الانتظار الآن:"
 #: model:ir.ui.menu,name:modryn_queue_poc.menu_modryn_queue_board
 msgid "Walk-in queue"
 msgstr "طابور الاستقبال"
+
+#. module: modryn_queue_poc
+#: model:ir.model,name:modryn_queue_poc.model_modryn_queue_entry
+msgid "Walk-in queue entry"
+msgstr "قيد في طابور الاستقبال"
 
 #. module: modryn_queue_poc
 #. odoo-python
@@ -306,19 +355,14 @@ msgstr "أهلاً وسهلاً"
 #. module: modryn_queue_poc
 #. odoo-python
 #: code:addons/modryn_queue_poc/models/queue_entry.py:0
-msgid ""
-"You're in the queue — and you're next. We'll be with you in a moment. Your "
-"ticket: %(link)s"
-msgstr ""
-"أنتِ في قائمة الانتظار — ودورك التالي. سنكون معك بعد لحظات. تذكرتك: %(link)s"
+msgid "You're in the queue — and you're next. We'll be with you in a moment. Your ticket: %(link)s"
+msgstr "أنتِ في قائمة الانتظار — ودورك التالي. سنكون معك بعد لحظات. تذكرتك: %(link)s"
 
 #. module: modryn_queue_poc
 #. odoo-python
 #: code:addons/modryn_queue_poc/models/queue_entry.py:0
-msgid ""
-"You're in the queue. We'll text you when you're next. Your ticket: %(link)s"
-msgstr ""
-"أنتِ في قائمة الانتظار. سنرسل لك رسالة عندما يحين دورك. تذكرتك: %(link)s"
+msgid "You're in the queue. We'll text you when you're next. Your ticket: %(link)s"
+msgstr "أنتِ في قائمة الانتظار. سنرسل لك رسالة عندما يحين دورك. تذكرتك: %(link)s"
 
 #. module: modryn_queue_poc
 #: model_terms:ir.ui.view,arch_db:modryn_queue_poc.ticket
@@ -330,8 +374,3 @@ msgstr "أنت التالية"
 #: code:addons/modryn_queue_poc/models/queue_entry.py:0
 msgid "You're next — we'll be with you in a moment."
 msgstr "أنت التالية — سنكون معك بعد لحظات."
-
-#. module: modryn_queue_poc
-#: model_terms:ir.ui.view,arch_db:modryn_queue_poc.ticket
-msgid "is waiting for you."
-msgstr "بانتظارك."

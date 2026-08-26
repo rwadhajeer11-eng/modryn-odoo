@@ -19,7 +19,7 @@ from odoo.addons.modryn_staff.controllers.manage import (
 from ..models.roster_week import _from_utc, _to_utc, window_days
 from ..models.shift_slot import next_week_start, week_start
 from ..models.shift_template import (
-    SHIFT_TYPE_ORDER, shift_type_selection, weekday_selection)
+    SHIFT_TYPE_ORDER, shift_type_selection, weekday_name, weekday_selection)
 
 _lt = LazyTranslate(__name__)
 
@@ -121,7 +121,7 @@ class ModrynRoster(http.Controller):
             days.append({
                 'date': day.strftime('%Y-%m-%d'),
                 'label': day.strftime('%d.%m'),
-                'weekday': day.strftime('%A'),
+                'weekday': weekday_name(day),
                 'cells': cells,
             })
         return days
@@ -256,6 +256,27 @@ class ModrynRoster(http.Controller):
     # question being the wrong one to ask.
     PLANNABLE_FROM = 0
 
+    def _refuse_past_week(self, offset):
+        """None if this week may still be planned, otherwise the refusal.
+
+        ONE helper called from both window routes, rather than the same six
+        lines pasted into each. The paste is not hypothetical: it is exactly how
+        this shipped the first time — both copies landed in window_rule, the
+        second unreachable, and window_week was left with no guard at all. A
+        manager could still write a submission window onto the week her team was
+        already standing, and the only visible symptom would have been
+        availability re-opening on a rota in progress.
+
+        It also keeps the SENTENCE identical across both routes, which is the
+        rule this module already states elsewhere: two wordings for one rule
+        teach a manager there are two rules.
+        """
+        if offset < self.PLANNABLE_FROM:
+            return self._window_redirect(offset, error=_(
+                "That week is already being worked — set the times for a week "
+                "that is still being planned."))
+        return None
+
     def _window_redirect(self, offset, error=None, warning=None):
         url = '/roster?week=%d' % offset
         if error:
@@ -280,18 +301,9 @@ class ModrynRoster(http.Controller):
             offset = max(-1, min(int(post.get('week') or 0), 1))
         except ValueError:
             offset = 0
-        # Guarded server-side and not merely hidden. A hidden control is not a
-        # rule, and this one would silently write a deadline nobody can meet.
-        if offset < self.PLANNABLE_FROM:
-            return self._window_redirect(offset, error=_(
-                "That week is already being worked — set the times for a week "
-                "that is still being planned."))
-        # Guarded server-side and not merely hidden. A hidden control is not a
-        # rule, and this one would silently write a deadline nobody can meet.
-        if offset < self.PLANNABLE_FROM:
-            return self._window_redirect(offset, error=_(
-                "That week is already being worked — set the times for a week "
-                "that is still being planned."))
+        refused = self._refuse_past_week(offset)
+        if refused:
+            return refused
 
         valid_days = {code for code, _label in window_days()}
         open_wd = (post.get('open_weekday') or '').strip()
@@ -347,6 +359,12 @@ class ModrynRoster(http.Controller):
             offset = max(-1, min(int(post.get('week') or 0), 1))
         except ValueError:
             offset = 0
+        # ABOVE the clear branch deliberately: clearing writes and returns ahead
+        # of every other check in this method, so a guard placed any lower would
+        # still wipe the current week's window on its way past.
+        refused = self._refuse_past_week(offset)
+        if refused:
+            return refused
         start = self._week(offset)
         week_row = request.env['modryn.roster.week'].sudo().modryn_for(start)
 

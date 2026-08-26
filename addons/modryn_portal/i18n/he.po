@@ -45,11 +45,8 @@ msgstr "התפנה מקום"
 #. module: modryn_portal
 #. odoo-python
 #: code:addons/modryn_portal/models/day_waitlist.py:0
-msgid ""
-"A place has opened up on %(date)s. It's yours for the next %(hours)s hours: "
-"%(link)s"
-msgstr ""
-"התפנה מקום בתאריך %(date)s. הוא שמור לך ל-%(hours)s השעות הקרובות: %(link)s"
+msgid "A place has opened up on %(date)s. It's yours for the next %(hours)s hours: %(link)s"
+msgstr "התפנה מקום בתאריך %(date)s. הוא שמור לך ל-%(hours)s השעות הקרובות: %(link)s"
 
 #. module: modryn_portal
 #: model_terms:ir.ui.view,arch_db:modryn_portal.booking_confirmed_ics
@@ -94,9 +91,29 @@ msgid "Cancelled"
 msgstr "בוטל"
 
 #. module: modryn_portal
+#: model:ir.model.fields,field_description:modryn_portal.field_calendar_event__modryn_cancelled_at
+msgid "Cancelled at"
+msgstr "תאריך ביטול"
+
+#. module: modryn_portal
+#: model:ir.model.fields,field_description:modryn_portal.field_calendar_event__modryn_cancelled_by
+msgid "Cancelled by"
+msgstr "בוטל על ידי"
+
+#. module: modryn_portal
+#: model:ir.model.fields.selection,name:modryn_portal.selection__modryn_day_waitlist__state__claimed
+msgid "Claimed"
+msgstr "מומשה"
+
+#. module: modryn_portal
 #: model_terms:ir.ui.view,arch_db:modryn_portal.verify
 msgid "Code"
 msgstr "קוד"
+
+#. module: modryn_portal
+#: model:ir.model.fields,field_description:modryn_portal.field_modryn_otp_code__code_hash
+msgid "Code Hash"
+msgstr "גיבוב קוד"
 
 #. module: modryn_portal
 #. odoo-python
@@ -108,6 +125,21 @@ msgstr "פגישת ייעוץ: %s"
 #: model_terms:ir.ui.view,arch_db:modryn_portal.verify
 msgid "Continue"
 msgstr "המשך"
+
+#. module: modryn_portal
+#: model:ir.model.fields.selection,name:modryn_portal.selection__calendar_event__modryn_cancelled_by__customer
+msgid "Customer"
+msgstr "לקוחה"
+
+#. module: modryn_portal
+#: model:ir.model,name:modryn_portal.model_modryn_otp_code
+msgid "Customer login code"
+msgstr "קוד כניסה של לקוחה"
+
+#. module: modryn_portal
+#: model:ir.model.fields,field_description:modryn_portal.field_modryn_day_waitlist__day
+msgid "Day"
+msgstr "יום"
 
 #. module: modryn_portal
 #: model_terms:ir.ui.view,arch_db:modryn_portal.verify
@@ -123,6 +155,21 @@ msgstr "הזיני את הקוד"
 #: model_terms:ir.ui.view,arch_db:modryn_portal.login
 msgid "Enter your phone number and we will text you a code."
 msgstr "הזיני את מספר הטלפון שלך ונשלח לך קוד בהודעה."
+
+#. module: modryn_portal
+#: model:ir.model.fields.selection,name:modryn_portal.selection__modryn_day_waitlist__state__expired
+msgid "Expired"
+msgstr "פגה"
+
+#. module: modryn_portal
+#: model:ir.model.fields,field_description:modryn_portal.field_modryn_otp_code__expires_at
+msgid "Expires At"
+msgstr "תוקף עד"
+
+#. module: modryn_portal
+#: model:ir.model.fields.selection,name:modryn_portal.selection__modryn_sms_outbox__state__failed
+msgid "Failed"
+msgstr "נכשלה"
 
 #. module: modryn_portal
 #: model_terms:ir.ui.view,arch_db:modryn_portal.claim_form
@@ -145,6 +192,41 @@ msgid "Keep my appointment"
 msgstr "להשאיר את התור"
 
 #. module: modryn_portal
+#: model:ir.model.fields,field_description:modryn_portal.field_modryn_day_waitlist__lang
+msgid "Lang"
+msgstr "שפה"
+
+#. module: modryn_portal
+#: model:ir.model.fields,field_description:modryn_portal.field_modryn_sms_outbox__last_error
+msgid "Last Error"
+msgstr "שגיאה אחרונה"
+
+#. module: modryn_portal
+#: model:ir.model.fields,field_description:modryn_portal.field_calendar_event__modryn_confirmed_at
+msgid "Modryn Confirmed At"
+msgstr "Modryn תאריך אישור"
+
+#. module: modryn_portal
+#: model:ir.model.fields,field_description:modryn_portal.field_calendar_event__modryn_lang
+msgid "Modryn Lang"
+msgstr "Modryn שפה"
+
+#. module: modryn_portal
+#: model:ir.model.fields,field_description:modryn_portal.field_calendar_event__modryn_reminder_sent_at
+msgid "Modryn Reminder Sent At"
+msgstr "Modryn תאריך שליחת תזכורת"
+
+#. module: modryn_portal
+#: model:ir.model,name:modryn_portal.model_modryn_sms
+msgid "MODRYN SMS sender"
+msgstr "שולח הודעות SMS של MODRYN"
+
+#. module: modryn_portal
+#: model:ir.actions.server,name:modryn_portal.ir_cron_expire_offers_ir_actions_server
+msgid "MODRYN: pass on unclaimed waitlist offers"
+msgstr "MODRYN: העברת הצעות שלא מומשו לממתינה הבאה"
+
+#. module: modryn_portal
 #: model:ir.actions.server,name:modryn_portal.ir_cron_gc_otp_codes_ir_actions_server
 msgid "MODRYN: purge expired login codes"
 msgstr "MODRYN: ניקוי קודי כניסה שפגו"
@@ -155,6 +237,11 @@ msgid "MODRYN: send 24h fitting reminders"
 msgstr "MODRYN: שליחת תזכורות 24 שעות מראש"
 
 #. module: modryn_portal
+#: model:ir.actions.server,name:modryn_portal.ir_cron_sms_outbox_drain_ir_actions_server
+msgid "MODRYN: send queued texts"
+msgstr "MODRYN: שליחת הודעות בתור"
+
+#. module: modryn_portal
 #: model:website.menu,name:modryn_portal.menu_my_appointments
 #: model_terms:ir.ui.view,arch_db:modryn_portal.bookings
 #: model_terms:ir.ui.view,arch_db:modryn_portal.login
@@ -162,9 +249,29 @@ msgid "My appointments"
 msgstr "התורים שלי"
 
 #. module: modryn_portal
+#: model:ir.model.fields,field_description:modryn_portal.field_modryn_day_waitlist__offer_expires_at
+msgid "Offer Expires At"
+msgstr "תוקף ההצעה עד"
+
+#. module: modryn_portal
+#: model:ir.model.fields,field_description:modryn_portal.field_modryn_day_waitlist__offer_token
+msgid "Offer Token"
+msgstr "אסימון ההצעה"
+
+#. module: modryn_portal
+#: model:ir.model.fields.selection,name:modryn_portal.selection__modryn_day_waitlist__state__offered
+msgid "Offered"
+msgstr "הוצעה"
+
+#. module: modryn_portal
 #: model_terms:ir.ui.view,arch_db:modryn_portal.bookings
 msgid "Past"
 msgstr "תורים קודמים"
+
+#. module: modryn_portal
+#: model:ir.model.fields.selection,name:modryn_portal.selection__modryn_sms_outbox__state__pending
+msgid "Pending"
+msgstr "בהמתנה"
 
 #. module: modryn_portal
 #: model_terms:ir.ui.view,arch_db:modryn_portal.login
@@ -195,19 +302,25 @@ msgid "Please request a code first."
 msgstr "יש לבקש קוד תחילה."
 
 #. module: modryn_portal
+#: model:ir.model,name:modryn_portal.model_modryn_sms_outbox
+msgid "Queued outbound SMS"
+msgstr "הודעות SMS בתור לשליחה"
+
+#. module: modryn_portal
 #. odoo-python
 #: code:addons/modryn_portal/models/booking_comms.py:0
-msgid ""
-"Reminder: your fitting at %(boutique)s is tomorrow, %(date)s at %(time)s. "
-"Confirm or cancel: %(link)s"
-msgstr ""
-"תזכורת: התור שלך ב%(boutique)s מחר, %(date)s בשעה %(time)s. לאישור או ביטול:"
-" %(link)s"
+msgid "Reminder: your fitting at %(boutique)s is tomorrow, %(date)s at %(time)s. Confirm or cancel: %(link)s"
+msgstr "תזכורת: התור שלך ב%(boutique)s מחר, %(date)s בשעה %(time)s. לאישור או ביטול: %(link)s"
 
 #. module: modryn_portal
 #: model_terms:ir.ui.view,arch_db:modryn_portal.booking_link
 msgid "Remove from calendar"
 msgstr "הסרה מהיומן"
+
+#. module: modryn_portal
+#: model:ir.model.fields,field_description:modryn_portal.field_modryn_sms_outbox__retry_after
+msgid "Retry After"
+msgstr "ניסיון חוזר אחרי"
 
 #. module: modryn_portal
 #: model_terms:ir.ui.view,arch_db:modryn_portal.claim_expired
@@ -225,9 +338,24 @@ msgid "Send me a code"
 msgstr "שליחת קוד"
 
 #. module: modryn_portal
+#: model:ir.model.fields.selection,name:modryn_portal.selection__modryn_sms_outbox__state__sent
+msgid "Sent"
+msgstr "נשלחה"
+
+#. module: modryn_portal
+#: model:ir.model.fields,field_description:modryn_portal.field_modryn_sms_outbox__sent_at
+msgid "Sent At"
+msgstr "תאריך שליחה"
+
+#. module: modryn_portal
 #: model_terms:ir.ui.view,arch_db:modryn_portal.bookings
 msgid "Sign out"
 msgstr "יציאה"
+
+#. module: modryn_portal
+#: model:ir.model.constraint,message:modryn_portal.constraint_modryn_day_waitlist_modryn_one_offer_per_day
+msgid "Someone else already holds the offer for that day."
+msgstr "מישהי אחרת כבר מחזיקה בהצעה ליום הזה."
 
 #. module: modryn_portal
 #. odoo-python
@@ -318,6 +446,26 @@ msgid "Use a different number"
 msgstr "שימוש במספר אחר"
 
 #. module: modryn_portal
+#: model:ir.model.fields,field_description:modryn_portal.field_modryn_otp_code__used_at
+msgid "Used At"
+msgstr "תאריך שימוש"
+
+#. module: modryn_portal
+#: model:ir.model.fields.selection,name:modryn_portal.selection__modryn_day_waitlist__state__waiting
+msgid "Waiting"
+msgstr "ממתינה"
+
+#. module: modryn_portal
+#: model:ir.model,name:modryn_portal.model_modryn_day_waitlist
+msgid "Waiting for a day to open up"
+msgstr "ממתינה שיתפנה יום"
+
+#. module: modryn_portal
+#: model:ir.model.fields,field_description:modryn_portal.field_modryn_sms_outbox__waitlist_id
+msgid "Waitlist"
+msgstr "רשימת המתנה"
+
+#. module: modryn_portal
 #. odoo-python
 #: code:addons/modryn_portal/controllers/portal.py:0
 msgid "We could not send the code. Please try again shortly."
@@ -376,11 +524,8 @@ msgstr "התור אושר."
 #. module: modryn_portal
 #. odoo-python
 #: code:addons/modryn_portal/models/booking_comms.py:0
-msgid ""
-"Your fitting at %(boutique)s is booked for %(date)s at %(time)s. Manage your"
-" appointment: %(link)s"
-msgstr ""
-"התור שלך ב%(boutique)s נקבע ל-%(date)s בשעה %(time)s. לניהול התור: %(link)s"
+msgid "Your fitting at %(boutique)s is booked for %(date)s at %(time)s. Manage your appointment: %(link)s"
+msgstr "התור שלך ב%(boutique)s נקבע ל-%(date)s בשעה %(time)s. לניהול התור: %(link)s"
 
 #. module: modryn_portal
 #: model_terms:ir.ui.view,arch_db:modryn_portal.bookings

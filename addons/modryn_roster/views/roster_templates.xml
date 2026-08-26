@@ -83,7 +83,19 @@
                 <p class="modryn_sub mt-2 mb-2">
                     These are the hours the team answers <strong>for the schedule of
                     <span dir="ltr"><t t-esc="week_start.strftime('%d.%m')"/>–<t t-esc="week_end.strftime('%d.%m')"/></span></strong>.
-                    They fall in the week before it, counting from that Monday.
+                    Counting from the Monday before it — so the last choice,
+                    Sunday, is <span dir="ltr"><t t-esc="week_start.strftime('%d.%m')"/></span>
+                    itself, the first day of that schedule.
+                </p>
+                <p class="modryn_sub mb-2">
+                    <!-- What the CURRENT rule actually produces for this week,
+                         computed by the server. It removes the arithmetic from
+                         the manager's head entirely, which is the only way the
+                         Sunday exception above can never bite her. -->
+                    Right now that means
+                    <strong dir="ltr" t-esc="window_opens.strftime('%d.%m %H:%M')"/>
+                    until
+                    <strong dir="ltr" t-esc="window_closes.strftime('%d.%m %H:%M')"/>.
                 </p>
 
                 <form action="/roster/window/rule" method="post"

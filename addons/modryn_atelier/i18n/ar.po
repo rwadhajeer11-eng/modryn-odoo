@@ -1,0 +1,340 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* modryn_atelier
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: ar\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: \n"
+
+#. module: modryn_atelier
+#: model_terms:ir.ui.view,arch_db:modryn_atelier.dashboard
+msgid "<option value=\"\">Auto-assign</option>"
+msgstr "<option value=\"\">تعيين تلقائي</option>"
+
+#. module: modryn_atelier
+#: model_terms:ir.ui.view,arch_db:modryn_atelier.dashboard
+msgid "<option value=\"\">Unassigned</option>"
+msgstr "<option value=\"\">غير معيّنة</option>"
+
+#. module: modryn_atelier
+#: model_terms:ir.ui.view,arch_db:modryn_atelier.dashboard
+msgid ""
+"<select id=\"task_priority\" name=\"priority\" class=\"form-select\">\n"
+"                                    <option value=\"0\">Low</option>\n"
+"                                    <option value=\"1\" selected=\"selected\">Normal</option>\n"
+"                                    <option value=\"2\">High</option>\n"
+"                                </select>"
+msgstr ""
+"<select id=\"task_priority\" name=\"priority\" class=\"form-select\">\n"
+"                                    <option value=\"0\">منخفضة</option>\n"
+"                                    <option value=\"1\" selected=\"selected\">عادية</option>\n"
+"                                    <option value=\"2\">عالية</option>\n"
+"                                </select>"
+
+#. module: modryn_atelier
+#: model_terms:ir.ui.view,arch_db:modryn_atelier.dashboard
+msgid "<span class=\"form-label d-block\">Pieces</span>"
+msgstr "<span class=\"form-label d-block\">الأجزاء</span>"
+
+#. module: modryn_atelier
+#. odoo-python
+#: code:addons/modryn_atelier/models/garment_piece.py:0
+msgid "A garment piece needs a name."
+msgstr "يجب إدخال اسم للجزء."
+
+#. module: modryn_atelier
+#: model_terms:ir.ui.view,arch_db:modryn_atelier.manage_pieces
+msgid "Add"
+msgstr "إضافة"
+
+#. module: modryn_atelier
+#: model:ir.model,name:modryn_atelier.model_modryn_alteration_task
+msgid "Alteration task"
+msgstr "مهمة تعديل"
+
+#. module: modryn_atelier
+#: model_terms:ir.ui.view,arch_db:modryn_atelier.manage_pieces
+msgid "Archive"
+msgstr "أرشفة"
+
+#. module: modryn_atelier
+#: model_terms:ir.ui.view,arch_db:modryn_atelier.dashboard
+msgid "Assign"
+msgstr "تعيين"
+
+#. module: modryn_atelier
+#: model_terms:ir.ui.view,arch_db:modryn_atelier.dashboard
+msgid "Create task"
+msgstr "إنشاء المهمة"
+
+#. module: modryn_atelier
+#: model:ir.model.fields,field_description:modryn_atelier.field_modryn_alteration_task__partner_id
+msgid "Customer"
+msgstr "الزبونة"
+
+#. module: modryn_atelier
+#: model:ir.model.fields,field_description:modryn_atelier.field_modryn_alteration_task__customer_name
+msgid "Customer Name"
+msgstr "اسم الزبونة"
+
+#. module: modryn_atelier
+#: model_terms:ir.ui.view,arch_db:modryn_atelier.dashboard
+msgid "Customer name"
+msgstr "اسم الزبونة"
+
+#. module: modryn_atelier
+#: model:ir.model.fields,field_description:modryn_atelier.field_modryn_alteration_task__customer_phone
+msgid "Customer Phone"
+msgstr "هاتف الزبونة"
+
+#. module: modryn_atelier
+#: model:ir.model.fields.selection,name:modryn_atelier.selection__modryn_alteration_task__state__delivered
+msgid "Delivered"
+msgstr "تم التسليم"
+
+#. module: modryn_atelier
+#: model:ir.model.fields,field_description:modryn_atelier.field_modryn_alteration_task__delivered_at
+msgid "Delivered At"
+msgstr "تاريخ التسليم"
+
+#. module: modryn_atelier
+#: model_terms:ir.ui.view,arch_db:modryn_atelier.dashboard
+msgid "Dress"
+msgstr "الفستان"
+
+#. module: modryn_atelier
+#: model:ir.model.fields,field_description:modryn_atelier.field_modryn_alteration_task__variant_id
+msgid "Dress / size"
+msgstr "الفستان / المقاس"
+
+#. module: modryn_atelier
+#: model:ir.model.fields,field_description:modryn_atelier.field_modryn_alteration_task__due_date
+msgid "Due"
+msgstr "الموعد النهائي"
+
+#. module: modryn_atelier
+#. odoo-python
+#: code:addons/modryn_atelier/models/alteration_task.py:0
+msgid "due %s"
+msgstr "بحلول %s"
+
+#. module: modryn_atelier
+#: model_terms:ir.ui.view,arch_db:modryn_atelier.dashboard
+msgid "Due date"
+msgstr "الموعد النهائي"
+
+#. module: modryn_atelier
+#: model:ir.model,name:modryn_atelier.model_modryn_garment_piece
+msgid "Garment piece"
+msgstr "جزء من الفستان"
+
+#. module: modryn_atelier
+#: model_terms:ir.ui.view,arch_db:modryn_atelier.dashboard
+#: model_terms:ir.ui.view,arch_db:modryn_atelier.manage_pieces
+msgid "Garment pieces"
+msgstr "أجزاء الفستان"
+
+#. module: modryn_atelier
+#: model:ir.model.fields.selection,name:modryn_atelier.selection__modryn_alteration_task__priority__2
+#: model_terms:ir.ui.view,arch_db:modryn_atelier.dashboard
+msgid "High"
+msgstr "عالية"
+
+#. module: modryn_atelier
+#: model:ir.model.fields.selection,name:modryn_atelier.selection__modryn_alteration_task__state__in_progress
+msgid "In progress"
+msgstr "قيد العمل"
+
+#. module: modryn_atelier
+#: model:ir.model.fields,field_description:modryn_atelier.field_modryn_alteration_task__note
+msgid "Instructions"
+msgstr "تعليمات"
+
+#. module: modryn_atelier
+#: model:ir.model.fields.selection,name:modryn_atelier.selection__modryn_alteration_task__state__intake
+msgid "Intake"
+msgstr "الاستلام"
+
+#. module: modryn_atelier
+#: model:ir.model.fields,field_description:modryn_atelier.field_modryn_alteration_task__is_overdue
+msgid "Is Overdue"
+msgstr "متأخرة"
+
+#. module: modryn_atelier
+#: model:ir.model.fields.selection,name:modryn_atelier.selection__modryn_alteration_task__priority__0
+#: model_terms:ir.ui.view,arch_db:modryn_atelier.dashboard
+msgid "Low"
+msgstr "منخفضة"
+
+#. module: modryn_atelier
+#. odoo-python
+#: code:addons/modryn_atelier/models/alteration_task.py:0
+msgid "New alteration for you: %s"
+msgstr "تعديل جديد لكِ: %s"
+
+#. module: modryn_atelier
+#: model_terms:ir.ui.view,arch_db:modryn_atelier.manage_pieces
+msgid "New piece"
+msgstr "جزء جديد"
+
+#. module: modryn_atelier
+#: model_terms:ir.ui.view,arch_db:modryn_atelier.dashboard
+msgid "New task"
+msgstr "مهمة جديدة"
+
+#. module: modryn_atelier
+#: model_terms:ir.ui.view,arch_db:modryn_atelier.dashboard
+msgid "No staff to show."
+msgstr "لا توجد موظفات."
+
+#. module: modryn_atelier
+#: model:ir.model.fields.selection,name:modryn_atelier.selection__modryn_alteration_task__priority__1
+#: model_terms:ir.ui.view,arch_db:modryn_atelier.dashboard
+msgid "Normal"
+msgstr "عادية"
+
+#. module: modryn_atelier
+#: model_terms:ir.ui.view,arch_db:modryn_atelier.dashboard
+msgid "Note"
+msgstr "ملاحظة"
+
+#. module: modryn_atelier
+#: model_terms:ir.ui.view,arch_db:modryn_atelier.dashboard
+msgid "Nothing here."
+msgstr "لا توجد مهام هنا."
+
+#. module: modryn_atelier
+#: model_terms:ir.ui.view,arch_db:modryn_atelier.dashboard
+msgid "Nothing waiting — every open task has hands on it."
+msgstr "لا شيء في الانتظار — كل مهمة مفتوحة بين يدي خيّاطة."
+
+#. module: modryn_atelier
+#: model_terms:ir.ui.view,arch_db:modryn_atelier.dashboard
+msgid "open"
+msgstr "مفتوحة"
+
+#. module: modryn_atelier
+#: model_terms:ir.ui.view,arch_db:modryn_atelier.dashboard
+msgid "overdue"
+msgstr "متأخرة"
+
+#. module: modryn_atelier
+#: model_terms:ir.ui.view,arch_db:modryn_atelier.dashboard
+msgid "Phone"
+msgstr "الهاتف"
+
+#. module: modryn_atelier
+#. odoo-python
+#: code:addons/modryn_atelier/controllers/atelier.py:0
+#: model:ir.model.fields,field_description:modryn_atelier.field_modryn_alteration_task__piece_ids
+msgid "Pieces"
+msgstr "الأجزاء"
+
+#. module: modryn_atelier
+#. odoo-python
+#: code:addons/modryn_atelier/controllers/atelier.py:0
+msgid "Please choose a due date"
+msgstr "يُرجى اختيار الموعد النهائي"
+
+#. module: modryn_atelier
+#. odoo-python
+#: code:addons/modryn_atelier/controllers/atelier.py:0
+msgid "Please choose a priority"
+msgstr "يُرجى اختيار الأولوية"
+
+#. module: modryn_atelier
+#. odoo-python
+#: code:addons/modryn_atelier/controllers/atelier.py:0
+msgid "Please enter a name"
+msgstr "يُرجى إدخال اسم"
+
+#. module: modryn_atelier
+#. odoo-python
+#: code:addons/modryn_atelier/controllers/atelier.py:0
+msgid "Please enter the customer's name"
+msgstr "يُرجى إدخال اسم الزبونة"
+
+#. module: modryn_atelier
+#: model:ir.model.fields,field_description:modryn_atelier.field_modryn_alteration_task__priority
+#: model_terms:ir.ui.view,arch_db:modryn_atelier.dashboard
+msgid "Priority"
+msgstr "الأولوية"
+
+#. module: modryn_atelier
+#: model_terms:ir.ui.view,arch_db:modryn_atelier.dashboard
+msgid "Queue"
+msgstr "طابور العمل"
+
+#. module: modryn_atelier
+#: model:ir.model.fields.selection,name:modryn_atelier.selection__modryn_alteration_task__state__ready
+msgid "Ready"
+msgstr "جاهزة"
+
+#. module: modryn_atelier
+#: model_terms:ir.ui.view,arch_db:modryn_atelier.manage_pieces
+msgid "Restore"
+msgstr "استعادة"
+
+#. module: modryn_atelier
+#: model_terms:ir.ui.view,arch_db:modryn_atelier.dashboard
+msgid "Save"
+msgstr "حفظ"
+
+#. module: modryn_atelier
+#: model:ir.model.fields,field_description:modryn_atelier.field_modryn_alteration_task__seamstress_id
+#: model_terms:ir.ui.view,arch_db:modryn_atelier.dashboard
+msgid "Seamstress"
+msgstr "خيّاطة"
+
+#. module: modryn_atelier
+#. odoo-python
+#: code:addons/modryn_atelier/controllers/atelier.py:0
+msgid "Something went wrong."
+msgstr "حدث خطأ ما."
+
+#. module: modryn_atelier
+#. odoo-python
+#: code:addons/modryn_atelier/controllers/atelier.py:0
+msgid "That garment piece already exists"
+msgstr "هذا الجزء موجود بالفعل"
+
+#. module: modryn_atelier
+#: model:ir.model.constraint,message:modryn_atelier.constraint_modryn_garment_piece_name_uniq
+msgid "That garment piece already exists."
+msgstr "هذا الجزء موجود بالفعل."
+
+#. module: modryn_atelier
+#. odoo-python
+#: code:addons/modryn_atelier/models/alteration_task.py:0
+msgid "That staff member is archived."
+msgstr "هذه الموظفة مؤرشفة."
+
+#. module: modryn_atelier
+#: model_terms:ir.ui.view,arch_db:modryn_atelier.manage_pieces
+msgid "The parts of a garment your workshop alters. Add whatever this boutique needs."
+msgstr "أجزاء الفستان التي تعدّلها ورشتك. أضيفي ما يحتاجه هذا البوتيك."
+
+#. module: modryn_atelier
+#: model_terms:ir.ui.view,arch_db:modryn_atelier.dashboard
+msgid "Unassigned"
+msgstr "غير معيّنة"
+
+#. module: modryn_atelier
+#: model_terms:ir.ui.view,arch_db:modryn_atelier.dashboard
+msgid "Workload"
+msgstr "عبء العمل"
+
+#. module: modryn_atelier
+#. odoo-python
+#: code:addons/modryn_atelier/controllers/atelier.py:0
+#: model_terms:ir.ui.view,arch_db:modryn_atelier.dashboard
+msgid "Workshop"
+msgstr "الورشة"

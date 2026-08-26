@@ -13,6 +13,34 @@ msgstr ""
 
 #. module: modryn_ops
 #: model_terms:ir.ui.view,arch_db:modryn_ops.manage_checklists
+msgid ""
+"<select name=\"kind\" class=\"form-select w-auto\">\n"
+"                    <option value=\"opening\">Opening</option>\n"
+"                    <option value=\"closing\">Closing</option>\n"
+"                </select>"
+msgstr ""
+"<select name=\"kind\" class=\"form-select w-auto\">\n"
+"                    <option value=\"opening\">פתיחה</option>\n"
+"                    <option value=\"closing\">סגירה</option>\n"
+"                </select>"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_audit
+msgid "<span class=\"modryn_sub\"> → </span>"
+msgstr "<span class=\"modryn_sub\"> ← </span>"
+
+#. module: modryn_ops
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_audit_log__actor_name
+msgid "Actor Name"
+msgstr "שם המבצעת"
+
+#. module: modryn_ops
+#: model:ir.model.fields.selection,name:modryn_ops.selection__modryn_task__task_type__adhoc
+msgid "Ad hoc"
+msgstr "משימה מזדמנת"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_checklists
 msgid "Add"
 msgstr "הוספה"
 
@@ -37,6 +65,11 @@ msgstr "יומן שינויים"
 #: model_terms:ir.ui.view,arch_db:modryn_ops.manage_reports
 msgid "Avg sale (₪)"
 msgstr "מכירה ממוצעת (₪)"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_reports
+msgid "avg sale ₪"
+msgstr "מכירה ממוצעת ₪"
 
 #. module: modryn_ops
 #: model_terms:ir.ui.view,arch_db:modryn_ops.manage_reports
@@ -71,11 +104,26 @@ msgid "Closed"
 msgstr "נסגרו"
 
 #. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_reports
+msgid "closed"
+msgstr "שנסגרו"
+
+#. module: modryn_ops
 #: model:ir.model.fields.selection,name:modryn_ops.selection__modryn_task__task_type__closing
 #: model:ir.model.fields.selection,name:modryn_ops.selection__modryn_task_template__kind__closing
 #: model_terms:ir.ui.view,arch_db:modryn_ops.manage_checklists
 msgid "Closing"
 msgstr "סגירה"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_reports
+msgid "completed"
+msgstr "הושלמו"
+
+#. module: modryn_ops
+#: model:ir.model,name:modryn_ops.model_res_partner
+msgid "Contact"
+msgstr "לקוחה"
 
 #. module: modryn_ops
 #: model_terms:ir.ui.view,arch_db:modryn_ops.manage_reports
@@ -88,14 +136,89 @@ msgid "Conversion"
 msgstr "המרה"
 
 #. module: modryn_ops
+#: model:ir.model,website_form_label:modryn_ops.model_res_partner
+msgid "Create a Customer"
+msgstr "יצירת לקוחה"
+
+#. module: modryn_ops
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_task__customer_name
+msgid "Customer Name"
+msgstr "שם הלקוחה"
+
+#. module: modryn_ops
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_task__customer_phone
+msgid "Customer Phone"
+msgstr "טלפון הלקוחה"
+
+#. module: modryn_ops
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_task__day
+msgid "Day"
+msgstr "יום"
+
+#. module: modryn_ops
+#: model:ir.model.fields.selection,name:modryn_ops.selection__modryn_task__state__done
+msgid "Done"
+msgstr "בוצעה"
+
+#. module: modryn_ops
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_task__done_at
+msgid "Done At"
+msgstr "בוצעה בתאריך"
+
+#. module: modryn_ops
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_task__done_by_id
+msgid "Done By"
+msgstr "בוצעה על ידי"
+
+#. module: modryn_ops
 #: model_terms:ir.ui.view,arch_db:modryn_ops.manage_checklists
 msgid "Due"
 msgstr "שעה"
 
 #. module: modryn_ops
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_task__due_at
+msgid "Due At"
+msgstr "תאריך יעד"
+
+#. module: modryn_ops
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_task_template__due_hour
+msgid "Due Hour"
+msgstr "שעת יעד"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_checklists
+msgid "e.g. Steam the window gowns"
+msgstr "לדוגמה: לגהץ את שמלות החלון"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_audit
+msgid "entries"
+msgstr "רשומות"
+
+#. module: modryn_ops
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_task__escalated_at
+msgid "Escalated At"
+msgstr "התראה נשלחה בתאריך"
+
+#. module: modryn_ops
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_task__event_id
+msgid "Event"
+msgstr "פגישה"
+
+#. module: modryn_ops
 #: model_terms:ir.ui.view,arch_db:modryn_ops.manage_reports
 msgid "Feedback texts sent"
 msgstr "הודעות משוב שנשלחו"
+
+#. module: modryn_ops
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_audit_log__field
+msgid "Field"
+msgstr "שדה"
+
+#. module: modryn_ops
+#: model:ir.model,name:modryn_ops.model_modryn_task
+msgid "Floor task"
+msgstr "משימת רצפה"
 
 #. module: modryn_ops
 #. odoo-python
@@ -104,9 +227,19 @@ msgid "Follow up: %s"
 msgstr "מעקב: %s"
 
 #. module: modryn_ops
+#: model:ir.model.fields.selection,name:modryn_ops.selection__modryn_task__task_type__follow_up
+msgid "Follow-up"
+msgstr "מעקב"
+
+#. module: modryn_ops
 #: model_terms:ir.ui.view,arch_db:modryn_ops.manage_reports
 msgid "Follow-ups done"
 msgstr "מעקבים שבוצעו"
+
+#. module: modryn_ops
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_task__is_overdue
+msgid "Is Overdue"
+msgstr "באיחור"
 
 #. module: modryn_ops
 #: model_terms:ir.ui.view,arch_db:modryn_ops.manage_checklists
@@ -114,13 +247,119 @@ msgid "Item"
 msgstr "פריט"
 
 #. module: modryn_ops
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_task_template__kind
+msgid "Kind"
+msgstr "סוג"
+
+#. module: modryn_ops
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_audit_log__label
+msgid "Label"
+msgstr "תווית"
+
+#. module: modryn_ops
 #: model_terms:ir.ui.view,arch_db:modryn_ops.manage_reports
 msgid ""
 "Made entirely of recorded outcomes — the \"to close\" badge on the floor board\n"
 "                is what keeps these numbers honest."
-msgstr ""
-"עשוי כולו מתוצאות שנרשמו — תג \"לסגירה\" בלוח הרצפה הוא ששומר על המספרים "
-"כנים."
+msgstr "עשוי כולו מתוצאות שנרשמו — תג \"לסגירה\" בלוח הרצפה הוא ששומר על המספרים כנים."
+
+#. module: modryn_ops
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_audit_log__model
+msgid "Model"
+msgstr "מודל"
+
+#. module: modryn_ops
+#: model:ir.model.fields,field_description:modryn_ops.field_res_partner__modryn_budget
+#: model:ir.model.fields,field_description:modryn_ops.field_res_users__modryn_budget
+msgid "Modryn Budget"
+msgstr "Modryn תקציב"
+
+#. module: modryn_ops
+#: model:ir.model.fields,field_description:modryn_ops.field_res_partner__modryn_category
+#: model:ir.model.fields,field_description:modryn_ops.field_res_users__modryn_category
+msgid "Modryn Category"
+msgstr "Modryn קטגוריה"
+
+#. module: modryn_ops
+#: model:ir.model.fields,field_description:modryn_ops.field_calendar_event__modryn_feedback_sent_at
+msgid "Modryn Feedback Sent At"
+msgstr "Modryn משוב נשלח בתאריך"
+
+#. module: modryn_ops
+#: model:ir.model.fields,field_description:modryn_ops.field_res_partner__modryn_measurements
+#: model:ir.model.fields,field_description:modryn_ops.field_res_users__modryn_measurements
+msgid "Modryn Measurements"
+msgstr "Modryn מידות"
+
+#. module: modryn_ops
+#: model:ir.model.fields,field_description:modryn_ops.field_res_partner__modryn_notes
+#: model:ir.model.fields,field_description:modryn_ops.field_res_users__modryn_notes
+msgid "Modryn Notes"
+msgstr "Modryn הערות"
+
+#. module: modryn_ops
+#: model:ir.model.fields,field_description:modryn_ops.field_calendar_event__modryn_outcome
+msgid "Modryn Outcome"
+msgstr "Modryn תוצאה"
+
+#. module: modryn_ops
+#: model:ir.model.fields,field_description:modryn_ops.field_calendar_event__modryn_outcome_at
+msgid "Modryn Outcome At"
+msgstr "Modryn תוצאה נרשמה בתאריך"
+
+#. module: modryn_ops
+#: model:ir.model.fields,field_description:modryn_ops.field_calendar_event__modryn_outcome_by_id
+msgid "Modryn Outcome By"
+msgstr "Modryn תוצאה נרשמה על ידי"
+
+#. module: modryn_ops
+#: model:ir.model.fields,field_description:modryn_ops.field_calendar_event__modryn_outcome_note
+msgid "Modryn Outcome Note"
+msgstr "Modryn הערת תוצאה"
+
+#. module: modryn_ops
+#: model:ir.model.fields,field_description:modryn_ops.field_res_partner__modryn_party_notes
+#: model:ir.model.fields,field_description:modryn_ops.field_res_users__modryn_party_notes
+msgid "Modryn Party Notes"
+msgstr "Modryn הערות מלווים"
+
+#. module: modryn_ops
+#: model:ir.model.fields,field_description:modryn_ops.field_calendar_event__modryn_sale_amount
+msgid "Modryn Sale Amount"
+msgstr "Modryn סכום מכירה"
+
+#. module: modryn_ops
+#: model:ir.model.fields,field_description:modryn_ops.field_calendar_event__modryn_sale_items
+msgid "Modryn Sale Items"
+msgstr "Modryn פריטי מכירה"
+
+#. module: modryn_ops
+#: model:ir.model.fields,field_description:modryn_ops.field_res_partner__modryn_wedding_date
+#: model:ir.model.fields,field_description:modryn_ops.field_res_users__modryn_wedding_date
+msgid "Modryn Wedding Date"
+msgstr "Modryn תאריך חתונה"
+
+#. module: modryn_ops
+#: model:ir.actions.server,name:modryn_ops.ir_cron_escalate_overdue_tasks_ir_actions_server
+msgid "MODRYN: escalate overdue floor tasks"
+msgstr "MODRYN: התראה על משימות רצפה באיחור"
+
+#. module: modryn_ops
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_audit_log__new
+msgid "New"
+msgstr "חדש"
+
+#. module: modryn_ops
+#. odoo-python
+#: code:addons/modryn_ops/models/task.py:0
+msgid "New task for you: %(name)s — %(customer)s"
+msgstr "משימה חדשה עבורך: %(name)s — %(customer)s"
+
+#. module: modryn_ops
+#. odoo-python
+#: code:addons/modryn_ops/models/task.py:0
+msgid "New task for you: %s"
+msgstr "משימה חדשה עבורך: %s"
 
 #. module: modryn_ops
 #: model_terms:ir.ui.view,arch_db:modryn_ops.manage_audit
@@ -143,9 +382,19 @@ msgid "No-show"
 msgstr "לא הגיעה"
 
 #. module: modryn_ops
+#: model:ir.model.fields.selection,name:modryn_ops.selection__modryn_task__task_type__no_show_recovery
+msgid "No-show recovery"
+msgstr "תיאום אחרי אי-הגעה"
+
+#. module: modryn_ops
 #: model_terms:ir.ui.view,arch_db:modryn_ops.manage_reports
 msgid "No-shows"
 msgstr "אי-הגעות"
+
+#. module: modryn_ops
+#: model:ir.model.fields.selection,name:modryn_ops.selection__res_partner__modryn_category__not_purchased
+msgid "Not purchased"
+msgstr "לא רכשה"
 
 #. module: modryn_ops
 #: model:ir.model.fields.selection,name:modryn_ops.selection__calendar_event__modryn_outcome__not_sold
@@ -158,9 +407,29 @@ msgid "Nothing has been changed yet."
 msgstr "עוד לא בוצעו שינויים."
 
 #. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_reports
+msgid "of"
+msgstr "מתוך"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_reports
+msgid "of not-sold fittings"
+msgstr "ממדידות שלא נמכרו"
+
+#. module: modryn_ops
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_audit_log__old
+msgid "Old"
+msgstr "ישן"
+
+#. module: modryn_ops
 #: model_terms:ir.ui.view,arch_db:modryn_ops.manage_audit
 msgid "Older"
 msgstr "ישן יותר"
+
+#. module: modryn_ops
+#: model:ir.model.fields.selection,name:modryn_ops.selection__modryn_task__state__open
+msgid "Open"
+msgstr "פתוחה"
 
 #. module: modryn_ops
 #: model:ir.model.fields.selection,name:modryn_ops.selection__modryn_task__task_type__opening
@@ -176,6 +445,12 @@ msgid "Overdue on the floor board: %(names)s"
 msgstr "משימות באיחור בלוח הרצפה: %(names)s"
 
 #. module: modryn_ops
+#. odoo-python
+#: code:addons/modryn_ops/controllers/tasks.py:0
+msgid "Please enter a name"
+msgstr "נא להזין שם"
+
+#. module: modryn_ops
 #: model:ir.model.fields.selection,name:modryn_ops.selection__res_partner__modryn_category__purchased
 msgid "Purchased"
 msgstr "רכשה"
@@ -187,11 +462,21 @@ msgid "Rebook after no-show: %s"
 msgstr "תיאום מחדש אחרי אי-הגעה: %s"
 
 #. module: modryn_ops
+#: model:ir.model,name:modryn_ops.model_modryn_task_template
+msgid "Recurring checklist item"
+msgstr "פריט צ'קליסט קבוע"
+
+#. module: modryn_ops
 #. odoo-python
 #: code:addons/modryn_ops/controllers/reports.py:0
 #: model_terms:ir.ui.view,arch_db:modryn_ops.manage_reports
 msgid "Reports"
 msgstr "דוחות"
+
+#. module: modryn_ops
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_audit_log__res_id
+msgid "Res"
+msgstr "רשומה"
 
 #. module: modryn_ops
 #: model_terms:ir.ui.view,arch_db:modryn_ops.manage_checklists
@@ -216,6 +501,11 @@ msgstr "נמכר"
 
 #. module: modryn_ops
 #: model_terms:ir.ui.view,arch_db:modryn_ops.manage_reports
+msgid "sold /"
+msgstr "נמכרו /"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_reports
 msgid "Stylist"
 msgstr "סטייליסטית"
 
@@ -232,41 +522,67 @@ msgid "Task reopened: %s"
 msgstr "משימה נפתחה מחדש: %s"
 
 #. module: modryn_ops
-#. odoo-python
-#: code:addons/modryn_ops/models/calendar_event.py:0
-msgid ""
-"Thank you for visiting %(boutique)s! We'd love to hear how it went — just "
-"reply to this message."
-msgstr ""
-"תודה שביקרת ב%(boutique)s! נשמח לשמוע איך היה — פשוט השיבי להודעה הזו."
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_task__task_type
+msgid "Task Type"
+msgstr "סוג משימה"
+
+#. module: modryn_ops
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_task__template_id
+msgid "Template"
+msgstr "תבנית"
 
 #. module: modryn_ops
 #. odoo-python
 #: code:addons/modryn_ops/models/calendar_event.py:0
-msgid ""
-"Thank you for visiting %(boutique)s! We're so happy for you — we'll be in "
-"touch about the next steps."
-msgstr ""
-"תודה שביקרת ב%(boutique)s! אנחנו כל כך שמחות בשבילך — נהיה בקשר לגבי ההמשך."
+msgid "Thank you for visiting %(boutique)s! We'd love to hear how it went — just reply to this message."
+msgstr "תודה שביקרת ב%(boutique)s! נשמח לשמוע איך היה — פשוט השיבי להודעה הזו."
+
+#. module: modryn_ops
+#. odoo-python
+#: code:addons/modryn_ops/models/calendar_event.py:0
+msgid "Thank you for visiting %(boutique)s! We're so happy for you — we'll be in touch about the next steps."
+msgstr "תודה שביקרת ב%(boutique)s! אנחנו כל כך שמחות בשבילך — נהיה בקשר לגבי ההמשך."
+
+#. module: modryn_ops
+#. odoo-python
+#: code:addons/modryn_ops/controllers/tasks.py:0
+msgid "That checklist item already exists"
+msgstr "פריט הצ'קליסט כבר קיים"
+
+#. module: modryn_ops
+#. odoo-python
+#: code:addons/modryn_ops/models/task.py:0
+msgid "That checklist item already exists."
+msgstr "פריט הצ'קליסט כבר קיים."
+
+#. module: modryn_ops
+#. odoo-python
+#: code:addons/modryn_ops/models/task.py:0
+msgid "The hour must be between 0 and 24."
+msgstr "השעה חייבת להיות בין 0 ל-24."
 
 #. module: modryn_ops
 #: model_terms:ir.ui.view,arch_db:modryn_ops.manage_checklists
 msgid ""
 "The opening and closing routine, as data. Every morning the floor board\n"
 "                materialises today's list; anyone on shift ticks the items off."
-msgstr ""
-"שגרת הפתיחה והסגירה, כנתונים. בכל בוקר לוח הרצפה יוצר את רשימת היום; מי "
-"שבמשמרת מסמנת את הפריטים."
+msgstr "שגרת הפתיחה והסגירה, כנתונים. בכל בוקר לוח הרצפה יוצר את רשימת היום; מי שבמשמרת מסמנת את הפריטים."
+
+#. module: modryn_ops
+#: model:ir.model.constraint,message:modryn_ops.constraint_modryn_task_modryn_one_instance_per_day
+msgid "Today's checklist already has this item"
+msgstr "הפריט כבר קיים בצ'קליסט של היום"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_reports
+msgid "unique brides who bought"
+msgstr "כלות ייחודיות שרכשו"
 
 #. module: modryn_ops
 #. odoo-python
 #: code:addons/modryn_ops/models/calendar_event.py:0
-msgid ""
-"We missed you today at %(boutique)s. Life happens! Book a new time here: "
-"%(book_link)s"
-msgstr ""
-"התגעגענו אלייך היום ב%(boutique)s. קורה! אפשר לקבוע תור חדש כאן: "
-"%(book_link)s"
+msgid "We missed you today at %(boutique)s. Life happens! Book a new time here: %(book_link)s"
+msgstr "התגעגענו אלייך היום ב%(boutique)s. קורה! אפשר לקבוע תור חדש כאן: %(book_link)s"
 
 #. module: modryn_ops
 #: model_terms:ir.ui.view,arch_db:modryn_ops.manage_audit
@@ -283,60 +599,3 @@ msgstr "מתי"
 #: model_terms:ir.ui.view,arch_db:modryn_ops.manage_audit
 msgid "Who"
 msgstr "מי"
-
-#. module: modryn_ops
-#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_reports
-msgid "avg sale ₪"
-msgstr "מכירה ממוצעת ₪"
-
-#. module: modryn_ops
-#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_reports
-msgid "closed"
-msgstr "שנסגרו"
-
-#. module: modryn_ops
-#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_reports
-msgid "completed"
-msgstr "הושלמו"
-
-#. module: modryn_ops
-#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_checklists
-msgid "e.g. Steam the window gowns"
-msgstr "לדוגמה: לגהץ את שמלות החלון"
-
-#. module: modryn_ops
-#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_audit
-msgid "entries"
-msgstr "רשומות"
-
-#. module: modryn_ops
-#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_reports
-msgid "of"
-msgstr "מתוך"
-
-#. module: modryn_ops
-#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_reports
-msgid "of not-sold fittings"
-msgstr "ממדידות שלא נמכרו"
-
-#. module: modryn_ops
-#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_reports
-msgid "sold /"
-msgstr "נמכרו /"
-
-#. module: modryn_ops
-#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_reports
-msgid "unique brides who bought"
-msgstr "כלות ייחודיות שרכשו"
-
-#. module: modryn_ops
-#. odoo-python
-#: code:addons/modryn_ops/models/task.py:0
-msgid "New task for you: %(name)s — %(customer)s"
-msgstr "משימה חדשה עבורך: %(name)s — %(customer)s"
-
-#. module: modryn_ops
-#. odoo-python
-#: code:addons/modryn_ops/models/task.py:0
-msgid "New task for you: %s"
-msgstr "משימה חדשה עבורך: %s"

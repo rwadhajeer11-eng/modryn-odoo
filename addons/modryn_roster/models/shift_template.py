@@ -34,6 +34,23 @@ def type_for_hour(start_hour):
     return 'night'
 
 
+def weekday_name(day):
+    """The name of a date's weekday, in the READER's language.
+
+    date.strftime('%A') cannot do this. It formats through the C locale, which
+    on this server is English and stays English no matter who is looking - so
+    the roster table printed "Monday" down its header on a Hebrew-first page,
+    and the screen readers' cell labels came out half Hebrew, half English
+    ("בוקר Monday 31.08"). Nothing errored; it simply was not translated, which
+    is the failure mode that survives a review.
+
+    weekday_selection() is already the translated list and is already the source
+    the shift forms render from, so reading it here keeps one set of day names
+    in the product instead of two that can disagree.
+    """
+    return dict(weekday_selection()).get(str(day.weekday()), '')
+
+
 def weekday_selection():
     return [
         ('6', _("Sunday")),
