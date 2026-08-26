@@ -81,6 +81,18 @@ PEOPLE = {
         ('עדן לוי',     sales,      'manager', 'eden',  '054-5550002'),
         ('גל שרון',     seamstress, 'staff',   'gal',   '054-5550003'),
     ],
+    # The throwaway QA tenant — the one qa/README.md tells you to point the
+    # browser suite at, because it carries modryn.twilio.disabled and because
+    # write-tests mutate state that verify.sh then reads back off bella.
+    # It was the ONLY slug the guard below refused, so the tenant existed and
+    # could not be seeded: every @writes spec needs a login to sign in with.
+    # Latin names on purpose — this is not a boutique and nothing here is shown
+    # to a customer, so a failing assertion prints something legible.
+    'qa': [
+        ('QA Owner',    sales,      'owner',   'qaowner',   '050-5550001'),
+        ('QA Manager',  sales,      'manager', 'qamanager', '050-5550002'),
+        ('QA Seamstress', seamstress, 'staff', 'qastaff',   '050-5550003'),
+    ],
 }
 
 created = []

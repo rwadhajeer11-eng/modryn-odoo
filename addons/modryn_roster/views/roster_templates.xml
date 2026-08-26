@@ -30,11 +30,65 @@
                    t-if="week_offset &lt; 1" class="btn btn-sm btn-outline-dark">Following week</a>
             </div>
 
+            <!-- The deadline, stated. A window that only greys a button out is
+                 not a deadline anyone can plan around; she has to be able to see
+                 when it shuts before she decides to come back later. -->
+            <div t-attf-class="modryn_panel mb-3 #{'' if window_open else 'modryn_archived'}">
+                <t t-if="window_open">
+                    <span class="modryn_badge is_free">Open</span>
+                    Submissions close
+                    <strong dir="ltr" t-esc="window_closes.strftime('%d.%m %H:%M')"/>
+                </t>
+                <t t-else="">
+                    <span class="modryn_badge is_muted">Closed</span>
+                    This week opens
+                    <strong dir="ltr" t-esc="window_opens.strftime('%d.%m %H:%M')"/>
+                    and closes
+                    <strong dir="ltr" t-esc="window_closes.strftime('%d.%m %H:%M')"/>
+                </t>
+            </div>
+
+            <!-- Manager: which parts of the day the boutique is not running at
+                 all this week. Ticking one does not delete anybody's answer —
+                 the ticks stay and come back if she unblocks. -->
+            <div t-if="is_manager" class="modryn_panel mb-3">
+                <span class="modryn_sub">Not running this week:</span>
+                <t t-foreach="shift_types" t-as="st">
+                    <label class="modryn_piece_check ms-2">
+                        <input type="checkbox" class="modryn_block_type"
+                               t-att-data-type="st[0]"
+                               t-att-checked="'checked' if st[0] in blocked_types else None"/>
+                        <span t-out="st[1]"/>
+                    </label>
+                </t>
+            </div>
+
+            <!-- Her answer for the week: the note, and the act of sending it.
+                 Separate from the per-shift ticks on purpose — those are a
+                 draft she can change her mind about, this is the moment she
+                 tells the manager to build on them. -->
+            <div t-if="me and not is_manager" class="modryn_panel mb-3">
+                <label class="form-label" for="modryn_week_note">
+                    Anything we should know?
+                </label>
+                <textarea id="modryn_week_note" class="form-control mb-2" rows="2"
+                          t-att-disabled="None if window_open else 'disabled'"
+                          t-out="my_note"/>
+                <button type="button" id="modryn_send_week" class="btn btn-primary"
+                        t-att-disabled="None if window_open else 'disabled'">
+                    Send my week
+                </button>
+                <span t-if="my_submitted_at" class="modryn_sub ms-2">
+                    Sent <span dir="ltr" t-esc="my_submitted_at.strftime('%d.%m %H:%M')"/>
+                </span>
+                <span t-else="" class="modryn_sub ms-2">Not sent yet</span>
+            </div>
+
             <div class="modryn_roster_grid"
                  t-att-data-week="week_offset"
                  t-att-data-manager="'1' if is_manager else '0'">
                 <t t-foreach="slots" t-as="slot">
-                    <div t-attf-class="modryn_shift_card #{'is_short' if slot['short_total'] else ''} #{'is_published' if slot['published'] else ''}"
+                    <div t-attf-class="modryn_shift_card #{'is_short' if slot['short_total'] else ''} #{'is_published' if slot['published'] else ''} #{'modryn_archived' if slot['blocked'] else ''}"
                          t-att-data-slot="slot['id']">
                         <div class="modryn_shift_head">
                             <span class="modryn_strong"><t t-esc="slot['name']"/></span>
@@ -62,11 +116,17 @@
                         </div>
                         <p t-else="" class="modryn_sub mb-0">Nobody rostered yet</p>
 
-                        <!-- What staff do here: offer, or withdraw. -->
+                        <!-- What staff do here: offer, or withdraw. Disabled once
+                             the window shuts, and the route refuses it there too
+                             — a greyed button is a courtesy, not a deadline. -->
                         <div t-if="not slot['published']" class="modryn_shift_actions">
-                            <button type="button"
+                            <p t-if="slot['blocked']" class="modryn_sub mb-0">
+                                Not running this week
+                            </p>
+                            <button t-else="" type="button"
                                     t-attf-class="btn btn-sm #{'btn-primary' if slot['i_am_available'] else 'btn-outline-dark'} modryn_avail_btn"
-                                    t-att-data-slot="slot['id']">
+                                    t-att-data-slot="slot['id']"
+                                    t-att-disabled="None if window_open else 'disabled'">
                                 <t t-if="slot['i_am_available']">I'm available</t>
                                 <t t-else="">I can work this</t>
                             </button>
@@ -95,6 +155,28 @@
                     </div>
                 </t>
             </div>
+
+            <!-- Who has answered, and what she said. One box each, because the
+                 note belongs to the WEEK and not to any shift — reading it off
+                 a card would mean repeating it on every card she ticked.
+                 A person with no row here has not looked yet, which is a
+                 different thing from a person who can work nothing, and the
+                 manager has to be able to tell them apart before she chases
+                 anyone. -->
+            <section t-if="is_manager" class="modryn_panel mt-4">
+                <h2 class="h5 mb-3">Answers for this week</h2>
+                <p t-if="not submissions" class="modryn_empty mb-0">
+                    Nobody has sent their week yet.
+                </p>
+                <div t-foreach="submissions" t-as="sub" class="mb-3">
+                    <span class="modryn_strong" t-out="sub['name']"/>
+                    <span t-if="sub['submitted_at']" class="modryn_badge is_free ms-2">
+                        Sent <span dir="ltr" t-esc="sub['submitted_at'].strftime('%d.%m %H:%M')"/>
+                    </span>
+                    <span t-else="" class="modryn_badge is_muted ms-2">Started, not sent</span>
+                    <div t-if="sub['note']" class="modryn_sub" t-out="sub['note']"/>
+                </div>
+            </section>
 
             <div t-if="is_manager" class="mt-4">
                 <button type="button" class="btn btn-primary" id="modryn_publish_week">

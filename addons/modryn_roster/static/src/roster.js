@@ -15,10 +15,55 @@ export class RosterPage extends Interaction {
     start() {
         this.el.addEventListener("click", (ev) => this.onClick(ev));
         this.el.addEventListener("change", (ev) => this.onChange(ev));
+        this.bindWeekControls();
         const publish = document.getElementById("modryn_publish_week");
         if (publish) {
             publish.addEventListener("click", () => this.publish());
         }
+    }
+
+    // The note, Send, and the manager's shift-type switches sit OUTSIDE the
+    // grid, so the grid's delegated listener never sees them. Bound explicitly
+    // rather than moved inside it: her answer is about the WEEK, not about any
+    // one shift card.
+    bindWeekControls() {
+        const send = document.getElementById("modryn_send_week");
+        if (send) {
+            send.addEventListener("click", () => this.send());
+        }
+        document.querySelectorAll(".modryn_block_type").forEach((box) => {
+            box.addEventListener("change", () => this.blockTypes());
+        });
+    }
+
+    async send() {
+        const note = document.getElementById("modryn_week_note");
+        const result = await rpc("/roster/send", {
+            week: this.week,
+            note: note ? note.value : "",
+        });
+        // window_closed is the case worth naming. She typed a note, pressed
+        // Send, and the deadline passed while the page sat open — reloading
+        // without a word would look exactly like a successful save.
+        if (result && result.error) {
+            window.alert(
+                result.error === "window_closed"
+                    ? "Submissions for that week have closed."
+                    : result.error
+            );
+        }
+        window.location.reload();
+    }
+
+    // Replace-set, matching the route: every box is read every time, so two
+    // managers on two phones cannot each toggle from a different reading of
+    // the same state.
+    async blockTypes() {
+        const types = [...document.querySelectorAll(".modryn_block_type")]
+            .filter((box) => box.checked)
+            .map((box) => box.dataset.type);
+        await rpc("/roster/block", { week: this.week, types });
+        window.location.reload();
     }
 
     async onClick(ev) {
