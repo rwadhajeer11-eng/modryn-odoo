@@ -168,7 +168,7 @@ msgid "Set"
 msgstr "עדכון"
 
 #. module: modryn_roster
-#: model:ir.model.constraint,message:modryn_roster.constraint_modryn_availability_slot_employee_uniq
+#: model:ir.model.constraint,message:modryn_roster.constraint_modryn_availability_day_type_employee_uniq
 msgid "She has already offered to work that shift."
 msgstr "היא כבר הציעה את עצמה למשמרת הזו."
 
@@ -260,3 +260,63 @@ msgstr "שלישי"
 #: code:addons/modryn_roster/models/shift_template.py:0
 msgid "Wednesday"
 msgstr "רביעי"
+
+#. module: modryn_roster
+#. odoo-python
+#: code:addons/modryn_roster/models/shift_template.py:0
+msgid "Morning"
+msgstr "בוקר"
+
+#. module: modryn_roster
+#. odoo-python
+#: code:addons/modryn_roster/models/shift_template.py:0
+msgid "Midday"
+msgstr "צהריים"
+
+#. module: modryn_roster
+#. odoo-python
+#: code:addons/modryn_roster/models/shift_template.py:0
+msgid "Evening"
+msgstr "ערב"
+
+#. module: modryn_roster
+#. odoo-python
+#: code:addons/modryn_roster/models/availability.py:0
+msgid "That day is not inside that week."
+msgstr "היום הזה לא נמצא בשבוע הזה."
+
+#. module: modryn_roster
+#. odoo-python
+#: code:addons/modryn_roster/models/availability.py:0
+msgid "The boutique isn't running that shift this week."
+msgstr "הסלון לא מפעיל את המשמרת הזו השבוע."
+
+#. module: modryn_roster
+#. odoo-python
+#: code:addons/modryn_roster/controllers/roster.py:0
+msgid "Please choose a day"
+msgstr "בחרי יום"
+
+#. module: modryn_roster
+#. odoo-python
+#: code:addons/modryn_roster/controllers/roster.py:0
+msgid "Please enter an opening and a closing time"
+msgstr "הזיני שעת פתיחה ושעת סגירה"
+
+#. module: modryn_roster
+#. odoo-python
+#: code:addons/modryn_roster/controllers/roster.py:0
+msgid "Could not save that window"
+msgstr "לא הצלחנו לשמור את החלון הזה"
+
+#. module: modryn_roster
+#. odoo-python
+#: code:addons/modryn_roster/controllers/roster.py:0
+msgid "Please enter a date and a time for both."
+msgstr "הזיני תאריך ושעה לשניהם."
+
+#. module: modryn_roster
+#. odoo-python
+#: code:addons/modryn_roster/controllers/roster.py:0
+msgid "Those dates aren't near the week you're planning."
+msgstr "התאריכים האלה רחוקים מהשבוע שאת מתכננת."

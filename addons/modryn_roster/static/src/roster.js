@@ -66,21 +66,71 @@ export class RosterPage extends Interaction {
         window.location.reload();
     }
 
+    // A cell is addressed by the DAY and the PART OF DAY it stands for, never
+    // by a slot id: the whole point of the grid is that she can offer Friday
+    // evening before the boutique has invented a Friday evening shift.
     async onClick(ev) {
-        const button = ev.target.closest(".modryn_avail_btn");
-        if (!button) {
+        const cell = ev.target.closest(".modryn_avail_cell");
+        if (!cell || cell.disabled) {
             return;
         }
+        // Paint first, then confirm. Twenty-one cells means she taps several in
+        // a row, and a round trip before any feedback makes every one of them
+        // feel broken. If the server disagrees, the class goes back below.
+        const wasOn = cell.classList.contains("is_on");
+        this.paint(cell, !wasOn);
+
         const result = await rpc("/roster/available", {
-            slot_id: parseInt(button.dataset.slot, 10),
+            day: cell.dataset.day,
+            shift_type: cell.dataset.type,
             week: this.week,
         });
-        // A refused toggle (the week went out while she was looking at it) has
-        // to say so, not silently do nothing.
+
         if (result && result.error) {
-            window.alert(result.error);
+            this.paint(cell, wasOn);
+            // A refused toggle - the week closed or was published while she was
+            // looking at it - has to say so, not silently do nothing. `message`
+            // is the translated sentence; `error` is the machine code, which is
+            // no use to a person but is what the load test matches on.
+            window.alert(result.message || result.error);
+            // Only a refusal costs a reload, and only because the reason for it
+            // (a closed window, a published week) changes the whole page.
+            window.location.reload();
+            return;
         }
-        window.location.reload();
+        // No reload on success. The old code threw away the grid the server had
+        // just built and reloaded the page for every single tap.
+        this.repaint(result);
+    }
+
+    paint(cell, on) {
+        cell.classList.toggle("is_on", on);
+        cell.setAttribute("aria-pressed", on ? "true" : "false");
+        // The glyph carries the state as well as the colour, so the cell still
+        // reads correctly to somebody who cannot tell the gold from the grey.
+        cell.innerHTML = on
+            ? '<i class="fa fa-check" aria-hidden="true"></i>'
+            : "";
+    }
+
+    // The manager's cards are rendered from the same response, so her view of
+    // who offered what stays true without a reload either.
+    repaint(result) {
+        if (!result || !Array.isArray(result.days)) {
+            return;
+        }
+        const byKey = {};
+        for (const day of result.days) {
+            for (const c of day.cells) {
+                byKey[`${c.day}|${c.shift_type}`] = c;
+            }
+        }
+        for (const cell of this.el.querySelectorAll(".modryn_avail_cell")) {
+            const c = byKey[`${cell.dataset.day}|${cell.dataset.type}`];
+            if (c) {
+                this.paint(cell, c.mine);
+            }
+        }
     }
 
     async onChange(ev) {

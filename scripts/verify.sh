@@ -600,7 +600,29 @@ curl -sg -b "$JAR" -c "$JAR" -o /dev/null -X POST "$TOKEN_URL" \
 SESSION=$(curl -sg -b "$JAR" -o /dev/null -w "%{http_code}" "$BELLA/floor")
 if [ "$SESSION" = "200" ]; then
   ok "staff sign-in succeeded"
-  for path in /floor /atelier; do
+  # The availability grid is seven days by three parts of the day, ALWAYS -
+  # it is computed from the calendar, not from however many shift templates the
+  # boutique happens to have. This is the one assertion in the suite that can
+  # actually go red if it regresses to being template-driven: the older checks
+  # ("at least 5 templates", "at least 5 slots") pass identically at 5 and at 21.
+  CELLS=$(curl -sg -b "$JAR" "$BELLA/roster" | grep -o 'modryn_avail_cell' | wc -l)
+  [ "${CELLS:-0}" -eq 21 ] && ok "the week grid offers all 21 cells" \
+    || bad "roster grid" "rendered ${CELLS:-0} cells, wanted 21 (7 days x morning/midday/evening)"
+  # /manage/shifts is deliberately NOT in this list. It is gated on
+  # _is_owner(), and sara is a shift MANAGER — so 404 is the correct answer and
+  # asserting 200 would have demanded that the owner-only gate be broken. It is
+  # asserted the other way round, immediately below.
+  SHIFTS_MGR=$(curl -sg -b "$JAR" -o /dev/null -w "%{http_code}" "$BELLA/manage/shifts")
+  [ "$SHIFTS_MGR" = "404" ] && ok "/manage/shifts stays owner-only (a manager gets 404)" \
+    || bad "/manage/shifts owner gate" "a shift manager got $SHIFTS_MGR, wanted 404"
+  # The window belongs to the manager. Asserted with a real signed-in session,
+  # because the anonymous check above can only ever reach Odoo's login redirect
+  # — it never touches _is_manager() at all.
+  WR=$(curl -sg -b "$JAR" -o /dev/null -w "%{http_code}" -X POST "$BELLA/roster/window/rule" \
+    --data-urlencode "week=0")
+  [ "$WR" != "404" ] && ok "a manager may set the submission window ($WR)" \
+    || bad "window rule for a manager" "got 404 — the manager gate is refusing the manager"
+  for path in /floor /atelier /roster; do
     C=$(curl -sg -b "$JAR" -o /dev/null -w "%{http_code}" "$BELLA$path")
     [ "$C" = "200" ] && ok "$path renders for a manager" || bad "$path for a manager" "got $C"
   done
@@ -844,9 +866,16 @@ SLOTS=$(psql -d bella -tAc "select count(*) from modryn_shift_slot")
 [ "${SLOTS:-0}" -ge 5 ] && ok "bella: next week materialised ($SLOTS slots)" || bad "shift slots" "only ${SLOTS:-0}"
 # Hours are snapshots: editing a template must not rewrite a week people agreed to.
 grep -q "'start_hour': template.start_hour" addons/modryn_roster/models/shift_slot.py && ok "slots snapshot their hours" || bad "hour snapshot" "slots read hours from the template"
+# Grouped on the key availability ACTUALLY has now - (day, shift_type,
+# employee) - and defaulting to the FAILING value, which is the idiom nine
+# lines above. It used to read slot_id and default to 0, the PASSING value: the
+# moment that column stopped existing, psql would error to a stderr nobody sees
+# inside four hundred lines of output, DUP would come back empty, and this would
+# have printed green for both tenants over a query that never ran. It is the
+# suite's only availability assertion, so that green would have meant nothing.
 for db in $TENANTS; do
-  DUP=$(psql -d $db -tAc "select count(*) from (select slot_id, employee_id from modryn_availability group by 1,2 having count(*) > 1) x")
-  [ "${DUP:-0}" = "0" ] && ok "$db: no duplicate availability rows" || bad "$db availability duplicates" "$DUP found"
+  DUP=$(psql -d $db -tAc "select count(*) from (select day, shift_type, employee_id from modryn_availability group by 1,2,3 having count(*) > 1) x")
+  [ "${DUP:-1}" = "0" ] && ok "$db: no duplicate availability rows" || bad "$db availability duplicates" "${DUP:-unreadable} found"
 done
 # Every roster route is staff-only, and publishing is manager-only.
 for route in /roster/available /roster/assign /roster/publish; do
@@ -855,6 +884,35 @@ for route in /roster/available /roster/assign /roster/publish; do
 done
 for path in /roster /manage/shifts; do
   [ "$(code "$BELLA$path")" != "200" ] && ok "$path refuses anonymous" || bad "$path anonymous" "returned 200"
+done
+# The window forms are asserted on the EXACT status, not on "anything but 200":
+# a route that has been DELETED answers 404, which is also "not 200", so the
+# loose form keeps printing green over a control that no longer exists.
+#
+# The exact status is 303, not 404. These carry auth='user', and Odoo bounces a
+# signed-out visitor to /web/login before the handler — and therefore before
+# _is_manager() — ever runs. 404 is what a signed-in NON-manager gets, which is
+# a different rule and is asserted separately in section 10a.
+for path in /roster/window/rule /roster/window/week; do
+  W=$(curl -sg -o /dev/null -w "%{http_code}" -X POST "$BELLA$path")
+  [ "$W" = "303" ] && ok "$path sends anonymous to sign in ($W)" \
+    || bad "$path anonymous" "got $W, wanted 303"
+done
+# The recurring window lives in two config rows and nothing asserted they were
+# ever writable, let alone well-formed. A malformed value is invisible at
+# runtime: _parse_window answers anything it cannot read with the shipped
+# default and says nothing at all.
+for db in $TENANTS; do
+  for key in modryn.roster.window_open modryn.roster.window_close; do
+    V=$(psql -d $db -tAc "select value from ir_config_parameter where key='$key'")
+    if [ -z "$V" ]; then
+      ok "$db: $key unset — the shipped default applies"
+    elif printf '%s' "$V" | grep -qE '^[0-6]:[0-9]+(\.[0-9]+)?$'; then
+      ok "$db: $key is '$V'"
+    else
+      bad "$db $key" "'$V' cannot be parsed — the window silently falls back to Thursday 09:00"
+    fi
+  done
 done
 
 head_ "10g. one bride per slot"

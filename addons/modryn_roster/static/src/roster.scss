@@ -10,7 +10,17 @@
     gap: 8px;
 }
 
+// The JS mount point, and nothing else. roster.js binds its two delegated
+// listeners here, so everything tappable has to live INSIDE it - which now
+// means the availability table, the Send button and the manager's cards all
+// share one container. It stopped being the card grid itself when the table
+// moved in: a table is one grid item, and a 240px minimum column would have
+// squeezed it.
 .modryn_roster_grid {
+    display: block;
+}
+
+.modryn_shift_cards {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
     gap: 16px;
@@ -60,4 +70,141 @@
     padding-block-start: 10px;
     display: grid;
     gap: 6px;
+}
+
+
+// ===================== the week, as one table =====================
+// Seven days across the top, three parts of the day down the side, and a cell
+// you press for each. A real <table> and not a CSS grid of divs: the days ARE
+// column headers and the parts of the day ARE row headers, so a screen reader
+// announces "Sunday, evening" when she lands on a cell. A grid of buttons
+// announces twenty-one buttons.
+//
+// No direction is set anywhere below. The page is already dir="rtl" for Hebrew
+// and Arabic, so the first column - Sunday - lands on the RIGHT by itself,
+// which is what was asked for; in English the same markup puts Sunday on the
+// left, which is what English readers expect. Hardcoding either one breaks the
+// other.
+.modryn_avail_table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 4px;
+    table-layout: fixed;
+
+    th {
+        font-weight: 600;
+        font-size: 0.82rem;
+        padding: 4px 2px;
+        text-align: center;
+        vertical-align: middle;
+    }
+
+    // The row label - morning / midday / evening - down the side.
+    tbody th {
+        width: 4.5rem;
+        text-align: start;
+        white-space: nowrap;
+    }
+
+    td {
+        padding: 0;
+    }
+
+    // The day, and the date under it. Two lines, because "Sunday" alone does
+    // not tell her which Sunday and this grid can show next week too.
+    .modryn_avail_day {
+        display: block;
+    }
+    .modryn_avail_date {
+        display: block;
+        font-weight: 400;
+        font-size: 0.72rem;
+        opacity: 0.65;
+    }
+}
+
+// One tappable cell. A <button>, so the keyboard and the screen reader get it
+// for free.
+.modryn_avail_cell {
+    width: 100%;
+    min-height: 44px;              // the iOS touch-target floor
+    border: 1px solid $modryn-border;
+    border-radius: 8px;
+    background: #FFFFFF;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px;
+    transition: background-color 0.12s ease, border-color 0.12s ease;
+
+    // rgba() only - LibSass rejects Color Level 4 and drops the WHOLE frontend
+    // bundle when it meets it, not just the offending rule.
+    &:hover:not(:disabled) {
+        background: rgba(197, 160, 89, 0.10);
+    }
+
+    // She can work this one. Gold fill AND a tick: colour is never the only
+    // signal, because roughly one man in twelve cannot tell this gold from
+    // this grey, and because a printed rota loses colour entirely.
+    &.is_on {
+        background: $modryn-gold;
+        border-color: $modryn-gold;
+        color: #FFFFFF;
+
+        &:hover:not(:disabled) {
+            background: rgba(197, 160, 89, 0.85);
+        }
+    }
+
+    &:disabled {
+        cursor: not-allowed;
+        opacity: 0.45;
+    }
+
+    // A part of the day the boutique is not running this week. Struck through
+    // rather than hidden: a missing cell reads as a bug, a struck one reads as
+    // a decision - and her earlier tick is still underneath it, waiting.
+    &.is_blocked {
+        background: repeating-linear-gradient(
+            45deg,
+            rgba(0, 0, 0, 0.04),
+            rgba(0, 0, 0, 0.04) 5px,
+            transparent 5px,
+            transparent 10px
+        );
+        cursor: not-allowed;
+    }
+
+    .fa {
+        font-size: 0.9rem;
+    }
+}
+
+// The note and Send, under the table where she reaches them last - the order
+// the work actually happens in.
+.modryn_avail_send {
+    margin-block-start: 20px;
+    display: grid;
+    gap: 10px;
+    max-width: 640px;
+}
+
+// A phone is narrower than seven columns of comfortable buttons. The table
+// scrolls sideways INSIDE its own box rather than making the page scroll,
+// which would drag the nav bar off screen with it.
+.modryn_avail_scroll {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+@media (max-width: 575.98px) {
+    .modryn_avail_table {
+        min-width: 520px;
+
+        tbody th {
+            width: 3.6rem;
+            font-size: 0.75rem;
+        }
+    }
 }

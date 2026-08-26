@@ -10,6 +10,7 @@
 
 import http from 'k6/http';
 import { check, sleep } from 'k6';
+import { Counter } from 'k6/metrics';
 
 import { call, isBoard } from '../lib/jsonrpc.js';
 import { runBoard } from '../lib/ws.js';
@@ -129,22 +130,48 @@ function rosterAvailability(t) {
     class: 'page',
     surface: 'roster',
   });
-  const ids = slotIds(page.body);
-  if (!ids.length) {
+  const cells = availabilityCells(page.body);
+  if (!cells.length) {
+    // Counted, not silently returned from. This guard used to hide a whole
+    // class of breakage: if the cell markup changed shape, the scrape came back
+    // empty, /roster/available was never called, and rpc_write stayed green on
+    // samples that were never taken. rosterCellsMissing is gated in
+    // config/thresholds.js so an empty scrape now fails the run.
+    rosterCellsMissing.add(1);
     return;
   }
+  const cell = cells[Math.floor(Math.random() * cells.length)];
   call(
     t.baseUrl,
     '/roster/available',
-    { slot_id: ids[Math.floor(Math.random() * ids.length)], week: 0 },
+    { day: cell.day, shift_type: cell.type, week: 0 },
     'rpc_write',
     'roster'
   );
 }
 
-// roster_templates.xml renders the shift card as t-att-data-slot, which the
-// browser serialises as data-slot="<id>" — the same attribute appears on the
-// availability button and the assign checkbox, hence the de-dup.
+// Gated at zero in config/thresholds.js: an empty scrape means the write
+// under test was never attempted, and a success rate over zero samples is
+// a perfect score for doing nothing.
+const rosterCellsMissing = new Counter('roster_cells_missing');
+
+// The availability grid is addressed by DAY and PART OF DAY now, not by slot
+// id: a cell exists for Friday evening whether or not the boutique has ever
+// run a Friday evening shift, so there is no slot id to name it by.
+const CELL_RE = /data-day="(\d{4}-\d{2}-\d{2})"\s+data-type="([a-z]+)"/g;
+
+export function availabilityCells(body) {
+  const out = [];
+  let m;
+  CELL_RE.lastIndex = 0;
+  while ((m = CELL_RE.exec(body || '')) !== null) {
+    out.push({ day: m[1], type: m[2] });
+  }
+  return out;
+}
+
+// Still used by the manager's assign checkboxes, which DO carry a slot id -
+// she is filling a real shift, not declaring when she is free.
 const SLOT_ID_RE = /data-slot="(\d+)"/g;
 
 export function slotIds(body) {

@@ -64,6 +64,14 @@ export function thresholdsFor(targetVus) {
     // one is, because zero is only ever a broken harness or a broken server.
     booking_created: ['count>0'],
 
+    // The roster grid rendered but carried no tappable cell. Same failure shape
+    // as booking_created and for the same reason: the scrape coming back empty
+    // means /roster/available is never called at all, so its success rate stays
+    // a flawless 100% over zero samples. Gated at zero because there is no
+    // legitimate reason for a signed-in staff member to see a roster with
+    // nothing on it - the grid is seven days by three, always.
+    roster_cells_missing: ['count==0'],
+
     // A dropped iteration means k6 could not start work it had scheduled — the
     // load generator, not the SUT, is the bottleneck, and every latency number
     // in the run is contaminated.

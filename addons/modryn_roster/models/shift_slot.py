@@ -55,6 +55,24 @@ class ModrynShiftSlot(models.Model):
     _template_day_uniq = models.Constraint(
         'unique(template_id, day)', "That shift already exists on that date.")
 
+    def _shift_type(self):
+        """Which part of the day this slot is, read off its template.
+
+        A method and not a stored column on purpose: the slot snapshots its
+        HOURS (so editing a template cannot rewrite a week people already agreed
+        to) but its part-of-day is the template's classification, and an owner
+        fixing a mislabelled evening shift should see that correction on the
+        grid rather than only on shifts generated afterwards.
+
+        Deliberately NOT a @property either, and not named `shift_type`: a
+        plain attribute that shadows what looks like a field is a trap - the
+        ORM would accept slot.shift_type and then blow up on
+        slots.mapped('shift_type') or on any search domain naming it, both of
+        which read as perfectly ordinary Odoo.
+        """
+        self.ensure_one()
+        return self.template_id.shift_type or 'morning'
+
     # ------------------------------------------------------------- generation
     @api.model
     def modryn_ensure_week(self, start=None):
@@ -155,15 +173,28 @@ class ModrynShiftSlot(models.Model):
             })
         return rows
 
-    def _row(self, employee=None):
+    def _row(self, employee=None, available_ids=None):
+        """One real shift, for the manager's side of the grid.
+
+        `available_ids` is handed in from modryn_week_map rather than looked up
+        here. It used to run a search AND a search_count per slot - fifteen
+        queries to draw five cards, and it would have been sixty-three for
+        twenty-one. Nothing in the gate asserts a query count, so the only
+        symptom of leaving it alone would have been a page that quietly got
+        four times slower.
+
+        Availability is now keyed on (day, shift_type, employee) and no longer
+        points at a slot at all, so two templates that legitimately share one
+        weekday-and-part both resolve to the SAME offer list - which is correct:
+        "I can work Sunday morning" qualifies her for either of them.
+        """
         self.ensure_one()
-        Availability = self.env['modryn.availability'].sudo()
-        available = Availability.search([('slot_id', '=', self.id)]).mapped('employee_id')
+        if available_ids is None:
+            available_ids = self.env['modryn.availability'].sudo().modryn_week_map(
+                self.week_start).get((self.day, self._shift_type()), [])
+        available = self.env['hr.employee'].sudo().browse(available_ids).exists()
         shortages = self._shortages()
-        mine = None
-        if employee:
-            mine = bool(Availability.search_count([
-                ('slot_id', '=', self.id), ('employee_id', '=', employee.id)]))
+        mine = bool(employee and employee.id in available_ids)
         return {
             'id': self.id,
             'name': self.name,
@@ -173,7 +204,7 @@ class ModrynShiftSlot(models.Model):
             'hours': '%s–%s' % (_fmt(self.start_hour), _fmt(self.end_hour)),
             # Which part of the day this is, so the page can lay the week out as
             # a 7x3 grid without asking the template model a second time per slot.
-            'shift_type': self.template_id.shift_type or 'morning',
+            'shift_type': self._shift_type(),
             'published': self.published,
             # Archived staff keep their place on a published shift — the m2o
             # still resolves — but drop out of the pickers for future weeks.

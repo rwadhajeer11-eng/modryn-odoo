@@ -37,6 +37,18 @@ def _to_utc(day, hour):
     return TZ.localize(naive).astimezone(pytz.UTC).replace(tzinfo=None)
 
 
+def _from_utc(value):
+    """Naive UTC -> the boutique's wall clock, for PRINTING only.
+
+    Its absence was a live bug, not a theoretical one: _window() returns naive
+    UTC and the page strftime'd it raw, so the shipped Saturday 21:00 deadline
+    printed as "18:00". Harmless while nothing wrote the window - and fatal the
+    moment a manager types 21:00 and the page echoes 18:00 back at her, because
+    the only sane reading of that is "it did not save".
+    """
+    return pytz.UTC.localize(value).astimezone(TZ)
+
+
 def _parse_window(raw, fallback):
     """"3:9.0" -> (3, 9.0). The fallback on anything unparseable.
 
@@ -52,6 +64,24 @@ def _parse_window(raw, fallback):
     if not (0 <= weekday <= 6) or not (0 <= hour <= 24):
         return fallback
     return weekday, hour
+
+
+def window_days():
+    """The weekday picker for the submission window, in RUNWAY order.
+
+    Monday first, Sunday last - NOT the Sunday-first order the rest of the
+    product uses. The window is anchored to the Monday of the week BEFORE the
+    one being planned (see _window), so weekday 6 (Sunday) lands on week_start
+    ITSELF - chronologically the last option, not the first. Showing it at the
+    top of a list a manager reads as a timeline is how she picks the one day
+    that opens submissions after the week has already begun.
+
+    Labels come from weekday_selection() so they cannot drift from the model's
+    own, and are translated there.
+    """
+    from .shift_template import weekday_selection
+    labels = dict(weekday_selection())
+    return [(str(wd), labels[str(wd)]) for wd in range(7)]
 
 
 class ModrynRosterWeek(models.Model):
@@ -128,6 +158,41 @@ class ModrynRosterWeek(models.Model):
         opens, closes = self._window()
         now = fields.Datetime.now()
         return opens <= now < closes
+
+    @api.model
+    def modryn_is_frozen(self, week_start):
+        """Has this week been published?
+
+        DERIVED from the slots rather than stored as a second flag. Publishing
+        is already week-wide - the controller publishes every slot sharing a
+        week_start - so this reads the existing truth instead of duplicating it.
+        A second stored flag would need backfilling on upgrade day, and getting
+        that backfill wrong would silently UNFREEZE every week already
+        published.
+        """
+        return bool(self.env['modryn.shift.slot'].sudo().search_count([
+            ('week_start', '=', week_start), ('published', '=', True)]))
+
+    @api.model
+    def modryn_set_default_window(self, open_wd, open_hour, close_wd, close_hour):
+        """Move the RECURRING window, and prove it landed.
+
+        Written through the model and not from the controller, for the reason
+        modryn_set_blocked already documents: a stored junk value here is
+        INVISIBLE, because _parse_window is deliberately forgiving and answers
+        anything unparseable with the shipped default. An owner would then be
+        shown Thursday 09:00, read it as "my save did not take", and try again.
+
+        So: a fixed format on the way in, and a read-back through the same
+        parser on the way out. The caller compares.
+        """
+        valid = {code for code, _label in window_days()}
+        if str(open_wd) not in valid or str(close_wd) not in valid:
+            return None
+        Param = self.env['ir.config_parameter'].sudo()
+        Param.set_param(PARAM_OPEN, '%s:%.2f' % (int(open_wd), float(open_hour)))
+        Param.set_param(PARAM_CLOSE, '%s:%.2f' % (int(close_wd), float(close_hour)))
+        return self._default_window()
 
     @api.constrains('opens_at', 'closes_at')
     def _check_window(self):

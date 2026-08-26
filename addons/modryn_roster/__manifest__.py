@@ -19,9 +19,16 @@ seamstress is not the same as one of each, even though both are "two people".
     # database, so a migration added at that version LATER is skipped forever on
     # exactly the tenants that already have data. Same trap as modryn_booking's.
     #
-    # What this one carries: shift_type arrives with default='morning', which
+    # What 19.0.1.1.0 carried: shift_type arrives with default='morning', which
     # would stamp every evening shift a boutique already runs as a morning.
-    'version': '19.0.1.1.0',
+    #
+    # What 19.0.1.2.0 carries: modryn.availability is re-keyed off the shift
+    # slot and onto (day, shift_type, employee), so a person can offer Friday
+    # evening before the boutique has invented a Friday evening shift. Its
+    # migration is a PRE-migrate, because the new columns must be filled before
+    # _auto_init ever sees them empty - see the file for why a post-migrate here
+    # would print green and silently orphan every tick.
+    'version': '19.0.1.2.0',
     'depends': [
         'modryn_staff',
     ],

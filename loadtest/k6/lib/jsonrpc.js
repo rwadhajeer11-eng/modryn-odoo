@@ -28,7 +28,16 @@ export const appRefusals = new Rate('app_refusals');
 
 // Refusal payloads the controllers return deliberately. Anything else in
 // result.error is a finding.
-const KNOWN_REFUSALS = ['forbidden', 'not_found', 'no_employee'];
+// window_closed / type_blocked / published are all the roster answering
+// correctly, not failing. window_closed in particular already fired on every
+// campaign run outside Thursday 09:00 - Saturday 21:00 Jerusalem, scoring as a
+// failed write; now that a manager can move that window per tenant, "is the
+// load test red" would otherwise become a data question nobody running it can
+// see.
+const KNOWN_REFUSALS = [
+  'forbidden', 'not_found', 'no_employee',
+  'window_closed', 'type_blocked', 'published',
+];
 
 // /floor/room answers a fitting-room collision with `dict(self._board(),
 // error=<ValidationError message>)` — a COMPLETE board that also carries an

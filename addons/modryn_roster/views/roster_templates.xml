@@ -19,9 +19,18 @@
                     Tick who is working. A shift turns amber when it is short of the roles it needs.
                 </t>
                 <t t-else="">
-                    Tell us which shifts you can work. Your manager builds the rota from this.
+                    Press every shift you can work. Then write us a note and send it.
                 </t>
             </p>
+
+            <div t-if="error" class="modryn_field_error mb-3" role="alert" t-out="error"/>
+            <!-- Gold, never red. A completed action painted in danger colours
+                 was once read by a manager as a rejection; the lesson is
+                 recorded in floor.scss and this is the next place it applies. -->
+            <div t-if="warning" class="modryn_panel mb-3" role="status">
+                <span class="modryn_badge is_busy">Saved</span>
+                <span t-out="warning"/>
+            </div>
 
             <div class="modryn_roster_nav mb-3">
                 <a t-attf-href="/roster?week=#{week_offset - 1}"
@@ -32,7 +41,9 @@
 
             <!-- The deadline, stated. A window that only greys a button out is
                  not a deadline anyone can plan around; she has to be able to see
-                 when it shuts before she decides to come back later. -->
+                 when it shuts before she decides to come back later.
+                 These times are the boutique's wall clock now — they used to be
+                 printed straight out of UTC, three hours early all summer. -->
             <div t-attf-class="modryn_panel mb-3 #{'' if window_open else 'modryn_archived'}">
                 <t t-if="window_open">
                     <span class="modryn_badge is_free">Open</span>
@@ -47,6 +58,87 @@
                     <strong dir="ltr" t-esc="window_closes.strftime('%d.%m %H:%M')"/>
                 </t>
             </div>
+
+            <!-- Manager: when the team may answer. Plain forms, no JS — which is
+                 also what keeps them safe outside .modryn_roster_grid, where the
+                 delegated listener never reaches. -->
+            <details t-if="is_manager" class="modryn_panel mb-3">
+                <summary style="cursor:pointer;">
+                    <span class="modryn_strong">When can the team answer?</span>
+                </summary>
+
+                <p class="modryn_sub mt-2 mb-2">
+                    Counting from the Monday of the week before — the week they
+                    are answering for starts on the Sunday at the end.
+                </p>
+
+                <form action="/roster/window/rule" method="post"
+                      class="d-flex gap-2 flex-wrap align-items-end mb-3">
+                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                    <input type="hidden" name="week" t-att-value="week_offset"/>
+                    <div>
+                        <label class="form-label mb-0" for="open_weekday">Opens</label>
+                        <select id="open_weekday" name="open_weekday" class="form-select form-select-sm">
+                            <t t-foreach="window_days" t-as="wd">
+                                <option t-att-value="wd[0]"
+                                        t-att-selected="'selected' if wd[0] == window_rule['open_weekday'] else None"
+                                        t-out="wd[1]"/>
+                            </t>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="form-label mb-0" for="open_time">at</label>
+                        <input id="open_time" type="time" name="open_time" dir="ltr"
+                               class="form-control form-control-sm"
+                               t-att-value="window_rule['open_time']"/>
+                    </div>
+                    <div>
+                        <label class="form-label mb-0" for="close_weekday">Closes</label>
+                        <select id="close_weekday" name="close_weekday" class="form-select form-select-sm">
+                            <t t-foreach="window_days" t-as="wd">
+                                <option t-att-value="wd[0]"
+                                        t-att-selected="'selected' if wd[0] == window_rule['close_weekday'] else None"
+                                        t-out="wd[1]"/>
+                            </t>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="form-label mb-0" for="close_time">at</label>
+                        <input id="close_time" type="time" name="close_time" dir="ltr"
+                               class="form-control form-control-sm"
+                               t-att-value="window_rule['close_time']"/>
+                    </div>
+                    <button type="submit" class="btn btn-sm btn-primary">Save for every week</button>
+                </form>
+
+                <!-- The escape hatch. A holiday, a team away day. -->
+                <form action="/roster/window/week" method="post"
+                      class="d-flex gap-2 flex-wrap align-items-end">
+                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                    <input type="hidden" name="week" t-att-value="week_offset"/>
+                    <div>
+                        <label class="form-label mb-0" for="opens_date">Just this week, from</label>
+                        <input id="opens_date" type="date" name="opens_date" dir="ltr"
+                               class="form-control form-control-sm"/>
+                    </div>
+                    <div>
+                        <input type="time" name="opens_time" dir="ltr"
+                               class="form-control form-control-sm" aria-label="Opening time"/>
+                    </div>
+                    <div>
+                        <label class="form-label mb-0" for="closes_date">until</label>
+                        <input id="closes_date" type="date" name="closes_date" dir="ltr"
+                               class="form-control form-control-sm"/>
+                    </div>
+                    <div>
+                        <input type="time" name="closes_time" dir="ltr"
+                               class="form-control form-control-sm" aria-label="Closing time"/>
+                    </div>
+                    <button type="submit" class="btn btn-sm btn-outline-dark">Use these times</button>
+                    <button t-if="window_overridden" type="submit" name="clear" value="1"
+                            class="btn btn-sm btn-link">Back to the usual</button>
+                </form>
+            </details>
 
             <!-- Manager: which parts of the day the boutique is not running at
                  all this week. Ticking one does not delete anybody's answer —
@@ -63,102 +155,150 @@
                 </t>
             </div>
 
-            <!-- Her answer for the week: the note, and the act of sending it.
-                 Separate from the per-shift ticks on purpose — those are a
-                 draft she can change her mind about, this is the moment she
-                 tells the manager to build on them. -->
-            <div t-if="me and not is_manager" class="modryn_panel mb-3">
-                <label class="form-label" for="modryn_week_note">
-                    Anything we should know?
-                </label>
-                <textarea id="modryn_week_note" class="form-control mb-2" rows="2"
-                          t-att-disabled="None if window_open else 'disabled'"
-                          t-out="my_note"/>
-                <button type="button" id="modryn_send_week" class="btn btn-primary"
-                        t-att-disabled="None if window_open else 'disabled'">
-                    Send my week
-                </button>
-                <span t-if="my_submitted_at" class="modryn_sub ms-2">
-                    Sent <span dir="ltr" t-esc="my_submitted_at.strftime('%d.%m %H:%M')"/>
-                </span>
-                <span t-else="" class="modryn_sub ms-2">Not sent yet</span>
-            </div>
-
+            <!-- ============ the week, as one table ============
+                 INSIDE .modryn_roster_grid on purpose: roster.js binds ONE
+                 delegated click listener on this container, so anything
+                 rendered outside it looks perfectly fine and does nothing at
+                 all when pressed. Twenty-one cells, one listener. -->
             <div class="modryn_roster_grid"
                  t-att-data-week="week_offset"
                  t-att-data-manager="'1' if is_manager else '0'">
-                <t t-foreach="slots" t-as="slot">
-                    <div t-attf-class="modryn_shift_card #{'is_short' if slot['short_total'] else ''} #{'is_published' if slot['published'] else ''} #{'modryn_archived' if slot['blocked'] else ''}"
-                         t-att-data-slot="slot['id']">
-                        <div class="modryn_shift_head">
-                            <span class="modryn_strong"><t t-esc="slot['name']"/></span>
-                            <span class="modryn_sub"><t t-esc="slot['day_label']"/> · <t t-esc="slot['hours']"/></span>
-                        </div>
 
-                        <!-- Coverage. Stated in words as well as colour, so the
-                             amber card is never the only signal. -->
-                        <div class="modryn_shift_cover">
-                            <t t-if="slot['shortages']">
-                                <t t-foreach="slot['shortages']" t-as="s">
-                                    <span t-attf-class="modryn_badge #{'is_busy' if s['short'] else 'is_free'}">
-                                        <t t-esc="s['role']"/>
-                                        <t t-esc="s['have']"/>/<t t-esc="s['required']"/>
-                                    </span>
-                                </t>
-                            </t>
-                            <span t-else="" class="modryn_sub">No targets set</span>
-                        </div>
+                <div class="modryn_avail_scroll">
+                    <table class="modryn_avail_table">
+                        <thead>
+                            <tr>
+                                <th><span class="visually-hidden">Shift</span></th>
+                                <th t-foreach="days" t-as="d" scope="col">
+                                    <span class="modryn_avail_day" t-out="d['weekday']"/>
+                                    <span class="modryn_avail_date" dir="ltr" t-out="d['label']"/>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="shift_rows" t-as="row">
+                                <th scope="row" t-out="row[1]"/>
+                                <td t-foreach="days" t-as="d">
+                                    <t t-set="cell" t-value="d['cells'][row_index]"/>
+                                    <!-- The label changes with the state, not
+                                         just the colour: one man in twelve
+                                         cannot tell this gold from this grey,
+                                         and a printed rota has no colour at
+                                         all. -->
+                                    <button type="button"
+                                            t-attf-class="modryn_avail_cell #{'is_on' if cell['mine'] else ''} #{'is_blocked' if cell['blocked'] else ''}"
+                                            t-att-data-day="cell['day']"
+                                            t-att-data-type="cell['shift_type']"
+                                            t-att-data-slot="cell['slot_ids'][0] if cell['slot_ids'] else None"
+                                            t-att-disabled="None if (window_open and not cell['blocked']) else 'disabled'"
+                                            t-attf-aria-label="#{row[1]} #{d['weekday']} #{d['label']}"
+                                            t-att-aria-pressed="'true' if cell['mine'] else 'false'">
+                                        <t t-if="cell['blocked']">
+                                            <i class="fa fa-ban" aria-hidden="true"/>
+                                            <span class="visually-hidden">Not running</span>
+                                        </t>
+                                        <t t-elif="cell['mine']">
+                                            <i class="fa fa-check" aria-hidden="true"/>
+                                            <span class="visually-hidden">I can work this</span>
+                                        </t>
+                                        <t t-else="">
+                                            <span class="visually-hidden">Not available</span>
+                                        </t>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
 
-                        <div t-if="slot['working']" class="modryn_shift_people">
-                            <t t-foreach="slot['working']" t-as="w">
-                                <span class="modryn_chip is_primary"><t t-esc="w['name']"/></span>
-                            </t>
-                        </div>
-                        <p t-else="" class="modryn_sub mb-0">Nobody rostered yet</p>
-
-                        <!-- What staff do here: offer, or withdraw. Disabled once
-                             the window shuts, and the route refuses it there too
-                             — a greyed button is a courtesy, not a deadline. -->
-                        <div t-if="not slot['published']" class="modryn_shift_actions">
-                            <p t-if="slot['blocked']" class="modryn_sub mb-0">
-                                Not running this week
-                            </p>
-                            <button t-else="" type="button"
-                                    t-attf-class="btn btn-sm #{'btn-primary' if slot['i_am_available'] else 'btn-outline-dark'} modryn_avail_btn"
-                                    t-att-data-slot="slot['id']"
-                                    t-att-disabled="None if window_open else 'disabled'">
-                                <t t-if="slot['i_am_available']">I'm available</t>
-                                <t t-else="">I can work this</t>
-                            </button>
-                        </div>
-                        <p t-else="" class="modryn_sub mb-0">Published</p>
-
-                        <!-- What the manager does here: fill it. -->
-                        <div t-if="is_manager and not slot['published']" class="modryn_shift_assign">
-                            <p class="modryn_sub mb-1">
-                                <t t-if="slot['available']">Offered this shift:</t>
-                                <t t-else="">Nobody has offered yet</t>
-                            </p>
-                            <t t-foreach="slot['available']" t-as="a">
-                                <label class="modryn_piece_check">
-                                    <input type="checkbox" class="modryn_assign_box"
-                                           t-att-data-slot="slot['id']"
-                                           t-att-data-employee="a['id']"
-                                           t-att-checked="'checked' if any(w['id'] == a['id'] for w in slot['working']) else None"/>
-                                    <span>
-                                        <t t-esc="a['name']"/>
-                                        <t t-if="a['role']"> · <t t-esc="a['role']"/></t>
-                                    </span>
-                                </label>
-                            </t>
-                        </div>
+                <!-- Her answer for the week: the note, and the act of sending
+                     it. Under the table, because that is the order the work
+                     happens in — press everything you can work, then say
+                     anything else, then send. Separate from the cells on
+                     purpose: those are a draft she can change her mind about,
+                     this is the moment she tells the manager to build on them. -->
+                <div t-if="me and not is_manager" class="modryn_avail_send">
+                    <div>
+                        <label class="form-label" for="modryn_week_note">
+                            Anything we should know?
+                        </label>
+                        <textarea id="modryn_week_note" class="form-control" rows="2"
+                                  t-att-disabled="None if window_open else 'disabled'"
+                                  t-out="my_note"/>
                     </div>
-                </t>
+                    <div>
+                        <button type="button" id="modryn_send_week" class="btn btn-primary"
+                                t-att-disabled="None if window_open else 'disabled'">
+                            Send my week
+                        </button>
+                        <span t-if="my_submitted_at" class="modryn_sub ms-2">
+                            Sent <span dir="ltr" t-esc="my_submitted_at.strftime('%d.%m %H:%M')"/>
+                        </span>
+                        <span t-else="" class="modryn_sub ms-2">Not sent yet</span>
+                    </div>
+                </div>
+
+                <!-- The manager's side: the real shifts, and who offered them.
+                     Still one card per SHIFT and not per cell, because this is
+                     where she fills a rota — a card carries hours, coverage
+                     targets and the people, none of which fit in a 44px box. -->
+                <div t-if="is_manager" class="modryn_shift_cards mt-4">
+                    <t t-foreach="slots" t-as="slot">
+                        <div t-attf-class="modryn_shift_card #{'is_short' if slot['short_total'] else ''} #{'is_published' if slot['published'] else ''} #{'modryn_archived' if slot['blocked'] else ''}"
+                             t-att-data-slot="slot['id']">
+                            <div class="modryn_shift_head">
+                                <span class="modryn_strong"><t t-esc="slot['name']"/></span>
+                                <span class="modryn_sub" dir="ltr">
+                                    <t t-esc="slot['day_label']"/> · <t t-esc="slot['hours']"/>
+                                </span>
+                            </div>
+
+                            <div class="modryn_shift_cover">
+                                <t t-if="slot['shortages']">
+                                    <t t-foreach="slot['shortages']" t-as="s">
+                                        <span t-attf-class="modryn_badge #{'is_busy' if s['short'] else 'is_free'}">
+                                            <t t-esc="s['role']"/>
+                                            <t t-esc="s['have']"/>/<t t-esc="s['required']"/>
+                                        </span>
+                                    </t>
+                                </t>
+                                <span t-else="" class="modryn_sub">No targets set</span>
+                            </div>
+
+                            <div t-if="slot['working']" class="modryn_shift_people">
+                                <t t-foreach="slot['working']" t-as="w">
+                                    <span class="modryn_chip is_primary"><t t-esc="w['name']"/></span>
+                                </t>
+                            </div>
+                            <p t-else="" class="modryn_sub mb-0">Nobody rostered yet</p>
+
+                            <div t-if="not slot['published']" class="modryn_shift_assign">
+                                <p class="modryn_sub mb-1">
+                                    <t t-if="slot['available']">Offered this shift:</t>
+                                    <t t-else="">Nobody has offered yet</t>
+                                </p>
+                                <t t-foreach="slot['available']" t-as="a">
+                                    <label class="modryn_piece_check">
+                                        <input type="checkbox" class="modryn_assign_box"
+                                               t-att-data-slot="slot['id']"
+                                               t-att-data-employee="a['id']"
+                                               t-att-checked="'checked' if any(w['id'] == a['id'] for w in slot['working']) else None"/>
+                                        <span>
+                                            <t t-esc="a['name']"/>
+                                            <t t-if="a['role']"> · <t t-esc="a['role']"/></t>
+                                        </span>
+                                    </label>
+                                </t>
+                            </div>
+                            <p t-else="" class="modryn_sub mb-0">Published</p>
+                        </div>
+                    </t>
+                </div>
             </div>
 
             <!-- Who has answered, and what she said. One box each, because the
                  note belongs to the WEEK and not to any shift — reading it off
-                 a card would mean repeating it on every card she ticked.
+                 a card would mean repeating it on every cell she pressed.
                  A person with no row here has not looked yet, which is a
                  different thing from a person who can work nothing, and the
                  manager has to be able to tell them apart before she chases
@@ -213,6 +353,12 @@
                     <option value="4">Friday</option>
                     <option value="5">Saturday</option>
                 </select>
+                <select name="shift_type" class="form-select" style="max-width: 150px;"
+                        aria-label="Part of the day">
+                    <t t-foreach="shift_types" t-as="stype">
+                        <option t-att-value="stype[0]" t-out="stype[1]"/>
+                    </t>
+                </select>
                 <input type="number" name="start_hour" class="form-control" style="max-width: 100px;"
                        step="0.5" min="0" max="24" value="10"/>
                 <input type="number" name="end_hour" class="form-control" style="max-width: 100px;"
@@ -245,6 +391,14 @@
                                         <option t-att-value="wd[0]"
                                                 t-att-selected="'selected' if wd[0] == tpl.weekday else None"
                                                 t-out="wd[1]"/>
+                                    </t>
+                                </select>
+                                <select name="shift_type" class="form-select form-select-sm w-auto"
+                                        aria-label="Part of the day">
+                                    <t t-foreach="shift_types" t-as="stype">
+                                        <option t-att-value="stype[0]"
+                                                t-att-selected="'selected' if tpl.shift_type == stype[0] else None"
+                                                t-out="stype[1]"/>
                                     </t>
                                 </select>
                                 <input type="number" name="start_hour" step="0.5" min="0" max="24"
