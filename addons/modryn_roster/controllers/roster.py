@@ -165,6 +165,10 @@ class ModrynRoster(http.Controller):
             'shift_rows': [(code, dict(shift_type_selection())[code])
                            for code in SHIFT_TYPE_ORDER],
             'window_days': window_days(),
+            # Whether the window may be set at all for the week on screen, and
+            # the week it would serve — stated in the panel rather than left to
+            # be worked out from a weekday name and an anchor rule.
+            'window_settable': offset >= self.PLANNABLE_FROM,
             # Pre-formatted for <input type="time">, so nobody has to think of
             # half past ten as 10.5 — the same reasoning the opening-hours form
             # already applies, and the reason _fmt_hour is shared rather than
@@ -244,6 +248,14 @@ class ModrynRoster(http.Controller):
     # jsonrpc control rendered outside that container renders perfectly and then
     # silently does nothing when pressed. A form needs no listener at all.
 
+    # The submission window only means something for a week nobody has worked
+    # yet. Offset -1 is the CURRENT week - the rota being stood right now - so a
+    # window set there can only ever describe a deadline that has already gone.
+    # The page showed the control anyway, and answered with a window entirely in
+    # the past, which reads as the feature being broken rather than as the
+    # question being the wrong one to ask.
+    PLANNABLE_FROM = 0
+
     def _window_redirect(self, offset, error=None, warning=None):
         url = '/roster?week=%d' % offset
         if error:
@@ -268,6 +280,18 @@ class ModrynRoster(http.Controller):
             offset = max(-1, min(int(post.get('week') or 0), 1))
         except ValueError:
             offset = 0
+        # Guarded server-side and not merely hidden. A hidden control is not a
+        # rule, and this one would silently write a deadline nobody can meet.
+        if offset < self.PLANNABLE_FROM:
+            return self._window_redirect(offset, error=_(
+                "That week is already being worked — set the times for a week "
+                "that is still being planned."))
+        # Guarded server-side and not merely hidden. A hidden control is not a
+        # rule, and this one would silently write a deadline nobody can meet.
+        if offset < self.PLANNABLE_FROM:
+            return self._window_redirect(offset, error=_(
+                "That week is already being worked — set the times for a week "
+                "that is still being planned."))
 
         valid_days = {code for code, _label in window_days()}
         open_wd = (post.get('open_weekday') or '').strip()

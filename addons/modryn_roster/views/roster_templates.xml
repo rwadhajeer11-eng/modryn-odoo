@@ -62,14 +62,28 @@
             <!-- Manager: when the team may answer. Plain forms, no JS — which is
                  also what keeps them safe outside .modryn_roster_grid, where the
                  delegated listener never reaches. -->
-            <details t-if="is_manager" class="modryn_panel mb-3">
+            <div t-if="is_manager and not window_settable" class="modryn_panel mb-3">
+                <span class="modryn_sub">
+                    This week is already being worked, so there is nothing left to
+                    answer for it. Move to the week being planned to set when
+                    submissions open.
+                </span>
+            </div>
+
+            <details t-if="is_manager and window_settable" class="modryn_panel mb-3">
                 <summary style="cursor:pointer;">
                     <span class="modryn_strong">When can the team answer?</span>
                 </summary>
 
+                <!-- Which week these hours serve, said outright. The times
+                     themselves fall in the week BEFORE the one being planned —
+                     she answers this week for next week — and leaving that to be
+                     deduced from a weekday name and an anchor rule is how a
+                     manager sets a deadline she did not mean. -->
                 <p class="modryn_sub mt-2 mb-2">
-                    Counting from the Monday of the week before — the week they
-                    are answering for starts on the Sunday at the end.
+                    These are the hours the team answers <strong>for the schedule of
+                    <span dir="ltr"><t t-esc="week_start.strftime('%d.%m')"/>–<t t-esc="week_end.strftime('%d.%m')"/></span></strong>.
+                    They fall in the week before it, counting from that Monday.
                 </p>
 
                 <form action="/roster/window/rule" method="post"

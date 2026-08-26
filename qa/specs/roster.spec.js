@@ -46,6 +46,33 @@ async function openWindowPanel(page) {
   await expect(page.locator('#open_weekday')).toBeVisible();
 }
 
+// The submission window is a GLOBAL setting for the tenant, and the specs below
+// change it. Restoring it inline at the end of a test is not enough: a test that
+// fails on its way there never reaches the restore, and the tenant is then left
+// configured by a failure — which the next run measures as if it were the real
+// setting. That is exactly how this tenant ended up on "Monday 09:00" with
+// nothing to say it had happened.
+//
+// afterAll runs whatever happened, so the reset is unconditional.
+const SHIPPED_RULE = { open_weekday: '3', open_time: '09:00',
+                       close_weekday: '5', close_time: '21:00' };
+
+test.afterAll(async ({ browser }) => {
+  const page = await browser.newPage();
+  try {
+    await signIn(page, PEOPLE.manager);
+    await page.goto('/roster?week=0');
+    await openWindowPanel(page);
+    await page.selectOption('#open_weekday', SHIPPED_RULE.open_weekday);
+    await page.fill('#open_time', SHIPPED_RULE.open_time);
+    await page.selectOption('#close_weekday', SHIPPED_RULE.close_weekday);
+    await page.fill('#close_time', SHIPPED_RULE.close_time);
+    await Promise.all([page.waitForURL(/\/roster/), submitFormWith(page, 'open_weekday')]);
+  } finally {
+    await page.close();
+  }
+});
+
 // The week AFTER the one being planned. Deliberately not week=0: a tenant that
 // has already published next week freezes it, and a frozen grid is disabled —
 // which would look exactly like the feature being broken.
@@ -122,11 +149,14 @@ test('@writes a cell remembers being pressed, and un-pressed', async ({ page }) 
   await expect(page.locator('.modryn_avail_cell[data-type="night"]').nth(5))
     .not.toHaveClass(/is_on/);
 
-  // Put the tenant back on its usual window.
+  // Put the tenant back on its usual window, and wait for it.
   await signIn(page, PEOPLE.manager);
   await page.goto(WEEK);
   await openWindowPanel(page);
-  await page.locator('button[name="clear"]').click();
+  await Promise.all([
+    page.waitForURL(/\/roster/),
+    page.locator('button[name="clear"]').click(),
+  ]);
 });
 
 test('@writes the manager can say when the team may answer', async ({ page }) => {
@@ -149,8 +179,19 @@ test('@writes the manager can say when the team may answer', async ({ page }) =>
   await expect(page.locator('#open_weekday')).toHaveValue('2');
   await expect(page.locator('#open_time')).toHaveValue('08:30');
 
-  // Put it back.
+  // Put it back — and WAIT for it to land. This restore used to fire and the
+  // test then ended, tearing down the context with the POST still in flight, so
+  // the tenant kept whatever the test had set. A spec that permanently
+  // reconfigures the thing it is testing is worse than no spec: the next run
+  // measures the last run's leftovers.
   await page.selectOption('#open_weekday', '3');
   await page.fill('#open_time', '09:00');
-  await submitFormWith(page, 'open_weekday');
+  await Promise.all([
+    page.waitForURL(/\/roster/),
+    submitFormWith(page, 'open_weekday'),
+  ]);
+  await page.goto(WEEK);
+  await openWindowPanel(page);
+  await expect(page.locator('#open_weekday')).toHaveValue('3');
+  await expect(page.locator('#open_time')).toHaveValue('09:00');
 });
