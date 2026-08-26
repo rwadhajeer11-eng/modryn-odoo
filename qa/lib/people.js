@@ -11,6 +11,13 @@
 const PEOPLE = {
   bella: { owner: 'miri', manager: 'sara', staff: 'rotem' },
   noga: { owner: 'tamar', manager: 'yael', staff: 'dana' },
+  // The throwaway tenant this suite is now SUPPOSED to run on. noga stopped
+  // being a safe target when the Twilio credentials moved into the Odoo
+  // process environment - every database inherits them now, so holding none
+  // proves nothing and safety became opt-IN via modryn.twilio.disabled.
+  // These three come from seed_staff.py's 'qa' block; the names must not
+  // drift from it, or the guard passes and every spec then 303s to a login.
+  qa: { owner: 'qaowner', manager: 'qamanager', staff: 'qastaff' },
 };
 
 // Overridable, because a production QA tenant is seeded by whoever provisions
