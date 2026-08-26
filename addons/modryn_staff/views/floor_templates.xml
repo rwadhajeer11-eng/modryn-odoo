@@ -20,10 +20,19 @@
                  class="modryn_admin">
                 <nav class="modryn_admin_nav">
                     <span class="modryn_admin_brand">MODRYN</span>
+                    <!-- Icon then label, both inside the link. The icon is
+                         aria-hidden because the label right next to it already
+                         names the destination; announcing both would read the
+                         page twice to a screen reader. On phones the label is
+                         hidden by CSS and the icon carries the meaning, so the
+                         label keeps a title attribute for the tooltip. -->
                     <a t-foreach="modryn_nav['staff']" t-as="entry"
                        t-att-href="entry['url']"
-                       t-attf-class="modryn_admin_link #{'is_active' if active_tab == entry['key'] else ''}"
-                       t-out="entry['label']"/>
+                       t-att-title="entry['label']"
+                       t-attf-class="modryn_admin_link #{'is_active' if active_tab == entry['key'] else ''}">
+                        <i t-attf-class="fa #{entry['icon']} modryn_admin_icon" aria-hidden="true"/>
+                        <span class="modryn_admin_label" t-out="entry['label']"/>
+                    </a>
                     <t t-call="modryn_staff.lang_toggle"/>
                     <span class="modryn_admin_who">
                         <t t-out="request.env.user.name"/>
@@ -36,8 +45,11 @@
                     <span class="modryn_admin_brand" aria-hidden="true" style="visibility:hidden;">MODRYN</span>
                     <a t-foreach="modryn_nav['manage']" t-as="entry"
                        t-att-href="entry['url']"
-                       t-attf-class="modryn_admin_link #{'is_active' if active_tab == entry['key'] else ''}"
-                       t-out="entry['label']"/>
+                       t-att-title="entry['label']"
+                       t-attf-class="modryn_admin_link #{'is_active' if active_tab == entry['key'] else ''}">
+                        <i t-attf-class="fa #{entry['icon']} modryn_admin_icon" aria-hidden="true"/>
+                        <span class="modryn_admin_label" t-out="entry['label']"/>
+                    </a>
                 </nav>
                 <main class="modryn_admin_main">
                     <t t-out="0"/>

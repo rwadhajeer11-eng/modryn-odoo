@@ -480,3 +480,91 @@
     justify-content: center;
     margin-block-start: 24px;
 }
+
+// ---------------------------------------------------------------- nav icons
+// Every nav entry is an icon plus its label. Font Awesome **4** — Odoo 19's
+// frontend bundle ships `.fa-clock-o` and has no `.fa-clock`; an FA5/6 name
+// renders an invisible empty box instead of erroring, so the names live in
+// modryn_staff/nav.py where they were checked against the served bundle.
+//
+// NOTE for anyone editing this file: Odoo compiles it with LibSass, so CSS
+// Color Level 4 syntax (`rgb(43 33 24 / 0.1)`) fails compilation and silently
+// drops the ENTIRE frontend stylesheet, not just the offending rule. Use
+// rgba(). Nothing below introduces a colour for exactly that reason.
+.modryn_admin_link {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+}
+
+.modryn_admin_icon {
+    font-size: 15px;
+    // Fixed box so labels line up even though glyph widths differ.
+    width: 1.1em;
+    text-align: center;
+}
+
+// ------------------------------------------------------- phones: nav at foot
+// Top of the screen on a desktop, bottom on a phone — a thumb reaches the
+// bottom of a phone and does not reach the top.
+@media (max-width: 767.98px) {
+    // Room for the bar(s) so the last row of content is never trapped behind
+    // them. Two bars only ever appear for the owner, who alone has a manage nav.
+    .modryn_admin {
+        padding-block-end: 140px;
+    }
+
+    .modryn_admin_nav {
+        position: fixed;
+        // left/right rather than inset-inline: the bar spans the full width,
+        // so there is no direction to mirror, and this parses everywhere.
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 1030;
+        justify-content: space-around;
+        gap: 2px;
+        padding: 6px 8px;
+        // The border moves to the top edge, since the bar is now the floor.
+        border-block-end: none;
+        border-block-start: 1px solid $modryn-border;
+        // More entries than fit: scroll rather than wrap into a second row
+        // that would silently cover the content the padding above accounts for.
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    // The owner has two bars. `:last-of-type:not(:first-of-type)` matches the
+    // manage bar ONLY when a staff bar exists too, so a single bar still sits
+    // flat on the floor instead of floating 64px above it.
+    .modryn_admin_nav:last-of-type:not(:first-of-type) {
+        bottom: 64px;
+    }
+
+    .modryn_admin_link {
+        flex-direction: column;
+        gap: 3px;
+        font-size: 10px;
+        line-height: 1.15;
+        min-width: 58px;
+        text-align: center;
+        padding-block: 2px;
+
+        // The underline that marks the active tab belongs on top here, where
+        // the bar's own border already occupies the bottom edge.
+        &.is_active {
+            border-block-end: none;
+            border-block-start: 2px solid $modryn-gold;
+        }
+    }
+
+    .modryn_admin_icon {
+        font-size: 19px;
+    }
+
+    // Chrome that earns its space on a wide screen and not on a phone.
+    .modryn_admin_brand,
+    .modryn_admin_who {
+        display: none;
+    }
+}

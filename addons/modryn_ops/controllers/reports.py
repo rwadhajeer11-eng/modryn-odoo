@@ -16,7 +16,7 @@ TZ = pytz.timezone('Asia/Jerusalem')
 GROUP_STAFF = 'modryn_staff.group_boutique_staff'
 GROUP_MANAGER = 'modryn_staff.group_shift_manager'
 
-nav.register('reports', '/manage/reports', _lt("Reports"), 40)
+nav.register('reports', '/manage/reports', _lt("Reports"), 40, icon='fa-bar-chart')
 
 
 def _pct(part, whole):

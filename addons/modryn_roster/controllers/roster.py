@@ -15,7 +15,7 @@ GROUP_OWNER = 'modryn_staff.group_boutique_owner'
 GROUP_MANAGER = 'modryn_staff.group_shift_manager'
 GROUP_STAFF = 'modryn_staff.group_boutique_staff'
 
-nav.register('shifts', '/manage/shifts', _lt("Shifts"), 60, 'manage')
+nav.register('shifts', '/manage/shifts', _lt("Shifts"), 60, 'manage', 'fa-calendar-o')
 
 
 class ModrynRoster(http.Controller):

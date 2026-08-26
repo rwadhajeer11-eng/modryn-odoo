@@ -83,5 +83,8 @@ class ModrynRolePage(models.Model):
                     'key': entry['key'],
                     'url': entry['url'],
                     'label': entry['label'],
+                    # .get, not []: a module registered before icons existed
+                    # would otherwise KeyError and take the whole nav down.
+                    'icon': entry.get('icon') or 'fa-circle-o',
                 })
         return entries

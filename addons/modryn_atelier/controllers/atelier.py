@@ -15,8 +15,8 @@ GROUP_STAFF = 'modryn_staff.group_boutique_staff'
 GROUP_MANAGER = 'modryn_staff.group_shift_manager'
 GROUP_OWNER = 'modryn_staff.group_boutique_owner'
 
-nav.register('atelier', '/atelier', _lt("Workshop"), 30)
-nav.register('pieces', '/manage/pieces', _lt("Pieces"), 30, 'manage')
+nav.register('atelier', '/atelier', _lt("Workshop"), 30, icon='fa-scissors')
+nav.register('pieces', '/manage/pieces', _lt("Pieces"), 30, 'manage', 'fa-puzzle-piece')
 
 
 def my_open_task_rows():

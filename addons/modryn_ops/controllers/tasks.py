@@ -10,7 +10,7 @@ GROUP_STAFF = 'modryn_staff.group_boutique_staff'
 GROUP_MANAGER = 'modryn_staff.group_shift_manager'
 GROUP_OWNER = 'modryn_staff.group_boutique_owner'
 
-nav.register('checklists', '/manage/checklists', _lt("Checklists"), 70, 'manage')
+nav.register('checklists', '/manage/checklists', _lt("Checklists"), 70, 'manage', 'fa-check-square-o')
 
 
 class ModrynOpsTasks(http.Controller):

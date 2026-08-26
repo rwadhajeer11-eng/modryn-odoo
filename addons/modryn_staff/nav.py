@@ -26,7 +26,7 @@ _lt = LazyTranslate(__name__)
 PAGES = []
 
 
-def register(key, url, label, sequence, section='staff'):
+def register(key, url, label, sequence, section='staff', icon='fa-circle-o'):
     """Add a page to the shared nav. Idempotent: a re-import is not a new page."""
     if any(p['key'] == key for p in PAGES):
         return
@@ -36,6 +36,7 @@ def register(key, url, label, sequence, section='staff'):
         'label': label,
         'sequence': sequence,
         'section': section,
+        'icon': icon,
     })
     PAGES.sort(key=lambda p: (p['section'] != 'staff', p['sequence']))
 
@@ -44,11 +45,15 @@ def page(key):
     return next((p for p in PAGES if p['key'] == key), None)
 
 
-register('home', '/staff/home', _lt("My day"), 5)
-register('floor', '/floor', _lt("Floor board"), 10)
-register('roster', '/roster', _lt("Roster"), 20)
-register('checkin', '/queue/checkin', _lt("Walk-in check-in"), 60)
-register('staff', '/manage/staff', _lt("Team"), 10, 'manage')
-register('roles', '/manage/roles', _lt("Roles"), 20, 'manage')
-register('rooms', '/manage/rooms', _lt("Rooms"), 40, 'manage')
-register('hours', '/manage/hours', _lt("Hours"), 50, 'manage')
+# Icon names are Font Awesome **4**, which is what Odoo 19 actually ships — the
+# served frontend bundle has `.fa-clock-o` and NO `.fa-clock`. An FA5/6 name does
+# not error; it renders an invisible empty box, so every name here was checked
+# against the real bundle rather than from memory.
+register('home', '/staff/home', _lt("My day"), 5, icon='fa-home')
+register('floor', '/floor', _lt("Floor board"), 10, icon='fa-th-large')
+register('roster', '/roster', _lt("Roster"), 20, icon='fa-calendar')
+register('checkin', '/queue/checkin', _lt("Walk-in check-in"), 60, icon='fa-qrcode')
+register('staff', '/manage/staff', _lt("Team"), 10, 'manage', 'fa-users')
+register('roles', '/manage/roles', _lt("Roles"), 20, 'manage', 'fa-briefcase')
+register('rooms', '/manage/rooms', _lt("Rooms"), 40, 'manage', 'fa-building')
+register('hours', '/manage/hours', _lt("Hours"), 50, 'manage', 'fa-clock-o')
