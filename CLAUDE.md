@@ -58,6 +58,22 @@ toolchain is Linux bash talking to Postgres over a unix socket with peer auth �
 | Odoo data dir | `~/modryn-runtime/data` |
 | The repo | stays on Windows at `C:\Users\rwadh\MODRYN\modryn-odoo` — **one copy only** |
 
+**Two things about this machine that took a while to find, so they are written
+down rather than rediscovered:**
+
+- **Node.** The browser suite needs Node **20+**; this box ships 18, so
+  Playwright refused to start and the gate's step 3 had in fact never run here.
+  Node 20 is installed **alongside** 18 via `nvm` (user-local, the system Node
+  untouched). Any shell that runs Playwright must load it first:
+  `export NVM_DIR="$HOME/.nvm"; . "$NVM_DIR/nvm.sh"; nvm use 20`.
+- **DNS.** `localtest.me` is a *public* domain carrying both an A record
+  (`127.0.0.1`) and an AAAA (`::1`), and the Odoo server binds IPv4 only — so
+  whenever the browser picked the IPv6 address a spec died with
+  `ERR_NAME_NOT_RESOLVED`, a **different spec each run**. That reads as flaky
+  application code and is not. The tenant names are pinned in `/etc/hosts`, and
+  `/etc/wsl.conf` carries `generateHosts = false` so WSL does not rewrite them
+  away on the next boot. If the flake ever returns, check that file first.
+
 `odoo/`, `.venv/` and `.odoo-data/` inside the repo are **symlinks** to those
 ext4 directories, so every repo script (`./odoo/odoo-bin`, `source
 .venv/bin/activate`, `$REPO/.odoo-data/filestore`) works verbatim, exactly as on
@@ -119,16 +135,28 @@ not run here" without the first.
 
 No password lives in this repo — you pick your own. The local demo password is
 kept **outside the repo** in the session scratchpad
-(`modryn-local-secrets.sh`), and is both the back-office `admin` password and
-every staff login. Seeded staff logins: **bella** = miri (owner), sara (manager),
-rotem / noa / orly (staff) · **noga** = tamar (owner), yael (manager), dana (staff).
+(`modryn-local-secrets.sh`), and is the password for every account below.
 
-**Known-red baseline** (2026-08-26): `verify.sh` reports **359 passed, 6 failed,
-7 skipped** on a clean install. Five failures are one root cause — English is
-never installed (`scripts/build_template.sh:49` sets `language_ids` to `[he, ar]`;
-the identical bug sits in the off-limits `deploy/scripts/build_template_prod.sh:134`).
-The sixth is a self-declared dead check. Treat that as the floor: anything beyond
-it is a regression you caused.
+Seeded staff logins — sign in at `/staff/login`:
+**bella** = miri (owner), sara (manager), rotem / noa / orly (staff) ·
+**noga** = tamar (owner), yael (manager), dana (staff) ·
+**qa** = qaowner, qamanager, qastaff.
+
+**There is no account called `admin` on a boutique.** The Administrator on
+bella is `miri` and on qa it is `qaowner`; `admin` exists only on the separate
+`platform` database. Odoo's own `/web/login` labels its field "Email" and there
+are no email addresses on any of these accounts — it takes the USERNAME.
+
+**Green baseline** (2026-08-26): `verify.sh` reports **378 passed, 0 failed,
+7 skipped**, and the browser suite **26 passed, 1 skipped**. Both are green —
+treat any failure as a regression you caused, and do not "fix" a check to make
+it pass without first proving the check is the thing that is wrong.
+
+The six failures this file used to record are gone. Five were one root cause
+(English was never installed, `scripts/build_template.sh:49`) and are fixed
+locally; **the identical bug still sits in the off-limits
+`deploy/scripts/build_template_prod.sh:134` and needs Mrwen.** The sixth was a
+self-declared dead check.
 
 ## The workflow — every task, no exceptions
 
@@ -174,6 +202,7 @@ gate, every time, before you say a word about being finished:
    point it at a live server.
 3. **Browser QA** (catches what curl can't — see [qa/README.md](qa/README.md)):
    ```bash
+   export NVM_DIR="$HOME/.nvm"; . "$NVM_DIR/nvm.sh"; nvm use 20   # 18 is too old
    cd qa && BASE_URL=http://qa.localtest.me:8069 \
      MODRYN_DEMO_PASSWORD=… npx playwright test --project=dev
    ```
