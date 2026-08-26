@@ -69,11 +69,30 @@
                 <tbody>
                     <tr t-foreach="employees" t-as="e"
                         t-attf-class="#{'modryn_archived' if not e['active'] else ''}">
-                        <td t-out="e['name']"/>
+                        <td>
+                            <t t-out="e['name']"/>
+                            <!-- Where she lives, under her name rather than in
+                                 columns of its own: this table already carries
+                                 seven, and an eighth and ninth would push the
+                                 Actions column off a phone. -->
+                            <div t-if="e['city'] or e['street']" class="modryn_sub">
+                                <t t-out="e['street']"/><t t-if="e['street'] and e['city']">, </t><t t-out="e['city']"/>
+                            </div>
+                        </td>
                         <td t-out="e['role']"/>
                         <td t-out="e['level']"/>
                         <td dir="ltr" t-out="e['login']"/>
-                        <td dir="ltr" t-out="e['phone']"/>
+                        <td dir="ltr">
+                            <t t-out="e['phone']"/>
+                            <!-- The second number, marked as the second number.
+                                 Printing them as two bare lines would leave
+                                 whoever is ringing round no way to tell which
+                                 one to try first. -->
+                            <div t-if="e['backup_phone']" class="modryn_sub">
+                                <t t-out="e['backup_phone']"/>
+                                <span dir="auto">· backup</span>
+                            </div>
+                        </td>
                         <td>
                             <span t-if="not e['active']" class="modryn_badge is_muted">Archived</span>
                             <span t-elif="e['occupied']" class="modryn_badge is_busy">
@@ -124,6 +143,44 @@
                     <input type="tel" id="phone" name="phone" class="form-control" dir="ltr"
                            t-att-value="values.get('phone', '')"/>
                 </div>
+
+                <!-- Who she is, as opposed to what she does. Kept together and
+                     kept ABOVE the job fields: an owner filling this in is
+                     copying off one document, and interleaving it with role and
+                     permission level would make her put it down and pick it up
+                     four times. -->
+                <fieldset class="mb-3">
+                    <legend class="h6 text-muted">Personal details</legend>
+
+                    <div class="mb-3">
+                        <label class="form-label" for="backup_phone">Backup phone</label>
+                        <input type="tel" id="backup_phone" name="backup_phone"
+                               class="form-control" dir="ltr"
+                               t-att-value="values.get('backup_phone', '')"/>
+                        <div class="form-text">The number to try when the first one doesn't answer.</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label" for="id_number">ID number</label>
+                        <input type="text" id="id_number" name="id_number"
+                               class="form-control" dir="ltr" inputmode="numeric"
+                               t-att-value="values.get('id_number', '')"/>
+                        <div t-if="errors.get('id_number')" class="modryn_field_error"
+                             t-out="errors['id_number']"/>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label" for="city">City</label>
+                        <input type="text" id="city" name="city" class="form-control"
+                               t-att-value="values.get('city', '')"/>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label" for="street">Street and number</label>
+                        <input type="text" id="street" name="street" class="form-control"
+                               t-att-value="values.get('street', '')"/>
+                    </div>
+                </fieldset>
 
                 <div class="mb-3">
                     <label class="form-label" for="role_id">Role</label>

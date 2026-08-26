@@ -1709,10 +1709,38 @@ for db in $TENANTS; do
 done
 
 head_ "20. the golden template ships a working boutique"
+# modryn_platform is excluded BY NAME below, and the loop after this check is
+# why: it is MODRYN's own register of which boutiques subscribe, and it must
+# never be installed in a boutique. Excluded by name rather than by loosening
+# the pattern, so a ninth addon added tomorrow is still caught by its absence.
+#
+# This check only started SEEING modryn_platform once something ran -u against
+# the template: a new addon gets its ir_module_module row when the module list
+# is refreshed, not when its directory appears. So "it passed yesterday" was
+# never evidence the module was absent - only that nobody had looked yet.
 MISSING=$(psql -d modryn_template -tAc "select string_agg(name, ',') from ir_module_module
-  where name like 'modryn%' and state <> 'installed'" 2>/dev/null)
-[ -z "$MISSING" ] && ok "modryn_template has every modryn module installed" \
+  where name like 'modryn%' and name <> 'modryn_platform' and state <> 'installed'" 2>/dev/null)
+[ -z "$MISSING" ] && ok "modryn_template has every boutique module installed" \
   || bad "template ships no product" "uninstalled in the template: $MISSING — every tenant cloned from it 404s on /book, /floor and /my"
+
+# The other half, and the one that actually protects a customer: no boutique
+# may carry the platform register. It lists every OTHER shop that subscribes -
+# names, cities, partners, what each one pays for - so a boutique with it
+# installed would put its owner one URL away from her competitors' details.
+# Asserted on the template AND on every tenant: the template is what future
+# boutiques get cloned from, the tenants are the ones that exist today.
+for db in modryn_template $TENANTS; do
+  STATE=$(psql -d "$db" -tAc "select state from ir_module_module
+    where name='modryn_platform'" 2>/dev/null)
+  # No row at all is a correct answer too: it means this database has not had
+  # its module list refreshed since the addon appeared, which is exactly as
+  # not-installed as 'uninstalled' is.
+  if [ -z "$STATE" ] || [ "$STATE" = "uninstalled" ]; then
+    ok "$db does not carry the platform register"
+  else
+    bad "$db can see other boutiques" "modryn_platform is '$STATE' in $db - its owner can open /platform/boutiques and read every subscribing shop's details"
+  fi
+done
 grep -q "^  -i modryn_theme,modryn_booking" scripts/build_template.sh \
   && ok "build_template.sh installs the modryn addons" \
   || bad "build_template.sh" "installs core only; the addons never reach the template"

@@ -1,6 +1,7 @@
 from datetime import datetime
 
-from odoo import api, fields, models
+from odoo import _, api, fields, models
+from odoo.exceptions import ValidationError
 
 LEVEL_OWNER = 'owner'
 LEVEL_MANAGER = 'manager'
@@ -31,6 +32,58 @@ class HrEmployee(models.Model):
         string="Permission level",
         default=LEVEL_STAFF,
     )
+
+    # --------------------------------------------------- who she actually is
+    # Plain Char columns on hr.employee, deliberately NOT Odoo's own
+    # identification_id / private_street / private_phone. Two reasons, and the
+    # first one has already bitten this file once:
+    #
+    #   * work_phone is a RELATED field living on the employee's work contact,
+    #     and modryn_provision_login relinks that contact to the new portal
+    #     user's partner - so a value written before provisioning is silently
+    #     dropped. See the comment on manage.py's hire path, which exists
+    #     because every walkthrough hire lost her number exactly there. A stored
+    #     Char on this table cannot go missing that way.
+    #   * This install carries a slim hr: there is no identification_id column
+    #     and no private_street/private_city at all. Reaching for them would
+    #     mean depending on modules the boutique does not have.
+    modryn_id_number = fields.Char(
+        string="ID number",
+        help="Identity-card or passport number. Only the owner can see this.",
+    )
+    modryn_city = fields.Char(string="City")
+    # Street AND house number in ONE field, as the owner asked for it ("which
+    # street with the number"). Splitting them would make the form longer for no
+    # gain: nothing in this product sorts or searches by house number, and a
+    # boutique writes an address the way it would write it on an envelope.
+    modryn_street = fields.Char(string="Street and number")
+    # The number to try when the first one does not answer. Its own field rather
+    # than Odoo's emergency_phone: an emergency contact is somebody ELSE - a
+    # relative to call if she is hurt at work - and a second number for HER is a
+    # different fact. Storing one in the other's column would eventually get
+    # somebody's mother called about a shift swap.
+    modryn_backup_phone = fields.Char(string="Backup phone")
+
+    @api.constrains('modryn_id_number')
+    def _check_id_number_unique(self):
+        """Two people cannot share an ID number.
+
+        Python and not a SQL unique(): blanks must stay repeatable - most of the
+        team will have no number recorded on the day this ships - and the check
+        has to see ARCHIVED colleagues too, which a search() in a constraint
+        only does with active_test=False.
+        """
+        for employee in self:
+            number = (employee.modryn_id_number or '').strip()
+            if not number:
+                continue
+            clash = self.with_context(active_test=False).search_count([
+                ('id', '!=', employee.id),
+                ('modryn_id_number', '=ilike', number),
+            ])
+            if clash:
+                raise ValidationError(
+                    _("Somebody on the team already has that ID number."))
 
     # Computed and NOT stored, with no @api.depends: occupancy is a fact about
     # *other* records (a live queue entry, a booking happening right now) and

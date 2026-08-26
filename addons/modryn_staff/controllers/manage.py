@@ -87,6 +87,21 @@ def _levels():
     ]
 
 
+# The fields that describe the PERSON rather than the job. Collected in one
+# place so the hire form and the edit form cannot drift apart - the bug where a
+# field is saveable on one screen and silently dropped on the other is exactly
+# what a second copy of this dict buys you.
+PERSONAL_FIELDS = ('id_number', 'city', 'street', 'backup_phone')
+
+
+def _personal_values(post):
+    return {'modryn_%s' % f: (post.get(f) or '').strip() for f in PERSONAL_FIELDS}
+
+
+def _personal_from(employee):
+    return {f: getattr(employee, 'modryn_%s' % f) or '' for f in PERSONAL_FIELDS}
+
+
 class ModrynManage(http.Controller):
     """Owner-only administration, themed to match the storefront.
 
@@ -109,12 +124,41 @@ class ModrynManage(http.Controller):
     def _roles(self):
         return request.env['modryn.staff.role'].sudo().search([])
 
+    def _id_number_taken(self, number, employee=None):
+        """The friendly half of the ID-number rule.
+
+        hr.employee carries the real constraint - this is only here so the owner
+        reads a sentence in the form instead of meeting a traceback. The model
+        keeps the last word, including for the race this cannot see.
+
+        active_test=False on purpose: a number belonging to somebody who left
+        last year is still taken, and without it the form would happily create
+        the duplicate that the model then refuses.
+        """
+        number = (number or '').strip()
+        if not number:
+            return None
+        domain = [('modryn_id_number', '=ilike', number)]
+        if employee:
+            domain.append(('id', '!=', employee.id))
+        if request.env['hr.employee'].sudo().with_context(
+                active_test=False).search_count(domain):
+            return _("Somebody on the team already has that ID number.")
+        return None
+
     def _employee_rows(self):
         employees = request.env['hr.employee'].sudo().with_context(active_test=False).search([])
         return [{
             'id': e.id,
             'name': e.name,
             'phone': e.work_phone or '',
+            'backup_phone': e.modryn_backup_phone or '',
+            'city': e.modryn_city or '',
+            'street': e.modryn_street or '',
+            # Deliberately NOT in the list: modryn_id_number. The list is the
+            # screen left open on the counter all day, and an identity number
+            # is the one field here that is worth something to somebody who
+            # walks past it. It lives on the form, one click away.
             'role': e.modryn_role_id.name or '',
             'level': dict(_levels()).get(e.modryn_level, e.modryn_level or ''),
             'level_raw': e.modryn_level or '',
@@ -167,13 +211,20 @@ class ModrynManage(http.Controller):
             errors['role_id'] = _("Please choose a role.")
         if level not in dict(_levels()):
             errors['level'] = _("That permission level isn't valid.")
+        id_error = self._id_number_taken(post.get('id_number'))
+        if id_error:
+            errors['id_number'] = id_error
 
         if not errors:
-            employee = request.env['hr.employee'].sudo().create({
-                'name': name,
-                'modryn_role_id': int(role_id),
-                'modryn_level': level,
-            })
+            # The personal fields go straight into create(), unlike work_phone
+            # below: they are stored columns on hr_employee, so provision_login
+            # relinking the work CONTACT cannot take them with it.
+            employee = request.env['hr.employee'].sudo().create(dict(
+                _personal_values(post),
+                name=name,
+                modryn_role_id=int(role_id),
+                modryn_level=level,
+            ))
             try:
                 employee.modryn_provision_login(username, password)
             except ValueError as exc:
@@ -212,12 +263,13 @@ class ModrynManage(http.Controller):
             return request.not_found()
         return request.render('modryn_staff.manage_staff_form', {
             'roles': self._roles(), 'levels': _levels(), 'employee': employee,
-            'errors': {}, 'values': {
-                'name': employee.name,
-                'phone': employee.work_phone or '',
-                'role_id': employee.modryn_role_id.id,
-                'level': employee.modryn_level,
-            },
+            'errors': {}, 'values': dict(
+                _personal_from(employee),
+                name=employee.name,
+                phone=employee.work_phone or '',
+                role_id=employee.modryn_role_id.id,
+                level=employee.modryn_level,
+            ),
             'active_tab': 'staff',
         })
 
@@ -238,6 +290,9 @@ class ModrynManage(http.Controller):
             errors['name'] = _("Please enter a name.")
         if level not in dict(_levels()):
             errors['level'] = _("That permission level isn't valid.")
+        id_error = self._id_number_taken(post.get('id_number'), employee=employee)
+        if id_error:
+            errors['id_number'] = id_error
 
         if errors:
             return request.render('modryn_staff.manage_staff_form', {
@@ -246,12 +301,13 @@ class ModrynManage(http.Controller):
             })
 
         level_changed = level != employee.modryn_level
-        employee.write({
-            'name': name,
-            'work_phone': (post.get('phone') or '').strip(),
-            'modryn_role_id': int(post['role_id']) if post.get('role_id') else False,
-            'modryn_level': level,
-        })
+        employee.write(dict(
+            _personal_values(post),
+            name=name,
+            work_phone=(post.get('phone') or '').strip(),
+            modryn_role_id=int(post['role_id']) if post.get('role_id') else False,
+            modryn_level=level,
+        ))
 
         # A promotion has to move the underlying account, or the new level is a
         # label with no power behind it.
