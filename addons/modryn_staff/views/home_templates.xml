@@ -95,15 +95,30 @@
                                       t-out="task['due']"/>
                             </td>
                             <td class="text-end">
-                                <button t-if="task['state'] == 'intake'"
-                                        class="btn btn-sm btn-primary"
-                                        t-att-data-task-advance="task['id']"
-                                        data-target="in_progress">Start</button>
-                                <button t-if="task['state'] == 'in_progress'"
-                                        class="btn btn-sm btn-primary"
-                                        t-att-data-task-advance="task['id']"
-                                        data-target="ready">Ready</button>
-                                <span t-if="task['state'] == 'ready'" class="modryn_badge is_free">Ready</span>
+                                <!-- All three working states, always, with the
+                                     current one held down. She taps whichever
+                                     the garment is actually in — INCLUDING
+                                     going back, which is the only way a mis-tap
+                                     gets undone. Before this there was one
+                                     forward button per state and "Ready" was a
+                                     dead end: tapping it on the wrong row meant
+                                     asking the owner to fix it in the back
+                                     office.
+                                     "Delivered" is deliberately not here — it
+                                     stamps delivered_at and hands her the next
+                                     job, so it is not a toggle. -->
+                                <div class="btn-group btn-group-sm" role="group"
+                                     aria-label="Task state">
+                                    <t t-foreach="home.get('task_states') or []" t-as="ts">
+                                        <button type="button"
+                                                t-attf-class="btn #{'btn-primary' if task['state'] == ts[0] else 'btn-outline-dark'}"
+                                                t-att-data-task-advance="task['id']"
+                                                t-att-data-target="ts[0]"
+                                                t-att-aria-pressed="'true' if task['state'] == ts[0] else 'false'"
+                                                t-att-disabled="'disabled' if task['state'] == ts[0] else None"
+                                                t-out="ts[1]"/>
+                                    </t>
+                                </div>
                             </td>
                         </tr>
                     </tbody>

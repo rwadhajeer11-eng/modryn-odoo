@@ -81,12 +81,26 @@ class ModrynAlterationTask(models.Model):
                 raise ValidationError(_("That staff member is archived."))
 
     def action_advance(self, target):
-        """Move a task forward. Only ever forward — history is not a toggle."""
+        """Move a task to another state.
+
+        Movement among the OPEN states is now free in both directions. It used
+        to be forward-only, and the cost of that landed on the wrong person: a
+        seamstress who tapped "Ready" on the row above the one she meant had no
+        way back, and the only repair was an owner editing the record in the
+        back office. A mis-tap is not history.
+
+        `delivered` is still a one-way door, and deliberately so. It is not a
+        label: it stamps delivered_at, releases her to the next job in the
+        queue, and is what the shop reads as "the bride has her dress". Undoing
+        that is a different act with different consequences, and it is not what
+        was asked for.
+        """
         self.ensure_one()
         order = [s[0] for s in STATES]
-        if target not in order:
+        if target not in order or target == self.state:
             return False
-        if order.index(target) <= order.index(self.state):
+        # Leaving delivered is not a correction, it is a resurrection.
+        if self.state == 'delivered':
             return False
         values = {'state': target}
         if target == 'delivered':

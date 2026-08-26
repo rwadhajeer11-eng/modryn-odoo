@@ -2218,12 +2218,20 @@ ATELIER_ANON=$(curl -sg -o /dev/null -w '%{http_code}' -X POST "$(turl bella)/at
 ASSIGN_ANON=$(curl -sg -o /dev/null -w '%{http_code}' -X POST "$(turl bella)/atelier/assign" -d "task_id=1")
 [ "$ASSIGN_ANON" != "200" ] && ok "anonymous POST /atelier/assign refused ($ASSIGN_ANON)" \
   || bad "atelier assign gate" "anonymous POST returned 200"
-# -A20: both methods open with a docstring; the guard is the first statement
-# after it, well within twenty lines but far past two.
-grep -A20 "def task_new" addons/modryn_atelier/controllers/atelier.py | grep -q "_is_manager" \
-  && grep -A20 "def assign" addons/modryn_atelier/controllers/atelier.py | grep -q "_is_manager" \
-  && ok "task_new and assign re-check the manager group server-side" \
-  || bad "atelier group re-check" "a route lost its _is_manager() guard — hiding the panel is not a permission"
+# -A30: each method opens with a docstring; the guard is the first statement
+# after it, well within thirty lines but far past two.
+#
+# task_new used to require _is_manager. It now requires _is_staff, deliberately:
+# a seamstress must be able to write down a garment that arrives in her hands.
+# The escalation this check really guards against moved rather than vanished —
+# it is now task_create() refusing to let a non-manager set seamstress_id, so a
+# seamstress cannot hand work to somebody else. All three lines below are
+# required together; dropping any one of them re-opens a real hole.
+grep -A30 "def task_new" addons/modryn_atelier/controllers/atelier.py | grep -q "_is_staff" \
+  && grep -A30 "def assign" addons/modryn_atelier/controllers/atelier.py | grep -q "_is_manager" \
+  && grep -A30 "def task_create" addons/modryn_atelier/controllers/atelier.py | grep -q "_is_manager" \
+  && ok "atelier routes re-check their group server-side (task_new staff, assign + task_create manager)" \
+  || bad "atelier group re-check" "a route lost its group guard — hiding the panel is not a permission"
 # The auto-assign pool must be non-empty by construction on a seeded tenant:
 # seed_staff.py sets is_workshop on the seamstress role, and the template ships
 # it for fresh installs.

@@ -63,6 +63,16 @@ class ModrynHomeAtelier(ModrynHome):
     def _home(self):
         home = super()._home()
         home['my_tasks'] = my_open_task_rows()
+        # The three working states, so her board can offer ALL of them instead of
+        # only the next one — that is what makes a mis-tap correctable.
+        # Built here, in the module that owns the model: modryn_atelier depends
+        # on modryn_staff and never the other way round, so modryn_staff must not
+        # import this list.
+        # 'delivered' is excluded on purpose. It stamps delivered_at and releases
+        # her to the next job; it is a one-way door and does not belong in a row
+        # of toggles.
+        home['task_states'] = [(code, label) for code, label in STATES
+                               if code in OPEN_STATES]
         return home
 
 
@@ -214,8 +224,15 @@ class ModrynAtelier(http.Controller):
         the defaults happened to drop it, invisible to the manager who thought
         she had said how urgent it was.
         """
-        if not self._is_manager():
+        # Staff, not manager: a seamstress must be able to write down a garment
+        # that arrives in her hands. She may not hand work to SOMEBODY ELSE
+        # though — assignment stays a manager's act, enforced below rather than
+        # by hiding a dropdown, because a payload is not authorisation.
+        if not self._is_staff():
             return {'error': 'forbidden'}
+        if not self._is_manager():
+            mine = self._my_employee()
+            seamstress_id = mine.id if mine else None
         name = (customer_name or '').strip()
         if not name:
             return {'error': 'missing_customer'}
@@ -270,7 +287,7 @@ class ModrynAtelier(http.Controller):
         callable, so the validation and creation stay single-sourced with the
         jsonrpc contract that qa act 6c and the k6 manager scenario pin.
         """
-        if not self._is_manager():          # hiding the panel is not a permission
+        if not self._is_staff():            # hiding the panel is not a permission
             return access.deny()
         result = self.task_create(
             customer_name=post.get('customer_name'),

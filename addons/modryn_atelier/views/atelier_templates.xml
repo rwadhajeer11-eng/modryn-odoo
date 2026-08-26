@@ -13,9 +13,10 @@
             <div t-if="error" class="modryn_field_error mb-3" role="alert" t-out="error"/>
 
             <!-- The dashboard's own creation door. Native details/summary — no JS.
-                 Rendered for managers only; /atelier/task/new re-checks the group
+                 Open to any staff member: a seamstress must be able to write down
+                 a garment that arrives in her hands. /atelier/task/new re-checks the group
                  server-side, because hiding a panel is not a permission. -->
-            <section t-if="is_manager" class="modryn_panel mb-4">
+            <section class="modryn_panel mb-4">
                 <details t-att-open="'open' if error else None">
                     <summary class="modryn_panel_head" style="cursor:pointer;">
                         <h2 class="d-inline">New task</h2>
@@ -45,7 +46,13 @@
                                     </t>
                                 </select>
                             </div>
-                            <div class="col-md-6">
+                            <!-- Managers only. Handing work to somebody else is a
+                                 manager's act; a seamstress adding a garment gets
+                                 it assigned to herself. The server enforces that
+                                 in task_create() regardless of what is posted —
+                                 this t-if only stops the form offering her a
+                                 choice it would then quietly overrule. -->
+                            <div t-if="is_manager" class="col-md-6">
                                 <label class="form-label" for="task_seamstress">Seamstress</label>
                                 <select id="task_seamstress" name="seamstress_id" class="form-select">
                                     <option value="">Auto-assign</option>
