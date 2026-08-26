@@ -9,7 +9,7 @@
         <t t-call="modryn_staff.staff_layout">
             <t t-set="active_tab" t-value="'roster'"/>
             <div class="d-flex align-items-baseline justify-content-between mb-1">
-                <h1 class="mb-0">Next week</h1>
+                <h1 class="mb-0">Work schedule</h1>
                 <span class="modryn_sub">
                     <t t-esc="week_start.strftime('%d.%m')"/>–<t t-esc="week_end.strftime('%d.%m.%Y')"/>
                 </span>
@@ -143,7 +143,36 @@
                     <tr t-foreach="templates" t-as="tpl"
                         t-attf-class="#{'modryn_archived' if not tpl.active else ''}">
                         <td>
-                            <span class="modryn_strong" t-out="tpl.name"/>
+                            <!-- Inline edit: the list IS the form. Until this
+                                 existed, fixing a typo in a shift name meant
+                                 archiving the row and typing a new one, which
+                                 orphaned its coverage targets and left a dead
+                                 row in the list for good.
+                                 The day options come from the field's own
+                                 selection (weekday_selection()), so they cannot
+                                 drift from what the model will accept. -->
+                            <form t-attf-action="/manage/shifts/edit/#{tpl.id}" method="post"
+                                  class="d-flex gap-1 align-items-center flex-wrap">
+                                <input type="hidden" name="csrf_token"
+                                       t-att-value="request.csrf_token()"/>
+                                <input type="text" name="name" t-att-value="tpl.name"
+                                       class="form-control form-control-sm"
+                                       style="max-width: 170px;"/>
+                                <select name="weekday" class="form-select form-select-sm w-auto">
+                                    <t t-foreach="weekdays" t-as="wd">
+                                        <option t-att-value="wd[0]"
+                                                t-att-selected="'selected' if wd[0] == tpl.weekday else None"
+                                                t-out="wd[1]"/>
+                                    </t>
+                                </select>
+                                <input type="number" name="start_hour" step="0.5" min="0" max="24"
+                                       t-att-value="tpl.start_hour"
+                                       class="form-control form-control-sm" style="max-width: 82px;"/>
+                                <input type="number" name="end_hour" step="0.5" min="0" max="24"
+                                       t-att-value="tpl.end_hour"
+                                       class="form-control form-control-sm" style="max-width: 82px;"/>
+                                <button type="submit" class="btn btn-sm btn-outline-dark">Save</button>
+                            </form>
                             <div class="modryn_sub" t-out="tpl._label()"/>
                         </td>
                         <td>

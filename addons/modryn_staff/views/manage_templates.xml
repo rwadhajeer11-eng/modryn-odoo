@@ -394,6 +394,10 @@
                 booking page completely — no times, and no waitlist either, because
                 there is nothing to queue for. Leave the second date empty to close
                 a single day.
+                <br/>
+                To shut only part of a day — you close at 14:00 for a wedding —
+                fill in the two times as well. The day still appears, offering the
+                hours you are open.
             </p>
 
             <form action="/manage/hours/closure/new" method="post"
@@ -405,6 +409,15 @@
                      format, exactly as type="time" does for the windows above. -->
                 <input type="date" name="date_from" class="form-control w-auto" dir="ltr"/>
                 <input type="date" name="date_to" class="form-control w-auto" dir="ltr"/>
+                <!-- Leave both empty for the whole day, which is what a closure
+                     has always been. Fill both to shut only part of it: the day
+                     still appears on /book with the hours that remain. One
+                     without the other is treated as a half-typed form, not as
+                     "from 14:00 until whenever". -->
+                <input type="time" name="start_hour" class="form-control w-auto" dir="ltr"
+                       aria-label="Closed from"/>
+                <input type="time" name="end_hour" class="form-control w-auto" dir="ltr"
+                       aria-label="Closed until"/>
                 <button type="submit" class="btn btn-primary">Add</button>
             </form>
 
@@ -415,13 +428,17 @@
             <table t-if="closures" class="table modryn_table align-middle"
                    style="max-width: 640px;">
                 <thead>
-                    <tr><th>Reason</th><th>Dates</th><th/></tr>
+                    <tr><th>Reason</th><th>Dates</th><th>Hours</th><th/></tr>
                 </thead>
                 <tbody>
                     <tr t-foreach="closures" t-as="c"
                         t-attf-class="#{'modryn_archived' if not c['active'] else ''}">
                         <td t-out="c['name']"/>
                         <td dir="ltr" t-out="c['when']"/>
+                        <!-- Blank means the whole day. Saying "All day" in every
+                             ordinary row would bury the part-day ones, which are
+                             the only rows where the hours carry information. -->
+                        <td dir="ltr" class="modryn_sub" t-out="c['hours']"/>
                         <td class="text-end">
                             <form t-attf-action="/manage/hours/closure/archive/#{c['id']}"
                                   method="post" class="d-inline">

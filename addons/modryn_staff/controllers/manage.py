@@ -3,6 +3,7 @@ from datetime import timedelta
 from psycopg2 import IntegrityError
 
 from odoo import _, fields, http
+from odoo.addons.modryn_booking.controllers.main import _utc_on
 from odoo.addons.modryn_booking.models.opening_hours import weekday_selection
 from odoo.exceptions import ValidationError
 from odoo.http import request
@@ -29,6 +30,12 @@ def _clock_to_float(raw):
     except (AttributeError, TypeError, ValueError):
         return None
     return value if 0 <= value <= 24 else None
+
+
+def _fmt_hour(value):
+    """9.5 -> "09:30". The inverse of _clock_to_float, for reading back."""
+    whole = int(value)
+    return '%02d:%02d' % (whole, int(round((value - whole) * 60)))
 
 
 def _to_date(raw):
@@ -455,6 +462,12 @@ class ModrynManage(http.Controller):
             # the shop shuts for an afternoon is noise.
             'when': c.date_from.strftime('%d.%m.%Y') if c.date_from == c.date_to else '%s – %s' % (
                 c.date_from.strftime('%d.%m.%Y'), c.date_to.strftime('%d.%m.%Y')),
+            # Blank for a full day. Shown ONLY for a part-day closure, because
+            # printing "00:00–00:00" against every ordinary closure would read as
+            # a bug, and printing nothing against a part-day one would hide the
+            # single fact that distinguishes it.
+            'hours': '' if c.full_day else '%s – %s' % (
+                _fmt_hour(c.start_hour), _fmt_hour(c.end_hour)),
             'active': c.active,
         } for c in closures]
 
@@ -575,6 +588,15 @@ class ModrynManage(http.Controller):
         if date_to < date_from:
             return request.redirect(
                 '/manage/hours?error=%s' % _("A closure has to end on or after the day it starts"))
+        # Both hours empty means the whole day — what a closure has always been,
+        # and what every row written before today still is. One hour without the
+        # other is a half-typed form, not a closure "from 14:00 to whenever".
+        start_hour = _clock_to_float(post.get('start_hour'))
+        end_hour = _clock_to_float(post.get('end_hour'))
+        full_day = start_hour is None or end_hour is None
+        if not full_day and end_hour <= start_hour:
+            return request.redirect(
+                '/manage/hours?error=%s' % _("A part-day closure has to end after it starts"))
         # Refuse to shut a day that already has brides booked into it, and say
         # how many. A closure only stops a date being OFFERED — it cancels
         # nothing — so without this the fittings survive, the 24h reminder cron
@@ -583,15 +605,34 @@ class ModrynManage(http.Controller):
         # that is the path that actually tells the bride and releases her slot to
         # the day's waitlist. So: cancel first, then close. Refusing enforces the
         # order; a warning she can click past would not.
-        booked = request.env['calendar.event'].sudo().search_count([
-            ('modryn_is_booking', '=', True),
-            ('modryn_cancelled_at', '=', False),
-            ('start', '>=', fields.Date.to_string(date_from)),
-            # calendar_event.start is a UTC datetime and these are local dates:
-            # compare against the day AFTER date_to so the whole closing day is
-            # inside the window whatever the offset is doing that week.
-            ('start', '<', fields.Date.to_string(date_to + timedelta(days=1))),
-        ])
+        Event = request.env['calendar.event'].sudo()
+        live = [('modryn_is_booking', '=', True), ('modryn_cancelled_at', '=', False)]
+        if full_day:
+            booked = Event.search_count(live + [
+                ('start', '>=', fields.Date.to_string(date_from)),
+                # calendar_event.start is a UTC datetime and these are local dates:
+                # compare against the day AFTER date_to so the whole closing day is
+                # inside the window whatever the offset is doing that week.
+                ('start', '<', fields.Date.to_string(date_to + timedelta(days=1))),
+            ])
+        else:
+            # Only fittings inside the hours actually being closed. Counting the
+            # whole day would refuse "we shut at 14:00" because of a 10:00
+            # fitting that the closure does not touch at all.
+            #
+            # One query per day rather than one for the range: the boundary is a
+            # LOCAL wall-clock hour and the column is UTC, so each date converts
+            # separately — Israel observes DST and a range spanning the change
+            # would be an hour wrong on one side of it. _utc_on is imported from
+            # modryn_booking rather than re-derived here for exactly that reason.
+            booked = 0
+            day = date_from
+            while day <= date_to:
+                booked += Event.search_count(live + [
+                    ('start', '>=', _utc_on(day, start_hour)),
+                    ('start', '<', _utc_on(day, end_hour)),
+                ])
+                day += timedelta(days=1)
         if booked:
             return request.redirect('/manage/hours?error=%s' % (
                 _("%s fittings are already booked on those dates. Cancel them from the floor"
@@ -601,7 +642,10 @@ class ModrynManage(http.Controller):
         try:
             with request.env.cr.savepoint(), mute_logger('odoo.sql_db'):
                 request.env['modryn.closure'].sudo().create({
-                    'name': name, 'date_from': date_from, 'date_to': date_to})
+                    'name': name, 'date_from': date_from, 'date_to': date_to,
+                    'full_day': full_day,
+                    'start_hour': 0.0 if full_day else start_hour,
+                    'end_hour': 0.0 if full_day else end_hour})
         except (ValidationError, IntegrityError):
             return request.redirect(
                 '/manage/hours?error=%s' % _("Those dates aren't valid"))

@@ -8,6 +8,7 @@ from odoo.addons.modryn_staff import nav
 from odoo.addons.modryn_staff.controllers import access
 
 from ..models.shift_slot import next_week_start, week_start
+from ..models.shift_template import weekday_selection
 
 _lt = LazyTranslate(__name__)
 
@@ -129,6 +130,9 @@ class ModrynRoster(http.Controller):
             'templates': request.env['modryn.shift.template'].sudo().with_context(
                 active_test=False).search([]),
             'roles': request.env['modryn.staff.role'].sudo().search([]),
+            # The label list the inline edit form renders its day picker from,
+            # so the options cannot drift from the field's own selection.
+            'weekdays': weekday_selection(),
             'error': error,
             'active_tab': 'shifts',
         })
@@ -155,6 +159,50 @@ class ModrynRoster(http.Controller):
                 [('name', '=ilike', name), ('weekday', '=', weekday)]):
             return request.redirect('/manage/shifts?error=%s' % _("That shift already exists"))
         Template.create({
+            'name': name, 'weekday': weekday,
+            'start_hour': start, 'end_hour': end,
+        })
+        return request.redirect('/manage/shifts')
+
+    @http.route('/manage/shifts/edit/<int:template_id>', type='http', auth='user',
+                website=True, methods=['POST'], csrf=True, sitemap=False)
+    def shifts_edit(self, template_id, **post):
+        """Rename a shift, or move its day or hours.
+
+        Until now a typo in a shift name could only be fixed by archiving the row
+        and typing a new one — which orphaned its coverage targets and left a
+        dead row in the list forever.
+
+        Same validation as shifts_new, and deliberately the same wording: two
+        different messages for one rule teach the owner there are two rules.
+        """
+        if not self._is_owner():
+            return request.not_found()
+        Template = request.env['modryn.shift.template'].sudo().with_context(
+            active_test=False)
+        template = Template.browse(template_id).exists()
+        if not template:
+            return request.redirect('/manage/shifts')
+
+        name = (post.get('name') or '').strip()
+        if not name:
+            return request.redirect('/manage/shifts?error=%s' % _("Please enter a name"))
+        try:
+            start = float(post.get('start_hour') or template.start_hour)
+            end = float(post.get('end_hour') or template.end_hour)
+        except ValueError:
+            return request.redirect('/manage/shifts?error=%s' % _("Please enter valid hours"))
+        if end <= start:
+            return request.redirect(
+                '/manage/shifts?error=%s' % _("A shift has to end after it starts"))
+        weekday = post.get('weekday') or template.weekday
+        # Excluding self: without it, saving a row without renaming it reports
+        # "that shift already exists" against itself and the edit never lands.
+        if Template.search_count([('id', '!=', template.id),
+                                  ('name', '=ilike', name),
+                                  ('weekday', '=', weekday)]):
+            return request.redirect('/manage/shifts?error=%s' % _("That shift already exists"))
+        template.write({
             'name': name, 'weekday': weekday,
             'start_hour': start, 'end_hour': end,
         })

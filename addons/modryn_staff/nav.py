@@ -51,7 +51,7 @@ def page(key):
 # against the real bundle rather than from memory.
 register('home', '/staff/home', _lt("My day"), 5, icon='fa-home')
 register('floor', '/floor', _lt("Floor board"), 10, icon='fa-th-large')
-register('roster', '/roster', _lt("Roster"), 20, icon='fa-calendar')
+register('roster', '/roster', _lt("Work schedule"), 20, icon='fa-calendar')
 register('checkin', '/queue/checkin', _lt("Walk-in check-in"), 60, icon='fa-qrcode')
 register('staff', '/manage/staff', _lt("Team"), 10, 'manage', 'fa-users')
 register('roles', '/manage/roles', _lt("Roles"), 20, 'manage', 'fa-briefcase')

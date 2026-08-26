@@ -96,8 +96,8 @@ msgstr "שני"
 
 #. module: modryn_roster
 #: model_terms:ir.ui.view,arch_db:modryn_roster.roster_page
-msgid "Next week"
-msgstr "השבוע הבא"
+msgid "Work schedule"
+msgstr "סידור עבודה"
 
 #. module: modryn_roster
 #: model_terms:ir.ui.view,arch_db:modryn_roster.roster_page

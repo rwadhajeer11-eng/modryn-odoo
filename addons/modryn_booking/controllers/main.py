@@ -130,6 +130,10 @@ class ModrynBooking(http.Controller):
         # the loop renders, both ends inclusive.
         closed = request.env['modryn.closure'].sudo().modryn_closed_dates(
             (now_local + timedelta(days=LEAD_DAYS)).date(), last_day)
+        # Part-day closures: the date stays, its blocked hours go. One search for
+        # the fortnight, for the same reason as `closed` above.
+        blocked_hours = request.env['modryn.closure'].sudo().modryn_closed_hours(
+            (now_local + timedelta(days=LEAD_DAYS)).date(), last_day)
         dates = [(now_local + timedelta(days=offset)).date()
                  for offset in range(LEAD_DAYS, DAYS_AHEAD + 1)]
         # What the boutique can STAFF, on top of what the room can hold. Empty
@@ -161,7 +165,13 @@ class ModrynBooking(http.Controller):
             # sorted(), so the order she reads is chronological whatever order
             # the model happened to build its dict in — a page that lists 14:00
             # above 11:00 reads as a bug even when every hour on it is right.
+            day_blocked = blocked_hours.get(day, ())
             for hour, capacity in sorted(hours.items()):
+                # Half-open on purpose: a closure "from 14:00" takes 14:00 itself
+                # and a closure "until 14:00" gives it back, so two adjacent
+                # closures can never both claim the same slot or both drop it.
+                if any(lo <= hour < hi for lo, hi in day_blocked):
+                    continue
                 utc = _utc_on(day, hour)
                 # Capacity is per HOUR, never boutique-wide: a shop that takes
                 # two on a Thursday evening and one the rest of the week is the
