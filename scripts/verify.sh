@@ -314,7 +314,18 @@ grep -q 'dir="rtl"' "$PAGE" && ok "he: RTL" || bad "he RTL" "no dir=rtl"
 
 fetch "$BELLA/ar/shop"
 grep -q 'lang="ar-001"' "$PAGE" && ok "ar: storefront serves ar-001" || bad "Arabic storefront" "no lang=ar-001"
-grep -qE "بحث|المنتجات" "$PAGE" && ok "ar: core UI translated" || bad "core Arabic UI" "no Arabic strings found"
+# Markers from CORE Odoo's Arabic, not ours: "الصفحة الرئيسية" is the website
+# module's Home menu and "الأعلى إلى الأقل" is website_sale's price sort. Both
+# were verified present on a rendered /ar/shop.
+#
+# This used to grep for "بحث|المنتجات" and had been failing on a correctly
+# translated page: Odoo 19 simply does not render either word here, so the
+# check was reporting a translation outage that did not exist (the page
+# carries 46 Arabic runs and the database holds 855 translated field labels).
+# Deliberately NOT relaxed to "contains any Arabic character" — our own addons
+# ship ar.po, so that would pass with core Odoo entirely untranslated, which is
+# the exact failure this line exists to catch.
+grep -qE "الصفحة الرئيسية|الأعلى إلى الأقل" "$PAGE" && ok "ar: core UI translated" || bad "core Arabic UI" "no core-Odoo Arabic strings found"
 
 fetch "$BELLA/en/shop"
 grep -q 'lang="en-US"' "$PAGE" && ok "en: storefront serves en-US" || bad "English storefront" "no lang=en-US"
@@ -814,10 +825,15 @@ head_ "10f. weekly roster"
 for db in $TENANTS; do
   TPLS=$(psql -d $db -tAc "select count(*) from modryn_shift_template where active")
   [ "${TPLS:-0}" -ge 5 ] && ok "$db: shift templates seeded ($TPLS)" || bad "$db shift templates" "only ${TPLS:-0}"
+  # +3640 days = exactly 520 weeks, so the planted row stays a MONDAY (which is
+  # what makes the monitor fire) while landing a decade out, where it cannot hit
+  # UNIQUE (template_id, day). Planting on THIS week collided with a real slot on
+  # any tenant that already had a rota — bella failed while noga passed, and the
+  # error was swallowed by the helper's 2>/dev/null, so it read as "seed failed".
   # The Israeli week starts Sunday. Python weekday(): Sun=6. Vacuously true on a
   # tenant with no slots, so the teeth test plants a Monday one and requires a catch.
   detects "$db" "week start" \
-    "INSERT INTO modryn_shift_slot (name, week_start, day, start_hour, end_hour, template_id, create_uid, write_uid, create_date, write_date) SELECT 'planted', date_trunc('week', now())::date, date_trunc('week', now())::date, 10, 18, id, 1, 1, now(), now() FROM modryn_shift_template LIMIT 1;" \
+    "INSERT INTO modryn_shift_slot (name, week_start, day, start_hour, end_hour, template_id, create_uid, write_uid, create_date, write_date) SELECT 'planted', date_trunc('week', now())::date + 3640, date_trunc('week', now())::date + 3640, 10, 18, id, 1, 1, now(), now() FROM modryn_shift_template LIMIT 1;" \
     "SELECT count(*) FROM modryn_shift_slot WHERE extract(dow from week_start) <> 0;"
   SUN=$(psql -d $db -tAc "select count(*) from modryn_shift_slot where extract(dow from week_start) <> 0")
   [ "${SUN:-1}" = "0" ] && ok "$db: weeks start on Sunday" || bad "$db week start" "$SUN slots start mid-week"
