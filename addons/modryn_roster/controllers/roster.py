@@ -78,7 +78,7 @@ class ModrynRoster(http.Controller):
                           available_ids=week_map.get((slot.day, slot._shift_type()), []))
                 for slot in slots]
 
-    def _days(self, start, employee=None, blocked=()):
+    def _days(self, start, employee=None):
         """The week as seven days of three cells - the thing she actually taps.
 
         Built from WEEKDAY_ORDER x SHIFT_TYPE_ORDER and NOT from the shift
@@ -111,7 +111,6 @@ class ModrynRoster(http.Controller):
                     'shift_type': code,
                     'type_label': type_labels.get(code, code),
                     'mine': bool(employee and employee.id in ids),
-                    'blocked': code in blocked,
                     'offers': len(ids),
                     # The real shifts sitting under this cell, for the manager.
                     # A day-and-part may legitimately carry two of them.
@@ -144,7 +143,6 @@ class ModrynRoster(http.Controller):
         # Not called "week": that is this route's own parameter, and shadowing
         # it works here only because offset happens to be read first.
         week_row = request.env['modryn.roster.week'].sudo().modryn_for(start)
-        blocked = week_row.modryn_blocked_types()
         opens, closes = week_row._window()
         is_open = week_row.modryn_is_open()
         rule = week_row._default_window()
@@ -156,20 +154,14 @@ class ModrynRoster(http.Controller):
         # not looked yet, and before this row existed both were an empty set.
         mine = Submission.modryn_for(start, me) if me else None
 
-        # Every slot, grouped day -> type, so the page draws a week instead of a
-        # list. Blocked types keep their slots (the manager can unblock and the
-        # ticks are still there) but are marked, so nobody offers for a shift the
-        # boutique is not running.
         rows = self._grid(start, employee=me)
-        for row in rows:
-            row['blocked'] = row['shift_type'] in blocked
 
         return request.render('modryn_roster.roster_page', {
             'slots': rows,
             # The seven-by-three grid she taps. Kept ALONGSIDE `slots` rather
             # than replacing it: `slots` is the manager's assign side, and it is
             # also the response key the load test classifies refusals by.
-            'days': self._days(start, employee=me, blocked=blocked),
+            'days': self._days(start, employee=me),
             'shift_rows': [(code, dict(shift_type_selection())[code])
                            for code in SHIFT_TYPE_ORDER],
             'window_days': window_days(),
@@ -190,8 +182,6 @@ class ModrynRoster(http.Controller):
             'is_manager': self._is_manager(),
             'is_owner': self._is_owner(),
             'me': me,
-            'shift_types': shift_type_selection(),
-            'blocked_types': blocked,
             'window_open': is_open,
             # _from_utc on all three, and it is a bug FIX, not a tidy-up:
             # _window() and submitted_at are naive UTC and the page strftime'd
@@ -240,21 +230,6 @@ class ModrynRoster(http.Controller):
         submission = request.env['modryn.roster.submission'].sudo().modryn_for(start, me)
         submission.modryn_send(note=(note or '').strip())
         return {'ok': True, 'submitted_at': fields.Datetime.to_string(submission.submitted_at)}
-
-    @http.route('/roster/block', type='jsonrpc', auth='user')
-    def block_types(self, week=0, types=None):
-        """Which shift types the boutique is not running this week.
-
-        Replace-set, not a toggle: two managers on two phones would each toggle
-        from a different reading of the current value.
-        """
-        if not self._is_manager():
-            return {'error': 'forbidden'}
-        start = self._week(int(week))
-        week_row = request.env['modryn.roster.week'].sudo().modryn_for(start)
-        valid = {code for code, _label in shift_type_selection()}
-        codes = [c for c in (types or []) if c in valid]
-        return {'ok': True, 'blocked': week_row.modryn_set_blocked(codes)}
 
     # ------------------------------------------------ when the team may answer
     #
@@ -438,12 +413,11 @@ class ModrynRoster(http.Controller):
         week_row = request.env['modryn.roster.week'].sudo().modryn_for(start)
         if not week_row.modryn_is_open():
             return {'error': 'window_closed'}
-        blocked = week_row.modryn_blocked_types()
         ok, code, message = request.env['modryn.availability'].sudo().modryn_toggle(
-            me, day, shift_type, blocked=blocked)
+            me, day, shift_type)
         return {
             'slots': self._grid(start, employee=me),
-            'days': self._days(start, employee=me, blocked=blocked),
+            'days': self._days(start, employee=me),
             # `code` is the stable string a test can match on; `message` is the
             # translated sentence a person reads. A Hebrew sentence can never go
             # on a load test's known-refusals list, which is why there are two.

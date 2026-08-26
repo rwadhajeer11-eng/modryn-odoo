@@ -162,20 +162,6 @@
         opacity: 0.45;
     }
 
-    // A part of the day the boutique is not running this week. Struck through
-    // rather than hidden: a missing cell reads as a bug, a struck one reads as
-    // a decision - and her earlier tick is still underneath it, waiting.
-    &.is_blocked {
-        background: repeating-linear-gradient(
-            45deg,
-            rgba(0, 0, 0, 0.04),
-            rgba(0, 0, 0, 0.04) 5px,
-            transparent 5px,
-            transparent 10px
-        );
-        cursor: not-allowed;
-    }
-
     .fa {
         font-size: 0.9rem;
     }

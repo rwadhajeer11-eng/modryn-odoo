@@ -109,13 +109,6 @@ class ModrynRosterWeek(models.Model):
     # default can be changed later and every untouched week follows it.
     opens_at = fields.Datetime(string="Submissions open")
     closes_at = fields.Datetime(string="Submissions close")
-    # Which shift types are not running this week at all: "no night shifts over
-    # the holiday". Comma-separated codes rather than a relation, because the
-    # set is three fixed strings that live in the field definition, and a
-    # relation would need a model, a security row and a data file to express
-    # what a Char already says.
-    blocked_types = fields.Char(default='')
-
     _week_uniq = models.Constraint('unique(week_start)',
                                    "That planning week already exists.")
 
@@ -177,11 +170,11 @@ class ModrynRosterWeek(models.Model):
     def modryn_set_default_window(self, open_wd, open_hour, close_wd, close_hour):
         """Move the RECURRING window, and prove it landed.
 
-        Written through the model and not from the controller, for the reason
-        modryn_set_blocked already documents: a stored junk value here is
-        INVISIBLE, because _parse_window is deliberately forgiving and answers
-        anything unparseable with the shipped default. An owner would then be
-        shown Thursday 09:00, read it as "my save did not take", and try again.
+        Written through the model and not from the controller, because a stored
+        junk value here is INVISIBLE: _parse_window is deliberately forgiving
+        and answers anything unparseable with the shipped default. An owner
+        would then be shown Thursday 09:00, read it as "my save did not take",
+        and try again.
 
         So: a fixed format on the way in, and a read-back through the same
         parser on the way out. The caller compares.
@@ -200,29 +193,6 @@ class ModrynRosterWeek(models.Model):
             if week.opens_at and week.closes_at and week.closes_at <= week.opens_at:
                 raise ValidationError(
                     _("Submissions have to close after they open."))
-
-    # ------------------------------------------------------------ shift types
-    def modryn_blocked_types(self):
-        self.ensure_one()
-        return [code for code in (self.blocked_types or '').split(',') if code]
-
-    def modryn_set_blocked(self, codes):
-        """Which shift types are off this week. Replace-set, never a toggle.
-
-        A toggle needs the caller to know the current value, and two managers on
-        two phones would then each toggle from a different one.
-
-        Filtered against the shift_type selection HERE and not only in the
-        controller. The controller is one caller; a stored junk code would
-        block nothing and be invisible, because a type that does not exist can
-        never match a slot.
-        """
-        self.ensure_one()
-        valid = {code for code, _label in
-                 self.env['modryn.shift.template']._fields['shift_type'].get_description(
-                     self.env)['selection']}
-        self.blocked_types = ','.join(sorted({c for c in codes if c in valid}))
-        return self.modryn_blocked_types()
 
     # ----------------------------------------------------------------- lookup
     @api.model

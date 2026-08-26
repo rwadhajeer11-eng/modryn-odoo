@@ -72,7 +72,7 @@ class ModrynAvailability(models.Model):
 
     # ------------------------------------------------------------------ writes
     @api.model
-    def modryn_toggle(self, employee, day, shift_type, blocked=()):
+    def modryn_toggle(self, employee, day, shift_type):
         """Offer a day-and-part, or withdraw the offer. Idempotent either way.
 
         Returns (ok, code, message). The CODE is a stable string the load test
@@ -90,16 +90,8 @@ class ModrynAvailability(models.Model):
             ('day', '=', day), ('shift_type', '=', shift_type),
             ('employee_id', '=', employee.id)], limit=1)
         if existing:
-            # An untick is ALWAYS allowed, even on a blocked type. She may have
-            # ticked it before the manager switched the type off, and refusing
-            # to let her take it back would strand an offer she has withdrawn.
             existing.unlink()
             return True, None, None
-        if shift_type in blocked:
-            # Refusing a NEW tick is stronger than today, where the page merely
-            # hides the button and the route accepts whatever is posted.
-            return False, 'type_blocked', _(
-                "The boutique isn't running that shift this week.")
         self.sudo().create({
             'week_start': start, 'day': day,
             'shift_type': shift_type, 'employee_id': employee.id,

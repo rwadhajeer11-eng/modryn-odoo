@@ -140,21 +140,6 @@
                 </form>
             </details>
 
-            <!-- Manager: which parts of the day the boutique is not running at
-                 all this week. Ticking one does not delete anybody's answer —
-                 the ticks stay and come back if she unblocks. -->
-            <div t-if="is_manager" class="modryn_panel mb-3">
-                <span class="modryn_sub">Not running this week:</span>
-                <t t-foreach="shift_types" t-as="st">
-                    <label class="modryn_piece_check ms-2">
-                        <input type="checkbox" class="modryn_block_type"
-                               t-att-data-type="st[0]"
-                               t-att-checked="'checked' if st[0] in blocked_types else None"/>
-                        <span t-out="st[1]"/>
-                    </label>
-                </t>
-            </div>
-
             <!-- ============ the week, as one table ============
                  INSIDE .modryn_roster_grid on purpose: roster.js binds ONE
                  delegated click listener on this container, so anything
@@ -186,18 +171,14 @@
                                          and a printed rota has no colour at
                                          all. -->
                                     <button type="button"
-                                            t-attf-class="modryn_avail_cell #{'is_on' if cell['mine'] else ''} #{'is_blocked' if cell['blocked'] else ''}"
+                                            t-attf-class="modryn_avail_cell #{'is_on' if cell['mine'] else ''}"
                                             t-att-data-day="cell['day']"
                                             t-att-data-type="cell['shift_type']"
                                             t-att-data-slot="cell['slot_ids'][0] if cell['slot_ids'] else None"
-                                            t-att-disabled="None if (window_open and not cell['blocked']) else 'disabled'"
+                                            t-att-disabled="None if window_open else 'disabled'"
                                             t-attf-aria-label="#{row[1]} #{d['weekday']} #{d['label']}"
                                             t-att-aria-pressed="'true' if cell['mine'] else 'false'">
-                                        <t t-if="cell['blocked']">
-                                            <i class="fa fa-ban" aria-hidden="true"/>
-                                            <span class="visually-hidden">Not running</span>
-                                        </t>
-                                        <t t-elif="cell['mine']">
+                                        <t t-if="cell['mine']">
                                             <i class="fa fa-check" aria-hidden="true"/>
                                             <span class="visually-hidden">I can work this</span>
                                         </t>
@@ -244,7 +225,7 @@
                      targets and the people, none of which fit in a 44px box. -->
                 <div t-if="is_manager" class="modryn_shift_cards mt-4">
                     <t t-foreach="slots" t-as="slot">
-                        <div t-attf-class="modryn_shift_card #{'is_short' if slot['short_total'] else ''} #{'is_published' if slot['published'] else ''} #{'modryn_archived' if slot['blocked'] else ''}"
+                        <div t-attf-class="modryn_shift_card #{'is_short' if slot['short_total'] else ''} #{'is_published' if slot['published'] else ''}"
                              t-att-data-slot="slot['id']">
                             <div class="modryn_shift_head">
                                 <span class="modryn_strong"><t t-esc="slot['name']"/></span>

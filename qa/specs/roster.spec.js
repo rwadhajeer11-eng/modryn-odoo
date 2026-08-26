@@ -129,25 +129,6 @@ test('@writes a cell remembers being pressed, and un-pressed', async ({ page }) 
   await page.locator('button[name="clear"]').click();
 });
 
-test('@writes switching a shift type off keeps the ticks underneath it', async ({ page }) => {
-  await signIn(page, PEOPLE.manager);
-  await page.goto(WEEK);
-
-  // The promise the page makes in so many words: block a part of the day and
-  // nobody's answer is deleted — unblock and her ticks are all still there.
-  const box = page.locator('.modryn_block_type[data-type="night"]');
-  await box.check();
-  await page.waitForLoadState('networkidle');
-
-  await page.goto(WEEK);
-  const blocked = page.locator('.modryn_avail_cell[data-type="night"]').first();
-  await expect(blocked).toBeDisabled();
-
-  // Unblock, and leave the tenant as it was found.
-  await page.locator('.modryn_block_type[data-type="night"]').uncheck();
-  await page.waitForLoadState('networkidle');
-});
-
 test('@writes the manager can say when the team may answer', async ({ page }) => {
   await signIn(page, PEOPLE.manager);
   await page.goto(WEEK);

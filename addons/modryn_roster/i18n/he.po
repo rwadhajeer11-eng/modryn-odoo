@@ -285,11 +285,6 @@ msgstr "ערב"
 msgid "That day is not inside that week."
 msgstr "היום הזה לא נמצא בשבוע הזה."
 
-#. module: modryn_roster
-#. odoo-python
-#: code:addons/modryn_roster/models/availability.py:0
-msgid "The boutique isn't running that shift this week."
-msgstr "הסלון לא מפעיל את המשמרת הזו השבוע."
 
 #. module: modryn_roster
 #. odoo-python

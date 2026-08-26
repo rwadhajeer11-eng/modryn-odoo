@@ -22,18 +22,14 @@ export class RosterPage extends Interaction {
         }
     }
 
-    // The note, Send, and the manager's shift-type switches sit OUTSIDE the
-    // grid, so the grid's delegated listener never sees them. Bound explicitly
-    // rather than moved inside it: her answer is about the WEEK, not about any
-    // one shift card.
+    // Send sits OUTSIDE the grid's delegated listener's reach when it is
+    // rendered above the table, so it is bound explicitly. This function exists
+    // because that already bit once.
     bindWeekControls() {
         const send = document.getElementById("modryn_send_week");
         if (send) {
             send.addEventListener("click", () => this.send());
         }
-        document.querySelectorAll(".modryn_block_type").forEach((box) => {
-            box.addEventListener("change", () => this.blockTypes());
-        });
     }
 
     async send() {
@@ -52,17 +48,6 @@ export class RosterPage extends Interaction {
                     : result.error
             );
         }
-        window.location.reload();
-    }
-
-    // Replace-set, matching the route: every box is read every time, so two
-    // managers on two phones cannot each toggle from a different reading of
-    // the same state.
-    async blockTypes() {
-        const types = [...document.querySelectorAll(".modryn_block_type")]
-            .filter((box) => box.checked)
-            .map((box) => box.dataset.type);
-        await rpc("/roster/block", { week: this.week, types });
         window.location.reload();
     }
 
