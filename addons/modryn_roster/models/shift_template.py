@@ -6,6 +6,34 @@ from odoo.exceptions import ValidationError
 WEEKDAY_ORDER = [6, 0, 1, 2, 3, 4, 5]
 
 
+# The three parts of a retail day, in the order they happen. Codes are words and
+# not digits (unlike PRIORITIES below): nothing sorts by them — the grid orders
+# by this list — and 'night' reads in a log where '2' does not.
+SHIFT_TYPE_ORDER = ['morning', 'middle', 'night']
+
+# Where a template lands when nobody has said. Boundaries are LOCAL wall-clock
+# start hours: before 12:00 is a morning, 17:00 and later is a night, the rest
+# is the middle. Used only to place templates that predate the field — after
+# that the owner's own choice is what counts.
+TYPE_BY_START_HOUR = ((12.0, 'morning'), (17.0, 'middle'), (24.1, 'night'))
+
+
+def shift_type_selection():
+    return [
+        ('morning', _("Morning")),
+        ('middle', _("Midday")),
+        ('night', _("Evening")),
+    ]
+
+
+def type_for_hour(start_hour):
+    """Which part of the day a shift starting at `start_hour` belongs to."""
+    for boundary, code in TYPE_BY_START_HOUR:
+        if start_hour < boundary:
+            return code
+    return 'night'
+
+
 def weekday_selection():
     return [
         ('6', _("Sunday")),
@@ -31,6 +59,19 @@ class ModrynShiftTemplate(models.Model):
     _order = 'sequence, id'
 
     name = fields.Char(required=True)
+    # Morning / middle / night, so the week reads as a 7x3 grid instead of a
+    # flat list of whatever the owner happened to name her shifts. The NAME
+    # stays free — "Thursday late" is still what the boutique calls it — but the
+    # type is what the grid groups by and what a manager switches off wholesale
+    # ("no night shifts over the holiday").
+    #
+    # Defaulted rather than required: every template that existed before this
+    # field needs an answer, and 'morning' is the one that leaves a shop opening
+    # at 10:00 described correctly. _compute_default_type below moves the
+    # obvious ones on upgrade so the default is not silently wrong for evenings.
+    shift_type = fields.Selection(
+        selection=lambda self: shift_type_selection(),
+        required=True, default='morning', index=True)
     weekday = fields.Selection(selection=weekday_selection, required=True, default='6')
     start_hour = fields.Float(default=10.0, required=True)
     end_hour = fields.Float(default=18.0, required=True)

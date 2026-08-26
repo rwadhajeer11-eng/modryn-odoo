@@ -5,3 +5,5 @@ access_modryn_shift_target_owner,modryn.shift.target.owner,model_modryn_shift_ta
 access_modryn_shift_target_internal,modryn.shift.target.internal,model_modryn_shift_target,base.group_user,1,1,1,1
 access_modryn_shift_slot_internal,modryn.shift.slot.internal,model_modryn_shift_slot,base.group_user,1,1,1,1
 access_modryn_availability_internal,modryn.availability.internal,model_modryn_availability,base.group_user,1,1,1,1
+access_modryn_roster_week_internal,modryn.roster.week.internal,model_modryn_roster_week,base.group_user,1,1,1,1
+access_modryn_roster_submission_internal,modryn.roster.submission.internal,model_modryn_roster_submission,base.group_user,1,1,1,1

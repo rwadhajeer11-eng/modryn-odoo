@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 
-from odoo import _, http
+from odoo import _, fields, http
+from odoo.exceptions import ValidationError
 from odoo.http import request
 from odoo.tools.translate import LazyTranslate
 
@@ -8,7 +9,7 @@ from odoo.addons.modryn_staff import nav
 from odoo.addons.modryn_staff.controllers import access
 
 from ..models.shift_slot import next_week_start, week_start
-from ..models.shift_template import weekday_selection
+from ..models.shift_template import shift_type_selection, weekday_selection
 
 _lt = LazyTranslate(__name__)
 
@@ -70,18 +71,114 @@ class ModrynRoster(http.Controller):
         offset = max(-1, min(offset, 1))
         start = self._week(offset)
         me = self._my_employee()
+        # Not called "week": that is this route's own parameter, and shadowing
+        # it works here only because offset happens to be read first.
+        week_row = request.env['modryn.roster.week'].sudo().modryn_for(start)
+        blocked = week_row.modryn_blocked_types()
+        opens, closes = week_row._window()
+        is_open = week_row.modryn_is_open()
+        Submission = request.env['modryn.roster.submission'].sudo()
+
+        # Her own answer for this week: the note she wrote and whether she has
+        # sent it. Absent is NOT the same as "available for nothing" — a manager
+        # has to be able to tell a team member who cannot work from one who has
+        # not looked yet, and before this row existed both were an empty set.
+        mine = Submission.modryn_for(start, me) if me else None
+
+        # Every slot, grouped day -> type, so the page draws a week instead of a
+        # list. Blocked types keep their slots (the manager can unblock and the
+        # ticks are still there) but are marked, so nobody offers for a shift the
+        # boutique is not running.
+        rows = self._grid(start, employee=me)
+        for row in rows:
+            row['blocked'] = row['shift_type'] in blocked
+
         return request.render('modryn_roster.roster_page', {
-            'slots': self._grid(start, employee=me),
+            'slots': rows,
             'week_start': start,
             'week_end': start + timedelta(days=6),
             'week_offset': offset,
             'is_manager': self._is_manager(),
             'is_owner': self._is_owner(),
             'me': me,
+            'shift_types': shift_type_selection(),
+            'blocked_types': blocked,
+            'window_open': is_open,
+            'window_opens': opens,
+            'window_closes': closes,
+            'my_note': (mine.note or '') if mine else '',
+            'my_submitted_at': mine.submitted_at if mine else None,
+            # Who has answered, for the manager. Only for the week on screen.
+            'submissions': [{
+                'employee_id': s.employee_id.id,
+                'name': s.employee_id.name,
+                'note': s.note or '',
+                'submitted_at': s.submitted_at,
+            } for s in Submission.search([('week_start', '=', start)])
+                if s.employee_id.active],
             'staff': request.env['hr.employee'].sudo().search([
                 ('modryn_level', 'in', ('manager', 'staff')),
             ]),
         })
+
+    # ------------------------------------------------------ submission window
+    @http.route('/roster/send', type='jsonrpc', auth='user')
+    def send_availability(self, week=0, note=None):
+        """"That's my week." The ticks were already saved; this is the answer.
+
+        Kept separate from the per-slot toggle on purpose. The toggle is a draft
+        — she can change her mind while she thinks — and this is the moment she
+        tells the manager to build on it.
+        """
+        if not self._is_staff():
+            return {'error': 'forbidden'}
+        me = self._my_employee()
+        if not me:
+            return {'error': 'not_found'}
+        start = self._week(int(week))
+        week_row = request.env['modryn.roster.week'].sudo().modryn_for(start)
+        # Server-side, because a closed window that only hides a button is not a
+        # deadline.
+        if not week_row.modryn_is_open():
+            return {'error': 'window_closed'}
+        submission = request.env['modryn.roster.submission'].sudo().modryn_for(start, me)
+        submission.modryn_send(note=(note or '').strip())
+        return {'ok': True, 'submitted_at': fields.Datetime.to_string(submission.submitted_at)}
+
+    @http.route('/roster/block', type='jsonrpc', auth='user')
+    def block_types(self, week=0, types=None):
+        """Which shift types the boutique is not running this week.
+
+        Replace-set, not a toggle: two managers on two phones would each toggle
+        from a different reading of the current value.
+        """
+        if not self._is_manager():
+            return {'error': 'forbidden'}
+        start = self._week(int(week))
+        week_row = request.env['modryn.roster.week'].sudo().modryn_for(start)
+        valid = {code for code, _label in shift_type_selection()}
+        codes = [c for c in (types or []) if c in valid]
+        return {'ok': True, 'blocked': week_row.modryn_set_blocked(codes)}
+
+    @http.route('/roster/window', type='jsonrpc', auth='user')
+    def set_window(self, week=0, opens_at=None, closes_at=None):
+        """Move THIS week's window. Empty puts it back on the recurring default."""
+        if not self._is_manager():
+            return {'error': 'forbidden'}
+        start = self._week(int(week))
+        week_row = request.env['modryn.roster.week'].sudo().modryn_for(start)
+        try:
+            week_row.write({
+                'opens_at': fields.Datetime.to_datetime(opens_at) if opens_at else False,
+                'closes_at': fields.Datetime.to_datetime(closes_at) if closes_at else False,
+            })
+        except (ValidationError, ValueError):
+            return {'error': 'invalid_window'}
+        opens, closes = week_row._window()
+        return {'ok': True,
+                'opens_at': fields.Datetime.to_string(opens),
+                'closes_at': fields.Datetime.to_string(closes),
+                'is_open': week_row.modryn_is_open()}
 
     # --------------------------------------------------------------- actions
     def _slot(self, slot_id):
@@ -96,6 +193,14 @@ class ModrynRoster(http.Controller):
         slot = self._slot(slot_id)
         if not me or not slot:
             return {'error': 'not_found'}
+        # The deadline binds the TICKS, not only the Send button. Guarding only
+        # the send would leave her able to withdraw a shift after the manager had
+        # already counted her into it — which is the exact thing a closing time
+        # exists to stop.
+        week_row = request.env['modryn.roster.week'].sudo().modryn_for(
+            self._week(int(week)))
+        if not week_row.modryn_is_open():
+            return {'error': 'window_closed'}
         ok, message = request.env['modryn.availability'].sudo().modryn_toggle(me, slot)
         grid = self._grid(self._week(int(week)), employee=me)
         return {'slots': grid, 'error': None if ok else message}

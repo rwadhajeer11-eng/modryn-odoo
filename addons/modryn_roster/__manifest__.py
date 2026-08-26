@@ -13,13 +13,15 @@ Coverage targets are per shift AND per role, because two saleswomen and no
 seamstress is not the same as one of each, even though both are "two people".
 """,
     'category': 'Website',
-    # Not bumped for the floor-board integration: it is new Python and a read
-    # helper, with no data to move. A bumped version with no matching
+    # Bumped to 19.0.1.1.0 WITH migrations/19.0.1.1.0/ created in the same commit.
+    # The two move together or not at all: a bumped version with no matching
     # migrations/<version>/ directory records the new number against every
-    # database, so a migration added at that version LATER would be skipped
-    # forever on exactly the tenants that already exist. Same reasoning, and the
-    # same trap, as modryn_booking's manifest.
-    'version': '19.0.1.0.0',
+    # database, so a migration added at that version LATER is skipped forever on
+    # exactly the tenants that already have data. Same trap as modryn_booking's.
+    #
+    # What this one carries: shift_type arrives with default='morning', which
+    # would stamp every evening shift a boutique already runs as a morning.
+    'version': '19.0.1.1.0',
     'depends': [
         'modryn_staff',
     ],
@@ -33,6 +35,7 @@ seamstress is not the same as one of each, even though both are "two people".
             'modryn_roster/static/src/**/*',
         ],
     },
+    'post_init_hook': 'post_init_hook',
     'author': 'MODRYN',
     'license': 'LGPL-3',
 }

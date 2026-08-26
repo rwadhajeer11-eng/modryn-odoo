@@ -171,6 +171,9 @@ class ModrynShiftSlot(models.Model):
             'day_label': self.day.strftime('%d.%m'),
             'weekday': self.day.strftime('%A'),
             'hours': '%s–%s' % (_fmt(self.start_hour), _fmt(self.end_hour)),
+            # Which part of the day this is, so the page can lay the week out as
+            # a 7x3 grid without asking the template model a second time per slot.
+            'shift_type': self.template_id.shift_type or 'morning',
             'published': self.published,
             # Archived staff keep their place on a published shift — the m2o
             # still resolves — but drop out of the pickers for future weeks.
