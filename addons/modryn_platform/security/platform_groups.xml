@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="privilege_platform" model="res.groups.privilege">
+            <field name="name">MODRYN Platform</field>
+            <field name="sequence">10</field>
+        </record>
+
+        <!--
+            The platform owner. Deliberately unrelated to the boutique groups in
+            modryn_staff: this is MODRYN's own staff, not a shop's, and the two
+            never meet — this module is never installed into modryn_template, so
+            a boutique database has no such group to grant.
+
+            It DOES imply base.group_user. Unlike the boutique groups (which must
+            not, because shop staff are portal users), the platform owner is an
+            internal user of MODRYN's own database.
+        -->
+        <record id="group_platform_owner" model="res.groups">
+            <field name="name">Platform owner</field>
+            <field name="privilege_id" ref="privilege_platform"/>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+            <field name="comment">Sees the register of subscribing boutiques.</field>
+        </record>
+    </data>
+</odoo>

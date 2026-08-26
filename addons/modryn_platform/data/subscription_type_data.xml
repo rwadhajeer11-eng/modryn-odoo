@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- noupdate: these are a starting point, not a fixture. The platform owner
+         renames and reorders them, and a module upgrade must not undo that. -->
+    <data noupdate="1">
+        <record id="subscription_basic" model="modryn.subscription.type">
+            <field name="name">Basic</field>
+            <field name="sequence">10</field>
+        </record>
+        <record id="subscription_standard" model="modryn.subscription.type">
+            <field name="name">Standard</field>
+            <field name="sequence">20</field>
+        </record>
+        <record id="subscription_premium" model="modryn.subscription.type">
+            <field name="name">Premium</field>
+            <field name="sequence">30</field>
+        </record>
+    </data>
+</odoo>

@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- MODRYN's own screen. Wears web.frontend_layout directly rather than
+         modryn_staff's shell: this module never depends on modryn_staff and is
+         never installed beside it, because that shell's navbar links to /floor
+         and /atelier — pages that do not exist in a platform database. -->
+    <template id="boutique_register" name="MODRYN boutique register">
+        <t t-call="web.frontend_layout">
+            <t t-set="no_header" t-value="true"/>
+            <t t-set="no_footer" t-value="true"/>
+            <div id="wrap" class="container py-4" style="max-width: 1100px;">
+                <a href="/platform/plans" class="small float-end">Subscriptions &#8594;</a>
+                <h1 class="mb-1">Boutiques</h1>
+                <p class="text-muted mb-4">
+                    Every shop that subscribes to MODRYN. This is the platform's own
+                    register — it is not read out of any boutique's database, and no
+                    boutique can see it.
+                </p>
+
+                <div t-if="error" class="alert alert-danger" role="alert" t-out="error"/>
+
+                <!-- Add. Native details/summary, no JS: this page is a register
+                     somebody fills in occasionally, not an application. -->
+                <details class="mb-4" t-att-open="'open' if error else None">
+                    <summary style="cursor:pointer;"><h2 class="h5 d-inline">Add a boutique</h2></summary>
+                    <form action="/platform/boutiques/new" method="post" class="row g-2 mt-2">
+                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                        <div class="col-md-2">
+                            <label class="form-label" for="p_code">Number</label>
+                            <input id="p_code" type="text" name="code" class="form-control"
+                                   dir="ltr" inputmode="numeric" pattern="[0-9]{4}"
+                                   maxlength="4" placeholder="0042"/>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label" for="p_name">Name</label>
+                            <input id="p_name" type="text" name="name" class="form-control"/>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label" for="p_city">City</label>
+                            <input id="p_city" type="text" name="city" class="form-control"/>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label" for="p_street">Street</label>
+                            <input id="p_street" type="text" name="street" class="form-control"/>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label" for="p_slug">Subdomain</label>
+                            <input id="p_slug" type="text" name="slug" class="form-control"
+                                   dir="ltr" placeholder="bella"/>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label" for="p_type">Subscription</label>
+                            <select id="p_type" name="subscription_type_id" class="form-select">
+                                <option value="">—</option>
+                                <t t-foreach="types" t-as="ty">
+                                    <option t-att-value="ty.id" t-out="ty.name"/>
+                                </t>
+                            </select>
+                        </div>
+
+                        <!-- Four partner rows, always rendered. Blank ones are
+                             dropped server-side, so the common one-owner shop
+                             costs no clicks and a four-way partnership needs no
+                             "add another" button and therefore no JS. -->
+                        <div class="col-12"><hr class="my-2"/><span class="text-muted">Partners</span></div>
+                        <t t-foreach="[1, 2, 3, 4]" t-as="n">
+                            <div class="col-md-3">
+                                <input type="text" name="partner_name" class="form-control"
+                                       t-attf-placeholder="Partner #{n} name"/>
+                            </div>
+                            <div class="col-md-3">
+                                <input type="text" name="partner_phone" class="form-control"
+                                       dir="ltr" t-attf-placeholder="Partner #{n} phone"/>
+                            </div>
+                        </t>
+
+                        <div class="col-12 mt-2">
+                            <button type="submit" class="btn btn-primary">Add boutique</button>
+                        </div>
+                    </form>
+                </details>
+
+                <p t-if="not shops" class="text-muted">
+                    No boutiques yet. Add the first one above.
+                </p>
+
+                <table t-if="shops" class="table align-middle">
+                    <thead>
+                        <tr>
+                            <th>No.</th><th>Name</th><th>Where</th>
+                            <th>Partners</th><th>Subscription</th><th/>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr t-foreach="shops" t-as="shop"
+                            t-attf-class="#{'text-muted' if not shop['active'] else ''}">
+                            <td dir="ltr" t-out="shop['code']"/>
+                            <td>
+                                <strong t-out="shop['name']"/>
+                                <div t-if="shop['slug']" class="small text-muted" dir="ltr"
+                                     t-out="shop['slug']"/>
+                            </td>
+                            <td>
+                                <t t-out="shop['city']"/>
+                                <t t-if="shop['street']">, <t t-out="shop['street']"/></t>
+                            </td>
+                            <td>
+                                <div t-foreach="shop['partners']" t-as="p" class="small">
+                                    <t t-out="p['name']"/>
+                                    <span t-if="p['phone']" dir="ltr" class="text-muted">
+                                        · <t t-out="p['phone']"/>
+                                    </span>
+                                </div>
+                                <span t-if="not shop['partners']" class="small text-muted">—</span>
+                            </td>
+                            <td>
+                                <!-- Editable in place: a shop moving up a tier is
+                                     the single most common change to this row. -->
+                                <form t-attf-action="/platform/boutiques/edit/#{shop['id']}"
+                                      method="post" class="d-flex gap-1">
+                                    <input type="hidden" name="csrf_token"
+                                           t-att-value="request.csrf_token()"/>
+                                    <select name="subscription_type_id"
+                                            class="form-select form-select-sm w-auto">
+                                        <option value="">—</option>
+                                        <t t-foreach="types" t-as="ty">
+                                            <option t-att-value="ty.id"
+                                                    t-att-selected="'selected' if ty.name == shop['subscription'] else None"
+                                                    t-out="ty.name"/>
+                                        </t>
+                                    </select>
+                                    <button type="submit" class="btn btn-sm btn-outline-dark">Save</button>
+                                </form>
+                            </td>
+                            <td class="text-end">
+                                <form t-attf-action="/platform/boutiques/archive/#{shop['id']}"
+                                      method="post" class="d-inline">
+                                    <input type="hidden" name="csrf_token"
+                                           t-att-value="request.csrf_token()"/>
+                                    <button type="submit" class="btn btn-sm btn-outline-dark">
+                                        <t t-if="shop['active']">Archive</t>
+                                        <t t-else="">Restore</t>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </t>
+    </template>
+
+
+    <!-- Subscription tiers, and what each one includes. The features are the
+         owner's own list — he said he would decide them later, so they are rows
+         he adds rather than a Selection a developer maintains. -->
+    <template id="plans" name="MODRYN subscription plans">
+        <t t-call="web.frontend_layout">
+            <t t-set="no_header" t-value="true"/>
+            <t t-set="no_footer" t-value="true"/>
+            <div id="wrap" class="container py-4" style="max-width: 1100px;">
+                <a href="/platform/boutiques" class="small">&#8592; Boutiques</a>
+                <h1 class="mb-1 mt-2">Subscriptions</h1>
+                <p class="text-muted mb-4">
+                    The tiers you sell, and what each one includes. Add a feature
+                    once and tick it on as many tiers as it belongs to.
+                </p>
+
+                <div t-if="error" class="alert alert-danger" role="alert" t-out="error"/>
+
+                <h2 class="h5">Features</h2>
+                <form action="/platform/plans/feature/new" method="post"
+                      class="row g-2 mb-3" style="max-width: 820px;">
+                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                    <div class="col-md-4">
+                        <input type="text" name="name" class="form-control"
+                               placeholder="Feature name"/>
+                    </div>
+                    <div class="col-md-3">
+                        <input type="text" name="code" class="form-control" dir="ltr"
+                               placeholder="code (optional)"/>
+                    </div>
+                    <div class="col-md-3">
+                        <input type="text" name="note" class="form-control"
+                               placeholder="What it covers"/>
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-outline-dark w-100">Add</button>
+                    </div>
+                </form>
+
+                <p t-if="not features" class="text-muted">
+                    No features yet. Add the first one above, then tick it onto a tier.
+                </p>
+                <table t-if="features" class="table table-sm align-middle mb-5"
+                       style="max-width: 820px;">
+                    <tbody>
+                        <tr t-foreach="features" t-as="f"
+                            t-attf-class="#{'text-muted' if not f.active else ''}">
+                            <td>
+                                <t t-out="f.name"/>
+                                <span t-if="f.code" class="small text-muted" dir="ltr">
+                                    · <t t-out="f.code"/>
+                                </span>
+                            </td>
+                            <td class="small text-muted" t-out="f.note or ''"/>
+                            <td class="text-end">
+                                <form t-attf-action="/platform/plans/feature/archive/#{f.id}"
+                                      method="post" class="d-inline">
+                                    <input type="hidden" name="csrf_token"
+                                           t-att-value="request.csrf_token()"/>
+                                    <button type="submit" class="btn btn-sm btn-outline-dark">
+                                        <t t-if="f.active">Archive</t><t t-else="">Restore</t>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h2 class="h5">Tiers</h2>
+                <form action="/platform/plans/type/new" method="post"
+                      class="row g-2 mb-4" style="max-width: 820px;">
+                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                    <div class="col-md-5">
+                        <input type="text" name="name" class="form-control"
+                               placeholder="Tier name"/>
+                    </div>
+                    <div class="col-md-5">
+                        <input type="text" name="note" class="form-control"
+                               placeholder="Note (optional)"/>
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-outline-dark w-100">Add tier</button>
+                    </div>
+                </form>
+
+                <!-- One form per tier, posting the WHOLE set of ticks. Replace-set
+                     rather than per-feature toggles: what gets stored is exactly
+                     what he is looking at, so two tabs open here cannot disagree. -->
+                <div t-foreach="types" t-as="ty" class="mb-4 p-3 border rounded"
+                     t-attf-class="mb-4 p-3 border rounded #{'text-muted' if not ty.active else ''}">
+                    <form action="/platform/plans/type/features" method="post">
+                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                        <input type="hidden" name="type_id" t-att-value="ty.id"/>
+                        <div class="d-flex align-items-baseline justify-content-between mb-2">
+                            <strong t-out="ty.name"/>
+                            <span class="small text-muted" t-out="ty.note or ''"/>
+                        </div>
+                        <p t-if="not features" class="small text-muted mb-2">
+                            Add a feature above before ticking one on here.
+                        </p>
+                        <t t-foreach="features" t-as="f">
+                            <label t-if="f.active" class="me-3">
+                                <input type="checkbox" name="feature_ids" t-att-value="f.id"
+                                       t-att-checked="'checked' if f in ty.feature_ids else None"/>
+                                <span t-out="f.name"/>
+                            </label>
+                        </t>
+                        <div class="mt-2">
+                            <button type="submit" class="btn btn-sm btn-primary">Save</button>
+                        </div>
+                    </form>
+                    <form t-attf-action="/platform/plans/type/archive/#{ty.id}" method="post"
+                          class="mt-2">
+                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                        <button type="submit" class="btn btn-sm btn-outline-dark">
+                            <t t-if="ty.active">Archive tier</t><t t-else="">Restore tier</t>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </t>
+    </template>
+
+</odoo>
