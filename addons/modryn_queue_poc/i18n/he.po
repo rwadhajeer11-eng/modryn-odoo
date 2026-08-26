@@ -143,6 +143,11 @@ msgid "No one is waiting right now."
 msgstr "אין לקוחות בתור כרגע."
 
 #. module: modryn_queue_poc
+#: model:ir.model.fields,field_description:modryn_queue_poc.field_modryn_queue_entry__staff_note
+msgid "Note for the team"
+msgstr "הערה לצוות"
+
+#. module: modryn_queue_poc
 #: model:ir.model.fields.selection,name:modryn_queue_poc.selection__modryn_queue_entry__state__pending
 msgid "Pending"
 msgstr "ממתינה לאישור"
@@ -176,6 +181,11 @@ msgstr "נא למלא שם מלא"
 #: model_terms:ir.ui.view,arch_db:modryn_queue_poc.ticket
 msgid "Prefer a scheduled visit?"
 msgstr "מעדיפה לקבוע תור מראש?"
+
+#. module: modryn_queue_poc
+#: model:ir.model.fields.selection,name:modryn_queue_poc.selection__modryn_queue_entry__client_type__evening
+msgid "Regular customer"
+msgstr "לקוחה רגילה"
 
 #. module: modryn_queue_poc
 #: model_terms:ir.ui.view,arch_db:modryn_queue_poc.queue_sign

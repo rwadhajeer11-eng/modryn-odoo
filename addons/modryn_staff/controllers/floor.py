@@ -67,6 +67,7 @@ class ModrynFloor(http.Controller):
                 'name': entry.name,
                 'phone': entry.phone or '',
                 'client_type': entry.client_type,
+                'staff_note': entry.staff_note or '',
                 'state': entry.state,
                 'employee_id': entry.modryn_employee_id.id or False,
                 'employee_name': entry.modryn_employee_id.name or '',
@@ -134,6 +135,12 @@ class ModrynFloor(http.Controller):
             'me': {'id': me.id, 'name': me.name} if me else None,
             'sos': [c._row() for c in mine],
             'can_assign': self._is_manager(),
+            # A SEPARATE flag, not a loosened can_assign. That one boolean gates
+            # nine different affordances on this board - Done, Invite to book,
+            # the booking-outcome select, the ops reopen - whose routes still
+            # refuse a plain staff member. Reusing it to show a Take button
+            # would hand her four buttons that error when pressed.
+            'can_take': self._is_staff(),
         }
 
     # ------------------------------------------------------------------ page
@@ -231,6 +238,94 @@ class ModrynFloor(http.Controller):
             })
         else:
             record.write({'modryn_helper_ids': [(3, employee.id)]})
+        return self._board()
+
+    # ------------------------------------------------- taking a customer
+    #
+    # These three are STAFF-level, unlike assign/unassign above. A saleswoman
+    # picking up the customer standing in front of her is the most ordinary act
+    # on the floor, and routing it through a manager was the thing that made the
+    # board a manager's tool rather than the team's.
+    #
+    # The limit is WHO she may move: herself. take() never reads an employee id
+    # from the request - it resolves _my_employee() - so a staff member cannot
+    # dispatch a colleague onto a customer. That is the same shape the atelier
+    # already uses to stop a seamstress handing her work to somebody else.
+
+    @http.route('/floor/take', type='jsonrpc', auth='user')
+    def take(self, target, target_id):
+        """I have this one."""
+        if not self._is_staff():
+            return {'error': 'forbidden'}
+        record = self._resolve_target(target, target_id)
+        me = self._my_employee()
+        if not record or not me:
+            return {'error': 'not_found'}
+
+        primary = record.modryn_employee_id
+        if primary and primary != me:
+            # Somebody already has her. Join as a helper rather than shoulder
+            # the colleague aside - two people on one bride is normal here, and
+            # a silent swap would take a customer off somebody mid-fitting.
+            if me not in record.modryn_helper_ids:
+                record.write({'modryn_helper_ids': [(4, me.id)]})
+        elif not primary:
+            record.write({'modryn_employee_id': me.id,
+                          'modryn_helper_ids': [(3, me.id)]})
+        # Taking a WAITING walk-in is calling her over, and it goes through
+        # modryn_call so she gets the text naming her stylist rather than a
+        # silent state flip. modryn_call is idempotent on the SMS.
+        if target == 'queue' and record.state == 'waiting':
+            record.modryn_call(employee=record.modryn_employee_id)
+        return self._board()
+
+    @http.route('/floor/release', type='jsonrpc', auth='user')
+    def release(self, target, target_id):
+        """Back in the line, in the place she checked in at."""
+        if not self._is_staff():
+            return {'error': 'forbidden'}
+        record = self._resolve_target(target, target_id)
+        if not record:
+            return {'error': 'not_found'}
+        if target != 'queue':
+            # Only a walk-in has a line to go back to. A booking released this
+            # way would lose its staffing and gain nothing.
+            return {'error': 'not_found'}
+        me = self._my_employee()
+        # A manager may release anybody; a staff member only a card she is on.
+        # Without this, one saleswoman could put another's customer back in the
+        # line from across the shop.
+        if not self._is_manager():
+            if not me or (record.modryn_employee_id != me
+                          and me not in record.modryn_helper_ids):
+                return {'error': 'forbidden'}
+        record.modryn_release()
+        return self._board()
+
+    @http.route('/floor/note', type='jsonrpc', auth='user')
+    def set_note(self, target_id, note=None):
+        """What the floor needs to remember about her."""
+        if not self._is_staff():
+            return {'error': 'forbidden'}
+        entry = self._resolve_target('queue', target_id)
+        if not entry:
+            return {'error': 'not_found'}
+        entry.write({'staff_note': (note or '').strip()})
+        return self._board()
+
+    @http.route('/floor/client-type', type='jsonrpc', auth='user')
+    def set_client_type(self, target_id, client_type=None):
+        """Bride, or not. Checked against the field's own selection."""
+        if not self._is_staff():
+            return {'error': 'forbidden'}
+        entry = self._resolve_target('queue', target_id)
+        if not entry:
+            return {'error': 'not_found'}
+        valid = dict(entry._fields['client_type'].get_description(
+            request.env)['selection'])
+        if client_type not in valid:
+            return {'error': 'not_found'}
+        entry.write({'client_type': client_type})
         return self._board()
 
     @http.route('/floor/accept', type='jsonrpc', auth='user')

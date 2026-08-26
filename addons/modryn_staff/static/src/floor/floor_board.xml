@@ -141,6 +141,42 @@
                                         Call for help
                                     </button>
                                 </div>
+
+                                <!-- What a saleswoman does with the customer in
+                                     front of her. Gated on canTake, NOT on
+                                     canAssign: that one boolean also switches on
+                                     Done and Invite-to-book, whose routes still
+                                     refuse her - she would get buttons that
+                                     error. -->
+                                <div t-if="state.canTake" class="modryn_card_actions">
+                                    <button t-if="!this.iAmOn(entry)"
+                                            class="btn btn-sm btn-primary modryn_take_btn"
+                                            t-on-click="() => this.take('queue', entry.id)">
+                                        I'll take her
+                                    </button>
+                                    <button t-if="this.iAmOn(entry)"
+                                            class="btn btn-sm btn-outline-dark modryn_release_btn"
+                                            t-on-click="() => this.release('queue', entry.id)">
+                                        Back to the line
+                                    </button>
+                                    <select class="form-select form-select-sm w-auto"
+                                            t-on-change="(ev) => this.setClientType(entry.id, ev)">
+                                        <option value="bride"
+                                                t-att-selected="entry.client_type === 'bride'">Bride</option>
+                                        <option value="evening"
+                                                t-att-selected="entry.client_type === 'evening'">Regular customer</option>
+                                    </select>
+                                </div>
+                                <!-- The note. Saved on blur rather than on every
+                                     keystroke: each save pushes to every open
+                                     board in the shop, and a push per character
+                                     would make the other terminals unusable. -->
+                                <div t-if="state.canTake" class="modryn_card_note">
+                                    <input type="text" class="form-control form-control-sm"
+                                           placeholder="Note for the team"
+                                           t-att-value="entry.staff_note or ''"
+                                           t-on-change="(ev) => this.setNote(entry.id, ev)"/>
+                                </div>
                                 <div t-if="state.canAssign" class="modryn_card_actions">
                                     <!-- Click fallback: dragging is faster, but a
                                          keyboard or a stubborn tablet still works. -->

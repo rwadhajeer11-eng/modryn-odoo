@@ -35,11 +35,24 @@ class ModrynQueueEntry(models.Model):
 
     name = fields.Char(required=True)
     phone = fields.Char()
+    # The CODE stays 'evening' - every row in every tenant carries it, and
+    # renaming it would be a migration for a word. Only the label changes, to
+    # the one the boutique actually uses: a customer is a bride or she is not.
     client_type = fields.Selection(
-        selection=[('bride', 'Bride'), ('evening', 'Evening')],
+        selection=[('bride', 'Bride'), ('evening', 'Regular customer')],
         default='bride',
         required=True,
     )
+
+    # What the floor needs to remember about her that no field covers: "allergic
+    # to the veil pins", "mother arriving at 4".
+    #
+    # STAFF-ONLY, and that is not enforced by this field - it is enforced by
+    # nobody rendering it on /q/<token>. That route hands the WHOLE entry record
+    # to its template, so this note is one careless t-out away from the
+    # customer's own screen. verify.sh plants a note and asserts it never
+    # appears there; if you add it to that template, the gate will say so.
+    staff_note = fields.Text(string="Note for the team")
     # A verified check-in joins the line directly. The old `pending` front door —
     # a scan parked her here until a staff member accepted her — is gone: proving
     # she holds the number is now the gate, and it is a better one than a human
@@ -98,6 +111,7 @@ class ModrynQueueEntry(models.Model):
             'name': self.name,
             'phone': self.phone or '',
             'client_type': self.client_type,
+            'staff_note': self.staff_note or '',
             'state': self.state,
         }
 
@@ -106,10 +120,13 @@ class ModrynQueueEntry(models.Model):
         for entry in self:
             self.env['bus.bus']._sendone(QUEUE_CHANNEL, 'modryn_queue/update', entry._payload())
 
+    # Fields the board actually draws. A write to anything else is noise and
+    # must not wake every open terminal in the shop.
+    BOARD_FIELDS = ('state', 'staff_note', 'client_type')
+
     def write(self, vals):
         res = super().write(vals)
-        # Only state changes matter to the board; anything else is noise.
-        if 'state' in vals:
+        if any(f in vals for f in self.BOARD_FIELDS):
             self._notify_board()
         return res
 

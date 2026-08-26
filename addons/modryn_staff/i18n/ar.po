@@ -224,6 +224,12 @@ msgid "available"
 msgstr "متاحات"
 
 #. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "Back to the line"
+msgstr "إرجاع للطابور"
+
+#. module: modryn_staff
 #: model:ir.model.fields,field_description:modryn_staff.field_hr_employee__modryn_backup_phone
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manage_staff_form
 msgid "Backup phone"
@@ -513,6 +519,12 @@ msgid "How did it end for"
 msgstr "كيف انتهت الزيارة مع"
 
 #. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "I'll take her"
+msgstr "أنا آخذها"
+
+#. module: modryn_staff
 #: model:ir.model.fields,field_description:modryn_staff.field_hr_employee__modryn_id_number
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manage_staff_form
 msgid "ID number"
@@ -748,6 +760,12 @@ msgstr "ليست ورشة"
 #: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
 msgid "Note (optional)"
 msgstr "ملاحظة (اختياري)"
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "Note for the team"
+msgstr "ملاحظة للفريق"
 
 #. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manage_hours
@@ -1017,6 +1035,12 @@ msgstr "السبب"
 #: model:modryn.staff.role,name:modryn_staff.role_reception
 msgid "Reception"
 msgstr "استقبال"
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "Regular customer"
+msgstr "عميلة عادية"
 
 #. module: modryn_staff
 #: model:ir.model.fields.selection,name:modryn_staff.selection__modryn_sos_call__state__resolved

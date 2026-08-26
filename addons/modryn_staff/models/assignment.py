@@ -165,6 +165,38 @@ class ModrynQueueEntry(models.Model):
         payload['helper_names'] = self.modryn_helper_ids.mapped('name')
         return payload
 
+    def modryn_release(self):
+        """Put her back in the line, exactly where she was.
+
+        Until now the only way off a card was /floor/unassign, which removes the
+        person and leaves the entry on 'called' - nobody serving her, and not
+        queueing either. She still drew on the board (the query takes waiting AND
+        called) but _notify_next_in_line had already counted her as served, so
+        she sat behind nobody and in front of nobody.
+
+        Her PLACE is safe without any work here: the queue orders by create_date,
+        which a release does not touch, so she returns to the position she
+        checked in at rather than the back.
+
+        The room is cleared deliberately. The mixin frees a room when the card
+        CLOSES, and 'waiting' is still open - so without this she would keep
+        occupying a fitting room she has walked out of, and the manager's
+        which-rooms-are-free view would be wrong.
+
+        No SMS. modryn_call guards its text on turn_notified_at, so when somebody
+        takes her again she is not told a second time that we are ready for her.
+        """
+        for entry in self:
+            if entry.state != 'called':
+                continue
+            entry.write({
+                'state': 'waiting',
+                'modryn_employee_id': False,
+                'modryn_helper_ids': [(5,)],
+                'modryn_room_id': False,
+            })
+        return self
+
     @api.model
     def _assignment_changed_fields(self):
         return {'modryn_employee_id', 'modryn_helper_ids'}

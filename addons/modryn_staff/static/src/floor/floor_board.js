@@ -28,6 +28,7 @@ export class FloorBoard extends Component {
             myTasks: [],
             atelier: { pieces: [] },
             canAssign: false,
+            canTake: false,
             error: null,
             // modryn_roster: "she isn't on today's rota". Transient by decision,
             // exactly like error above — every apply() clears it and the bus
@@ -176,6 +177,7 @@ export class FloorBoard extends Component {
         this.state.myTasks = board.my_tasks || [];
         this.state.atelier = board.atelier || { pieces: [] };
         this.state.canAssign = board.can_assign;
+        this.state.canTake = board.can_take;
         this.state.unclosed = board.unclosed_count || 0;
         this.state.checklist = board.checklist || [];
         this.state.opsTasks = board.ops_tasks || [];
@@ -249,6 +251,40 @@ export class FloorBoard extends Component {
     }
 
     // ----------------------------------------------------------- rooms
+    // Is the signed-in employee on this card at all - as its primary or as a
+    // helper? The board already knows who she is (me_id), so this is the same
+    // question the release route asks server-side, and the two must agree or a
+    // button appears that the route then refuses.
+    iAmOn(card) {
+        // state.me and card.helpers are the shapes /floor/data really sends -
+        // an object, and a list of {id, name}. Guessing me_id / helper_ids gave
+        // a button that rendered and could never be true, so "Back to the line"
+        // would simply never have appeared.
+        const me = this.state.me && this.state.me.id;
+        if (!me) {
+            return false;
+        }
+        return card.employee_id === me
+            || (card.helpers || []).some((h) => h.id === me);
+    }
+
+    async take(target, id) {
+        this.apply(await rpc("/floor/take", { target, target_id: id }));
+    }
+
+    async release(target, id) {
+        this.apply(await rpc("/floor/release", { target, target_id: id }));
+    }
+
+    async setNote(id, ev) {
+        this.apply(await rpc("/floor/note", { target_id: id, note: ev.target.value }));
+    }
+
+    async setClientType(id, ev) {
+        this.apply(await rpc("/floor/client-type", {
+            target_id: id, client_type: ev.target.value }));
+    }
+
     async setRoom(target, targetId, ev) {
         const roomId = ev.target.value ? parseInt(ev.target.value, 10) : null;
         const board = await rpc("/floor/room", {

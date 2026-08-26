@@ -231,6 +231,12 @@ msgid "available"
 msgstr "פנויות"
 
 #. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "Back to the line"
+msgstr "חזרה לתור"
+
+#. module: modryn_staff
 #: model:ir.model.fields,field_description:modryn_staff.field_hr_employee__modryn_backup_phone
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manage_staff_form
 msgid "Backup phone"
@@ -530,6 +536,12 @@ msgid "How did it end for"
 msgstr "איך זה הסתיים עבור"
 
 #. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "I'll take her"
+msgstr "אני לוקחת אותה"
+
+#. module: modryn_staff
 #: model:ir.model.fields,field_description:modryn_staff.field_hr_employee__modryn_id_number
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manage_staff_form
 msgid "ID number"
@@ -768,6 +780,12 @@ msgstr "לא סדנה"
 #: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
 msgid "Note (optional)"
 msgstr "הערה (לא חובה)"
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "Note for the team"
+msgstr "הערה לצוות"
 
 #. module: modryn_staff
 #. odoo-javascript
@@ -1043,6 +1061,12 @@ msgstr "סיבה"
 #: model:modryn.staff.role,name:modryn_staff.role_reception
 msgid "Reception"
 msgstr "קבלת קהל"
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "Regular customer"
+msgstr "לקוחה רגילה"
 
 #. module: modryn_staff
 #: model:ir.model.fields.selection,name:modryn_staff.selection__modryn_sos_call__state__resolved
