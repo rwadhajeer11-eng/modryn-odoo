@@ -6,17 +6,31 @@
          product decision. A form (POST + csrf), not a link: it mutates the
          user's stored preference. -->
     <template id="lang_toggle" name="MODRYN staff language toggle">
-        <form action="/staff/lang" method="post" class="d-inline">
+        <!-- Every language the boutique has switched on, not a hardcoded pair.
+             A <select> and not a toggle button, because a toggle can only ever
+             reach the NEXT language: with three switched on, one of them
+             becomes unreachable.
+
+             The submit button is always rendered, never JS-only. `onchange`
+             submits for the common case, but an inline handler is exactly the
+             thing a Content-Security-Policy drops silently — and a language
+             picker that quietly does nothing is worse than one with a button. -->
+        <form action="/staff/lang" method="post" class="d-inline modryn_admin_lang">
             <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
             <input type="hidden" name="redirect" t-att-value="request.httprequest.path"/>
-            <t t-if="(request.env.lang or 'he_IL').startswith('en')">
-                <input type="hidden" name="lang" value="he_IL"/>
-                <button type="submit" class="modryn_admin_link btn btn-link p-0">עברית</button>
-            </t>
-            <t t-else="">
-                <input type="hidden" name="lang" value="en_US"/>
-                <button type="submit" class="modryn_admin_link btn btn-link p-0">English</button>
-            </t>
+            <i class="fa fa-globe modryn_admin_icon" aria-hidden="true"/>
+            <select name="lang" class="modryn_admin_lang_select"
+                    aria-label="Language" onchange="this.form.submit()">
+                <t t-foreach="request.env['res.lang'].sudo().search([])" t-as="l">
+                    <option t-att-value="l.code"
+                            t-att-selected="'selected' if l.code == (request.env.lang or '') else None"
+                            t-out="l.name"/>
+                </t>
+            </select>
+            <button type="submit" class="modryn_admin_link btn btn-link p-0 modryn_admin_lang_go"
+                    aria-label="Apply language">
+                <i class="fa fa-check" aria-hidden="true"/>
+            </button>
         </form>
     </template>
 

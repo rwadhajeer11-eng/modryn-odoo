@@ -90,11 +90,13 @@ class ModrynStaffAuth(http.Controller):
         request.session.logout(keep_db=True)
         return request.redirect('/staff/login')
 
-    # Staff screens are Hebrew/English by product decision (customers get Arabic
-    # too, on the storefront switcher). A hard whitelist, not free choice: a
-    # portal user writes her own lang through sudo() here, and sudo plus an
-    # unchecked value would let her set any field-legal language.
-    STAFF_LANGS = {'he_IL', 'en_US'}
+    # Was a hardcoded {'he_IL', 'en_US'}. It is STILL a whitelist — a portal user
+    # writes her own lang through sudo() below, and an unchecked value would let
+    # her set any field-legal string — but the list is now the tenant's own
+    # switched-on languages, so an owner enabling Arabic or Russian gets it in
+    # the picker with no code change. search([]) is already active-only.
+    def _staff_langs(self):
+        return request.env['res.lang'].sudo().search([])
 
     @http.route('/staff/lang', type='http', auth='user', website=True,
                 methods=['POST'], csrf=True, sitemap=False)
@@ -102,7 +104,9 @@ class ModrynStaffAuth(http.Controller):
         user = request.env.user
         if user._is_public() or not user.has_group('modryn_staff.group_boutique_staff'):
             return request.not_found()
-        if lang not in self.STAFF_LANGS:
+        langs = self._staff_langs()
+        target = langs.filtered(lambda l: l.code == lang)[:1]
+        if not target:
             return request.redirect(redirect or '/floor')
 
         # Two writes, because "the user's language" is two different things:
@@ -111,16 +115,24 @@ class ModrynStaffAuth(http.Controller):
         # (verified: the partner switched to en_US and the page stayed Hebrew).
         # So also route her through the language-prefixed URL and pin the
         # frontend_lang cookie, which is how the website remembers a visitor.
-        user.sudo().lang = lang
+        user.sudo().lang = target.code
 
         path = redirect or '/floor'
-        for code in ('/en', '/ar'):
-            if path == code or path.startswith(code + '/'):
-                path = path[len(code):] or '/'
+        # Strip whatever language prefix the path already carries. Derived from
+        # the tenant's own languages, not a hardcoded ('/en', '/ar'): switch a
+        # third language on and that list leaves its prefix in place, so the
+        # redirect lands back in the language she just left. Longest first, so a
+        # short code can never shadow a longer one that starts with it.
+        for code in sorted(langs.mapped('url_code'), key=len, reverse=True):
+            if path == '/' + code or path.startswith('/' + code + '/'):
+                path = path[len(code) + 1:] or '/'
                 break
-        if lang == 'en_US':
-            path = '/en' + (path if path.startswith('/') else '/' + path)
+        # Odoo serves the website's DEFAULT language with no prefix at all —
+        # prefixing that one 404s.
+        default_lang = request.env['website'].get_current_website().sudo().default_lang_id
+        if target.url_code != default_lang.url_code:
+            path = '/' + target.url_code + (path if path.startswith('/') else '/' + path)
 
         response = request.redirect(path)
-        response.set_cookie('frontend_lang', lang)
+        response.set_cookie('frontend_lang', target.code)
         return response

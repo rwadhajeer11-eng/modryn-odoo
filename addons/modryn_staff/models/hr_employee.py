@@ -117,13 +117,20 @@ class HrEmployee(models.Model):
         else:
             base_group = self.env.ref('base.group_portal')
 
-        user = Users.create({
+        vals = {
             'name': self.name,
             'login': username,
             'password': password,
             # A user may be portal OR internal, never both — Odoo enforces this
             # with a constraint, so set exactly one base group plus our own.
             'group_ids': [(6, 0, [base_group.id, self._modryn_group_for_level().id])],
-        })
+        }
+        # A new account starts in English; she picks her own language from the
+        # navbar and it persists on res.users.lang. Guarded on the language
+        # actually being switched on: writing a code the tenant never activated
+        # leaves her with a preference that renders nothing.
+        if self.env['res.lang'].sudo().search_count([('code', '=', 'en_US')]):
+            vals['lang'] = 'en_US'
+        user = Users.create(vals)
         self.user_id = user
         return user

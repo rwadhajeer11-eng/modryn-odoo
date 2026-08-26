@@ -29,10 +29,15 @@ echo "==> initializing $TEMPLATE with base modules (takes a few minutes)"
 
 echo "==> configuring template defaults (Hebrew, Arabic, ILS, variants)"
 ./odoo/odoo-bin shell -c odoo.conf -d "$TEMPLATE" --db-filter="^$TEMPLATE\$" --no-http <<'PY'
-# Hebrew active + default; Arabic installed as the second website language.
+# Hebrew active + default; Arabic and English as the other website languages.
+# English is NOT optional and was missing here until 2026-08-26: without it
+# /en/... 404s, every English string falls back to source with no language
+# behind it, and four verify.sh checks fail on a brand-new install. The website
+# DEFAULT stays Hebrew — a bride who has typed nothing gets a Hebrew storefront.
 he = env['res.lang']._activate_lang('he_IL') or env['res.lang'].with_context(active_test=False).search([('code','=','he_IL')], limit=1)
 ar = env['res.lang']._activate_lang('ar_001') or env['res.lang'].with_context(active_test=False).search([('code','=','ar_001')], limit=1)
-(he | ar).write({'active': True})
+en = env['res.lang']._activate_lang('en_US') or env['res.lang'].with_context(active_test=False).search([('code','=','en_US')], limit=1)
+(he | ar | en).write({'active': True})
 
 # ILS as company currency. Israel prices in shekels; agorot precision matters.
 ils = env['res.currency'].with_context(active_test=False).search([('name','=','ILS')], limit=1)
@@ -46,7 +51,7 @@ env['res.config.settings'].create({'group_product_variant': True}).execute()
 site = env['website'].search([], limit=1)
 site.write({
     'default_lang_id': he.id,
-    'language_ids': [(6, 0, [he.id, ar.id])],
+    'language_ids': [(6, 0, [he.id, ar.id, en.id])],
 })
 
 env.cr.commit()
