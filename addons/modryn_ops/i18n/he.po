@@ -171,6 +171,13 @@ msgid "Done By"
 msgstr "בוצעה על ידי"
 
 #. module: modryn_ops
+#. odoo-python
+#: code:addons/modryn_ops/controllers/dresses.py:0
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_dresses
+msgid "Dresses"
+msgstr "שמלות"
+
+#. module: modryn_ops
 #: model_terms:ir.ui.view,arch_db:modryn_ops.manage_checklists
 msgid "Due"
 msgstr "שעה"
@@ -235,6 +242,17 @@ msgstr "מעקב"
 #: model_terms:ir.ui.view,arch_db:modryn_ops.manage_reports
 msgid "Follow-ups done"
 msgstr "מעקבים שבוצעו"
+
+#. module: modryn_ops
+#: model:ir.model.fields,field_description:modryn_ops.field_product_product__modryn_stock
+msgid "How many"
+msgstr "כמה"
+
+#. module: modryn_ops
+#: model:ir.model.fields,field_description:modryn_ops.field_product_product__modryn_in_stock
+#: model:ir.model.fields,field_description:modryn_ops.field_product_template__modryn_in_stock
+msgid "In stock"
+msgstr "במלאי"
 
 #. module: modryn_ops
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_task__is_overdue
@@ -377,6 +395,11 @@ msgid "No closed appointments with an assigned stylist in this range yet."
 msgstr "אין עדיין פגישות סגורות עם סטייליסטית משויכת בטווח הזה."
 
 #. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_dresses
+msgid "No dresses yet."
+msgstr "עדיין אין שמלות."
+
+#. module: modryn_ops
 #: model:ir.model.fields.selection,name:modryn_ops.selection__calendar_event__modryn_outcome__no_show
 msgid "No-show"
 msgstr "לא הגיעה"
@@ -390,6 +413,16 @@ msgstr "תיאום אחרי אי-הגעה"
 #: model_terms:ir.ui.view,arch_db:modryn_ops.manage_reports
 msgid "No-shows"
 msgstr "אי-הגעות"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_dresses
+msgid "None left"
+msgstr "לא נשאר"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_dresses
+msgid "Not on the shop"
+msgstr "לא בחנות"
 
 #. module: modryn_ops
 #: model:ir.model.fields.selection,name:modryn_ops.selection__res_partner__modryn_category__not_purchased
@@ -427,6 +460,12 @@ msgid "Older"
 msgstr "ישן יותר"
 
 #. module: modryn_ops
+#. odoo-python
+#: code:addons/modryn_ops/controllers/dresses.py:0
+msgid "One size"
+msgstr "מידה אחת"
+
+#. module: modryn_ops
 #: model:ir.model.fields.selection,name:modryn_ops.selection__modryn_task__state__open
 msgid "Open"
 msgstr "פתוחה"
@@ -449,6 +488,12 @@ msgstr "משימות באיחור בלוח הרצפה: %(names)s"
 #: code:addons/modryn_ops/controllers/tasks.py:0
 msgid "Please enter a name"
 msgstr "נא להזין שם"
+
+#. module: modryn_ops
+#. odoo-python
+#: code:addons/modryn_ops/controllers/dresses.py:0
+msgid "Please enter a whole number"
+msgstr "נא להזין מספר שלם"
 
 #. module: modryn_ops
 #: model:ir.model.fields.selection,name:modryn_ops.selection__res_partner__modryn_category__purchased
@@ -489,6 +534,23 @@ msgid "Revenue (₪)"
 msgstr "הכנסות (₪)"
 
 #. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_dresses
+msgid "Scan for the dress page"
+msgstr "סרקי לעמוד השמלה"
+
+#. module: modryn_ops
+#: model:ir.model.fields,field_description:modryn_ops.field_product_product__modryn_serial
+#: model:ir.model.fields,field_description:modryn_ops.field_product_template__modryn_serial
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_dresses
+msgid "Serial number"
+msgstr "מספר סידורי"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_dresses
+msgid "Set"
+msgstr "עדכון"
+
+#. module: modryn_ops
 #: model_terms:ir.ui.view,arch_db:modryn_ops.manage_reports
 msgid "Show"
 msgstr "הצגה"
@@ -503,6 +565,18 @@ msgstr "נמכר"
 #: model_terms:ir.ui.view,arch_db:modryn_ops.manage_reports
 msgid "sold /"
 msgstr "נמכרו /"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_dresses
+msgid "Sold out"
+msgstr "אזלה"
+
+#. module: modryn_ops
+#. odoo-python
+#: code:addons/modryn_ops/controllers/dresses.py:0
+#: code:addons/modryn_ops/models/dress.py:0
+msgid "Stock cannot go below zero."
+msgstr "המלאי לא יכול לרדת מתחת לאפס."
 
 #. module: modryn_ops
 #: model_terms:ir.ui.view,arch_db:modryn_ops.manage_reports
@@ -588,6 +662,13 @@ msgstr "התגעגענו אלייך היום ב%(boutique)s. קורה! אפשר 
 #: model_terms:ir.ui.view,arch_db:modryn_ops.manage_audit
 msgid "What"
 msgstr "מה"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_dresses
+msgid ""
+"What is on the rail, in each size. A dress with nothing left in\n"
+"                any size is sold out on the shop."
+msgstr "מה יש על המוט, בכל מידה. שמלה שלא נשארה באף מידה מסומנת כאזלה בחנות."
 
 #. module: modryn_ops
 #: model_terms:ir.ui.view,arch_db:modryn_ops.manage_audit

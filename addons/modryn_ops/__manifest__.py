@@ -23,6 +23,7 @@ the hooks this module defines.
         'security/ir.model.access.csv',
         'data/ir_cron_data.xml',
         'views/ops_templates.xml',
+        'views/dress_templates.xml',
     ],
     # Wired to BOTH lifecycle paths: cloned tenants INSTALL (hooks), the
     # hand-built ones upgrade (migrations/) — see schema_guard.py.

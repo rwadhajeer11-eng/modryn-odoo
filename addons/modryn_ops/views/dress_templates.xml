@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ============================== the rail ============================= -->
+    <template id="manage_dresses" name="MODRYN dresses">
+        <t t-call="modryn_staff.manage_layout">
+            <h1 class="mb-2">Dresses</h1>
+            <p class="text-muted mb-4">
+                What is on the rail, in each size. A dress with nothing left in
+                any size is sold out on the shop.
+            </p>
+
+            <div t-if="error" class="modryn_field_error mb-3" role="alert" t-out="error"/>
+
+            <div t-if="not dresses" class="modryn_empty">No dresses yet.</div>
+
+            <div t-foreach="dresses" t-as="d" class="modryn_panel mb-3">
+                <div class="modryn_dress_head">
+                    <img t-attf-src="/web/image/product.template/#{d['id']}/image_128"
+                         t-att-alt="d['name']" class="modryn_dress_photo"/>
+                    <div class="modryn_dress_facts">
+                        <div>
+                            <span class="modryn_strong" t-out="d['name']"/>
+                            <span t-if="d['sold_out']" class="modryn_badge is_busy">Sold out</span>
+                            <span t-elif="not d['published']" class="modryn_badge is_muted">Not on the shop</span>
+                        </div>
+                        <div class="modryn_sub" dir="ltr">
+                            <t t-esc="'%.0f' % d['price']"/> ₪
+                            · <t t-esc="d['in_stock']"/> on the rail
+                        </div>
+
+                        <form t-attf-action="/manage/dresses/serial" method="post"
+                              class="d-flex gap-2 mt-2" style="max-width: 320px;">
+                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                            <input type="hidden" name="dress_id" t-att-value="d['id']"/>
+                            <input type="text" name="serial" class="form-control form-control-sm"
+                                   dir="ltr" placeholder="Serial number"
+                                   t-att-value="d['serial']"/>
+                            <button type="submit" class="btn btn-sm btn-outline-dark">Save</button>
+                        </form>
+                    </div>
+
+                    <!-- The QR, drawn by Odoo's own barcode route - no library
+                         and no stored image. It encodes the dress's page on the
+                         shop, so scanning it from a rail tag opens what the
+                         customer would see rather than an internal id that
+                         means nothing off this screen. -->
+                    <div class="modryn_dress_qr">
+                        <img t-attf-src="/report/barcode/?barcode_type=QR&amp;value=#{request.httprequest.host_url}shop/#{d['id']}&amp;width=180&amp;height=180"
+                             t-attf-alt="QR for #{d['name']}"/>
+                        <div class="modryn_sub">Scan for the dress page</div>
+                    </div>
+                </div>
+
+                <table class="table modryn_table align-middle mt-3 mb-0"
+                       style="max-width: 420px;">
+                    <tbody>
+                        <tr t-foreach="d['sizes']" t-as="v">
+                            <td t-out="v['label']"/>
+                            <td>
+                                <span t-if="not v['stock']" class="modryn_badge is_muted">None left</span>
+                                <span t-else="" class="modryn_badge is_free"><t t-esc="v['stock']"/></span>
+                            </td>
+                            <td class="text-end">
+                                <form action="/manage/dresses/stock" method="post"
+                                      class="d-flex gap-1 justify-content-end">
+                                    <input type="hidden" name="csrf_token"
+                                           t-att-value="request.csrf_token()"/>
+                                    <input type="hidden" name="variant_id" t-att-value="v['id']"/>
+                                    <input type="number" name="stock" min="0" step="1"
+                                           class="form-control form-control-sm"
+                                           style="max-width: 90px;" dir="ltr"
+                                           t-att-value="v['stock']"/>
+                                    <button type="submit" class="btn btn-sm btn-outline-dark">Set</button>
+                                </form>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </t>
+    </template>
+
+</odoo>
