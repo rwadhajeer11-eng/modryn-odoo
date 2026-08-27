@@ -592,6 +592,12 @@ msgid "That week is already published — ask your manager to change it."
 msgstr "השבוע הזה כבר פורסם — פני לאחראית המשמרת לשינוי."
 
 #. module: modryn_roster
+#. odoo-python
+#: code:addons/modryn_roster/models/shift_slot.py:0
+msgid "The rota for the week of %s is published."
+msgstr "הסידור לשבוע של %s פורסם."
+
+#. module: modryn_roster
 #: model_terms:ir.ui.view,arch_db:modryn_roster.manage_shifts
 msgid "The shifts this boutique actually runs, and how many of each role each one needs."
 msgstr "המשמרות שהבוטיק באמת מפעיל, וכמה אנשי צוות מכל תפקיד כל אחת צריכה."

@@ -43,6 +43,23 @@ class ModrynRolePage(models.Model):
 
     # ------------------------------------------------------------------ read
     @api.model
+    @api.model
+    def modryn_unread(self):
+        """Unread count for the navbar bell, for the signed-in woman.
+
+        Lives here because the navbar is rendered by staff_layout, which every
+        page wears - and QWeb needs ONE call it can make without each controller
+        remembering to put a count in its own render context. A page that forgot
+        would show a bell that is permanently empty, and nothing would report it.
+        """
+        user = self.env.user
+        if not user or user._is_public() or not user.has_group(GROUP_STAFF):
+            return 0
+        employee = self.env['hr.employee'].sudo().search(
+            [('user_id', '=', user.id)], limit=1)
+        return self.env['modryn.staff.notification'].sudo().modryn_unread_count(
+            employee)
+
     def modryn_can_view(self, page_key):
         """May the signed-in user open this page?
 

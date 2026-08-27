@@ -91,6 +91,36 @@ class ModrynStaffAuth(http.Controller):
         return request.redirect('/staff/login')
 
 
+
+    # ----------------------------------------------------------------- the bell
+    @http.route('/staff/notifications', type='http', auth='user', website=True,
+                sitemap=False)
+    def notifications(self, **kw):
+        """Everything she has been told, newest first.
+
+        Opening the page marks it read - the bell is a "there is news" light,
+        not an inbox with per-item state. A tick-each-one flow would mean a
+        count that only ever goes down when somebody remembers to press
+        something.
+        """
+        if not self._is_staff():
+            return request.not_found()
+        me = self._my_employee()
+        if not me:
+            return request.not_found()
+        Notification = request.env['modryn.staff.notification'].sudo()
+        rows = Notification.search([('employee_id', '=', me.id)], limit=100)
+        unread = rows.filtered(lambda n: not n.read_at)
+        page = request.render('modryn_staff.staff_notifications', {
+            'rows': rows,
+            'unread_ids': unread.ids,
+            'active_tab': 'notifications',
+        })
+        # AFTER rendering, so the page she is looking at still shows which ones
+        # were new. Reading it is what marks them.
+        unread.modryn_mark_read()
+        return page
+
     # ------------------------------------------------------------- her profile
     # Same shape as staff_lang above, and for the same reason: portal users have
     # no ORM access to hr.employee, so the group is checked HERE and the write

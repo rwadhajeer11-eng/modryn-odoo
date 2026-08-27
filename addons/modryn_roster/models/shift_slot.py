@@ -118,8 +118,30 @@ class ModrynShiftSlot(models.Model):
         return self
 
     def modryn_publish(self):
-        """Freeze the week. Published shifts stop accepting availability edits."""
+        """Freeze the week, and tell the women who are on it.
+
+        Publishing used to send NOTHING - no text, no record - so the team
+        learned the rota existed only by opening /roster and looking. It is the
+        most bell-worthy moment in the product and the only one with no SMS to
+        copy, which is exactly why an inventory built from send_async call sites
+        would have missed it.
+
+        One notification per woman per week, not per slot: three shifts on a
+        published week is one piece of news, and three identical rows in her
+        bell is the fastest way to make her stop reading it.
+        """
         self.sudo().write({'published': True})
+
+        Notification = self.env['modryn.staff.notification'].sudo()
+        actor = self.env['hr.employee'].sudo().search(
+            [('user_id', '=', self.env.uid)], limit=1)
+        for week in set(self.mapped('week_start')):
+            slots = self.filtered(lambda s: s.week_start == week)
+            body = _("The rota for the week of %s is published.") % week.strftime('%d.%m')
+            for employee in slots.mapped('employee_ids'):
+                if not employee.active:
+                    continue
+                Notification.modryn_notify(employee, body, actor=actor)
         return self
 
     # ----------------------------------------------------------------- reading

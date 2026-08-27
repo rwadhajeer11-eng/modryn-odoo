@@ -18,7 +18,13 @@ export class QueueBoard extends Component {
             // addChannel + subscribe is the entire client-side contract; the
             // websocket itself is already running for Discuss.
             this.bus.addChannel("modryn_queue");
-            this.bus.subscribe("modryn_queue/update", (payload) => this.onUpdate(payload));
+            // Re-read, never patch from the push. The push is a bare signal
+            // now - it carries an id and nothing else - because the channel it
+            // rides on is a guessable string that any client can subscribe to,
+            // and it used to carry the customer's name, her phone and the staff
+            // note about her. load() goes through the ORM, which is
+            // permission-checked; the payload never was.
+            this.bus.subscribe("modryn_queue/update", () => this.load());
         });
     }
 
@@ -29,19 +35,6 @@ export class QueueBoard extends Component {
             ["name", "phone", "client_type", "state"],
             { order: "create_date asc, id asc" }
         );
-    }
-
-    onUpdate(payload) {
-        const existing = this.state.entries.find((e) => e.id === payload.id);
-        if (payload.state === "done") {
-            this.state.entries = this.state.entries.filter((e) => e.id !== payload.id);
-        } else if (existing) {
-            Object.assign(existing, payload);
-        } else {
-            // Append, never sort by arrival time on the client: the server's
-            // create_date is the fair order and the board must not re-rank it.
-            this.state.entries.push(payload);
-        }
     }
 
     async call(entry) {

@@ -661,3 +661,52 @@
         padding: 4px 6px;
     }
 }
+
+
+// ===================== the bell =====================
+// rgba() only - LibSass drops the WHOLE bundle on Color Level 4 syntax.
+.modryn_bell {
+    position: relative;
+}
+
+.modryn_bell_count {
+    position: absolute;
+    // Logical, not `right`: this badge has to sit on the outer corner of the
+    // icon in both directions, and a physical side puts it under the icon in
+    // one of the two languages.
+    inset-inline-end: -2px;
+    inset-block-start: -2px;
+    min-width: 16px;
+    padding: 0 4px;
+    border-radius: 8px;
+    background: $modryn-gold;
+    color: #FFFFFF;
+    font-size: 0.62rem;
+    line-height: 16px;
+    text-align: center;
+    font-weight: 700;
+}
+
+.modryn_note_row {
+    padding-block: 10px;
+
+    & + & {
+        border-block-start: 1px solid $modryn-border;
+    }
+
+    &.is_new {
+        border-inline-start: 3px solid $modryn-gold;
+        padding-inline-start: 10px;
+    }
+}
+
+// On a phone the nav is a FIXED BOTTOM bar and .modryn_admin_who is hidden.
+// The bell must NOT be hidden with it - the phone is the only screen some of
+// the team ever use - and the count has to stay legible against a 19px icon.
+@media (max-width: 767.98px) {
+    .modryn_bell_count {
+        inset-inline-end: -4px;
+        inset-block-start: -4px;
+        font-size: 0.58rem;
+    }
+}

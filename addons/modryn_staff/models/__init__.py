@@ -2,6 +2,7 @@ from . import staff_role
 from . import role_page
 from . import fitting_room
 from . import hr_employee
+from . import notification
 from . import notify
 from . import assignment
 from . import sos_call

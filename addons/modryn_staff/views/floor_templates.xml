@@ -14,6 +14,12 @@
             <t t-set="no_header" t-value="true"/>
             <t t-set="no_footer" t-value="true"/>
             <t t-set="modryn_nav" t-value="request.env['modryn.role.page'].modryn_nav()"/>
+            <!-- Computed in the LAYOUT, not in each controller's render context:
+                 every staff page wears this shell, and a page whose controller
+                 forgot to pass a count would show a bell that is permanently
+                 empty with nothing to report it. -->
+            <t t-set="unread_count"
+               t-value="request.env['modryn.role.page'].modryn_unread()"/>
             <!-- dir follows the user's language: staff screens are he (rtl) or
                  en (ltr) by per-user preference. -->
             <div id="wrap" t-att-dir="'ltr' if (request.env.lang or 'he_IL').startswith('en') else 'rtl'"
@@ -32,6 +38,28 @@
                        t-attf-class="modryn_admin_link #{'is_active' if active_tab == entry['key'] else ''}">
                         <i t-attf-class="fa #{entry['icon']} modryn_admin_icon" aria-hidden="true"/>
                         <span class="modryn_admin_label" t-out="entry['label']"/>
+                    </a>
+                    <!-- The bell. In the FIRST nav only: the owner gets a
+                         SECOND <nav class="modryn_admin_nav"> below, and a
+                         class-targeted bell would give her two.
+
+                         Placed before .modryn_admin_who, which carries
+                         margin-inline-start:auto - so this sits at the LEADING
+                         edge of the trailing cluster, which is the left in
+                         Hebrew and Arabic and the right in English. "Top-left"
+                         is a statement about RTL, not about CSS, and hardcoding
+                         a side gets one of the two languages wrong silently.
+
+                         fa-bell-o is FA4. fa-bell exists in FA4 too but is the
+                         solid face; the outline reads as "nothing new" and the
+                         count is what says otherwise. -->
+                    <a href="/staff/notifications"
+                       t-attf-class="modryn_admin_link modryn_bell #{'has_unread' if unread_count else ''}"
+                       t-att-title="'Notifications'"
+                       t-attf-aria-label="Notifications#{', %s unread' % unread_count if unread_count else ''}">
+                        <i class="fa fa-bell-o modryn_admin_icon" aria-hidden="true"/>
+                        <span t-if="unread_count" class="modryn_bell_count"
+                              t-out="unread_count"/>
                     </a>
                     <t t-call="modryn_staff.lang_toggle"/>
                     <span class="modryn_admin_who">

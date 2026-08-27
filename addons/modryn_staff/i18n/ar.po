@@ -451,6 +451,11 @@ msgid "Event"
 msgstr "الموعد"
 
 #. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.staff_notifications
+msgid "Everything the boutique has told you, newest first."
+msgstr "كل اللي المحل خبّرك فيه، من الأحدث."
+
+#. module: modryn_staff
 #: model:ir.model.fields.selection,name:modryn_staff.selection__hr_employee__modryn_gender__female
 msgid "Female"
 msgstr "أنثى"
@@ -725,6 +730,11 @@ msgstr ""
 "                المساعدة، اسم الغرفة هو ما يدل زميلتها على المكان."
 
 #. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.staff_notifications
+msgid "New"
+msgstr "جديد"
+
+#. module: modryn_staff
 #. odoo-python
 #: code:addons/modryn_staff/models/assignment.py:0
 msgid "New customer for you: %s"
@@ -847,6 +857,16 @@ msgstr "لا شيء محدد بعد — صفحة الحجز بلا مواعيد 
 #: model_terms:ir.ui.view,arch_db:modryn_staff.staff_home
 msgid "Nothing to chase."
 msgstr "لا متابعات مفتوحة."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.staff_notifications
+msgid "Nothing yet."
+msgstr "لسا ما في إشي."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.staff_notifications
+msgid "Notifications"
+msgstr "الإشعارات"
 
 #. module: modryn_staff
 #: model:ir.model.fields,field_description:modryn_staff.field_hr_employee__modryn_is_occupied

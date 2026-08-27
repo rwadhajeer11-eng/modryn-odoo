@@ -468,6 +468,11 @@ msgid "Event"
 msgstr "תור"
 
 #. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.staff_notifications
+msgid "Everything the boutique has told you, newest first."
+msgstr "כל מה שהסלון עדכן אותך בו, מהחדש לישן."
+
+#. module: modryn_staff
 #: model:ir.model.fields.selection,name:modryn_staff.selection__hr_employee__modryn_gender__female
 msgid "Female"
 msgstr "נקבה"
@@ -745,6 +750,11 @@ msgid ""
 msgstr "תני לחדרים את השמות שהצוות באמת אומר בקול. כשמישהי קוראת לעזרה, שם החדר הוא מה שמכוון את החברה לאן ללכת."
 
 #. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.staff_notifications
+msgid "New"
+msgstr "חדש"
+
+#. module: modryn_staff
 #. odoo-python
 #: code:addons/modryn_staff/models/assignment.py:0
 msgid "New customer for you: %s"
@@ -873,6 +883,16 @@ msgstr "עדיין לא הוגדר כלום — לעמוד קביעת התורי
 #: model_terms:ir.ui.view,arch_db:modryn_staff.staff_home
 msgid "Nothing to chase."
 msgstr "אין מעקבים פתוחים."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.staff_notifications
+msgid "Nothing yet."
+msgstr "עדיין כלום."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.staff_notifications
+msgid "Notifications"
+msgstr "התראות"
 
 #. module: modryn_staff
 #: model:ir.model.fields,field_description:modryn_staff.field_hr_employee__modryn_is_occupied

@@ -116,9 +116,24 @@ class ModrynQueueEntry(models.Model):
         }
 
     def _notify_board(self):
-        """Push to every open board. Called after the row is committed-visible."""
+        """Ring every open board. A SIGNAL, never the customer.
+
+        QUEUE_CHANNEL is a plain string, and Odoo's
+        ir.websocket._build_bus_channel_list returns the channel list the CLIENT
+        sent, unfiltered - so anybody who knows or guesses the name receives
+        everything published on it. Odoo's own _sendone docstring says a string
+        target "should not be guessable by an attacker".
+
+        This used to push _payload(): the customer's name, her phone number and
+        the staff note about her, to any listener at all. It carries her id and
+        nothing else now. Both boards re-read through their own
+        permission-checked path anyway - the floor board's handler is
+        `() => this.refresh()`, which never looked at the payload - so nothing
+        is lost by not sending it.
+        """
         for entry in self:
-            self.env['bus.bus']._sendone(QUEUE_CHANNEL, 'modryn_queue/update', entry._payload())
+            self.env['bus.bus']._sendone(
+                QUEUE_CHANNEL, 'modryn_queue/update', {'id': entry.id})
 
     # Fields the board actually draws. A write to anything else is noise and
     # must not wake every open terminal in the shop.

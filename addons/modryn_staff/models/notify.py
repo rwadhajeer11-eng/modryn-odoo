@@ -25,12 +25,15 @@ class ModrynStaffNotify(models.AbstractModel):
     def modryn_lang(self, employee):
         return (employee.user_id.lang or 'he_IL') if employee.user_id else 'he_IL'
 
-    def modryn_assigned(self, employee, body):
+    def modryn_assigned(self, employee, body, record=None):
         """Text `employee` that work was just assigned to her.
 
-        Returns True when a message was queued. Never raises and never blocks:
-        send_async hands the body to the outbox, so a Twilio outage cannot
-        stall the assignment that triggered this.
+        Raises the in-app notification AND queues the text. Returns True when
+        the MESSAGE was queued - the bell is raised either way, so a False here
+        no longer means she was not told.
+
+        Never raises and never blocks: send_async hands the body to the outbox,
+        so a Twilio outage cannot stall the assignment that triggered this.
         """
         if not employee:
             return False
@@ -40,6 +43,16 @@ class ModrynStaffNotify(models.AbstractModel):
             [('user_id', '=', self.env.uid)], limit=1)
         if actor and actor.id == employee.id:
             return False
+
+        # The bell, raised BEFORE the phone lookup below and never gated on it.
+        # modryn_assigned returns early for a woman with no work_phone - and she
+        # is exactly the person an in-app notification exists for. Every
+        # portal-level hire on every tenant was phoneless for months and nothing
+        # read a staff phone until this notifier existed; the bell must not
+        # inherit that blind spot.
+        self.env['modryn.staff.notification'].sudo().modryn_notify(
+            employee, body, actor=actor, record=record)
+
         phone = employee.work_phone or employee.mobile_phone
         if not phone:
             _logger.info(

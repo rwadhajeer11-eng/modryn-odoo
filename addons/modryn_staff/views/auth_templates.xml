@@ -135,4 +135,32 @@
         </t>
     </template>
 
+
+    <!-- =========================== what she has been told ================== -->
+    <template id="staff_notifications" name="MODRYN notifications">
+        <t t-call="modryn_staff.staff_layout">
+            <t t-set="active_tab" t-value="'notifications'"/>
+            <h1 class="mb-2">Notifications</h1>
+            <p class="modryn_sub mb-4">
+                Everything the boutique has told you, newest first.
+            </p>
+
+            <p t-if="not rows" class="modryn_empty">Nothing yet.</p>
+
+            <div t-else="" class="modryn_panel">
+                <div t-foreach="rows" t-as="n"
+                     t-attf-class="modryn_note_row #{'is_new' if n.id in unread_ids else ''}">
+                    <div>
+                        <span t-if="n.id in unread_ids" class="modryn_badge is_free">New</span>
+                        <span class="modryn_strong" t-out="n.body"/>
+                    </div>
+                    <div class="modryn_sub">
+                        <span dir="ltr" t-esc="n.create_date.strftime('%d.%m %H:%M')"/>
+                        <t t-if="n.actor_name"> · <t t-out="n.actor_name"/></t>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
 </odoo>
