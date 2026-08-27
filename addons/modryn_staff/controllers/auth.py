@@ -1,6 +1,6 @@
 import odoo
 from odoo import _, http
-from odoo.http import request
+from odoo.http import content_disposition, request
 
 # Where each level lands after signing in. The owner configures, the manager
 # runs the room, and plain staff get their own day — not the whole floor.
@@ -92,6 +92,103 @@ class ModrynStaffAuth(http.Controller):
 
 
 
+
+    # --------------------------------------------------------- her documents
+    #
+    # The FIRST file upload in this product, so it sets the pattern. Three
+    # things decide whether it is safe, and all three are easy to get wrong:
+    #
+    #  1. WHOSE FILE. The employee is resolved from the SESSION, never from
+    #     anything the request carries - there is no employee id in any of these
+    #     routes. An id in the URL is an id somebody edits.
+    #  2. WHO MAY READ IT. Downloads go through this route, never Odoo's
+    #     /web/content: that one serves any attachment its ACL allows, and
+    #     ir.attachment's rules are about models, not about which woman owns
+    #     which payslip. Here the attachment must belong to HER employee record
+    #     or it is a 404 - not a 403, which would confirm the file exists.
+    #  3. WHAT COMES BACK. Always as a DOWNLOAD, never inline. An uploaded .html
+    #     or .svg served inline runs in the boutique's own origin, which is
+    #     stored XSS with extra steps.
+    MAX_UPLOAD_BYTES = 10 * 1024 * 1024
+
+    def _my_documents(self, employee):
+        return request.env['ir.attachment'].sudo().search([
+            ('res_model', '=', 'hr.employee'),
+            ('res_id', '=', employee.id),
+            ('name', '!=', False),
+        ], order='create_date desc')
+
+    @http.route('/staff/profile/upload', type='http', auth='user', website=True,
+                methods=['POST'], csrf=True, sitemap=False)
+    def profile_upload(self, **post):
+        if not self._is_staff():
+            return request.not_found()
+        me = self._my_employee()
+        if not me:
+            return request.not_found()
+
+        upload = request.httprequest.files.get('document')
+        if not upload or not upload.filename:
+            return request.redirect('/staff/profile?error=nofile')
+
+        data = upload.read(self.MAX_UPLOAD_BYTES + 1)
+        if len(data) > self.MAX_UPLOAD_BYTES:
+            # Read one byte past the limit rather than trusting a declared
+            # length: content-length is whatever the client says it is.
+            return request.redirect('/staff/profile?error=toobig')
+        if not data:
+            return request.redirect('/staff/profile?error=nofile')
+
+        request.env['ir.attachment'].sudo().create({
+            'name': upload.filename,
+            'raw': data,
+            'res_model': 'hr.employee',
+            'res_id': me.id,
+            # NEVER a website-visible attachment: public=True would put a
+            # woman's documents on a URL anybody can fetch.
+            'public': False,
+        })
+        return request.redirect('/staff/profile?saved=1')
+
+    @http.route('/staff/profile/file/<int:attachment_id>', type='http', auth='user',
+                website=True, sitemap=False)
+    def profile_file(self, attachment_id, **kw):
+        if not self._is_staff():
+            return request.not_found()
+        me = self._my_employee()
+        if not me:
+            return request.not_found()
+        attachment = request.env['ir.attachment'].sudo().browse(
+            attachment_id).exists()
+        # Ownership, checked here and nowhere else. A 404 and not a 403: telling
+        # her the file exists but is not hers is telling her it exists.
+        if (not attachment or attachment.res_model != 'hr.employee'
+                or attachment.res_id != me.id):
+            return request.not_found()
+        return request.make_response(attachment.raw, headers=[
+            # Downloaded, never rendered. octet-stream and an explicit
+            # attachment disposition, so an uploaded .html or .svg cannot run
+            # in the boutique's own origin.
+            ('Content-Type', 'application/octet-stream'),
+            ('Content-Disposition', content_disposition(attachment.name)),
+            ('X-Content-Type-Options', 'nosniff'),
+        ])
+
+    @http.route('/staff/profile/file/<int:attachment_id>/delete', type='http',
+                auth='user', website=True, methods=['POST'], csrf=True, sitemap=False)
+    def profile_file_delete(self, attachment_id, **post):
+        if not self._is_staff():
+            return request.not_found()
+        me = self._my_employee()
+        if not me:
+            return request.not_found()
+        attachment = request.env['ir.attachment'].sudo().browse(
+            attachment_id).exists()
+        if (attachment and attachment.res_model == 'hr.employee'
+                and attachment.res_id == me.id):
+            attachment.unlink()
+        return request.redirect('/staff/profile?saved=1')
+
     # ----------------------------------------------------------------- the bell
     @http.route('/staff/notifications', type='http', auth='user', website=True,
                 sitemap=False)
@@ -156,6 +253,7 @@ class ModrynStaffAuth(http.Controller):
             request.env)['selection']
         return {
             'employee': employee,
+            'documents': self._my_documents(employee),
             'genders': genders,
             'langs': self._staff_langs(),
             'saved': saved,
@@ -163,17 +261,26 @@ class ModrynStaffAuth(http.Controller):
             'active_tab': 'profile',
         }
 
+    # Messages for the redirect-carried upload errors. A redirect cannot carry a
+    # rendered page, so the failure travels as a CODE and is turned back into a
+    # sentence here - which also keeps the sentence translatable.
+    UPLOAD_ERRORS = {
+        'nofile': "Please choose a file.",
+        'toobig': "That file is too large — the limit is 10 MB.",
+    }
+
     @http.route('/staff/profile', type='http', auth='user', website=True,
                 methods=['GET'], sitemap=False)
-    def profile_form(self, saved=None, **kw):
+    def profile_form(self, saved=None, error=None, **kw):
         if not self._is_staff():
             return request.not_found()
         me = self._my_employee()
         if not me:
             return request.not_found()
         request.session.touch()
-        return request.render('modryn_staff.staff_profile',
-                              self._profile_context(me, saved=bool(saved)))
+        return request.render('modryn_staff.staff_profile', self._profile_context(
+            me, saved=bool(saved),
+            error=_(self.UPLOAD_ERRORS[error]) if error in self.UPLOAD_ERRORS else None))
 
     @http.route('/staff/profile', type='http', auth='user', website=True,
                 methods=['POST'], csrf=True, sitemap=False)

@@ -132,6 +132,43 @@
 
                 <button type="submit" class="btn btn-primary btn-lg">Save</button>
             </form>
+
+            <!-- Documents. Its OWN form: a file input inside the details form
+                 would mean every save re-posts the file, and a details save
+                 with no file chosen would look like a failed upload. -->
+            <section class="modryn_panel mt-4">
+                <h2 class="h5">My documents</h2>
+                <p class="modryn_sub">
+                    Only you and the boutique owner can open these.
+                </p>
+
+                <div t-if="not documents" class="modryn_empty mb-3">Nothing uploaded yet.</div>
+                <div t-else="" class="mb-3">
+                    <div t-foreach="documents" t-as="doc" class="modryn_doc_row">
+                        <a t-attf-href="/staff/profile/file/#{doc.id}">
+                            <i class="fa fa-file-o" aria-hidden="true"/>
+                            <t t-out="doc.name"/>
+                        </a>
+                        <span class="modryn_sub" dir="ltr"
+                              t-esc="doc.create_date.strftime('%d.%m.%Y')"/>
+                        <form t-attf-action="/staff/profile/file/#{doc.id}/delete"
+                              method="post" class="d-inline">
+                            <input type="hidden" name="csrf_token"
+                                   t-att-value="request.csrf_token()"/>
+                            <button type="submit" class="btn btn-sm btn-outline-dark">Remove</button>
+                        </form>
+                    </div>
+                </div>
+
+                <form action="/staff/profile/upload" method="post"
+                      enctype="multipart/form-data" class="d-flex gap-2 flex-wrap">
+                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                    <input type="file" name="document" class="form-control"
+                           style="max-width: 320px;"/>
+                    <button type="submit" class="btn btn-outline-dark">Upload</button>
+                </form>
+                <div class="form-text">Up to 10 MB per file.</div>
+            </section>
         </t>
     </template>
 
