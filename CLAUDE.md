@@ -147,8 +147,8 @@ bella is `miri` and on qa it is `qaowner`; `admin` exists only on the separate
 `platform` database. Odoo's own `/web/login` labels its field "Email" and there
 are no email addresses on any of these accounts — it takes the USERNAME.
 
-**Green baseline** (2026-08-26): `verify.sh` reports **378 passed, 0 failed,
-7 skipped**, and the browser suite **26 passed, 1 skipped**. Both are green —
+**Green baseline** (2026-08-27): `verify.sh` reports **397 passed, 0 failed,
+6 skipped**, and the browser suite **33 passed**. Both are green —
 treat any failure as a regression you caused, and do not "fix" a check to make
 it pass without first proving the check is the thing that is wrong.
 

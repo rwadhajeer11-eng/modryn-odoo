@@ -771,15 +771,6 @@ msgstr "الترتيب"
 #. module: modryn_roster
 #: model_terms:ir.ui.view,arch_db:modryn_roster.roster_page
 msgid ""
-".\n"
-"                    What you offered is below."
-msgstr ""
-".\n"
-"                    ما عرضتِه يظهر في الأسفل."
-
-#. module: modryn_roster
-#: model_terms:ir.ui.view,arch_db:modryn_roster.roster_page
-msgid ""
 "<span class=\"modryn_badge is_muted\">Closed</span>\n"
 "                    Answers for this week closed"
 msgstr ""
@@ -794,17 +785,6 @@ msgid ""
 msgstr ""
 "<span class=\"modryn_badge is_muted\">لم يُفتح بعد</span>\n"
 "                    هذا الأسبوع يُفتح"
-
-#. module: modryn_roster
-#: model_terms:ir.ui.view,arch_db:modryn_roster.roster_page
-msgid ""
-"<span class=\"modryn_badge is_muted\">Published</span>\n"
-"                    The schedule for this week is out. What you offered is below,\n"
-"                    and it can no longer be changed here — ask your manager."
-msgstr ""
-"<span class=\"modryn_badge is_muted\">نُشر</span>\n"
-"                    جدول العمل لهذا الأسبوع صدر. ما عرضتِه يظهر في الأسفل،\n"
-"                    ولم يعد بالإمكان تغييره هنا — راجعي مسؤولة الوردية."
 
 #. module: modryn_roster
 #: model_terms:ir.ui.view,arch_db:modryn_roster.roster_page
@@ -875,3 +855,25 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:modryn_roster.roster_page
 msgid "What you offered"
 msgstr "ما عرضتِه"
+
+#. module: modryn_roster
+#: model_terms:ir.ui.view,arch_db:modryn_roster.roster_page
+msgid ""
+"<span class=\"modryn_badge is_muted\">Published</span>\n"
+"                    The schedule for this week is out, so it can no longer be\n"
+"                    changed here — ask your manager. What you offered is below.\n"
+"                    Use <strong>Following week</strong> to answer for the next one."
+msgstr ""
+"<span class=\"modryn_badge is_muted\">نُشر</span>\n"
+"                    جدول العمل لهذا الأسبوع صدر، ولم يعد بالإمكان تغييره\n"
+"                    هنا — راجعي مسؤولة الوردية. ما عرضتِه يظهر في الأسفل.\n"
+"                    اضغطي <strong>الأسبوع التالي</strong> للإجابة عن الأسبوع القادم."
+
+#. module: modryn_roster
+#: model_terms:ir.ui.view,arch_db:modryn_roster.roster_page
+msgid ""
+".\n"
+"                    What you offered is below, and it stands as it is."
+msgstr ""
+".\n"
+"                    ما عرضتِه يظهر في الأسفل، ويبقى كما هو."

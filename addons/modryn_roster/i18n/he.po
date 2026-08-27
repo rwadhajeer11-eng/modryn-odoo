@@ -758,15 +758,6 @@ msgstr "סדר"
 #. module: modryn_roster
 #: model_terms:ir.ui.view,arch_db:modryn_roster.roster_page
 msgid ""
-".\n"
-"                    What you offered is below."
-msgstr ""
-".\n"
-"                    מה שהצעת מופיע למטה."
-
-#. module: modryn_roster
-#: model_terms:ir.ui.view,arch_db:modryn_roster.roster_page
-msgid ""
 "<span class=\"modryn_badge is_muted\">Closed</span>\n"
 "                    Answers for this week closed"
 msgstr ""
@@ -781,17 +772,6 @@ msgid ""
 msgstr ""
 "<span class=\"modryn_badge is_muted\">עוד לא נפתח</span>\n"
 "                    השבוע הזה נפתח"
-
-#. module: modryn_roster
-#: model_terms:ir.ui.view,arch_db:modryn_roster.roster_page
-msgid ""
-"<span class=\"modryn_badge is_muted\">Published</span>\n"
-"                    The schedule for this week is out. What you offered is below,\n"
-"                    and it can no longer be changed here — ask your manager."
-msgstr ""
-"<span class=\"modryn_badge is_muted\">פורסם</span>\n"
-"                    סידור העבודה לשבוע הזה יצא. מה שהצעת מופיע למטה,\n"
-"                    ולא ניתן לשנות אותו כאן — פני לאחראית המשמרת."
 
 #. module: modryn_roster
 #: model_terms:ir.ui.view,arch_db:modryn_roster.roster_page
@@ -855,3 +835,25 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:modryn_roster.roster_page
 msgid "What you offered"
 msgstr "מה שהצעת"
+
+#. module: modryn_roster
+#: model_terms:ir.ui.view,arch_db:modryn_roster.roster_page
+msgid ""
+"<span class=\"modryn_badge is_muted\">Published</span>\n"
+"                    The schedule for this week is out, so it can no longer be\n"
+"                    changed here — ask your manager. What you offered is below.\n"
+"                    Use <strong>Following week</strong> to answer for the next one."
+msgstr ""
+"<span class=\"modryn_badge is_muted\">פורסם</span>\n"
+"                    סידור העבודה לשבוע הזה יצא, ולא ניתן לשנות\n"
+"                    אותו כאן — פני לאחראית המשמרת. מה שהצעת מופיע למטה.\n"
+"                    לחצי על <strong>השבוע הבא</strong> כדי לענות עליו."
+
+#. module: modryn_roster
+#: model_terms:ir.ui.view,arch_db:modryn_roster.roster_page
+msgid ""
+".\n"
+"                    What you offered is below, and it stands as it is."
+msgstr ""
+".\n"
+"                    מה שהצעת מופיע למטה, והוא נשאר כפי שהוא."

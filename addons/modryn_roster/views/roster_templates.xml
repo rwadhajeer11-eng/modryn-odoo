@@ -10,7 +10,12 @@
             <t t-set="active_tab" t-value="'roster'"/>
             <div class="d-flex align-items-baseline justify-content-between mb-1">
                 <h1 class="mb-0">Work schedule</h1>
-                <span class="modryn_sub">
+                <!-- dir="ltr", or the bidi algorithm reads the range
+                     right-to-left with the rest of the Hebrew and prints the
+                     week as "05.09.2026-30.08" - the end date first, which is
+                     not a typo anybody spots, it is a week that looks wrong.
+                     Every other date pair on these pages already carries it. -->
+                <span class="modryn_sub" dir="ltr">
                     <t t-esc="week_start.strftime('%d.%m')"/>–<t t-esc="week_end.strftime('%d.%m.%Y')"/>
                 </span>
             </div>
@@ -69,16 +74,22 @@
                     answer for it. Use <strong>Following week</strong> to fill in the
                     week being planned.
                 </t>
+                <!-- A shut door with nowhere to go is the complaint this
+                     whole page was reported under. Every locked state now names
+                     the week she CAN answer for, because "you cannot do this
+                     here" without "here is where you can" is the same dead end
+                     the blank refusal was. -->
                 <t t-elif="lock_reason == 'published'">
                     <span class="modryn_badge is_muted">Published</span>
-                    The schedule for this week is out. What you offered is below,
-                    and it can no longer be changed here — ask your manager.
+                    The schedule for this week is out, so it can no longer be
+                    changed here — ask your manager. What you offered is below.
+                    Use <strong>Following week</strong> to answer for the next one.
                 </t>
                 <t t-elif="lock_reason == 'passed'">
                     <span class="modryn_badge is_muted">Closed</span>
                     Answers for this week closed
                     <strong dir="ltr" t-esc="window_closes.strftime('%d.%m %H:%M')"/>.
-                    What you offered is below.
+                    What you offered is below, and it stands as it is.
                 </t>
                 <t t-else="">
                     <span class="modryn_badge is_muted">Not open yet</span>
