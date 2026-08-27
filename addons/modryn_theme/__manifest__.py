@@ -17,6 +17,7 @@ Token source of truth: Frontend/packages/ui/src/theme.css in the MODRYN repo.
     'depends': ['website_sale'],
     'data': [
         'views/product_views.xml',
+        'views/login_templates.xml',
         'views/website_sale_templates.xml',
         'views/website_templates.xml',
         'views/homepage_templates.xml',

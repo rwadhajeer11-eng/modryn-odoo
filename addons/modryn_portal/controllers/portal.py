@@ -92,6 +92,25 @@ class ModrynCustomerPortal(http.Controller):
         return upcoming, past
 
     # ------------------------------------------------------------------ login
+    # ------------------------------------------------------------------ /my
+    @http.route('/my', type='http', auth='public', website=True, sitemap=False)
+    def my_root(self, **kw):
+        """A customer typing /my must not be asked to sign in like staff.
+
+        Odoo's portal owns this path and answers a signed-out visitor with
+        /web/login, which asks for a login and a password. A bride has neither:
+        she is never given an account at all. She proves who she is with her
+        phone and a code we text her, which is what /my/login does and what
+        every link in this product already points at - the website menu goes
+        straight to /my/bookings.
+
+        So the only way to reach that sign-in page was to type /my by hand, and
+        the only thing it could tell her was that her credentials were wrong.
+        """
+        if self._current_partner():
+            return request.redirect('/my/bookings')
+        return request.redirect('/my/login')
+
     @http.route('/my/login', type='http', auth='public', website=True,
                 methods=['GET'], sitemap=False)
     def login_form(self, **kw):

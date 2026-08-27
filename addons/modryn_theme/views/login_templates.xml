@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Odoo's back-office sign-in asks for an "Email".
+         No account in this product has one - not one of the twelve across
+         bella, noga, qa and platform - because staff are created by the owner
+         at /manage/staff with a USERNAME, and customers never sign in here at
+         all: they use /my/login, which asks for a phone number and texts a code.
+         The field has always taken the username; only its label was wrong, and
+         the first thing anybody did with it was type an email address and be
+         told the credentials were incorrect.
+         Placeholder and autocomplete move with it, or the browser keeps
+         offering saved email addresses for a field that will never accept one. -->
+    <template id="login_username_not_email" inherit_id="web.login">
+        <xpath expr="//label[@for='login']" position="replace">
+            <label for="login" class="form-label d-flex justify-content-between">Username</label>
+        </xpath>
+        <xpath expr="//input[@name='login']" position="attributes">
+            <attribute name="placeholder">Enter your username</attribute>
+        </xpath>
+    </template>
+
+</odoo>

@@ -38,7 +38,10 @@ seconds per booking. The login code stays synchronous — she is watching the sc
     # every boutique cloned from modryn_template actually takes. See schema_guard.
     'pre_init_hook': 'pre_init_hook',
     'post_init_hook': 'post_init_hook',
-    'depends': ['website', 'modryn_booking', 'modryn_theme'],
+    # portal is named so THIS module loads after it and its /my route wins.
+    # Odoo picks the last-loaded module's route for a duplicated path, and
+    # relying on incidental load order is how a fix quietly un-fixes itself.
+    'depends': ['website', 'portal', 'modryn_booking', 'modryn_theme'],
     'data': [
         'security/ir.model.access.csv',
         'data/ir_cron_data.xml',

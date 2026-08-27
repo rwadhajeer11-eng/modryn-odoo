@@ -29,6 +29,7 @@ a different and much larger thing — see .planning/BACKLOG.md.
         'security/ir.model.access.csv',
         'data/subscription_type_data.xml',
         'views/platform_templates.xml',
+        'views/login_templates.xml',
     ],
     'author': 'MODRYN',
     'license': 'LGPL-3',
