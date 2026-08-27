@@ -90,6 +90,99 @@ class ModrynStaffAuth(http.Controller):
         request.session.logout(keep_db=True)
         return request.redirect('/staff/login')
 
+
+    # ------------------------------------------------------------- her profile
+    # Same shape as staff_lang above, and for the same reason: portal users have
+    # no ORM access to hr.employee, so the group is checked HERE and the write
+    # goes through sudo() - which makes it critical that the record is resolved
+    # from the SESSION and never from anything the request carries. There is no
+    # employee id in these routes at all, so there is no id to tamper with.
+    #
+    # WHAT SHE MAY CHANGE is deliberately narrower than the owner's form: her
+    # name, how to reach her, where she lives, how she is addressed and which
+    # language she reads. NOT her role, NOT her permission level, and NOT her ID
+    # number - those are the owner's record of her, not her description of
+    # herself, and letting her edit them would make the Team page advisory.
+    HER_OWN = ('city', 'street', 'backup_phone', 'gender')
+
+    def _is_staff(self):
+        """Boutique staff, and not the public user.
+
+        The same check staff_lang makes inline. Written out here because these
+        routes write to hr.employee through sudo(), and a sudo() write behind a
+        check that is easy to forget is how a public visitor edits somebody's
+        record.
+        """
+        user = request.env.user
+        return not user._is_public() and user.has_group(
+            'modryn_staff.group_boutique_staff')
+
+    def _my_employee(self):
+        return request.env['hr.employee'].sudo().search(
+            [('user_id', '=', request.env.user.id)], limit=1)
+
+    def _profile_context(self, employee, saved=False, error=None):
+        genders = request.env['hr.employee']._fields['modryn_gender'].get_description(
+            request.env)['selection']
+        return {
+            'employee': employee,
+            'genders': genders,
+            'langs': self._staff_langs(),
+            'saved': saved,
+            'error': error,
+            'active_tab': 'profile',
+        }
+
+    @http.route('/staff/profile', type='http', auth='user', website=True,
+                methods=['GET'], sitemap=False)
+    def profile_form(self, saved=None, **kw):
+        if not self._is_staff():
+            return request.not_found()
+        me = self._my_employee()
+        if not me:
+            return request.not_found()
+        request.session.touch()
+        return request.render('modryn_staff.staff_profile',
+                              self._profile_context(me, saved=bool(saved)))
+
+    @http.route('/staff/profile', type='http', auth='user', website=True,
+                methods=['POST'], csrf=True, sitemap=False)
+    def profile_save(self, **post):
+        if not self._is_staff():
+            return request.not_found()
+        me = self._my_employee()
+        if not me:
+            return request.not_found()
+
+        name = (post.get('name') or '').strip()
+        if not name:
+            return request.render('modryn_staff.staff_profile', self._profile_context(
+                me, error=_("Please enter your name.")))
+
+        values = {'name': name, 'work_phone': (post.get('phone') or '').strip()}
+        for field in self.HER_OWN:
+            if field == 'gender':
+                # Validated against the field's OWN selection, not a list copied
+                # here: a stored value outside it renders as nothing at all, so
+                # the form would silently blank her answer.
+                valid = dict(request.env['hr.employee']._fields[
+                    'modryn_gender'].get_description(request.env)['selection'])
+                raw = (post.get('gender') or '').strip()
+                values['modryn_gender'] = raw if raw in valid else False
+            else:
+                values['modryn_%s' % field] = (post.get(field) or '').strip()
+        me.write(values)
+
+        # Language rides the existing picker's rules rather than a second copy:
+        # it is a whitelist of the tenant's switched-on languages, and writing a
+        # code the boutique never activated leaves her with a preference that
+        # renders nothing.
+        lang = (post.get('lang') or '').strip()
+        if lang and self._staff_langs().filtered(lambda l: l.code == lang):
+            request.env.user.sudo().lang = lang
+
+        return request.redirect('/staff/profile?saved=1')
+
     # Was a hardcoded {'he_IL', 'en_US'}. It is STILL a whitelist — a portal user
     # writes her own lang through sudo() below, and an unchecked value would let
     # her set any field-legal string — but the list is now the tenant's own

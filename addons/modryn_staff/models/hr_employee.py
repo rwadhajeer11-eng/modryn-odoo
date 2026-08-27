@@ -63,6 +63,13 @@ class HrEmployee(models.Model):
     # different fact. Storing one in the other's column would eventually get
     # somebody's mother called about a shift swap.
     modryn_backup_phone = fields.Char(string="Backup phone")
+    # Its own field rather than Odoo's hr gender: this install carries a slim
+    # hr with no gender column at all, and the selection here is the boutique's
+    # own - the team is overwhelmingly women and "prefer not to say" is a real
+    # answer that a two-value field cannot hold.
+    modryn_gender = fields.Selection(
+        selection=[('female', "Female"), ('male', "Male"), ('other', "Prefer not to say")],
+        string="Gender")
 
     @api.constrains('modryn_id_number')
     def _check_id_number_unique(self):

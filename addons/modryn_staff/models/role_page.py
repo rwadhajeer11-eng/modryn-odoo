@@ -11,6 +11,11 @@ GROUP_OWNER = 'modryn_staff.group_boutique_owner'
 # plain staff live on their own page unless the owner grants more.
 DEFAULT_PAGE_KEYS = ('roster', 'checkin')
 
+# Pages the matrix may never take away. Kept as a tuple rather than repeated
+# literals so modryn_can_view and the owner's tick-list cannot disagree - and
+# they were two separate 'home' literals in two files before this.
+ALWAYS_OPEN = ('home', 'profile')
+
 
 class ModrynRolePage(models.Model):
     """One page a job role may open.
@@ -48,9 +53,11 @@ class ModrynRolePage(models.Model):
         user = self.env.user
         if not user or user._is_public() or not user.has_group(GROUP_STAFF):
             return False
-        if page_key == 'home':
-            # Always reachable: the one page that can never be configured away,
-            # so no matrix state can strand a signed-in staff member.
+        if page_key in ALWAYS_OPEN:
+            # Never configurable away. 'home' so no matrix state can strand a
+            # signed-in staff member, and 'profile' because a woman correcting
+            # her own phone number is not a privilege an owner grants - and the
+            # boutique's ability to reach her depends on it being right.
             return True
         if user.has_group(GROUP_OWNER):
             return True

@@ -50,6 +50,11 @@ def page(key):
 # not error; it renders an invisible empty box, so every name here was checked
 # against the real bundle rather than from memory.
 register('home', '/staff/home', _lt("Main screen"), 5, icon='fa-home')
+# Her own details. Registered in the STAFF section, so it can never enter the
+# owner's grant matrix as something to take away: every woman on the floor must
+# be able to correct her own phone number. fa-user-o is FA4 - fa-user-circle is
+# FA5 and would render an invisible box with nothing in the log.
+register('profile', '/staff/profile', _lt("My details"), 90, icon='fa-user-o')
 register('floor', '/floor', _lt("Floor board"), 10, icon='fa-th-large')
 register('roster', '/roster', _lt("Work schedule"), 20, icon='fa-calendar')
 register('checkin', '/queue/checkin', _lt("Walk-in check-in"), 60, icon='fa-qrcode')

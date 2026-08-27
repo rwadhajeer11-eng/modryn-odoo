@@ -42,4 +42,97 @@
         </t>
     </template>
 
+
+    <!-- ============================ her own details ======================= -->
+    <template id="staff_profile" name="MODRYN my details">
+        <t t-call="modryn_staff.staff_layout">
+            <t t-set="active_tab" t-value="'profile'"/>
+            <h1 class="mb-2">My details</h1>
+            <p class="modryn_sub mb-4">
+                Keep these right and the boutique can always reach you.
+                Your role and permission level are set by the owner.
+            </p>
+
+            <div t-if="saved" class="modryn_panel mb-3" role="status">
+                <span class="modryn_badge is_free">Saved</span>
+            </div>
+            <div t-if="error" class="modryn_field_error mb-3" role="alert" t-out="error"/>
+
+            <form method="post" action="/staff/profile" class="modryn_form">
+                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+
+                <div class="mb-3">
+                    <label class="form-label" for="name">Name</label>
+                    <input type="text" id="name" name="name" class="form-control"
+                           t-att-value="employee.name or ''"/>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label" for="phone">Phone</label>
+                    <input type="tel" id="phone" name="phone" class="form-control" dir="ltr"
+                           t-att-value="employee.work_phone or ''"/>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label" for="backup_phone">Backup phone</label>
+                    <input type="tel" id="backup_phone" name="backup_phone"
+                           class="form-control" dir="ltr"
+                           t-att-value="employee.modryn_backup_phone or ''"/>
+                    <div class="form-text">The number to try when the first one doesn't answer.</div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label" for="city">City</label>
+                    <input type="text" id="city" name="city" class="form-control"
+                           t-att-value="employee.modryn_city or ''"/>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label" for="street">Street and number</label>
+                    <input type="text" id="street" name="street" class="form-control"
+                           t-att-value="employee.modryn_street or ''"/>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label" for="gender">Gender</label>
+                    <select id="gender" name="gender" class="form-select">
+                        <option value="">&#8212;</option>
+                        <t t-foreach="genders" t-as="g">
+                            <option t-att-value="g[0]"
+                                    t-att-selected="'selected' if employee.modryn_gender == g[0] else None"
+                                    t-out="g[1]"/>
+                        </t>
+                    </select>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label" for="lang">Language</label>
+                    <select id="lang" name="lang" class="form-select">
+                        <t t-foreach="langs" t-as="l">
+                            <option t-att-value="l.code"
+                                    t-att-selected="'selected' if l.code == (request.env.lang or '') else None"
+                                    t-out="l.name"/>
+                        </t>
+                    </select>
+                </div>
+
+                <!-- What she may NOT change, shown so she knows who to ask
+                     rather than wondering why the field is missing. -->
+                <div class="modryn_panel mb-4">
+                    <div class="modryn_sub">Set by the owner</div>
+                    <div>
+                        <span class="modryn_strong">Role:</span>
+                        <t t-out="employee.modryn_role_id.name or '&#8212;'"/>
+                    </div>
+                    <div t-if="employee.modryn_id_number">
+                        <span class="modryn_strong">ID number:</span>
+                        <span dir="ltr" t-out="employee.modryn_id_number"/>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-lg">Save</button>
+            </form>
+        </t>
+    </template>
+
 </odoo>

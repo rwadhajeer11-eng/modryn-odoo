@@ -55,9 +55,24 @@ msgid "<span class=\"modryn_admin_brand\">MODRYN</span>"
 msgstr "MODRYN"
 
 #. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.staff_profile
+msgid "<span class=\"modryn_badge is_free\">Saved</span>"
+msgstr "<span class=\"modryn_badge is_free\">נשמר</span>"
+
+#. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.staff_home
 msgid "<span class=\"modryn_badge is_free\">Walk-in</span>"
 msgstr "ללא תור"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.staff_profile
+msgid "<span class=\"modryn_strong\">ID number:</span>"
+msgstr "<span class=\"modryn_strong\">מספר זהות:</span>"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.staff_profile
+msgid "<span class=\"modryn_strong\">Role:</span>"
+msgstr "<span class=\"modryn_strong\">תפקיד:</span>"
 
 #. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manage_hours
@@ -239,6 +254,7 @@ msgstr "חזרה לתור"
 #. module: modryn_staff
 #: model:ir.model.fields,field_description:modryn_staff.field_hr_employee__modryn_backup_phone
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manage_staff_form
+#: model_terms:ir.ui.view,arch_db:modryn_staff.staff_profile
 msgid "Backup phone"
 msgstr "טלפון נוסף"
 
@@ -271,6 +287,7 @@ msgstr "תפקיד צוות בבוטיק"
 #. module: modryn_staff
 #. odoo-javascript
 #: code:addons/modryn_staff/static/src/floor/floor_board.js:0
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
 msgid "Bride"
 msgstr "כלה"
 
@@ -313,6 +330,7 @@ msgstr "ביטול"
 #. module: modryn_staff
 #: model:ir.model.fields,field_description:modryn_staff.field_hr_employee__modryn_city
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manage_staff_form
+#: model_terms:ir.ui.view,arch_db:modryn_staff.staff_profile
 msgid "City"
 msgstr "עיר"
 
@@ -450,6 +468,11 @@ msgid "Event"
 msgstr "תור"
 
 #. module: modryn_staff
+#: model:ir.model.fields.selection,name:modryn_staff.selection__hr_employee__modryn_gender__female
+msgid "Female"
+msgstr "נקבה"
+
+#. module: modryn_staff
 #: model:ir.model,name:modryn_staff.model_modryn_fitting_room
 #: model:ir.model.fields,field_description:modryn_staff.field_calendar_event__modryn_room_id
 #: model:ir.model.fields,field_description:modryn_staff.field_modryn_queue_entry__modryn_room_id
@@ -485,6 +508,12 @@ msgstr "מסך משמרת"
 #: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
 msgid "Follow-ups open"
 msgstr "מעקבים פתוחים"
+
+#. module: modryn_staff
+#: model:ir.model.fields,field_description:modryn_staff.field_hr_employee__modryn_gender
+#: model_terms:ir.ui.view,arch_db:modryn_staff.staff_profile
+msgid "Gender"
+msgstr "מגדר"
 
 #. module: modryn_staff
 #. odoo-javascript
@@ -588,7 +617,15 @@ msgid "Just arrived"
 msgstr "הגיעו עכשיו"
 
 #. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.staff_profile
+msgid ""
+"Keep these right and the boutique can always reach you.\n"
+"                Your role and permission level are set by the owner."
+msgstr "שמרי אותם מעודכנים כדי שנוכל תמיד להשיג אותך. התפקיד ורמת ההרשאה נקבעים על ידי הבעלים."
+
+#. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.lang_toggle
+#: model_terms:ir.ui.view,arch_db:modryn_staff.staff_profile
 msgid "Language"
 msgstr "שפה"
 
@@ -610,6 +647,11 @@ msgstr "נמוכה"
 #: code:addons/modryn_staff/nav.py:0
 msgid "Main screen"
 msgstr "מסך ראשי"
+
+#. module: modryn_staff
+#: model:ir.model.fields.selection,name:modryn_staff.selection__hr_employee__modryn_gender__male
+msgid "Male"
+msgstr "זכר"
 
 #. module: modryn_staff
 #. odoo-python
@@ -664,6 +706,13 @@ msgid "My day"
 msgstr "היום שלי"
 
 #. module: modryn_staff
+#. odoo-python
+#: code:addons/modryn_staff/nav.py:0
+#: model_terms:ir.ui.view,arch_db:modryn_staff.staff_profile
+msgid "My details"
+msgstr "הפרטים שלי"
+
+#. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.staff_home
 msgid "My follow-ups"
 msgstr "המעקבים שלי"
@@ -684,6 +733,7 @@ msgstr "המשמרות שלי"
 #: model:ir.model.fields,field_description:modryn_staff.field_modryn_staff_role__name
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manage_staff_form
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manage_staff_list
+#: model_terms:ir.ui.view,arch_db:modryn_staff.staff_profile
 msgid "Name"
 msgstr "שם"
 
@@ -944,6 +994,7 @@ msgstr "פרטים אישיים"
 #. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manage_staff_form
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manage_staff_list
+#: model_terms:ir.ui.view,arch_db:modryn_staff.staff_profile
 msgid "Phone"
 msgstr "טלפון"
 
@@ -1020,6 +1071,12 @@ msgid "Please enter an opening and a closing time"
 msgstr "נא למלא שעת פתיחה ושעת סגירה"
 
 #. module: modryn_staff
+#. odoo-python
+#: code:addons/modryn_staff/controllers/auth.py:0
+msgid "Please enter your name."
+msgstr "נא להזין את שמך."
+
+#. module: modryn_staff
 #. odoo-javascript
 #: code:addons/modryn_staff/static/src/floor/floor_board.js:0
 msgid "Please pick a due date — the workshop queue runs on it."
@@ -1042,6 +1099,11 @@ msgstr "נא לציין כמה מדידות אפשר לקיים במקביל —
 #: code:addons/modryn_staff/controllers/manage.py:0
 msgid "Please say what the closure is for"
 msgstr "נא לציין מה סיבת הסגירה"
+
+#. module: modryn_staff
+#: model:ir.model.fields.selection,name:modryn_staff.selection__hr_employee__modryn_gender__other
+msgid "Prefer not to say"
+msgstr "מעדיפה לא לציין"
 
 #. module: modryn_staff
 #. odoo-javascript
@@ -1136,6 +1198,7 @@ msgstr "מוכרת"
 #: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manage_hours
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manage_staff_form
+#: model_terms:ir.ui.view,arch_db:modryn_staff.staff_profile
 msgid "Save"
 msgstr "שמירה"
 
@@ -1160,6 +1223,11 @@ msgstr "רואה את השיוכים שלה במסך המשמרת."
 #: model:ir.model.fields,field_description:modryn_staff.field_hr_employee__modryn_occupied_with
 msgid "Serving"
 msgstr "מטפלת ב"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.staff_profile
+msgid "Set by the owner"
+msgstr "נקבע על ידי הבעלים"
 
 #. module: modryn_staff
 #: model:ir.model.constraint,message:modryn_staff.constraint_modryn_floor_helper_event_uniq
@@ -1277,6 +1345,7 @@ msgstr "נותרו לסגירה"
 #. module: modryn_staff
 #: model:ir.model.fields,field_description:modryn_staff.field_hr_employee__modryn_street
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manage_staff_form
+#: model_terms:ir.ui.view,arch_db:modryn_staff.staff_profile
 msgid "Street and number"
 msgstr "רחוב ומספר"
 
@@ -1360,6 +1429,7 @@ msgstr ""
 
 #. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manage_staff_form
+#: model_terms:ir.ui.view,arch_db:modryn_staff.staff_profile
 msgid "The number to try when the first one doesn't answer."
 msgstr "המספר שמתקשרים אליו כשהראשון לא עונה."
 

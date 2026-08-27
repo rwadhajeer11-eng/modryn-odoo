@@ -10,6 +10,7 @@ from odoo.http import request
 from odoo.tools import mute_logger
 
 from .. import nav
+from ..models.role_page import ALWAYS_OPEN
 
 MIN_PASSWORD = 8
 # The most fittings an owner can claim to run in one hour. Not a business rule
@@ -91,7 +92,7 @@ def _levels():
 # place so the hire form and the edit form cannot drift apart - the bug where a
 # field is saveable on one screen and silently dropped on the other is exactly
 # what a second copy of this dict buys you.
-PERSONAL_FIELDS = ('id_number', 'city', 'street', 'backup_phone')
+PERSONAL_FIELDS = ('id_number', 'city', 'street', 'backup_phone', 'gender')
 
 
 def _personal_values(post):
@@ -350,7 +351,7 @@ class ModrynManage(http.Controller):
         # column (it cannot be configured away) and manage pages never enter
         # the matrix at all — see nav.py.
         pages = [p for p in nav.PAGES
-                 if p['section'] == 'staff' and p['key'] != 'home']
+                 if p['section'] == 'staff' and p['key'] not in ALWAYS_OPEN]
         granted = {}
         for grant in request.env['modryn.role.page'].sudo().search(
                 [('role_id', 'in', roles.ids)]):
@@ -369,7 +370,7 @@ class ModrynManage(http.Controller):
         if not self._require_owner():
             return request.not_found()
         valid_keys = {p['key'] for p in nav.PAGES
-                      if p['section'] == 'staff' and p['key'] != 'home'}
+                      if p['section'] == 'staff' and p['key'] not in ALWAYS_OPEN}
         Role = request.env['modryn.staff.role'].sudo().with_context(
             active_test=False)
         role_ids = set(Role.search([]).ids)
