@@ -71,7 +71,6 @@ msgstr "הזיני את הקוד"
 #. module: modryn_queue_poc
 #. odoo-javascript
 #: code:addons/modryn_queue_poc/static/src/queue_board/queue_board.xml:0
-#: model:ir.model.fields.selection,name:modryn_queue_poc.selection__modryn_queue_entry__client_type__evening
 #: model_terms:ir.ui.view,arch_db:modryn_queue_poc.checkin_form
 msgid "Evening"
 msgstr "ערב"
