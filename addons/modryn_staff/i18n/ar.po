@@ -590,6 +590,12 @@ msgstr "منخفضة"
 
 #. module: modryn_staff
 #. odoo-python
+#: code:addons/modryn_staff/nav.py:0
+msgid "Main screen"
+msgstr "الشاشة الرئيسية"
+
+#. module: modryn_staff
+#. odoo-python
 #: code:addons/modryn_staff/controllers/manage.py:0
 msgid "manager"
 msgstr "مديرة"
@@ -645,6 +651,11 @@ msgstr "متابعاتي"
 #: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
 msgid "My month"
 msgstr "شهري"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.staff_home
+msgid "My shifts"
+msgstr "ورديّاتي"
 
 #. module: modryn_staff
 #: model:ir.model.fields,field_description:modryn_staff.field_modryn_fitting_room__name
@@ -732,6 +743,11 @@ msgid "Nobody is assigned to you right now."
 msgstr "لا توجد عميلة مُسندة إليكِ الآن."
 
 #. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.staff_home
+msgid "Nobody yet"
+msgstr "ما حدا لسا"
+
+#. module: modryn_staff
 #. odoo-javascript
 #: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
 msgid "Normal"
@@ -766,6 +782,11 @@ msgstr "ملاحظة (اختياري)"
 #: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
 msgid "Note for the team"
 msgstr "ملاحظة للفريق"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.staff_home
+msgid "Nothing on this day."
+msgstr "ما في ورديات بهذا اليوم."
 
 #. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manage_hours
@@ -1334,6 +1355,16 @@ msgid "This page isn't yours to open"
 msgstr "هذه الصفحة ليست من صلاحيتك"
 
 #. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.staff_home
+msgid "This week's rota hasn't been published yet."
+msgstr "سيدور هذا الأسبوع لسا ما انتشر."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.staff_home
+msgid "This week's shifts"
+msgstr "ورديات الأسبوع"
+
+#. module: modryn_staff
 #. odoo-python
 #: code:addons/modryn_staff/controllers/manage.py:0
 msgid "Those dates aren't valid"
@@ -1355,6 +1386,11 @@ msgstr ""
 #: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
 msgid "to close"
 msgstr "للإغلاق"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.staff_home
+msgid "Today"
+msgstr "اليوم"
 
 #. module: modryn_staff
 #. odoo-javascript
@@ -1486,6 +1522,11 @@ msgstr "ليست لديكِ صلاحية لذلك."
 
 #. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.staff_home
+msgid "You're not on this week's published rota."
+msgstr "إنتِ مش مشمولة بسيدور هذا الأسبوع المنشور."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.staff_home
 msgid "You're not on today's published rota."
 msgstr "لستِ ضمن مناوبة اليوم المنشورة."
 
@@ -1509,12 +1550,9 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:modryn_staff.staff_home
 msgid ""
 "Your role isn't set yet — ask the owner to pick one for you\n"
-"                on the Team page. Until then this page shows only what is\n"
-"                assigned to you by name."
-msgstr ""
-"لم تُحدد وظيفتك بعد — اطلبي من المالكة أن تختار لكِ واحدة\n"
-"                في صفحة الفريق. حتى ذلك الحين تعرض هذه الصفحة فقط ما هو\n"
-"                مُسند إليكِ بالاسم."
+"                on the Team page. Until then you'll only see what is assigned\n"
+"                to you by name, and the pages your role would open are closed."
+msgstr "وظيفتك لسا ما انحددت — اطلبي من المالكة تختارلك وحدة بصفحة الفريق. لحد هديك بتشوفي بس اللي مشمول باسمك، والصفحات اللي وظيفتك بتفتحها مسكّرة."
 
 #. module: modryn_staff
 #. odoo-javascript

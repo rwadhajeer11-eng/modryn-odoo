@@ -601,3 +601,63 @@
         padding: 1px 3px;
     }
 }
+
+
+// ===================== the main screen's week =====================
+// rgba() only. LibSass rejects Color Level 4 and drops the WHOLE frontend
+// bundle when it meets it, not just the offending rule.
+.modryn_myshift {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 8px;
+    padding-block: 6px;
+
+    & + & {
+        border-block-start: 1px solid $modryn-border;
+    }
+}
+
+.modryn_weekday {
+    padding-block: 8px;
+
+    & + & {
+        border-block-start: 1px solid $modryn-border;
+    }
+
+    // Today, marked with a rule down the leading edge rather than a fill: the
+    // panel already carries chips and badges, and another background would make
+    // the one row she is looking for harder to find, not easier.
+    &.is_today {
+        border-inline-start: 3px solid $modryn-gold;
+        padding-inline-start: 10px;
+    }
+}
+
+.modryn_weekday_head {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin-block-end: 4px;
+}
+
+.modryn_weekday_slots {
+    display: grid;
+    gap: 6px;
+}
+
+.modryn_weekslot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 6px;
+
+    // Her own shift, inside a list of everybody's. Weight and a tint, so it
+    // still reads on a printed rota where the tint is gone.
+    &.is_mine {
+        font-weight: 600;
+        background: rgba(197, 160, 89, 0.08);
+        border-radius: 6px;
+        padding: 4px 6px;
+    }
+}

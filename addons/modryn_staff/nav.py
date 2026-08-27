@@ -49,7 +49,7 @@ def page(key):
 # served frontend bundle has `.fa-clock-o` and NO `.fa-clock`. An FA5/6 name does
 # not error; it renders an invisible empty box, so every name here was checked
 # against the real bundle rather than from memory.
-register('home', '/staff/home', _lt("My day"), 5, icon='fa-home')
+register('home', '/staff/home', _lt("Main screen"), 5, icon='fa-home')
 register('floor', '/floor', _lt("Floor board"), 10, icon='fa-th-large')
 register('roster', '/roster', _lt("Work schedule"), 20, icon='fa-calendar')
 register('checkin', '/queue/checkin', _lt("Walk-in check-in"), 60, icon='fa-qrcode')

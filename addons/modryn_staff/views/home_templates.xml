@@ -14,17 +14,91 @@
             <div t-if="home['no_role'] or home['no_employee']"
                  class="alert alert-warning my-3" role="status">
                 Your role isn't set yet — ask the owner to pick one for you
-                on the Team page. Until then this page shows only what is
-                assigned to you by name.
+                on the Team page. Until then you'll only see what is assigned
+                to you by name, and the pages your role would open are closed.
             </div>
 
-            <!-- Today's shift (modryn_roster) -->
-            <section t-if="home.get('shift') is not None" class="modryn_panel mb-4">
-                <header class="modryn_panel_head"><h2>Today's shift</h2></header>
-                <p t-if="not home['shift']" class="modryn_empty">
-                    You're not on today's published rota.
+            <!-- HER shifts this week (modryn_roster). Renamed from "Today's
+                 shift": a saleswoman plans her week, not her afternoon, and the
+                 old panel could only ever answer a question she had already
+                 answered by turning up. -->
+            <section t-if="home.get('my_shifts') is not None" class="modryn_panel mb-4">
+                <header class="modryn_panel_head"><h2>My shifts</h2></header>
+                <p t-if="not home['my_shifts']" class="modryn_empty">
+                    You're not on this week's published rota.
                 </p>
                 <div t-else="" class="p-3">
+                    <div t-foreach="home['my_shifts']" t-as="s" class="modryn_myshift">
+                        <span class="modryn_strong"><t t-esc="s['weekday']"/></span>
+                        <span class="modryn_sub" dir="ltr"><t t-esc="s['day_label']"/></span>
+                        <span class="modryn_badge is_free"><t t-esc="s['type_label']"/></span>
+                        <span class="modryn_sub" dir="ltr"><t t-esc="s['hours']"/></span>
+                        <span class="modryn_sub"><t t-esc="s['name']"/></span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- The WHOLE week, whether or not she is on it. Knowing the shop is
+                 covered on Friday, or who to ask for a swap, means seeing the
+                 shifts that are not hers - so this deliberately does not filter
+                 to her own. Days with nothing on them are still drawn: a day
+                 that is simply absent reads the same as a day nobody is on, and
+                 only one of those is worth asking about. -->
+            <section t-if="home.get('week_shifts')" class="modryn_panel mb-4">
+                <header class="modryn_panel_head"><h2>This week's shifts</h2></header>
+                <div class="p-3">
+                    <!-- Three states, not two. "No rota yet" and "a published
+                         day nobody is on" are different facts and only one of
+                         them is worth asking the manager about - noga trades
+                         Sunday to Thursday and, with its week not yet
+                         generated, every day read "Nothing on this day": a
+                         shop that looked shut all week. Same None-vs-empty
+                         contract modryn_rostered_on already keeps. -->
+                    <p t-if="not home.get('week_published')" class="modryn_empty mb-0">
+                        This week's rota hasn't been published yet.
+                    </p>
+                    <div t-if="home.get('week_published')"
+                         t-foreach="home['week_shifts']" t-as="d"
+                         t-attf-class="modryn_weekday #{'is_today' if d['is_today'] else ''}">
+                        <div class="modryn_weekday_head">
+                            <span class="modryn_strong"><t t-esc="d['weekday']"/></span>
+                            <span class="modryn_sub" dir="ltr"><t t-esc="d['day_label']"/></span>
+                            <span t-if="d['is_today']" class="modryn_badge is_free">Today</span>
+                        </div>
+                        <p t-if="not d['slots']" class="modryn_sub mb-0">Nothing on this day.</p>
+                        <div t-else="" class="modryn_weekday_slots">
+                            <div t-foreach="d['slots']" t-as="s"
+                                 t-attf-class="modryn_weekslot #{'is_mine' if s['mine'] else ''}">
+                                <span class="modryn_badge is_muted"><t t-esc="s['type_label']"/></span>
+                                <span class="modryn_sub" dir="ltr"><t t-esc="s['hours']"/></span>
+                                <!-- The NAME, because a day can legitimately
+                                     carry two shifts of the same part of the day
+                                     at the same hours - bella runs exactly that
+                                     on Sundays - and without it the second row
+                                     reads as the page having duplicated the
+                                     first. unique(name, weekday) makes the name
+                                     the one field guaranteed to tell them
+                                     apart; hours and type are not constrained. -->
+                                <span class="modryn_sub"><t t-esc="s['name']"/></span>
+                                <t t-if="s['people']">
+                                    <span t-foreach="s['people']" t-as="p"
+                                          class="modryn_chip"><t t-esc="p"/></span>
+                                </t>
+                                <span t-else="" class="modryn_sub">Nobody yet</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Today, kept as a one-line strip under the week. -->
+            <section t-if="home.get('shift')" class="modryn_panel mb-4">
+                <header class="modryn_panel_head"><h2>Today</h2></header>
+                <!-- No t-else here: the t-if it used to pair with moved into the
+                     "My shifts" panel above, and a t-else with no preceding t-if
+                     sibling is a QWeb error at RENDER time - the page would have
+                     500'd for every staff member, not failed to load once. -->
+                <div class="p-3">
                     <t t-foreach="home['shift']" t-as="s">
                         <div>
                             <span class="modryn_strong" t-out="s['name']"/>
