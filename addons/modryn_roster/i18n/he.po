@@ -67,15 +67,6 @@ msgstr ""
 
 #. module: modryn_roster
 #: model_terms:ir.ui.view,arch_db:modryn_roster.roster_page
-msgid ""
-"<span class=\"modryn_badge is_muted\">Closed</span>\n"
-"                    This week opens"
-msgstr ""
-"<span class=\"modryn_badge is_muted\">סגור</span>\n"
-"                    השבוע נפתח"
-
-#. module: modryn_roster
-#: model_terms:ir.ui.view,arch_db:modryn_roster.roster_page
 msgid "<span class=\"modryn_strong\">When can the team answer?</span>"
 msgstr "<span class=\"modryn_strong\">מתי הצוות יכול לענות?</span>"
 
@@ -244,11 +235,6 @@ msgstr "שישי"
 #: model_terms:ir.ui.view,arch_db:modryn_roster.roster_page
 msgid "I can work this"
 msgstr "אני יכולה לעבוד"
-
-#. module: modryn_roster
-#: model_terms:ir.ui.view,arch_db:modryn_roster.roster_page
-msgid "I'm available"
-msgstr "סימנתי שאני פנויה"
 
 #. module: modryn_roster
 #: model_terms:ir.ui.view,arch_db:modryn_roster.roster_page
@@ -429,8 +415,12 @@ msgstr "שמירה לכל שבוע"
 #. module: modryn_roster
 #. odoo-python
 #: code:addons/modryn_roster/controllers/roster.py:0
-msgid "Saved. That time has already gone for the week of %s — nobody can answer for it. Set times for just this week below to reopen it."
-msgstr "נשמר. הזמן הזה כבר חלף עבור השבוע של %s — אף אחת לא יכולה לענות עליו. קבעי למטה שעות לשבוע הזה בלבד כדי לפתוח אותו מחדש."
+msgid ""
+"Saved. That time has already gone for the week of %s — nobody can answer for"
+" it. Set times for just this week below to reopen it."
+msgstr ""
+"נשמר. הזמן הזה כבר חלף עבור השבוע של %s — אף אחת לא יכולה לענות עליו. קבעי "
+"למטה שעות לשבוע הזה בלבד כדי לפתוח אותו מחדש."
 
 #. module: modryn_roster
 #: model_terms:ir.ui.view,arch_db:modryn_roster.roster_page
@@ -526,11 +516,6 @@ msgid "Target"
 msgstr "יעד"
 
 #. module: modryn_roster
-#: model_terms:ir.ui.view,arch_db:modryn_roster.roster_page
-msgid "Tell us which shifts you can work. Your manager builds the rota from this."
-msgstr "סמני אילו משמרות את יכולה לעבוד. אחראית המשמרת בונה מזה את הסידור."
-
-#. module: modryn_roster
 #: model:ir.model.fields,field_description:modryn_roster.field_modryn_shift_slot__template_id
 #: model:ir.model.fields,field_description:modryn_roster.field_modryn_shift_target__template_id
 msgid "Template"
@@ -576,7 +561,9 @@ msgstr "המשמרת הזו כבר קיימת ביום הזה."
 #. module: modryn_roster
 #. odoo-python
 #: code:addons/modryn_roster/controllers/roster.py:0
-msgid "That week is already being worked — set the times for a week that is still being planned."
+msgid ""
+"That week is already being worked — set the times for a week that is still "
+"being planned."
 msgstr "השבוע הזה כבר בעבודה — קבעי את השעות לשבוע שעדיין בתכנון."
 
 #. module: modryn_roster
@@ -587,19 +574,15 @@ msgstr "השבוע הזה כבר פורסם — פני לאחראית המשמר
 
 #. module: modryn_roster
 #. odoo-python
-#: code:addons/modryn_roster/models/availability.py:0
-msgid "That week is already published — ask your manager to change it."
-msgstr "השבוע הזה כבר פורסם — פני לאחראית המשמרת לשינוי."
-
-#. module: modryn_roster
-#. odoo-python
 #: code:addons/modryn_roster/models/shift_slot.py:0
 msgid "The rota for the week of %s is published."
 msgstr "הסידור לשבוע של %s פורסם."
 
 #. module: modryn_roster
 #: model_terms:ir.ui.view,arch_db:modryn_roster.manage_shifts
-msgid "The shifts this boutique actually runs, and how many of each role each one needs."
+msgid ""
+"The shifts this boutique actually runs, and how many of each role each one "
+"needs."
 msgstr "המשמרות שהבוטיק באמת מפעיל, וכמה אנשי צוות מכל תפקיד כל אחת צריכה."
 
 #. module: modryn_roster
@@ -621,7 +604,9 @@ msgstr "חמישי"
 
 #. module: modryn_roster
 #: model_terms:ir.ui.view,arch_db:modryn_roster.roster_page
-msgid "Tick who is working. A shift turns amber when it is short of the roles it needs."
+msgid ""
+"Tick who is working. A shift turns amber when it is short of the roles it "
+"needs."
 msgstr "סמני מי עובדת. משמרת נצבעת בכתום כשחסר בה תפקיד שהיא צריכה."
 
 #. module: modryn_roster
@@ -668,3 +653,205 @@ msgstr "סידור עבודה"
 #: model:ir.model.fields,field_description:modryn_roster.field_modryn_shift_slot__employee_ids
 msgid "Working"
 msgstr "עובדות"
+
+#. module: modryn_roster
+#: model:ir.model.fields,field_description:modryn_roster.field_modryn_shift_slot__name
+#: model:ir.model.fields,field_description:modryn_roster.field_modryn_shift_template__name
+msgid "Name"
+msgstr "שם"
+
+#. module: modryn_roster
+#: model_terms:ir.ui.view,arch_db:modryn_roster.roster_page
+msgid "at"
+msgstr "בשעה"
+
+#. module: modryn_roster
+#. odoo-python
+#: code:addons/modryn_roster/models/shift_template.py:0
+msgid "middle"
+msgstr "צהריים"
+
+#. module: modryn_roster
+#. odoo-python
+#: code:addons/modryn_roster/models/shift_template.py:0
+msgid "night"
+msgstr "ערב"
+
+#. module: modryn_roster
+#: model:ir.model.fields,field_description:modryn_roster.field_modryn_shift_template__active
+msgid "Active"
+msgstr "פעיל"
+
+#. module: modryn_roster
+#: model:ir.model.fields,field_description:modryn_roster.field_modryn_availability__create_uid
+#: model:ir.model.fields,field_description:modryn_roster.field_modryn_roster_submission__create_uid
+#: model:ir.model.fields,field_description:modryn_roster.field_modryn_roster_week__create_uid
+#: model:ir.model.fields,field_description:modryn_roster.field_modryn_shift_slot__create_uid
+#: model:ir.model.fields,field_description:modryn_roster.field_modryn_shift_target__create_uid
+#: model:ir.model.fields,field_description:modryn_roster.field_modryn_shift_template__create_uid
+msgid "Created by"
+msgstr "נוצר על ידי"
+
+#. module: modryn_roster
+#: model:ir.model.fields,field_description:modryn_roster.field_modryn_availability__create_date
+#: model:ir.model.fields,field_description:modryn_roster.field_modryn_roster_submission__create_date
+#: model:ir.model.fields,field_description:modryn_roster.field_modryn_roster_week__create_date
+#: model:ir.model.fields,field_description:modryn_roster.field_modryn_shift_slot__create_date
+#: model:ir.model.fields,field_description:modryn_roster.field_modryn_shift_target__create_date
+#: model:ir.model.fields,field_description:modryn_roster.field_modryn_shift_template__create_date
+msgid "Created on"
+msgstr "נוצר בתאריך"
+
+#. module: modryn_roster
+#: model:ir.model.fields,field_description:modryn_roster.field_modryn_availability__display_name
+#: model:ir.model.fields,field_description:modryn_roster.field_modryn_opening_hours__display_name
+#: model:ir.model.fields,field_description:modryn_roster.field_modryn_roster_submission__display_name
+#: model:ir.model.fields,field_description:modryn_roster.field_modryn_roster_week__display_name
+#: model:ir.model.fields,field_description:modryn_roster.field_modryn_shift_slot__display_name
+#: model:ir.model.fields,field_description:modryn_roster.field_modryn_shift_target__display_name
+#: model:ir.model.fields,field_description:modryn_roster.field_modryn_shift_template__display_name
+msgid "Display Name"
+msgstr "שם לתצוגה"
+
+#. module: modryn_roster
+#: model:ir.model.fields,field_description:modryn_roster.field_modryn_availability__employee_id
+#: model:ir.model.fields,field_description:modryn_roster.field_modryn_roster_submission__employee_id
+msgid "Employee"
+msgstr "עובדת"
+
+#. module: modryn_roster
+#: model:ir.model.fields,field_description:modryn_roster.field_modryn_availability__id
+#: model:ir.model.fields,field_description:modryn_roster.field_modryn_opening_hours__id
+#: model:ir.model.fields,field_description:modryn_roster.field_modryn_roster_submission__id
+#: model:ir.model.fields,field_description:modryn_roster.field_modryn_roster_week__id
+#: model:ir.model.fields,field_description:modryn_roster.field_modryn_shift_slot__id
+#: model:ir.model.fields,field_description:modryn_roster.field_modryn_shift_target__id
+#: model:ir.model.fields,field_description:modryn_roster.field_modryn_shift_template__id
+msgid "ID"
+msgstr "מזהה"
+
+#. module: modryn_roster
+#: model:ir.model.fields,field_description:modryn_roster.field_modryn_availability__write_uid
+#: model:ir.model.fields,field_description:modryn_roster.field_modryn_roster_submission__write_uid
+#: model:ir.model.fields,field_description:modryn_roster.field_modryn_roster_week__write_uid
+#: model:ir.model.fields,field_description:modryn_roster.field_modryn_shift_slot__write_uid
+#: model:ir.model.fields,field_description:modryn_roster.field_modryn_shift_target__write_uid
+#: model:ir.model.fields,field_description:modryn_roster.field_modryn_shift_template__write_uid
+msgid "Last Updated by"
+msgstr "עודכן לאחרונה על ידי"
+
+#. module: modryn_roster
+#: model:ir.model.fields,field_description:modryn_roster.field_modryn_availability__write_date
+#: model:ir.model.fields,field_description:modryn_roster.field_modryn_roster_submission__write_date
+#: model:ir.model.fields,field_description:modryn_roster.field_modryn_roster_week__write_date
+#: model:ir.model.fields,field_description:modryn_roster.field_modryn_shift_slot__write_date
+#: model:ir.model.fields,field_description:modryn_roster.field_modryn_shift_target__write_date
+#: model:ir.model.fields,field_description:modryn_roster.field_modryn_shift_template__write_date
+msgid "Last Updated on"
+msgstr "עודכן לאחרונה בתאריך"
+
+#. module: modryn_roster
+#: model:ir.model.fields,field_description:modryn_roster.field_modryn_shift_template__sequence
+msgid "Sequence"
+msgstr "סדר"
+
+#. module: modryn_roster
+#: model_terms:ir.ui.view,arch_db:modryn_roster.roster_page
+msgid ""
+".\n"
+"                    What you offered is below."
+msgstr ""
+".\n"
+"                    מה שהצעת מופיע למטה."
+
+#. module: modryn_roster
+#: model_terms:ir.ui.view,arch_db:modryn_roster.roster_page
+msgid ""
+"<span class=\"modryn_badge is_muted\">Closed</span>\n"
+"                    Answers for this week closed"
+msgstr ""
+"<span class=\"modryn_badge is_muted\">סגור</span>\n"
+"                    התשובות לשבוע הזה נסגרו"
+
+#. module: modryn_roster
+#: model_terms:ir.ui.view,arch_db:modryn_roster.roster_page
+msgid ""
+"<span class=\"modryn_badge is_muted\">Not open yet</span>\n"
+"                    This week opens"
+msgstr ""
+"<span class=\"modryn_badge is_muted\">עוד לא נפתח</span>\n"
+"                    השבוע הזה נפתח"
+
+#. module: modryn_roster
+#: model_terms:ir.ui.view,arch_db:modryn_roster.roster_page
+msgid ""
+"<span class=\"modryn_badge is_muted\">Published</span>\n"
+"                    The schedule for this week is out. What you offered is below,\n"
+"                    and it can no longer be changed here — ask your manager."
+msgstr ""
+"<span class=\"modryn_badge is_muted\">פורסם</span>\n"
+"                    סידור העבודה לשבוע הזה יצא. מה שהצעת מופיע למטה,\n"
+"                    ולא ניתן לשנות אותו כאן — פני לאחראית המשמרת."
+
+#. module: modryn_roster
+#: model_terms:ir.ui.view,arch_db:modryn_roster.roster_page
+msgid ""
+"<span class=\"modryn_badge is_muted\">This week</span>\n"
+"                    You are working this week already, so there is nothing left to\n"
+"                    answer for it. Use <strong>Following week</strong> to fill in the\n"
+"                    week being planned."
+msgstr ""
+"<span class=\"modryn_badge is_muted\">השבוע הזה</span>\n"
+"                    את כבר עובדת השבוע הזה, אז אין מה למלא עבורו.\n"
+"                    לחצי על <strong>השבוע הבא</strong> כדי למלא את השבוע שמתוכנן עכשיו."
+
+#. module: modryn_roster
+#. odoo-python
+#: code:addons/modryn_roster/controllers/roster.py:0
+msgid "Answers for this week closed %s."
+msgstr "התשובות לשבוע הזה נסגרו ב-%s."
+
+#. module: modryn_roster
+#. odoo-python
+#: code:addons/modryn_roster/controllers/roster.py:0
+msgid "Answers for this week open %s."
+msgstr "התשובות לשבוע הזה נפתחות ב-%s."
+
+#. module: modryn_roster
+#. odoo-javascript
+#: code:addons/modryn_roster/static/src/roster.js:0
+msgid "Not available"
+msgstr "לא זמינה"
+
+#. module: modryn_roster
+#: model_terms:ir.ui.view,arch_db:modryn_roster.roster_page
+msgid "Nothing this week."
+msgstr "כלום השבוע."
+
+#. module: modryn_roster
+#. odoo-javascript
+#: code:addons/modryn_roster/static/src/roster.js:0
+msgid "That week can no longer be changed."
+msgstr "לא ניתן לשנות את השבוע הזה יותר."
+
+#. module: modryn_roster
+#. odoo-python
+#: code:addons/modryn_roster/controllers/roster.py:0
+msgid ""
+"This week is already being worked - you can only answer for the week being "
+"planned."
+msgstr "השבוע הזה כבר בעבודה — אפשר לענות רק על השבוע שמתוכנן."
+
+#. module: modryn_roster
+#: model_terms:ir.ui.view,arch_db:modryn_roster.roster_page
+msgid ""
+"This week is closed for answers. You can see what you offered,\n"
+"                    but it can no longer be changed here."
+msgstr ""
+"השבוע הזה סגור לתשובות. אפשר לראות מה הצעת,\n"
+"                    אבל כבר לא לשנות את זה כאן."
+
+#. module: modryn_roster
+#: model_terms:ir.ui.view,arch_db:modryn_roster.roster_page
+msgid "What you offered"
+msgstr "מה שהצעת"

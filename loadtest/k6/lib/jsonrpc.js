@@ -34,9 +34,14 @@ export const appRefusals = new Rate('app_refusals');
 // failed write; now that a manager can move that window per tenant, "is the
 // load test red" would otherwise become a data question nobody running it can
 // see.
+// past_week is the roster refusing a tick on the week the boutique is standing
+// in - its rota went out days ago. Same class as the two above: the rule
+// working, not the route failing. It is on this list because a campaign that
+// walks the week selector reaches it, and an unlisted code scores every one of
+// those as a failed write.
 const KNOWN_REFUSALS = [
   'forbidden', 'not_found', 'no_employee',
-  'window_closed', 'published',
+  'window_closed', 'published', 'past_week',
 ];
 
 // /floor/room answers a fitting-room collision with `dict(self._board(),

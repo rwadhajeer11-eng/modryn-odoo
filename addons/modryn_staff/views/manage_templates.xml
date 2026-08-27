@@ -54,11 +54,19 @@
 
             <div t-if="not employees" class="modryn_empty">No team members yet.</div>
 
-            <table t-else="" class="table modryn_table align-middle">
+            <!-- The scroll belongs to the TABLE, not to the page. Seven
+                 columns come to 720px and the phone is 390, so without this the
+                 whole screen slid sideways - headings, buttons and all - and
+                 the owner had to drag the page back to read the next column.
+                 Now the table scrolls inside its own box and nothing else
+                 moves. The other tables on these pages carry an explicit
+                 max-width and already fit; this one never had one. -->
+            <div t-else="" class="modryn_table_scroll">
+            <table class="table modryn_table align-middle">
                 <thead>
                     <tr>
                         <th>Name</th>
-                        <th>Role</th>
+                        <th>Roles</th>
                         <th>Permission level</th>
                         <th>Username</th>
                         <th>Phone</th>
@@ -116,6 +124,7 @@
                     </tr>
                 </tbody>
             </table>
+            </div>
         </t>
     </template>
 
@@ -182,16 +191,18 @@
                     </div>
                 </fieldset>
 
+                <!-- Tick boxes, not a dropdown: a woman does more than one
+                     job here, and the seamstress who also sells on a Saturday
+                     was the case the single dropdown could not describe. -->
                 <div class="mb-3">
-                    <label class="form-label" for="role_id">Role</label>
-                    <select id="role_id" name="role_id" class="form-select">
-                        <option value="">— Choose a role —</option>
-                        <t t-foreach="roles" t-as="role">
-                            <option t-att-value="role.id"
-                                    t-att-selected="'selected' if str(values.get('role_id', '')) == str(role.id) else None"
-                                    t-out="role.name"/>
-                        </t>
-                    </select>
+                    <span class="form-label d-block">Roles</span>
+                    <t t-foreach="roles" t-as="role">
+                        <label class="modryn_piece_check me-3">
+                            <input type="checkbox" name="role_ids" t-att-value="role.id"
+                                   t-att-checked="'checked' if role.id in (values.get('role_ids') or []) else None"/>
+                            <span t-out="role.name"/>
+                        </label>
+                    </t>
                     <div t-if="errors.get('role_id')" class="modryn_field_error" t-out="errors['role_id']"/>
                 </div>
 

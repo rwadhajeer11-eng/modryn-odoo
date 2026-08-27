@@ -132,6 +132,17 @@ Every one of these failed **silently** — no error, no log line — which is th
    Call `request.session.touch()` when rendering a form that anonymous users land on
    directly. Other pages hide this bug because the visitor already had a cookie.
 
+7. **A write to a non-stored computed field is silently thrown away.** No error, no
+   warning, `write()` even returns `True` — the value simply never lands. This is how
+   turning `hr_employee.modryn_role_id` into a compute over the new many-to-many nearly
+   shipped a boutique where every woman had no role at all: two seeding scripts still
+   wrote the old field name, `seed_staff.py` would have "succeeded", and
+   `modryn_can_view` falls straight to `if not roles: return False` — so the whole team
+   would have been locked out of every page but her own home, with nothing in any log
+   to say why. **Searching** one raises loudly (`Cannot convert … to SQL because it is
+   not stored`); writing one does not. Give any compute that keeps its old name an
+   `inverse=`, and grep the repo for every writer before you make the change.
+
 Also renamed in 19: `res.users.groups_id` → `group_ids`, and `res.groups.category_id` →
 `privilege_id` (pointing at a new `res.groups.privilege` model). That drift is the real
 cost of a version upgrade, and it is why the addon count matters.

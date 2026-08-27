@@ -65,11 +65,20 @@ page. After signing in you land on `/manage/staff`.
 [README](../README.md) for why a SQL one silently does nothing here.)
 
 **1.3 Hire someone.** **צוות** → **הוספת עובדת**. Name `יעל שמש`, phone `052-5559999`,
-role `מוכרת בכירה`, level `עובדת`, username `yaels`, password `$MODRYN_DEMO_PASSWORD`.
+level `עובדת`, username `yaels`, password `$MODRYN_DEMO_PASSWORD` — and under **תפקידים**
+tick **two** boxes, `מוכרת` and `תופרת`.
 
-*Expect:* she appears in the staff list showing her role, level, username and **פנויה**. A
-**portal** account was created for her in the same step — she can sign in, but she cannot
-reach `/odoo`.
+*Expect:* she appears in the staff list showing **both** roles separated by a `·`, plus her
+level, username and **פנויה**. A **portal** account was created for her in the same step —
+she can sign in, but she cannot reach `/odoo`.
+
+Two roles is the point: she can open everything either job opens (the grants are the union,
+not her first role's), and because one of them is the workshop role she joins the atelier's
+auto-assign pool as well. Now go back into her, untick **both** boxes and save.
+
+*Expect:* refused in red — **נא לבחור לפחות תפקיד אחד** — and her two roles are untouched.
+A woman with no role keeps only her home and her profile and loses every other page, so the
+form will not let an owner do it by accident.
 
 (This exact employee already exists if you have run the walkthrough before; pick another
 name rather than reusing the username, which is enforced unique.)

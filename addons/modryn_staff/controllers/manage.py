@@ -125,6 +125,18 @@ class ModrynManage(http.Controller):
     def _roles(self):
         return request.env['modryn.staff.role'].sudo().search([])
 
+    def _role_ids_from(self, post):
+        """Every role ticked on the form. Replace-set, never a toggle.
+
+        getlist, because a repeated field name is how an HTML form says
+        "several of these" - the same idiom the page-grant matrix already uses.
+        Validated against the roles that actually exist, so a hand-made POST
+        cannot attach a role id from another tenant's numbering.
+        """
+        wanted = {int(r) for r in request.httprequest.form.getlist('role_ids')
+                  if str(r).isdigit()}
+        return list(wanted & set(self._roles().ids))
+
     def _id_number_taken(self, number, employee=None):
         """The friendly half of the ID-number rule.
 
@@ -160,7 +172,7 @@ class ModrynManage(http.Controller):
             # screen left open on the counter all day, and an identity number
             # is the one field here that is worth something to somebody who
             # walks past it. It lives on the form, one click away.
-            'role': e.modryn_role_id.name or '',
+            'role': ' · '.join(e.modryn_role_ids.mapped('name')) or '',
             'level': dict(_levels()).get(e.modryn_level, e.modryn_level or ''),
             'level_raw': e.modryn_level or '',
             'login': e.user_id.login or '',
@@ -198,7 +210,6 @@ class ModrynManage(http.Controller):
         name = (post.get('name') or '').strip()
         username = (post.get('username') or '').strip()
         password = post.get('password') or ''
-        role_id = post.get('role_id')
         level = post.get('level') or 'staff'
 
         errors = {}
@@ -208,8 +219,9 @@ class ModrynManage(http.Controller):
             errors['username'] = _("Please enter a username.")
         if len(password) < MIN_PASSWORD:
             errors['password'] = _("Password must be at least %d characters.") % MIN_PASSWORD
-        if not role_id:
-            errors['role_id'] = _("Please choose a role.")
+        role_ids = self._role_ids_from(post)
+        if not role_ids:
+            errors['role_id'] = _("Please choose at least one role.")
         if level not in dict(_levels()):
             errors['level'] = _("That permission level isn't valid.")
         id_error = self._id_number_taken(post.get('id_number'))
@@ -223,7 +235,7 @@ class ModrynManage(http.Controller):
             employee = request.env['hr.employee'].sudo().create(dict(
                 _personal_values(post),
                 name=name,
-                modryn_role_id=int(role_id),
+                modryn_role_ids=[(6, 0, role_ids)],
                 modryn_level=level,
             ))
             try:
@@ -249,7 +261,14 @@ class ModrynManage(http.Controller):
         if errors:
             return request.render('modryn_staff.manage_staff_form', {
                 'roles': self._roles(), 'levels': _levels(), 'employee': None,
-                'errors': errors, 'values': post, 'active_tab': 'staff',
+                # role_ids OVER the raw post, deliberately. A form field arrives
+                # as a string, the template asks `role.id in values['role_ids']`,
+                # and an int against a string is a 500 - so a hire that trips any
+                # validation would crash instead of showing the error. It also
+                # keeps her ticks: re-rendering from the raw post dropped every
+                # role the owner had chosen.
+                'errors': errors, 'values': dict(post, role_ids=role_ids),
+                'active_tab': 'staff',
             })
         return request.redirect('/manage/staff')
 
@@ -268,7 +287,7 @@ class ModrynManage(http.Controller):
                 _personal_from(employee),
                 name=employee.name,
                 phone=employee.work_phone or '',
-                role_id=employee.modryn_role_id.id,
+                role_ids=employee.modryn_role_ids.ids,
                 level=employee.modryn_level,
             ),
             'active_tab': 'staff',
@@ -289,6 +308,15 @@ class ModrynManage(http.Controller):
         errors = {}
         if not name:
             errors['name'] = _("Please enter a name.")
+        # The same rule the hire form has. Without it, an owner who cleared the
+        # ticks by accident saved an employee with NO role - and a role-less
+        # woman silently loses every page but her own home and profile, because
+        # modryn_can_view falls straight to `if not roles: return False`. Empty
+        # is not a state the boutique ever means, so it is refused here rather
+        # than discovered by the worker who cannot open her own roster.
+        role_ids = self._role_ids_from(post)
+        if not role_ids:
+            errors['role_id'] = _("Please choose at least one role.")
         if level not in dict(_levels()):
             errors['level'] = _("That permission level isn't valid.")
         id_error = self._id_number_taken(post.get('id_number'), employee=employee)
@@ -298,7 +326,8 @@ class ModrynManage(http.Controller):
         if errors:
             return request.render('modryn_staff.manage_staff_form', {
                 'roles': self._roles(), 'levels': _levels(), 'employee': employee,
-                'errors': errors, 'values': post, 'active_tab': 'staff',
+                'errors': errors, 'values': dict(post, role_ids=role_ids),
+                'active_tab': 'staff',
             })
 
         level_changed = level != employee.modryn_level
@@ -306,7 +335,7 @@ class ModrynManage(http.Controller):
             _personal_values(post),
             name=name,
             work_phone=(post.get('phone') or '').strip(),
-            modryn_role_id=int(post['role_id']) if post.get('role_id') else False,
+            modryn_role_ids=[(6, 0, role_ids)],
             modryn_level=level,
         ))
 

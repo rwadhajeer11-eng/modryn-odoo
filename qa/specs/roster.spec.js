@@ -195,3 +195,109 @@ test('@writes the manager can say when the team may answer', async ({ page }) =>
   await expect(page.locator('#open_weekday')).toHaveValue('3');
   await expect(page.locator('#open_time')).toHaveValue('09:00');
 });
+
+// The deadline, from the chair. Everything below is about what she SEES when a
+// week is not hers to change — reported as "it doesn't work", which is what a
+// grid of twenty-one buttons that silently refuse every press looks like.
+test('@writes the deadline passing locks the grid, and she can still read her own answer', async ({ page }) => {
+  const day = (n) => new Date(Date.now() + n * 86400000).toISOString().slice(0, 10);
+
+  const setWindow = async (fromDay, fromTime, toDay, toTime) => {
+    await page.goto(WEEK);
+    await openWindowPanel(page);
+    await page.fill('input[name="opens_date"]', fromDay);
+    await page.fill('input[name="opens_time"]', fromTime);
+    await page.fill('input[name="closes_date"]', toDay);
+    await page.fill('input[name="closes_time"]', toTime);
+    await Promise.all([page.waitForURL(/\/roster/), submitFormWith(page, 'opens_date')]);
+  };
+
+  await signIn(page, PEOPLE.manager);
+  await setWindow(day(-1), '00:00', day(2), '23:00');
+
+  // She offers one shift while the window is open. The cell is only pressed if
+  // it is not already on: this tenant is shared, and asserting on a COUNT of
+  // gold cells across the week would fail the moment another act - or a hand
+  // poking at the page - left one behind. What matters is that THIS cell is
+  // hers and survives the lock.
+  await signIn(page, PEOPLE.staff);
+  await page.goto(WEEK);
+  const grid = page.locator('.modryn_roster_grid');
+  await expect(grid).toHaveAttribute('data-can-edit', '1');
+  const cell = page.locator('.modryn_avail_cell[data-type="middle"]').nth(2);
+  const wasAlreadyOn = (await cell.getAttribute('class')).includes('is_on');
+  if (!wasAlreadyOn) {
+    await cell.click();
+  }
+  await expect(cell).toHaveClass(/is_on/);
+
+  // The manager moves the deadline into the past.
+  await signIn(page, PEOPLE.manager);
+  await setWindow(day(-3), '00:00', day(-1), '23:00');
+
+  await signIn(page, PEOPLE.staff);
+  await page.goto(WEEK);
+
+  // Every cell is now dead, and the grid says so at the frame as well.
+  await expect(grid).toHaveAttribute('data-can-edit', '0');
+  await expect(grid).toHaveClass(/is_locked/);
+  const cells = page.locator('.modryn_avail_cell');
+  const total = await cells.count();
+  expect(total).toBe(21);
+  for (const c of await cells.all()) {
+    await expect(c).toBeDisabled();
+  }
+  await expect(page.locator('#modryn_send_week')).toBeDisabled();
+  await expect(page.locator('#modryn_week_note')).toBeDisabled();
+
+  // Locked means she cannot CHANGE it — never that she cannot SEE it. Her
+  // offer survives as a tick AND is written out in words, because a grey grid
+  // is not something anyone reads back off a phone.
+  await expect(page.locator('.modryn_avail_cell[data-type="middle"]').nth(2))
+    .toHaveClass(/is_on/);
+  await expect(page.locator('.modryn_panel', { hasText: /What you offered|מה שהצעת|ما عرضتِه/ })
+    .first()).toBeVisible();
+
+  // Put the week back the way the other specs expect to find it: the window
+  // open, and her offer withdrawn only if this act was the one that made it.
+  // A restore that toggles unconditionally is a restore that BREAKS the state
+  // it was meant to protect on every second run.
+  await signIn(page, PEOPLE.manager);
+  await setWindow(day(-1), '00:00', day(2), '23:00');
+  await signIn(page, PEOPLE.staff);
+  await page.goto(WEEK);
+  const again = page.locator('.modryn_avail_cell[data-type="middle"]').nth(2);
+  if (!wasAlreadyOn) {
+    await again.click();
+    await expect(again).not.toHaveClass(/is_on/);
+  }
+});
+
+test('@writes the week she is standing in is never hers to fill', async ({ page }) => {
+  await signIn(page, PEOPLE.staff);
+  // week=-1 is the CURRENT week — the rota she is working right now.
+  await page.goto('/roster?week=-1');
+  const grid = page.locator('.modryn_roster_grid');
+  await expect(grid).toHaveAttribute('data-can-edit', '0');
+  await expect(grid).toHaveClass(/is_locked/);
+  for (const c of await page.locator('.modryn_avail_cell').all()) {
+    await expect(c).toBeDisabled();
+  }
+
+  // And the server refuses it too, not just the disabled attribute — a button
+  // is only a suggestion, and this route is reachable without one.
+  const refused = await page.evaluate(async () => {
+    const res = await fetch('/roster/available', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ jsonrpc: '2.0', method: 'call', params: {
+        day: document.querySelector('.modryn_avail_cell').dataset.day,
+        shift_type: 'morning', week: -1 } }),
+    });
+    return (await res.json()).result;
+  });
+  expect(refused.error).toBe('past_week');
+  // The refusal carries a sentence, not only a code: a press that answers with
+  // nothing to read is indistinguishable from a press that did nothing at all.
+  expect(refused.message, 'the refusal came back with no sentence to show her').toBeTruthy();
+});

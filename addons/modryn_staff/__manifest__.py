@@ -22,7 +22,14 @@ reads through sudo(), handing the template only the fields it needs. Portal user
 therefore never touch hr.employee directly.
 """,
     'category': 'Website',
-    'version': '19.0.1.6.0',
+    # 19.0.1.7.0 ships WITH migrations/19.0.1.7.0/, both halves in this commit.
+    # modryn_role_id becomes a non-stored compute over a new many-to-many, so
+    # the column that holds every woman's role disappears at _auto_init - the
+    # pre-migrate saves the values and the post-migrate puts them back through
+    # the ORM. A version bumped without that directory records the number
+    # against every database and the migration is skipped FOREVER on exactly
+    # the tenants holding data.
+    'version': '19.0.1.7.0',
     'depends': [
         'hr',
         'portal',

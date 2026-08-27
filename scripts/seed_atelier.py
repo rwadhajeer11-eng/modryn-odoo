@@ -19,7 +19,7 @@ def piece(name):
 
 
 # The seamstress in each demo boutique.
-seamstress = Employee.search([('modryn_role_id.name', 'ilike', 'תופרת')], limit=1) \
+seamstress = Employee.search([('modryn_role_ids.name', 'ilike', 'תופרת')], limit=1) \
     or Employee.search([('modryn_level', '=', 'staff')], limit=1)
 
 variant = env['product.product'].sudo().search(

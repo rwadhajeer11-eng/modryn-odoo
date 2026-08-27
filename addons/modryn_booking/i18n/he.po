@@ -201,12 +201,14 @@ msgstr "שם מלא"
 
 #. module: modryn_booking
 #: model:ir.model.fields,help:modryn_booking.field_modryn_opening_hours__capacity
-msgid "How many customers this boutique can take at the same time in this window."
+msgid ""
+"How many customers this boutique can take at the same time in this window."
 msgstr "כמה לקוחות הבוטיק יכול לקלוט בו-זמנית בחלון הזה."
 
 #. module: modryn_booking
 #: model_terms:ir.ui.view,arch_db:modryn_booking.booking_form
-msgid "I've read and accept the boutique's cancellation, lateness and no-show terms"
+msgid ""
+"I've read and accept the boutique's cancellation, lateness and no-show terms"
 msgstr "קראתי ואני מאשרת את תנאי הביטול, האיחור ואי-ההגעה של הבוטיק"
 
 #. module: modryn_booking
@@ -349,8 +351,11 @@ msgstr "שלישי"
 
 #. module: modryn_booking
 #: model:ir.model.fields,help:modryn_booking.field_modryn_closure__full_day
-msgid "Uncheck to close only part of the day; the day still appears with its remaining hours."
-msgstr "בטלי את הסימון כדי לסגור רק חלק מהיום; היום ימשיך להופיע עם השעות שנותרו."
+msgid ""
+"Uncheck to close only part of the day; the day still appears with its "
+"remaining hours."
+msgstr ""
+"בטלי את הסימון כדי לסגור רק חלק מהיום; היום ימשיך להופיע עם השעות שנותרו."
 
 #. module: modryn_booking
 #: model_terms:ir.ui.view,arch_db:modryn_booking.booking_form
@@ -377,3 +382,57 @@ msgstr "יום בשבוע"
 #: model_terms:ir.ui.view,arch_db:modryn_booking.booking_confirmed
 msgid "Your appointment is booked"
 msgstr "התור נקבע"
+
+#. module: modryn_booking
+#: model:ir.model.fields,field_description:modryn_booking.field_modryn_closure__name
+msgid "Name"
+msgstr "שם"
+
+#. module: modryn_booking
+#: model:ir.model.fields,field_description:modryn_booking.field_modryn_closure__active
+#: model:ir.model.fields,field_description:modryn_booking.field_modryn_opening_hours__active
+msgid "Active"
+msgstr "פעיל"
+
+#. module: modryn_booking
+#: model:ir.model,name:modryn_booking.model_calendar_event
+msgid "Calendar Event"
+msgstr "אירוע ביומן"
+
+#. module: modryn_booking
+#: model:ir.model.fields,field_description:modryn_booking.field_modryn_closure__create_uid
+#: model:ir.model.fields,field_description:modryn_booking.field_modryn_opening_hours__create_uid
+msgid "Created by"
+msgstr "נוצר על ידי"
+
+#. module: modryn_booking
+#: model:ir.model.fields,field_description:modryn_booking.field_modryn_closure__create_date
+#: model:ir.model.fields,field_description:modryn_booking.field_modryn_opening_hours__create_date
+msgid "Created on"
+msgstr "נוצר בתאריך"
+
+#. module: modryn_booking
+#: model:ir.model.fields,field_description:modryn_booking.field_calendar_event__display_name
+#: model:ir.model.fields,field_description:modryn_booking.field_modryn_closure__display_name
+#: model:ir.model.fields,field_description:modryn_booking.field_modryn_opening_hours__display_name
+msgid "Display Name"
+msgstr "שם לתצוגה"
+
+#. module: modryn_booking
+#: model:ir.model.fields,field_description:modryn_booking.field_calendar_event__id
+#: model:ir.model.fields,field_description:modryn_booking.field_modryn_closure__id
+#: model:ir.model.fields,field_description:modryn_booking.field_modryn_opening_hours__id
+msgid "ID"
+msgstr "מזהה"
+
+#. module: modryn_booking
+#: model:ir.model.fields,field_description:modryn_booking.field_modryn_closure__write_uid
+#: model:ir.model.fields,field_description:modryn_booking.field_modryn_opening_hours__write_uid
+msgid "Last Updated by"
+msgstr "עודכן לאחרונה על ידי"
+
+#. module: modryn_booking
+#: model:ir.model.fields,field_description:modryn_booking.field_modryn_closure__write_date
+#: model:ir.model.fields,field_description:modryn_booking.field_modryn_opening_hours__write_date
+msgid "Last Updated on"
+msgstr "עודכן לאחרונה בתאריך"

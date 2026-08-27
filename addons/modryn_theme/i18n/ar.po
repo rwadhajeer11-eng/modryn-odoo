@@ -40,7 +40,8 @@ msgstr "تصفّحي المجموعة"
 
 #. module: modryn_theme
 #: model_terms:ir.ui.view,arch_db:modryn_theme.homepage_hero
-msgid "Browse the collection, book a private fitting, and leave the rest to us."
+msgid ""
+"Browse the collection, book a private fitting, and leave the rest to us."
 msgstr "تصفّحي المجموعة، واحجزي موعد قياس خاص، واتركي الباقي علينا."
 
 #. module: modryn_theme
@@ -97,10 +98,43 @@ msgstr "فساتين زفاف وسهرة، مفصّلة لكِ."
 #. module: modryn_theme
 #: model:ir.model.fields,help:modryn_theme.field_product_product__modryn_price_visible
 #: model:ir.model.fields,help:modryn_theme.field_product_template__modryn_price_visible
-msgid "When off, the storefront shows 'Price on request' instead of the price."
+msgid ""
+"When off, the storefront shows 'Price on request' instead of the price."
 msgstr "عند إيقافه، يعرض الموقع \"السعر عند الطلب\" بدلاً من السعر."
 
 #. module: modryn_theme
 #: model_terms:ir.ui.view,arch_db:modryn_theme.homepage_hero
 msgid "Your stylist and your dress will be waiting."
 msgstr "المصمّمة وفستانك سيكونان بانتظارك."
+
+#. module: modryn_theme
+#: model_terms:ir.ui.view,arch_db:modryn_theme.login_username_not_email
+msgid "Enter your username"
+msgstr "أدخلي اسم المستخدم"
+
+#. module: modryn_theme
+#: model_terms:ir.ui.view,arch_db:modryn_theme.login_username_not_email
+msgid "Username"
+msgstr "اسم المستخدم"
+
+#. module: modryn_theme
+#: model:ir.model.fields,field_description:modryn_theme.field_ir_http__display_name
+#: model:ir.model.fields,field_description:modryn_theme.field_product_template__display_name
+msgid "Display Name"
+msgstr "الاسم المعروض"
+
+#. module: modryn_theme
+#: model:ir.model,name:modryn_theme.model_ir_http
+msgid "HTTP Routing"
+msgstr "توجيه HTTP"
+
+#. module: modryn_theme
+#: model:ir.model.fields,field_description:modryn_theme.field_ir_http__id
+#: model:ir.model.fields,field_description:modryn_theme.field_product_template__id
+msgid "ID"
+msgstr "المعرّف"
+
+#. module: modryn_theme
+#: model:ir.model,name:modryn_theme.model_product_template
+msgid "Product"
+msgstr "منتج"

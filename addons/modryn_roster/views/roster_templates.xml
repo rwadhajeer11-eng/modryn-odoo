@@ -18,8 +18,16 @@
                 <t t-if="is_manager">
                     Tick who is working. A shift turns amber when it is short of the roles it needs.
                 </t>
-                <t t-else="">
+                <!-- An instruction she cannot follow is worse than no
+                     instruction. "Press every shift you can work" over a
+                     twenty-one-cell grid that refuses every press is the whole
+                     reason this page was reported as broken. -->
+                <t t-elif="can_edit">
                     Press every shift you can work. Then write us a note and send it.
+                </t>
+                <t t-else="">
+                    This week is closed for answers. You can see what you offered,
+                    but it can no longer be changed here.
                 </t>
             </p>
 
@@ -44,19 +52,57 @@
                  when it shuts before she decides to come back later.
                  These times are the boutique's wall clock now — they used to be
                  printed straight out of UTC, three hours early all summer. -->
-            <div t-attf-class="modryn_panel mb-3 #{'' if window_open else 'modryn_archived'}">
-                <t t-if="window_open">
+            <div t-attf-class="modryn_panel mb-3 #{'' if can_edit else 'modryn_archived'}">
+                <t t-if="can_edit">
                     <span class="modryn_badge is_free">Open</span>
                     Submissions close
                     <strong dir="ltr" t-esc="window_closes.strftime('%d.%m %H:%M')"/>
                 </t>
-                <t t-else="">
+                <!-- THREE reasons a week is shut, and each one is a different
+                     sentence. They used to share the one "closed" line, which
+                     told a woman looking at a rota she is already working that
+                     it "opens Thursday" - true of the window, and nonsense
+                     about the week in front of her. -->
+                <t t-elif="lock_reason == 'current'">
+                    <span class="modryn_badge is_muted">This week</span>
+                    You are working this week already, so there is nothing left to
+                    answer for it. Use <strong>Following week</strong> to fill in the
+                    week being planned.
+                </t>
+                <t t-elif="lock_reason == 'published'">
+                    <span class="modryn_badge is_muted">Published</span>
+                    The schedule for this week is out. What you offered is below,
+                    and it can no longer be changed here — ask your manager.
+                </t>
+                <t t-elif="lock_reason == 'passed'">
                     <span class="modryn_badge is_muted">Closed</span>
+                    Answers for this week closed
+                    <strong dir="ltr" t-esc="window_closes.strftime('%d.%m %H:%M')"/>.
+                    What you offered is below.
+                </t>
+                <t t-else="">
+                    <span class="modryn_badge is_muted">Not open yet</span>
                     This week opens
                     <strong dir="ltr" t-esc="window_opens.strftime('%d.%m %H:%M')"/>
                     and closes
                     <strong dir="ltr" t-esc="window_closes.strftime('%d.%m %H:%M')"/>
                 </t>
+            </div>
+
+            <!-- Her own answer, in words, whenever the grid is locked. Locked
+                 means she cannot CHANGE it; it was never supposed to mean she
+                 cannot read it, and a grey grid of ticks is not something
+                 anybody reads off a phone. -->
+            <div t-if="me and not is_manager and not can_edit" class="modryn_panel mb-3">
+                <div class="modryn_strong mb-1">What you offered</div>
+                <t t-if="my_picks">
+                    <div t-foreach="my_picks" t-as="p" class="modryn_sub">
+                        <span t-out="p['weekday']"/>
+                        <span dir="ltr" t-out="p['label']"/> —
+                        <span t-out="', '.join(p['parts'])"/>
+                    </div>
+                </t>
+                <div t-else="" class="modryn_sub">Nothing this week.</div>
             </div>
 
             <!-- Manager: when the team may answer. Plain forms, no JS — which is
@@ -171,8 +217,9 @@
                  delegated click listener on this container, so anything
                  rendered outside it looks perfectly fine and does nothing at
                  all when pressed. Twenty-one cells, one listener. -->
-            <div class="modryn_roster_grid"
+            <div t-attf-class="modryn_roster_grid #{'' if can_edit else 'is_locked'}"
                  t-att-data-week="week_offset"
+                 t-att-data-can-edit="'1' if can_edit else '0'"
                  t-att-data-manager="'1' if is_manager else '0'">
 
                 <div class="modryn_avail_scroll">
@@ -201,7 +248,7 @@
                                             t-att-data-day="cell['day']"
                                             t-att-data-type="cell['shift_type']"
                                             t-att-data-slot="cell['slot_ids'][0] if cell['slot_ids'] else None"
-                                            t-att-disabled="None if window_open else 'disabled'"
+                                            t-att-disabled="None if can_edit else 'disabled'"
                                             t-attf-aria-label="#{row[1]} #{d['weekday']} #{d['label']}"
                                             t-att-aria-pressed="'true' if cell['mine'] else 'false'">
                                         <t t-if="cell['mine']">
@@ -230,12 +277,12 @@
                             Anything we should know?
                         </label>
                         <textarea id="modryn_week_note" class="form-control" rows="2"
-                                  t-att-disabled="None if window_open else 'disabled'"
+                                  t-att-disabled="None if can_edit else 'disabled'"
                                   t-out="my_note"/>
                     </div>
                     <div>
                         <button type="button" id="modryn_send_week" class="btn btn-primary"
-                                t-att-disabled="None if window_open else 'disabled'">
+                                t-att-disabled="None if can_edit else 'disabled'">
                             Send my week
                         </button>
                         <span t-if="my_submitted_at" class="modryn_sub ms-2">

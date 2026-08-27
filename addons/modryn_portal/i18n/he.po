@@ -45,8 +45,11 @@ msgstr "התפנה מקום"
 #. module: modryn_portal
 #. odoo-python
 #: code:addons/modryn_portal/models/day_waitlist.py:0
-msgid "A place has opened up on %(date)s. It's yours for the next %(hours)s hours: %(link)s"
-msgstr "התפנה מקום בתאריך %(date)s. הוא שמור לך ל-%(hours)s השעות הקרובות: %(link)s"
+msgid ""
+"A place has opened up on %(date)s. It's yours for the next %(hours)s hours: "
+"%(link)s"
+msgstr ""
+"התפנה מקום בתאריך %(date)s. הוא שמור לך ל-%(hours)s השעות הקרובות: %(link)s"
 
 #. module: modryn_portal
 #: model_terms:ir.ui.view,arch_db:modryn_portal.booking_confirmed_ics
@@ -309,8 +312,12 @@ msgstr "הודעות SMS בתור לשליחה"
 #. module: modryn_portal
 #. odoo-python
 #: code:addons/modryn_portal/models/booking_comms.py:0
-msgid "Reminder: your fitting at %(boutique)s is tomorrow, %(date)s at %(time)s. Confirm or cancel: %(link)s"
-msgstr "תזכורת: התור שלך ב%(boutique)s מחר, %(date)s בשעה %(time)s. לאישור או ביטול: %(link)s"
+msgid ""
+"Reminder: your fitting at %(boutique)s is tomorrow, %(date)s at %(time)s. "
+"Confirm or cancel: %(link)s"
+msgstr ""
+"תזכורת: התור שלך ב%(boutique)s מחר, %(date)s בשעה %(time)s. לאישור או ביטול:"
+" %(link)s"
 
 #. module: modryn_portal
 #: model_terms:ir.ui.view,arch_db:modryn_portal.booking_link
@@ -524,8 +531,11 @@ msgstr "התור אושר."
 #. module: modryn_portal
 #. odoo-python
 #: code:addons/modryn_portal/models/booking_comms.py:0
-msgid "Your fitting at %(boutique)s is booked for %(date)s at %(time)s. Manage your appointment: %(link)s"
-msgstr "התור שלך ב%(boutique)s נקבע ל-%(date)s בשעה %(time)s. לניהול התור: %(link)s"
+msgid ""
+"Your fitting at %(boutique)s is booked for %(date)s at %(time)s. Manage your"
+" appointment: %(link)s"
+msgstr ""
+"התור שלך ב%(boutique)s נקבע ל-%(date)s בשעה %(time)s. לניהול התור: %(link)s"
 
 #. module: modryn_portal
 #: model_terms:ir.ui.view,arch_db:modryn_portal.bookings
@@ -536,3 +546,93 @@ msgstr "· מידה"
 #: model_terms:ir.ui.view,arch_db:modryn_portal.claim_form
 msgid "— it's yours if you'd like it."
 msgstr "— הוא שלך אם תרצי."
+
+#. module: modryn_portal
+#: model:ir.model.fields,field_description:modryn_portal.field_modryn_day_waitlist__name
+msgid "Name"
+msgstr "שם"
+
+#. module: modryn_portal
+#: model:ir.model.fields,field_description:modryn_portal.field_modryn_day_waitlist__phone
+#: model:ir.model.fields,field_description:modryn_portal.field_modryn_otp_code__phone
+#: model:ir.model.fields,field_description:modryn_portal.field_modryn_sms_outbox__phone
+msgid "Phone"
+msgstr "טלפון"
+
+#. module: modryn_portal
+#: model:ir.model.fields,field_description:modryn_portal.field_modryn_otp_code__attempts
+#: model:ir.model.fields,field_description:modryn_portal.field_modryn_sms_outbox__attempts
+msgid "Attempts"
+msgstr "ניסיונות"
+
+#. module: modryn_portal
+#: model:ir.model.fields,field_description:modryn_portal.field_modryn_sms_outbox__body
+msgid "Body"
+msgstr "תוכן"
+
+#. module: modryn_portal
+#: model:ir.model.fields.selection,name:modryn_portal.selection__calendar_event__modryn_cancelled_by__boutique
+msgid "Boutique"
+msgstr "בוטיק"
+
+#. module: modryn_portal
+#: model:ir.model,name:modryn_portal.model_calendar_event
+msgid "Calendar Event"
+msgstr "אירוע ביומן"
+
+#. module: modryn_portal
+#: model:ir.model.fields,field_description:modryn_portal.field_modryn_day_waitlist__create_uid
+#: model:ir.model.fields,field_description:modryn_portal.field_modryn_otp_code__create_uid
+#: model:ir.model.fields,field_description:modryn_portal.field_modryn_sms_outbox__create_uid
+msgid "Created by"
+msgstr "נוצר על ידי"
+
+#. module: modryn_portal
+#: model:ir.model.fields,field_description:modryn_portal.field_modryn_day_waitlist__create_date
+#: model:ir.model.fields,field_description:modryn_portal.field_modryn_otp_code__create_date
+#: model:ir.model.fields,field_description:modryn_portal.field_modryn_sms_outbox__create_date
+msgid "Created on"
+msgstr "נוצר בתאריך"
+
+#. module: modryn_portal
+#: model:ir.model.fields,field_description:modryn_portal.field_calendar_event__display_name
+#: model:ir.model.fields,field_description:modryn_portal.field_modryn_day_waitlist__display_name
+#: model:ir.model.fields,field_description:modryn_portal.field_modryn_otp_code__display_name
+#: model:ir.model.fields,field_description:modryn_portal.field_modryn_sms__display_name
+#: model:ir.model.fields,field_description:modryn_portal.field_modryn_sms_outbox__display_name
+msgid "Display Name"
+msgstr "שם לתצוגה"
+
+#. module: modryn_portal
+#: model:ir.model.fields,field_description:modryn_portal.field_calendar_event__id
+#: model:ir.model.fields,field_description:modryn_portal.field_modryn_day_waitlist__id
+#: model:ir.model.fields,field_description:modryn_portal.field_modryn_otp_code__id
+#: model:ir.model.fields,field_description:modryn_portal.field_modryn_sms__id
+#: model:ir.model.fields,field_description:modryn_portal.field_modryn_sms_outbox__id
+msgid "ID"
+msgstr "מזהה"
+
+#. module: modryn_portal
+#: model:ir.model.fields,field_description:modryn_portal.field_modryn_otp_code__ip
+msgid "Ip"
+msgstr "כתובת IP"
+
+#. module: modryn_portal
+#: model:ir.model.fields,field_description:modryn_portal.field_modryn_day_waitlist__write_uid
+#: model:ir.model.fields,field_description:modryn_portal.field_modryn_otp_code__write_uid
+#: model:ir.model.fields,field_description:modryn_portal.field_modryn_sms_outbox__write_uid
+msgid "Last Updated by"
+msgstr "עודכן לאחרונה על ידי"
+
+#. module: modryn_portal
+#: model:ir.model.fields,field_description:modryn_portal.field_modryn_day_waitlist__write_date
+#: model:ir.model.fields,field_description:modryn_portal.field_modryn_otp_code__write_date
+#: model:ir.model.fields,field_description:modryn_portal.field_modryn_sms_outbox__write_date
+msgid "Last Updated on"
+msgstr "עודכן לאחרונה בתאריך"
+
+#. module: modryn_portal
+#: model:ir.model.fields,field_description:modryn_portal.field_modryn_day_waitlist__state
+#: model:ir.model.fields,field_description:modryn_portal.field_modryn_sms_outbox__state
+msgid "State"
+msgstr "מצב"

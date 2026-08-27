@@ -111,7 +111,8 @@ msgstr "כניסה לתור"
 msgid ""
 "Make yourself at home — feel free to browse while you wait.\n"
 "                            We'll text you when we're ready."
-msgstr "הרגישי בבית — הסתובבי והתרשמי בזמן ההמתנה. נעדכן אותך בהודעה כשנהיה מוכנות."
+msgstr ""
+"הרגישי בבית — הסתובבי והתרשמי בזמן ההמתנה. נעדכן אותך בהודעה כשנהיה מוכנות."
 
 #. module: modryn_queue_poc
 #: model:ir.ui.menu,name:modryn_queue_poc.menu_modryn_queue_root
@@ -364,13 +365,16 @@ msgstr "ברוכה הבאה"
 #. module: modryn_queue_poc
 #. odoo-python
 #: code:addons/modryn_queue_poc/models/queue_entry.py:0
-msgid "You're in the queue — and you're next. We'll be with you in a moment. Your ticket: %(link)s"
+msgid ""
+"You're in the queue — and you're next. We'll be with you in a moment. Your "
+"ticket: %(link)s"
 msgstr "את בתור — ואת הבאה בתור. נהיה איתך עוד רגע. הכרטיס שלך: %(link)s"
 
 #. module: modryn_queue_poc
 #. odoo-python
 #: code:addons/modryn_queue_poc/models/queue_entry.py:0
-msgid "You're in the queue. We'll text you when you're next. Your ticket: %(link)s"
+msgid ""
+"You're in the queue. We'll text you when you're next. Your ticket: %(link)s"
 msgstr "את בתור. נעדכן אותך בהודעה כשיגיע תורך. הכרטיס שלך: %(link)s"
 
 #. module: modryn_queue_poc
@@ -383,3 +387,48 @@ msgstr "את הבאה בתור"
 #: code:addons/modryn_queue_poc/models/queue_entry.py:0
 msgid "You're next — we'll be with you in a moment."
 msgstr "את הבאה בתור — נהיה איתך עוד רגע."
+
+#. module: modryn_queue_poc
+#: model_terms:ir.ui.view,arch_db:modryn_queue_poc.queue_sign
+msgid "QR"
+msgstr "QR"
+
+#. module: modryn_queue_poc
+#: model:ir.model.fields,field_description:modryn_queue_poc.field_modryn_queue_entry__access_token
+msgid "Access Token"
+msgstr "אסימון גישה"
+
+#. module: modryn_queue_poc
+#: model:ir.model.fields,field_description:modryn_queue_poc.field_modryn_queue_entry__create_uid
+msgid "Created by"
+msgstr "נוצר על ידי"
+
+#. module: modryn_queue_poc
+#: model:ir.model.fields,field_description:modryn_queue_poc.field_modryn_queue_entry__create_date
+msgid "Created on"
+msgstr "נוצר בתאריך"
+
+#. module: modryn_queue_poc
+#: model:ir.model.fields,field_description:modryn_queue_poc.field_modryn_queue_entry__display_name
+msgid "Display Name"
+msgstr "שם לתצוגה"
+
+#. module: modryn_queue_poc
+#: model:ir.model.fields,field_description:modryn_queue_poc.field_modryn_queue_entry__id
+msgid "ID"
+msgstr "מזהה"
+
+#. module: modryn_queue_poc
+#: model:ir.model.fields,field_description:modryn_queue_poc.field_modryn_queue_entry__write_uid
+msgid "Last Updated by"
+msgstr "עודכן לאחרונה על ידי"
+
+#. module: modryn_queue_poc
+#: model:ir.model.fields,field_description:modryn_queue_poc.field_modryn_queue_entry__write_date
+msgid "Last Updated on"
+msgstr "עודכן לאחרונה בתאריך"
+
+#. module: modryn_queue_poc
+#: model:ir.model.fields,field_description:modryn_queue_poc.field_modryn_queue_entry__state
+msgid "State"
+msgstr "מצב"

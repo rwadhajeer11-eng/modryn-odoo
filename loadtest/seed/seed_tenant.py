@@ -204,7 +204,7 @@ for name, job, level, username in PEOPLE:
             employee = Employee.with_context(active_test=False).search(
                 [('user_id', '=', admin.id)], limit=1)
             values = {'name': name, 'work_phone': '03-555%s00' % TENANT_INDEX,
-                      'modryn_role_id': job.id, 'modryn_level': level}
+                      'modryn_role_ids': [(6, 0, [job.id])], 'modryn_level': level}
             if employee:
                 employee.write(values)
             else:
@@ -214,7 +214,7 @@ for name, job, level, username in PEOPLE:
 
     employee = Employee.create({
         'name': name,
-        'modryn_role_id': job.id,
+        'modryn_role_ids': [(6, 0, [job.id])],
         'modryn_level': level,
     })
     employee.modryn_provision_login(username, DEMO_PASSWORD)

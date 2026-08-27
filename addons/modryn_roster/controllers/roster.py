@@ -154,14 +154,51 @@ class ModrynRoster(http.Controller):
         # not looked yet, and before this row existed both were an empty set.
         mine = Submission.modryn_for(start, me) if me else None
 
+        # ONE truth for "may she still change this week", and three separate
+        # reasons why not. The page used to disable the cells on window_open
+        # alone, which is only one of the three: a published week left every
+        # cell looking pressable and refused every press, and the week already
+        # being worked did the same. From the chair that is indistinguishable
+        # from the feature being broken - which is exactly what it was reported
+        # as.
+        frozen = request.env['modryn.roster.week'].sudo().modryn_is_frozen(start)
+        # offset < 0 is the week she is standing in. Its rota was built and sent
+        # days ago; nothing she ticks there can change what she is working now.
+        is_current_week = offset < 0
+        can_edit = bool(me) and is_open and not frozen and not is_current_week
+        # "Closed" is two different sentences. A window that has not opened yet
+        # is a date to come back on; one that has shut is a deadline she has
+        # missed. The page printed the first for both, so a woman looking at a
+        # window that ended on Sunday was told it "opens" on Sunday - which
+        # reads as the site having the wrong date, not as her being late.
+        window_passed = bool(closes) and closes <= fields.Datetime.now()
+        if is_current_week:
+            lock_reason = 'current'
+        elif frozen:
+            lock_reason = 'published'
+        elif not is_open:
+            lock_reason = 'passed' if window_passed else 'closed'
+        else:
+            lock_reason = None
+
         rows = self._grid(start, employee=me)
+        # What she actually offered, as a sentence rather than a grid. When the
+        # table locks she still has to be able to READ her own answer - "you
+        # cannot change this" and "you cannot see this" are not the same
+        # promise, and only the first one is the deadline.
+        my_days = self._days(start, employee=me)
+        my_picks = [{
+            'weekday': d['weekday'],
+            'label': d['label'],
+            'parts': [c['type_label'] for c in d['cells'] if c['mine']],
+        } for d in my_days if any(c['mine'] for c in d['cells'])]
 
         return request.render('modryn_roster.roster_page', {
             'slots': rows,
             # The seven-by-three grid she taps. Kept ALONGSIDE `slots` rather
             # than replacing it: `slots` is the manager's assign side, and it is
             # also the response key the load test classifies refusals by.
-            'days': self._days(start, employee=me),
+            'days': my_days,
             'shift_rows': [(code, dict(shift_type_selection())[code])
                            for code in SHIFT_TYPE_ORDER],
             'window_days': window_days(),
@@ -187,6 +224,12 @@ class ModrynRoster(http.Controller):
             'is_owner': self._is_owner(),
             'me': me,
             'window_open': is_open,
+            # The template asks can_edit, never window_open, for anything that
+            # disables a control.
+            'can_edit': can_edit,
+            'lock_reason': lock_reason,
+            'week_frozen': frozen,
+            'my_picks': my_picks,
             # _from_utc on all three, and it is a bug FIX, not a tidy-up:
             # _window() and submitted_at are naive UTC and the page strftime'd
             # them raw, so the shipped Saturday 21:00 deadline printed as
@@ -225,12 +268,27 @@ class ModrynRoster(http.Controller):
         me = self._my_employee()
         if not me:
             return {'error': 'not_found'}
+        if int(week) < self.PLANNABLE_FROM:
+            return {'error': 'past_week',
+                    'message': _("This week is already being worked - you can only"
+                                 " answer for the week being planned.")}
         start = self._week(int(week))
         week_row = request.env['modryn.roster.week'].sudo().modryn_for(start)
         # Server-side, because a closed window that only hides a button is not a
         # deadline.
+        if request.env['modryn.roster.week'].sudo().modryn_is_frozen(start):
+            return {'error': 'published',
+                    'message': _("That week is already published - ask your manager"
+                                 " to change it.")}
         if not week_row.modryn_is_open():
-            return {'error': 'window_closed'}
+            opens, closes = week_row._window()
+            if closes <= fields.Datetime.now():
+                return {'error': 'window_closed',
+                        'message': _("Answers for this week closed %s.",
+                                     _from_utc(closes).strftime('%d.%m %H:%M'))}
+            return {'error': 'window_closed',
+                    'message': _("Answers for this week open %s.",
+                                 _from_utc(opens).strftime('%d.%m %H:%M'))}
         submission = request.env['modryn.roster.submission'].sudo().modryn_for(start, me)
         submission.modryn_send(note=(note or '').strip())
         return {'ok': True, 'submitted_at': fields.Datetime.to_string(submission.submitted_at)}
@@ -452,9 +510,28 @@ class ModrynRoster(http.Controller):
         # the send would leave her able to withdraw a shift after the manager had
         # already counted her into it — which is the exact thing a closing time
         # exists to stop.
+        # The week she is STANDING in. Its rota went out days ago, so a tick
+        # here could only ever be an offer for a shift that has already been
+        # filled - and worse, one she might read back as a change she made.
+        if int(week) < self.PLANNABLE_FROM:
+            return {'error': 'past_week',
+                    'message': _("This week is already being worked - you can only"
+                                 " answer for the week being planned.")}
+
         week_row = request.env['modryn.roster.week'].sudo().modryn_for(start)
         if not week_row.modryn_is_open():
-            return {'error': 'window_closed'}
+            # A message, not a bare code. This route answered with `error` and
+            # NOTHING to read, so a refused press looked exactly like a press
+            # that did nothing at all - which is how "it just doesn't work" gets
+            # reported for a rule working perfectly.
+            opens, closes = week_row._window()
+            if closes <= fields.Datetime.now():
+                return {'error': 'window_closed',
+                        'message': _("Answers for this week closed %s.",
+                                     _from_utc(closes).strftime('%d.%m %H:%M'))}
+            return {'error': 'window_closed',
+                    'message': _("Answers for this week open %s.",
+                                 _from_utc(opens).strftime('%d.%m %H:%M'))}
         ok, code, message = request.env['modryn.availability'].sudo().modryn_toggle(
             me, day, shift_type)
         return {

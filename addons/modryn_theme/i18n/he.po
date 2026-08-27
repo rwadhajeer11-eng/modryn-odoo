@@ -40,7 +40,8 @@ msgstr "לצפייה בקולקציה"
 
 #. module: modryn_theme
 #: model_terms:ir.ui.view,arch_db:modryn_theme.homepage_hero
-msgid "Browse the collection, book a private fitting, and leave the rest to us."
+msgid ""
+"Browse the collection, book a private fitting, and leave the rest to us."
 msgstr "הציצו בקולקציה, קבעו תור למדידה אישית — ואת כל השאר תשאירו לנו."
 
 #. module: modryn_theme
@@ -97,10 +98,43 @@ msgstr "שמלות כלה וערב, מותאמות בדיוק לך."
 #. module: modryn_theme
 #: model:ir.model.fields,help:modryn_theme.field_product_product__modryn_price_visible
 #: model:ir.model.fields,help:modryn_theme.field_product_template__modryn_price_visible
-msgid "When off, the storefront shows 'Price on request' instead of the price."
+msgid ""
+"When off, the storefront shows 'Price on request' instead of the price."
 msgstr "כשהאפשרות כבויה, האתר מציג 'מחיר בתיאום' במקום המחיר."
 
 #. module: modryn_theme
 #: model_terms:ir.ui.view,arch_db:modryn_theme.homepage_hero
 msgid "Your stylist and your dress will be waiting."
 msgstr "הסטייליסטית והשמלה כבר יחכו לך."
+
+#. module: modryn_theme
+#: model_terms:ir.ui.view,arch_db:modryn_theme.login_username_not_email
+msgid "Enter your username"
+msgstr "הזיני שם משתמש"
+
+#. module: modryn_theme
+#: model_terms:ir.ui.view,arch_db:modryn_theme.login_username_not_email
+msgid "Username"
+msgstr "שם משתמש"
+
+#. module: modryn_theme
+#: model:ir.model.fields,field_description:modryn_theme.field_ir_http__display_name
+#: model:ir.model.fields,field_description:modryn_theme.field_product_template__display_name
+msgid "Display Name"
+msgstr "שם לתצוגה"
+
+#. module: modryn_theme
+#: model:ir.model,name:modryn_theme.model_ir_http
+msgid "HTTP Routing"
+msgstr "ניתוב HTTP"
+
+#. module: modryn_theme
+#: model:ir.model.fields,field_description:modryn_theme.field_ir_http__id
+#: model:ir.model.fields,field_description:modryn_theme.field_product_template__id
+msgid "ID"
+msgstr "מזהה"
+
+#. module: modryn_theme
+#: model:ir.model,name:modryn_theme.model_product_template
+msgid "Product"
+msgstr "מוצר"

@@ -50,7 +50,7 @@
             <h1 class="mb-2">My details</h1>
             <p class="modryn_sub mb-4">
                 Keep these right and the boutique can always reach you.
-                Your role and permission level are set by the owner.
+                Your roles and permission level are set by the owner.
             </p>
 
             <div t-if="saved" class="modryn_panel mb-3" role="status">
@@ -121,8 +121,12 @@
                 <div class="modryn_panel mb-4">
                     <div class="modryn_sub">Set by the owner</div>
                     <div>
-                        <span class="modryn_strong">Role:</span>
-                        <t t-out="employee.modryn_role_id.name or '&#8212;'"/>
+                        <!-- Every role, not just the first. Her own profile is
+                             the one screen where "which jobs am I down for" is
+                             the question, and showing one of two reads as the
+                             owner having removed the other. -->
+                        <span class="modryn_strong">Roles:</span>
+                        <t t-out="' &#183; '.join(employee.modryn_role_ids.mapped('name')) or '&#8212;'"/>
                     </div>
                     <div t-if="employee.modryn_id_number">
                         <span class="modryn_strong">ID number:</span>

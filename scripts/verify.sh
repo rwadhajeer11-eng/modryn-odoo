@@ -312,6 +312,30 @@ fetch "$BELLA/shop"
 grep -q "מחיר בתיאום" "$PAGE" && ok "he: price-on-request translated" || bad "he translation" "Hebrew msgid missing — .po drift?"
 grep -q 'dir="rtl"' "$PAGE" && ok "he: RTL" || bad "he RTL" "no dir=rtl"
 
+# Every shipped catalogue, every entry, both languages. The boutique screens
+# are Hebrew-first with an Arabic toggle, so ONE blank msgstr is one word of
+# English on an otherwise Hebrew page - and a blank entry is invisible in
+# review because the file looks complete either way.
+#
+# What this CANNOT see: an English string that was never added to the .po at
+# all. That needs Odoo's own extractor, which this suite deliberately cannot
+# start (see the note at "10c"). Run scripts/sync_translations.py for that.
+.venv/bin/python - <<'PY' && ok "every shipped .po entry is translated"   || bad "translation coverage" "blank msgstr found — that term renders English"
+import glob, os, sys
+try:
+    import polib
+except ImportError:
+    sys.exit(0)          # not installed: report nothing rather than a false red
+blank = []
+for path in sorted(glob.glob('addons/*/i18n/*.po')):
+    for entry in polib.pofile(path):
+        if entry.msgid and not entry.msgstr:
+            blank.append('%s: %r' % (path, entry.msgid[:40]))
+for line in blank[:8]:
+    print(line)
+sys.exit(1 if blank else 0)
+PY
+
 fetch "$BELLA/ar/shop"
 grep -q 'lang="ar-001"' "$PAGE" && ok "ar: storefront serves ar-001" || bad "Arabic storefront" "no lang=ar-001"
 # Markers from CORE Odoo's Arabic, not ours: "الصفحة الرئيسية" is the website
@@ -450,6 +474,19 @@ for db in $TENANTS; do
   [ "${ROLES:-0}" -ge 3 ] && ok "$db: staff roles exist ($ROLES)" || bad "$db staff roles" "only ${ROLES:-0}"
   PORTAL=$(psql -d $db -tAc "select count(*) from res_groups_users_rel r join res_groups g on g.id=r.gid join ir_model_data d on d.res_id=g.id and d.model='res.groups' where d.module='base' and d.name='group_portal'")
   [ "${PORTAL:-0}" -ge 1 ] && ok "$db: portal staff accounts exist ($PORTAL)" || bad "$db portal staff accounts" "none found"
+  # Roles are a MANY-to-many since 19.0.1.7.0, and an empty many-to-many is not
+  # an error - it is just empty. A woman with no role keeps her home and her
+  # profile and silently loses every other page, so a whole team can be locked
+  # out with nothing in any log. This counts the ones with none, which is the
+  # shape both ways it could happen take: a migration that saved and restored
+  # nothing, and a write to the old single-value name being discarded.
+  # Administrator is excluded - it is Odoo's own row, has no boutique job, and
+  # is role-less in the template every boutique is cloned from.
+  NOROLE=$(psql -d $db -tAc "select count(*) from hr_employee e
+    where e.active and e.name <> 'Administrator'
+      and not exists (select 1 from hr_employee_modryn_staff_role_rel x
+                       where x.hr_employee_id = e.id)")
+  [ "${NOROLE:-1}" = "0" ] && ok "$db: every employee carries at least one role"     || bad "$db employee roles" "${NOROLE:-?} employee(s) with none — they can open only their home and profile"
 done
 [ "$(code "$BELLA/staff/login")" = "200" ] && ok "staff login page" || bad "staff login page" "not 200"
 # Unauthenticated access to staff surfaces must not be 200.
@@ -900,6 +937,27 @@ for route in /roster/available /roster/assign /roster/publish; do
 done
 for path in /roster /manage/shifts; do
   [ "$(code "$BELLA$path")" != "200" ] && ok "$path refuses anonymous" || bad "$path anonymous" "returned 200"
+done
+# The week she is STANDING in is not hers to fill: its rota went out days ago.
+# Greppable teeth on the guard itself, in the slot-snapshot style used above.
+# The disabled attribute on the buttons is only a suggestion — /roster/available
+# is reachable without one, and this is the line that says the server refuses it
+# too. If the constant or the comparison is edited away the page keeps looking
+# right and the rule quietly stops existing.
+grep -q "if int(week) < self.PLANNABLE_FROM" addons/modryn_roster/controllers/roster.py   && ok "the toggle refuses a week already being worked"   || bad "roster past-week guard" "the check on PLANNABLE_FROM is gone from /roster/available"
+# The three refusals a woman can actually PROVOKE by pressing a cell — a shut
+# window, a published week, the week already being worked — each have to carry a
+# sentence as well as a code. A press that answers with nothing to read is
+# indistinguishable from a press that did nothing at all, which is exactly how a
+# working deadline got reported as a broken page.
+#
+# Scoped to those three deliberately. `forbidden` and `not_found` on the same
+# file are machine answers to a request no button can produce, and demanding
+# prose for them would be a check nobody could keep green.
+for code in window_closed published past_week; do
+  N=$(grep -c "'error': '$code', *\$" addons/modryn_roster/controllers/roster.py)
+  B=$(grep -c "return {'error': '$code'}\$" addons/modryn_roster/controllers/roster.py)
+  [ "${B:-1}" = "0" ] && [ "${N:-0}" -ge 1 ]     && ok "roster: $code answers with a sentence, not just a code"     || bad "roster $code message" "answered with a bare code — she would see a press that did nothing"
 done
 # The window forms are asserted on the EXACT status, not on "anything but 200":
 # a route that has been DELETED answers 404, which is also "not 200", so the

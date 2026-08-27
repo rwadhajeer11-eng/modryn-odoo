@@ -595,14 +595,22 @@ msgstr "القالب"
 #. module: modryn_ops
 #. odoo-python
 #: code:addons/modryn_ops/models/calendar_event.py:0
-msgid "Thank you for visiting %(boutique)s! We'd love to hear how it went — just reply to this message."
-msgstr "شكرًا لزيارتك %(boutique)s! يسعدنا أن نسمع رأيك — ما عليك سوى الرد على هذه الرسالة."
+msgid ""
+"Thank you for visiting %(boutique)s! We'd love to hear how it went — just "
+"reply to this message."
+msgstr ""
+"شكرًا لزيارتك %(boutique)s! يسعدنا أن نسمع رأيك — ما عليك سوى الرد على هذه "
+"الرسالة."
 
 #. module: modryn_ops
 #. odoo-python
 #: code:addons/modryn_ops/models/calendar_event.py:0
-msgid "Thank you for visiting %(boutique)s! We're so happy for you — we'll be in touch about the next steps."
-msgstr "شكرًا لزيارتك %(boutique)s! نحن سعداء جدًا من أجلك — سنتواصل معك بشأن الخطوات القادمة."
+msgid ""
+"Thank you for visiting %(boutique)s! We're so happy for you — we'll be in "
+"touch about the next steps."
+msgstr ""
+"شكرًا لزيارتك %(boutique)s! نحن سعداء جدًا من أجلك — سنتواصل معك بشأن "
+"الخطوات القادمة."
 
 #. module: modryn_ops
 #. odoo-python
@@ -644,8 +652,12 @@ msgstr "عرائس مختلفات اشترين"
 #. module: modryn_ops
 #. odoo-python
 #: code:addons/modryn_ops/models/calendar_event.py:0
-msgid "We missed you today at %(boutique)s. Life happens! Book a new time here: %(book_link)s"
-msgstr "افتقدناك اليوم في %(boutique)s. لا بأس! يمكنك حجز موعد جديد هنا: %(book_link)s"
+msgid ""
+"We missed you today at %(boutique)s. Life happens! Book a new time here: "
+"%(book_link)s"
+msgstr ""
+"افتقدناك اليوم في %(boutique)s. لا بأس! يمكنك حجز موعد جديد هنا: "
+"%(book_link)s"
 
 #. module: modryn_ops
 #: model_terms:ir.ui.view,arch_db:modryn_ops.manage_audit
@@ -657,7 +669,9 @@ msgstr "ماذا"
 msgid ""
 "What is on the rail, in each size. A dress with nothing left in\n"
 "                any size is sold out on the shop."
-msgstr "شو موجود عالرفّ، بكل مقاس. الفستان اللي ما ضل منه ولا مقاس بيصير \"خلص\" عالموقع."
+msgstr ""
+"شو موجود عالرفّ، بكل مقاس. الفستان اللي ما ضل منه ولا مقاس بيصير \"خلص\" "
+"عالموقع."
 
 #. module: modryn_ops
 #: model_terms:ir.ui.view,arch_db:modryn_ops.manage_audit
@@ -669,3 +683,151 @@ msgstr "متى"
 #: model_terms:ir.ui.view,arch_db:modryn_ops.manage_audit
 msgid "Who"
 msgstr "من"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_reports
+msgid "<span class=\"modryn_sub\">–</span>"
+msgstr "<span class=\"modryn_sub\">–</span>"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_audit
+msgid "<span class=\"modryn_sub\"> → </span>"
+msgstr "<span class=\"modryn_sub\"> → </span>"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_dresses
+msgid "Save"
+msgstr "حفظ"
+
+#. module: modryn_ops
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_task__name
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_task_template__name
+msgid "Name"
+msgstr "الاسم"
+
+#. module: modryn_ops
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_task__note
+msgid "Note"
+msgstr "ملاحظة"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_reports
+msgid "of"
+msgstr "من"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_dresses
+msgid "on the rail"
+msgstr "على الشمّاعة"
+
+#. module: modryn_ops
+#: model:ir.model.fields,help:modryn_ops.field_product_product__modryn_in_stock
+#: model:ir.model.fields,help:modryn_ops.field_product_template__modryn_in_stock
+msgid "Across every size."
+msgstr "الإجمالي في كل المقاسات."
+
+#. module: modryn_ops
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_task_template__active
+msgid "Active"
+msgstr "نشط"
+
+#. module: modryn_ops
+#: model:ir.model,name:modryn_ops.model_calendar_event
+msgid "Calendar Event"
+msgstr "حدث في التقويم"
+
+#. module: modryn_ops
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_audit_log__create_uid
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_task__create_uid
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_task_template__create_uid
+msgid "Created by"
+msgstr "أنشأه"
+
+#. module: modryn_ops
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_audit_log__create_date
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_task__create_date
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_task_template__create_date
+msgid "Created on"
+msgstr "أُنشئ في"
+
+#. module: modryn_ops
+#: model:ir.model.fields,field_description:modryn_ops.field_calendar_event__display_name
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_audit_log__display_name
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_task__display_name
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_task_template__display_name
+#: model:ir.model.fields,field_description:modryn_ops.field_product_product__display_name
+#: model:ir.model.fields,field_description:modryn_ops.field_product_template__display_name
+#: model:ir.model.fields,field_description:modryn_ops.field_res_partner__display_name
+msgid "Display Name"
+msgstr "الاسم المعروض"
+
+#. module: modryn_ops
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_task__employee_id
+msgid "Employee"
+msgstr "موظفة"
+
+#. module: modryn_ops
+#: model:ir.model.fields,field_description:modryn_ops.field_calendar_event__id
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_audit_log__id
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_task__id
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_task_template__id
+#: model:ir.model.fields,field_description:modryn_ops.field_product_product__id
+#: model:ir.model.fields,field_description:modryn_ops.field_product_template__id
+#: model:ir.model.fields,field_description:modryn_ops.field_res_partner__id
+msgid "ID"
+msgstr "المعرّف"
+
+#. module: modryn_ops
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_audit_log__write_uid
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_task__write_uid
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_task_template__write_uid
+msgid "Last Updated by"
+msgstr "آخر تحديث بواسطة"
+
+#. module: modryn_ops
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_audit_log__write_date
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_task__write_date
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_task_template__write_date
+msgid "Last Updated on"
+msgstr "آخر تحديث في"
+
+#. module: modryn_ops
+#: model:ir.model.fields,field_description:modryn_ops.field_product_product__modryn_sold_out
+#: model:ir.model.fields,field_description:modryn_ops.field_product_template__modryn_sold_out
+msgid "Modryn Sold Out"
+msgstr "نفد من المخزون"
+
+#. module: modryn_ops
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_task__partner_id
+msgid "Partner"
+msgstr "جهة الاتصال"
+
+#. module: modryn_ops
+#: model:ir.model,name:modryn_ops.model_product_template
+msgid "Product"
+msgstr "منتج"
+
+#. module: modryn_ops
+#: model:ir.model,name:modryn_ops.model_product_product
+msgid "Product Variant"
+msgstr "متغيّر المنتج"
+
+#. module: modryn_ops
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_audit_log__res_id
+msgid "Res"
+msgstr "المورد"
+
+#. module: modryn_ops
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_task_template__sequence
+msgid "Sequence"
+msgstr "الترتيب"
+
+#. module: modryn_ops
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_task__state
+msgid "State"
+msgstr "الحالة"
+
+#. module: modryn_ops
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_audit_log__user_id
+msgid "User"
+msgstr "مستخدمة"

@@ -47,7 +47,7 @@
                          means nothing off this screen. -->
                     <div class="modryn_dress_qr">
                         <img t-attf-src="/report/barcode/?barcode_type=QR&amp;value=#{request.httprequest.host_url}shop/#{d['id']}&amp;width=180&amp;height=180"
-                             t-attf-alt="QR for #{d['name']}"/>
+                             t-att-alt="d['name']"/>
                         <div class="modryn_sub">Scan for the dress page</div>
                     </div>
                 </div>

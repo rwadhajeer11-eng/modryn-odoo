@@ -16,6 +16,14 @@
 // share one container. It stopped being the card grid itself when the table
 // moved in: a table is one grid item, and a 240px minimum column would have
 // squeezed it.
+// A whole week nobody may touch. The muted frame is the second signal after
+// the sentence above it: the cells alone said "closed" only to whoever tried
+// pressing one.
+.modryn_roster_grid.is_locked .modryn_avail_scroll {
+    background: $modryn-bg;
+    box-shadow: none;
+}
+
 .modryn_roster_grid {
     display: block;
 }
@@ -99,11 +107,28 @@
         vertical-align: middle;
     }
 
+    // A hairline under the day names, so the week reads as a header and a body
+    // rather than as twenty-eight loose boxes. border-block-end, not
+    // border-bottom: this page is Hebrew first and mirrors.
+    thead th {
+        padding-block-end: 10px;
+        border-block-end: 1px solid $modryn-border;
+        color: $modryn-ink;
+    }
+
     // The row label - morning / midday / evening - down the side.
     tbody th {
-        width: 4.5rem;
+        width: 5.5rem;
         text-align: start;
         white-space: nowrap;
+        color: $modryn-ink-muted;
+        font-weight: 600;
+        letter-spacing: 0.02em;
+        // Its own hairline, matching the header's: the three parts of the day
+        // are the other axis of the grid and they were carrying no weight at
+        // all next to twenty-one gold-capable buttons.
+        border-inline-end: 1px solid $modryn-border;
+        padding-inline-end: 12px;
     }
 
     td {
@@ -157,9 +182,37 @@
         }
     }
 
+    // The press itself, before the server has answered. A ring rather than a
+    // fill, so it reads as "heard you" and never as "saved" - the fill is the
+    // saved state and the two must not be confusable in the fifth of a second
+    // between them.
+    &.is_saving {
+        border-color: $modryn-gold;
+        box-shadow: 0 0 0 3px rgba(197, 160, 89, 0.28);
+    }
+
+    // Keyboard focus gets the same ring the finger gets.
+    &:focus-visible {
+        outline: none;
+        border-color: $modryn-gold;
+        box-shadow: 0 0 0 3px rgba(197, 160, 89, 0.35);
+    }
+
+    // A locked week is READ-ONLY, not greyed into illegibility: she still has
+    // to be able to see which shifts she offered. 0.45 opacity took the gold
+    // most of the way to the cream behind it and her own answer with it.
     &:disabled {
-        cursor: not-allowed;
-        opacity: 0.45;
+        cursor: default;
+        opacity: 1;
+        background: $modryn-bg;
+        color: $modryn-ink-muted;
+
+        &.is_on {
+            // Still clearly hers - just not hers to change any more.
+            background: rgba(197, 160, 89, 0.35);
+            border-color: rgba(197, 160, 89, 0.55);
+            color: $modryn-gold-text;
+        }
     }
 
     .fa {
@@ -179,9 +232,36 @@
 // A phone is narrower than seven columns of comfortable buttons. The table
 // scrolls sideways INSIDE its own box rather than making the page scroll,
 // which would drag the nav bar off screen with it.
+//
+// The frame lives HERE and not on the table, because this is the box that
+// clips: a border on a scrolling table scrolls away with it and the week ends
+// mid-air. On the wrapper it stays put and the days pass underneath.
 .modryn_avail_scroll {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
+    background: #FFFFFF;
+    border: 1px solid $modryn-border;
+    border-radius: 14px;
+    padding: 14px 16px 16px;
+    // Two shadows, both nearly nothing: a hairline that reads as a printed
+    // edge and a wide soft one that lifts the card off the cream. One heavy
+    // shadow reads as a dialog; this reads as paper on a table.
+    box-shadow: 0 1px 2px rgba(43, 33, 24, 0.05),
+                0 12px 28px rgba(43, 33, 24, 0.06);
+}
+
+// The refusal, said on the page. Gold, not red - a deadline that has passed is
+// not an error she made, and the lesson about danger colours reading as
+// rejection is already recorded in floor.scss.
+.modryn_roster_notice {
+    margin-block-end: 12px;
+    padding: 12px 16px;
+    border: 1px solid $modryn-gold;
+    border-inline-start: 4px solid $modryn-gold;
+    border-radius: 10px;
+    background: rgba(197, 160, 89, 0.10);
+    color: $modryn-gold-text;
+    font-size: 0.9rem;
 }
 
 @media (max-width: 575.98px) {

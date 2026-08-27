@@ -120,14 +120,14 @@ for name, job, level, username, phone in PEOPLE[SLUG]:
                 employee.write({
                     'name': name,
                     'work_phone': phone,
-                    'modryn_role_id': job.id,
+                    'modryn_role_ids': [(6, 0, [job.id])],
                     'modryn_level': level,
                 })
             else:
                 employee = Employee.create({
                     'name': name,
                     'work_phone': phone,
-                    'modryn_role_id': job.id,
+                    'modryn_role_ids': [(6, 0, [job.id])],
                     'modryn_level': level,
                     'user_id': admin.id,
                 })
@@ -136,7 +136,7 @@ for name, job, level, username, phone in PEOPLE[SLUG]:
 
     employee = Employee.create({
         'name': name,
-        'modryn_role_id': job.id,
+        'modryn_role_ids': [(6, 0, [job.id])],
         'modryn_level': level,
     })
     employee.modryn_provision_login(username, DEMO_PASSWORD)

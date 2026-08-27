@@ -60,7 +60,13 @@
 .modryn_admin_nav {
     display: flex;
     align-items: center;
+    // WRAP, because this bar grows every time a page is added and a flex row
+    // that cannot wrap does not clip politely - it pushes the tail off the
+    // edge. At 1100px "Sign out" had left the screen entirely, so the only way
+    // out of the boutique's own back office was the browser's back button.
+    flex-wrap: wrap;
     gap: 20px;
+    row-gap: 10px;
     padding: 14px 24px;
     background: #FFFFFF;
     border-block-end: 1px solid $modryn-border;
@@ -76,6 +82,10 @@
     color: $modryn-ink;
     text-decoration: none;
     padding-block: 4px;
+    // One entry, one line. "Walk-in check-in" was breaking across THREE lines
+    // and dragging the whole bar's height with it; the row wraps now, so a
+    // long label takes its own line rather than shredding itself.
+    white-space: nowrap;
 
     &:hover { color: $modryn-gold-text; }
 
@@ -94,6 +104,14 @@
 .modryn_admin_logout { color: $modryn-ink-muted; }
 
 .modryn_admin_main { padding: 32px 24px; }
+
+// A table too wide for the screen scrolls HERE rather than dragging the page
+// with it. Only the boxes that opt in: every other table on these pages sets
+// its own max-width and fits.
+.modryn_table_scroll {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
 
 // ---------------------------------------------------------------- primitives
 .modryn_table {
@@ -532,6 +550,7 @@
         // that would silently cover the content the padding above accounts for.
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
+        flex-wrap: nowrap;
     }
 
     // The owner has two bars. `:last-of-type:not(:first-of-type)` matches the
@@ -544,6 +563,9 @@
     .modryn_admin_link {
         flex-direction: column;
         gap: 3px;
+        // Two short lines under an icon is the point of the phone bar; the
+        // desktop rule would force every label onto one and blow the 58px.
+        white-space: normal;
         font-size: 10px;
         line-height: 1.15;
         min-width: 58px;

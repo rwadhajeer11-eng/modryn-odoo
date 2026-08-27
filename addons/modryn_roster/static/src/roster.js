@@ -1,3 +1,4 @@
+import { _t } from "@web/core/l10n/translation";
 import { rpc } from "@web/core/network/rpc";
 import { registry } from "@web/core/registry";
 import { Interaction } from "@web/public/interaction";
@@ -32,21 +33,36 @@ export class RosterPage extends Interaction {
         }
     }
 
+    // A line on the page, never window.alert. The alert is a system chrome box
+    // in the browser's own font that cannot be translated, cannot be styled,
+    // and blocks the tab until it is dismissed - on a boutique screen it reads
+    // as an error the site has suffered rather than an answer it is giving.
+    notice(text) {
+        let box = document.getElementById("modryn_roster_notice");
+        if (!box) {
+            box = document.createElement("div");
+            box.id = "modryn_roster_notice";
+            box.className = "modryn_roster_notice";
+            box.setAttribute("role", "alert");
+            this.el.parentNode.insertBefore(box, this.el);
+        }
+        box.textContent = text;
+        box.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    }
+
     async send() {
         const note = document.getElementById("modryn_week_note");
         const result = await rpc("/roster/send", {
             week: this.week,
             note: note ? note.value : "",
         });
-        // window_closed is the case worth naming. She typed a note, pressed
-        // Send, and the deadline passed while the page sat open — reloading
-        // without a word would look exactly like a successful save.
+        // She typed a note, pressed Send, and the deadline passed while the page
+        // sat open - reloading without a word would look exactly like a
+        // successful save.
         if (result && result.error) {
-            window.alert(
-                result.error === "window_closed"
-                    ? "Submissions for that week have closed."
-                    : result.error
-            );
+            this.notice(result.message || _t("That week can no longer be changed."));
+            window.setTimeout(() => window.location.reload(), 2500);
+            return;
         }
         window.location.reload();
     }
@@ -64,12 +80,19 @@ export class RosterPage extends Interaction {
         // feel broken. If the server disagrees, the class goes back below.
         const wasOn = cell.classList.contains("is_on");
         this.paint(cell, !wasOn);
+        // is_saving is the press itself, and it is a SEPARATE state from is_on.
+        // The gold settles in a fifth of a second; the tap has to answer in the
+        // same instant her finger lands, or she presses the cell again thinking
+        // the first one missed - which toggles the offer straight back off and
+        // is precisely how "it does not work" happens on a working page.
+        cell.classList.add("is_saving");
 
         const result = await rpc("/roster/available", {
             day: cell.dataset.day,
             shift_type: cell.dataset.type,
             week: this.week,
         });
+        cell.classList.remove("is_saving");
 
         if (result && result.error) {
             this.paint(cell, wasOn);
@@ -77,10 +100,11 @@ export class RosterPage extends Interaction {
             // looking at it - has to say so, not silently do nothing. `message`
             // is the translated sentence; `error` is the machine code, which is
             // no use to a person but is what the load test matches on.
-            window.alert(result.message || result.error);
+            this.notice(result.message || _t("That week can no longer be changed."));
             // Only a refusal costs a reload, and only because the reason for it
-            // (a closed window, a published week) changes the whole page.
-            window.location.reload();
+            // (a closed window, a published week) changes the whole page. The
+            // delay is so the sentence is read before the page replaces it.
+            window.setTimeout(() => window.location.reload(), 2500);
             return;
         }
         // No reload on success. The old code threw away the grid the server had
@@ -93,9 +117,16 @@ export class RosterPage extends Interaction {
         cell.setAttribute("aria-pressed", on ? "true" : "false");
         // The glyph carries the state as well as the colour, so the cell still
         // reads correctly to somebody who cannot tell the gold from the grey.
+        // The glyph AND the hidden label, because paint() replaces the whole
+        // cell: rendering only the icon dropped the words the server had put
+        // there, and after one tap a screen reader read every cell as blank.
         cell.innerHTML = on
             ? '<i class="fa fa-check" aria-hidden="true"></i>'
             : "";
+        const label = document.createElement("span");
+        label.className = "visually-hidden";
+        label.textContent = on ? _t("I can work this") : _t("Not available");
+        cell.appendChild(label);
     }
 
     // The manager's cards are rendered from the same response, so her view of

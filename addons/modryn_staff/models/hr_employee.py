@@ -18,11 +18,34 @@ LEVEL_GROUPS = {
 class HrEmployee(models.Model):
     _inherit = 'hr.employee'
 
+    # A woman does more than one job. The seamstress who also sells on a
+    # Saturday is the normal case in a boutique this size, and one role per
+    # person forced the owner to pick which half of somebody's week to describe.
+    modryn_role_ids = fields.Many2many(
+        'modryn.staff.role',
+        string="Boutique roles",
+        help="Owner-defined job roles, for example Sales and Seamstress.",
+    )
+
+    # The FIRST of her roles, and the ONLY reason it still exists: twenty-odd
+    # places read employee.modryn_role_id.name to print "who she is" on a card,
+    # and rewriting all of them to pick a role out of a set would have been a
+    # large diff whose failure mode is a blank label nobody notices.
+    #
+    # COMPUTED and NOT stored, deliberately. Stored, it would be a second copy
+    # of a fact that already lives in modryn_role_ids, and the two would drift
+    # the first time anything wrote one without the other. Not stored, it cannot
+    # drift and it cannot be searched - which is why the one search domain in
+    # the product had to move onto modryn_role_ids, and that domain is more
+    # correct for it: a woman whose SECOND role is the workshop one belongs in
+    # the workshop queue too.
     modryn_role_id = fields.Many2one(
         'modryn.staff.role',
-        string="Boutique role",
-        help="Owner-defined job role, for example Sales or Seamstress.",
+        string="Main role",
+        compute='_compute_modryn_role_id',
+        inverse='_inverse_modryn_role_id',
     )
+
     modryn_level = fields.Selection(
         selection=[
             (LEVEL_OWNER, "Owner"),
@@ -70,6 +93,28 @@ class HrEmployee(models.Model):
     modryn_gender = fields.Selection(
         selection=[('female', "Female"), ('male', "Male"), ('other', "Prefer not to say")],
         string="Gender")
+
+    @api.depends('modryn_role_ids')
+    def _compute_modryn_role_id(self):
+        for employee in self:
+            employee.modryn_role_id = employee.modryn_role_ids[:1]
+
+    def _inverse_modryn_role_id(self):
+        """Writing the old single field sets the whole set to that one role.
+
+        Without an inverse, Odoo ACCEPTS a write to a non-stored computed field
+        and throws it away - no error, no warning, and the employee ends with no
+        role at all. Two seeding scripts still wrote this name; a fresh boutique
+        would have been built with every woman role-less and nothing in any log
+        to say so. Those scripts are fixed, but the trap belonged to the field,
+        not to them: anything that writes `modryn_role_id` now lands where the
+        roles actually live.
+
+        Replace, not append: the old field meant "her role", and the only honest
+        reading of assigning it is that this is now the role she has.
+        """
+        for employee in self:
+            employee.modryn_role_ids = [(6, 0, employee.modryn_role_id.ids)]
 
     @api.constrains('modryn_id_number')
     def _check_id_number_unique(self):

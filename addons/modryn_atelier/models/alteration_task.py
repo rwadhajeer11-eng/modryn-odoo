@@ -161,7 +161,11 @@ class ModrynAlterationTask(models.Model):
         never opens /roster must still get its alterations sewn.
         """
         pool = self.env['hr.employee'].sudo().search([
-            ('modryn_role_id.is_workshop', '=', True),
+            # ANY of her roles, not just her first. The seamstress who also
+            # sells belongs in the workshop queue on the strength of the
+            # seamstress half, and modryn_role_id is a non-stored compute now
+            # so it cannot be searched at all.
+            ('modryn_role_ids.is_workshop', '=', True),
             ('modryn_level', 'in', ['manager', 'staff']),
         ])
         # Soft registry lookup, not a manifest dependency: the atelier stays

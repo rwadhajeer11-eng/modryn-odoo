@@ -20,8 +20,12 @@ msgstr "%(room)s כבר תפוס על ידי %(who)s."
 #. module: modryn_staff
 #. odoo-python
 #: code:addons/modryn_staff/controllers/manage.py:0
-msgid "%s fittings are already booked on those dates. Cancel them from the floor first — that is what tells each bride and frees her slot."
-msgstr "%s מדידות כבר קבועות בתאריכים האלה. בטלי אותן קודם ממסך המשמרת — זה מה שמעדכן כל כלה ומפנה את המקום שלה."
+msgid ""
+"%s fittings are already booked on those dates. Cancel them from the floor "
+"first — that is what tells each bride and frees her slot."
+msgstr ""
+"%s מדידות כבר קבועות בתאריכים האלה. בטלי אותן קודם ממסך המשמרת — זה מה "
+"שמעדכן כל כלה ומפנה את המקום שלה."
 
 #. module: modryn_staff
 #. odoo-javascript
@@ -40,13 +44,10 @@ msgstr ""
 "                        שמירה תחליף אותו."
 
 #. module: modryn_staff
-#: model_terms:ir.ui.view,arch_db:modryn_staff.manage_staff_form
-msgid "<option value=\"\">— Choose a role —</option>"
-msgstr "<option value=\"\">— בחרי תפקיד —</option>"
-
-#. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.staff_layout
-msgid "<span class=\"modryn_admin_brand\" aria-hidden=\"true\" style=\"visibility:hidden;\">MODRYN</span>"
+msgid ""
+"<span class=\"modryn_admin_brand\" aria-hidden=\"true\" "
+"style=\"visibility:hidden;\">MODRYN</span>"
 msgstr "MODRYN"
 
 #. module: modryn_staff
@@ -68,11 +69,6 @@ msgstr "ללא תור"
 #: model_terms:ir.ui.view,arch_db:modryn_staff.staff_profile
 msgid "<span class=\"modryn_strong\">ID number:</span>"
 msgstr "<span class=\"modryn_strong\">מספר זהות:</span>"
-
-#. module: modryn_staff
-#: model_terms:ir.ui.view,arch_db:modryn_staff.staff_profile
-msgid "<span class=\"modryn_strong\">Role:</span>"
-msgstr "<span class=\"modryn_strong\">תפקיד:</span>"
 
 #. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manage_hours
@@ -275,11 +271,6 @@ msgid "Boutique owner"
 msgstr "בעלת הבוטיק"
 
 #. module: modryn_staff
-#: model:ir.model.fields,field_description:modryn_staff.field_hr_employee__modryn_role_id
-msgid "Boutique role"
-msgstr "תפקיד בבוטיק"
-
-#. module: modryn_staff
 #: model:ir.model,name:modryn_staff.model_modryn_staff_role
 msgid "Boutique staff role"
 msgstr "תפקיד צוות בבוטיק"
@@ -434,11 +425,6 @@ msgid "Edit team member"
 msgstr "עריכת עובדת"
 
 #. module: modryn_staff
-#: model_terms:ir.ui.view,arch_db:modryn_staff.lang_toggle
-msgid "English"
-msgstr "English"
-
-#. module: modryn_staff
 #. odoo-python
 #: code:addons/modryn_staff/controllers/auth.py:0
 msgid "Enter your username and password."
@@ -589,7 +575,8 @@ msgstr "מספר תעודת זהות או דרכון. רק בעלת הבוטיק
 #. module: modryn_staff
 #. odoo-javascript
 #: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
-msgid "If the gown needs work, open a task for the workshop. Otherwise just skip."
+msgid ""
+"If the gown needs work, open a task for the workshop. Otherwise just skip."
 msgstr "אם השמלה צריכה תיקון, פתחי משימה לסדנה. אחרת אפשר לדלג."
 
 #. module: modryn_staff
@@ -620,13 +607,6 @@ msgstr "תפקיד סדנה"
 #: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
 msgid "Just arrived"
 msgstr "הגיעו עכשיו"
-
-#. module: modryn_staff
-#: model_terms:ir.ui.view,arch_db:modryn_staff.staff_profile
-msgid ""
-"Keep these right and the boutique can always reach you.\n"
-"                Your role and permission level are set by the owner."
-msgstr "שמרי אותם מעודכנים כדי שנוכל תמיד להשיג אותך. התפקיד ורמת ההרשאה נקבעים על ידי הבעלים."
 
 #. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.lang_toggle
@@ -707,12 +687,6 @@ msgstr "הלקוחות שלי"
 #. module: modryn_staff
 #. odoo-python
 #: code:addons/modryn_staff/nav.py:0
-msgid "My day"
-msgstr "היום שלי"
-
-#. module: modryn_staff
-#. odoo-python
-#: code:addons/modryn_staff/nav.py:0
 #: model_terms:ir.ui.view,arch_db:modryn_staff.staff_profile
 msgid "My details"
 msgstr "הפרטים שלי"
@@ -747,7 +721,9 @@ msgstr "שם"
 msgid ""
 "Name your rooms the way your team says them out loud. When someone\n"
 "                calls for help, the room is what tells a colleague where to go."
-msgstr "תני לחדרים את השמות שהצוות באמת אומר בקול. כשמישהי קוראת לעזרה, שם החדר הוא מה שמכוון את החברה לאן ללכת."
+msgstr ""
+"תני לחדרים את השמות שהצוות באמת אומר בקול. כשמישהי קוראת לעזרה, שם החדר הוא "
+"מה שמכוון את החברה לאן ללכת."
 
 #. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.staff_notifications
@@ -876,8 +852,12 @@ msgstr "אין משמרות ביום הזה."
 
 #. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manage_hours
-msgid "Nothing set yet — the booking page has no times to offer. Add your first day above."
-msgstr "עדיין לא הוגדר כלום — לעמוד קביעת התורים אין שעות להציע. הוסיפי את היום הראשון למעלה."
+msgid ""
+"Nothing set yet — the booking page has no times to offer. Add your first day"
+" above."
+msgstr ""
+"עדיין לא הוגדר כלום — לעמוד קביעת התורים אין שעות להציע. הוסיפי את היום "
+"הראשון למעלה."
 
 #. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.staff_home
@@ -944,11 +924,6 @@ msgstr "נפתח"
 #: model:ir.model.fields.selection,name:modryn_staff.selection__hr_employee__modryn_level__owner
 msgid "Owner"
 msgstr "בעלים"
-
-#. module: modryn_staff
-#: model:ir.model.fields,help:modryn_staff.field_hr_employee__modryn_role_id
-msgid "Owner-defined job role, for example Sales or Seamstress."
-msgstr "תפקיד שהבעלים מגדירה, למשל מוכרת או תופרת."
 
 #. module: modryn_staff
 #: model:ir.model,name:modryn_staff.model_modryn_role_page
@@ -1035,12 +1010,6 @@ msgstr "נא לבחור תאריך"
 #: code:addons/modryn_staff/controllers/manage.py:0
 msgid "Please choose a day"
 msgstr "נא לבחור יום"
-
-#. module: modryn_staff
-#. odoo-python
-#: code:addons/modryn_staff/controllers/manage.py:0
-msgid "Please choose a role."
-msgstr "נא לבחור תפקיד"
 
 #. module: modryn_staff
 #. odoo-python
@@ -1492,7 +1461,9 @@ msgid ""
 "Tick the pages each role may open. Shift managers always see\n"
 "                every page here; every staff member always has her own\n"
 "                <em>My day</em> page."
-msgstr "סמני אילו עמודים כל תפקיד יכול לפתוח. מנהלות משמרת תמיד רואות את כל העמודים; לכל אשת צוות תמיד יש את העמוד \"היום שלי\" שלה."
+msgstr ""
+"סמני אילו עמודים כל תפקיד יכול לפתוח. מנהלות משמרת תמיד רואות את כל העמודים;"
+" לכל אשת צוות תמיד יש את העמוד \"היום שלי\" שלה."
 
 #. module: modryn_staff
 #. odoo-javascript
@@ -1510,11 +1481,6 @@ msgstr "היום"
 #: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
 msgid "Today's appointments"
 msgstr "תורים להיום"
-
-#. module: modryn_staff
-#: model_terms:ir.ui.view,arch_db:modryn_staff.staff_home
-msgid "Today's shift"
-msgstr "המשמרת של היום"
 
 #. module: modryn_staff
 #. odoo-javascript
@@ -1640,11 +1606,6 @@ msgstr "את לא משובצת בסידור המפורסם של השבוע."
 
 #. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.staff_home
-msgid "You're not on today's published rota."
-msgstr "את לא במשמרת שפורסמה להיום."
-
-#. module: modryn_staff
-#: model_terms:ir.ui.view,arch_db:modryn_staff.staff_home
 msgid "Your rail is clear — new work is assigned automatically when it lands."
 msgstr "המוט שלך פנוי — עבודה חדשה משויכת אלייך אוטומטית כשהיא מגיעה."
 
@@ -1654,7 +1615,9 @@ msgid ""
 "Your role doesn't include this page. The links above are the\n"
 "                    ones that belong to you — if this page should be one of them,\n"
 "                    ask the owner to grant it to your role."
-msgstr "התפקיד שלך לא כולל את הדף הזה. הקישורים למעלה הם שלך — אם הדף הזה אמור להיות אחד מהם, בקשי מבעלת הבוטיק לפתוח אותו לתפקידך."
+msgstr ""
+"התפקיד שלך לא כולל את הדף הזה. הקישורים למעלה הם שלך — אם הדף הזה אמור להיות"
+" אחד מהם, בקשי מבעלת הבוטיק לפתוח אותו לתפקידך."
 
 #. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.staff_home
@@ -1662,12 +1625,9 @@ msgid ""
 "Your role isn't set yet — ask the owner to pick one for you\n"
 "                on the Team page. Until then you'll only see what is assigned\n"
 "                to you by name, and the pages your role would open are closed."
-msgstr "התפקיד שלך עדיין לא נקבע — בקשי מהבעלים לבחור לך אחד בעמוד הצוות. עד אז תראי רק את מה שמשובץ לך בשם, והעמודים שהתפקיד שלך היה פותח סגורים."
-
-#. module: modryn_staff
-#: model_terms:ir.ui.view,arch_db:modryn_staff.lang_toggle
-msgid "עברית"
-msgstr "עברית"
+msgstr ""
+"התפקיד שלך עדיין לא נקבע — בקשי מהבעלים לבחור לך אחד בעמוד הצוות. עד אז תראי"
+" רק את מה שמשובץ לך בשם, והעמודים שהתפקיד שלך היה פותח סגורים."
 
 #. module: modryn_staff
 #. odoo-javascript
@@ -1692,3 +1652,231 @@ msgstr "— בהמשך —"
 #: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
 msgid "— No room —"
 msgstr "— ללא חדר —"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.staff_profile
+msgid "<option value=\"\">—</option>"
+msgstr "<option value=\"\">—</option>"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manage_staff_form
+msgid "<span class=\"form-label d-block\">Roles</span>"
+msgstr "<span class=\"form-label d-block\">תפקידים</span>"
+
+#. module: modryn_staff
+#: model:ir.model.fields,field_description:modryn_staff.field_modryn_fitting_room__active
+#: model:ir.model.fields,field_description:modryn_staff.field_modryn_staff_role__active
+msgid "Active"
+msgstr "פעיל"
+
+#. module: modryn_staff
+#: model:ir.model.fields,field_description:modryn_staff.field_modryn_staff_notification__body
+msgid "Body"
+msgstr "תוכן"
+
+#. module: modryn_staff
+#: model:ir.model.fields,field_description:modryn_staff.field_hr_employee__modryn_role_ids
+msgid "Boutique roles"
+msgstr "תפקידים בבוטיק"
+
+#. module: modryn_staff
+#: model:ir.model,name:modryn_staff.model_calendar_event
+msgid "Calendar Event"
+msgstr "אירוע ביומן"
+
+#. module: modryn_staff
+#: model:ir.model.fields,field_description:modryn_staff.field_modryn_fitting_room__create_uid
+#: model:ir.model.fields,field_description:modryn_staff.field_modryn_floor_helper__create_uid
+#: model:ir.model.fields,field_description:modryn_staff.field_modryn_role_page__create_uid
+#: model:ir.model.fields,field_description:modryn_staff.field_modryn_sos_call__create_uid
+#: model:ir.model.fields,field_description:modryn_staff.field_modryn_staff_notification__create_uid
+#: model:ir.model.fields,field_description:modryn_staff.field_modryn_staff_role__create_uid
+msgid "Created by"
+msgstr "נוצר על ידי"
+
+#. module: modryn_staff
+#: model:ir.model.fields,field_description:modryn_staff.field_modryn_fitting_room__create_date
+#: model:ir.model.fields,field_description:modryn_staff.field_modryn_floor_helper__create_date
+#: model:ir.model.fields,field_description:modryn_staff.field_modryn_role_page__create_date
+#: model:ir.model.fields,field_description:modryn_staff.field_modryn_sos_call__create_date
+#: model:ir.model.fields,field_description:modryn_staff.field_modryn_staff_notification__create_date
+#: model:ir.model.fields,field_description:modryn_staff.field_modryn_staff_role__create_date
+msgid "Created on"
+msgstr "נוצר בתאריך"
+
+#. module: modryn_staff
+#: model:ir.model.fields,field_description:modryn_staff.field_calendar_event__display_name
+#: model:ir.model.fields,field_description:modryn_staff.field_hr_employee__display_name
+#: model:ir.model.fields,field_description:modryn_staff.field_ir_http__display_name
+#: model:ir.model.fields,field_description:modryn_staff.field_modryn_fitting_room__display_name
+#: model:ir.model.fields,field_description:modryn_staff.field_modryn_floor_helper__display_name
+#: model:ir.model.fields,field_description:modryn_staff.field_modryn_helper_mixin__display_name
+#: model:ir.model.fields,field_description:modryn_staff.field_modryn_queue_entry__display_name
+#: model:ir.model.fields,field_description:modryn_staff.field_modryn_role_page__display_name
+#: model:ir.model.fields,field_description:modryn_staff.field_modryn_room_occupant_mixin__display_name
+#: model:ir.model.fields,field_description:modryn_staff.field_modryn_sos_call__display_name
+#: model:ir.model.fields,field_description:modryn_staff.field_modryn_staff_notification__display_name
+#: model:ir.model.fields,field_description:modryn_staff.field_modryn_staff_notify__display_name
+#: model:ir.model.fields,field_description:modryn_staff.field_modryn_staff_role__display_name
+msgid "Display Name"
+msgstr "שם לתצוגה"
+
+#. module: modryn_staff
+#: model:ir.model,name:modryn_staff.model_hr_employee
+#: model:ir.model.fields,field_description:modryn_staff.field_modryn_floor_helper__employee_id
+msgid "Employee"
+msgstr "עובדת"
+
+#. module: modryn_staff
+#: model:ir.model,name:modryn_staff.model_ir_http
+msgid "HTTP Routing"
+msgstr "ניתוב HTTP"
+
+#. module: modryn_staff
+#: model:ir.model.fields,field_description:modryn_staff.field_calendar_event__id
+#: model:ir.model.fields,field_description:modryn_staff.field_hr_employee__id
+#: model:ir.model.fields,field_description:modryn_staff.field_ir_http__id
+#: model:ir.model.fields,field_description:modryn_staff.field_modryn_fitting_room__id
+#: model:ir.model.fields,field_description:modryn_staff.field_modryn_floor_helper__id
+#: model:ir.model.fields,field_description:modryn_staff.field_modryn_helper_mixin__id
+#: model:ir.model.fields,field_description:modryn_staff.field_modryn_queue_entry__id
+#: model:ir.model.fields,field_description:modryn_staff.field_modryn_role_page__id
+#: model:ir.model.fields,field_description:modryn_staff.field_modryn_room_occupant_mixin__id
+#: model:ir.model.fields,field_description:modryn_staff.field_modryn_sos_call__id
+#: model:ir.model.fields,field_description:modryn_staff.field_modryn_staff_notification__id
+#: model:ir.model.fields,field_description:modryn_staff.field_modryn_staff_notify__id
+#: model:ir.model.fields,field_description:modryn_staff.field_modryn_staff_role__id
+msgid "ID"
+msgstr "מזהה"
+
+#. module: modryn_staff
+#: model:ir.model.fields,field_description:modryn_staff.field_modryn_fitting_room__write_uid
+#: model:ir.model.fields,field_description:modryn_staff.field_modryn_floor_helper__write_uid
+#: model:ir.model.fields,field_description:modryn_staff.field_modryn_role_page__write_uid
+#: model:ir.model.fields,field_description:modryn_staff.field_modryn_sos_call__write_uid
+#: model:ir.model.fields,field_description:modryn_staff.field_modryn_staff_notification__write_uid
+#: model:ir.model.fields,field_description:modryn_staff.field_modryn_staff_role__write_uid
+msgid "Last Updated by"
+msgstr "עודכן לאחרונה על ידי"
+
+#. module: modryn_staff
+#: model:ir.model.fields,field_description:modryn_staff.field_modryn_fitting_room__write_date
+#: model:ir.model.fields,field_description:modryn_staff.field_modryn_floor_helper__write_date
+#: model:ir.model.fields,field_description:modryn_staff.field_modryn_role_page__write_date
+#: model:ir.model.fields,field_description:modryn_staff.field_modryn_sos_call__write_date
+#: model:ir.model.fields,field_description:modryn_staff.field_modryn_staff_notification__write_date
+#: model:ir.model.fields,field_description:modryn_staff.field_modryn_staff_role__write_date
+msgid "Last Updated on"
+msgstr "עודכן לאחרונה בתאריך"
+
+#. module: modryn_staff
+#: model:ir.model.fields,field_description:modryn_staff.field_hr_employee__modryn_role_id
+msgid "Main role"
+msgstr "תפקיד ראשי"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.staff_profile
+msgid "My documents"
+msgstr "המסמכים שלי"
+
+#. module: modryn_staff
+#: model:ir.model.fields,field_description:modryn_staff.field_modryn_sos_call__note
+msgid "Note"
+msgstr "הערה"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.staff_profile
+msgid "Nothing uploaded yet."
+msgstr "עדיין לא הועלו קבצים."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.staff_profile
+msgid "Only you and the boutique owner can open these."
+msgstr "רק את ובעלת הבוטיק יכולות לפתוח אותם."
+
+#. module: modryn_staff
+#: model:ir.model.fields,help:modryn_staff.field_hr_employee__modryn_role_ids
+msgid "Owner-defined job roles, for example Sales and Seamstress."
+msgstr "תפקידים שמגדירה בעלת הבוטיק, למשל מכירות ותפירה."
+
+#. module: modryn_staff
+#. odoo-python
+#: code:addons/modryn_staff/controllers/manage.py:0
+msgid "Please choose at least one role."
+msgstr "נא לבחור לפחות תפקיד אחד."
+
+#. module: modryn_staff
+#: model:ir.model.fields,field_description:modryn_staff.field_modryn_staff_notification__read_at
+msgid "Read At"
+msgstr "נקרא בתאריך"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.staff_profile
+msgid "Remove"
+msgstr "הסרה"
+
+#. module: modryn_staff
+#: model:ir.model.fields,field_description:modryn_staff.field_modryn_staff_notification__res_id
+msgid "Res"
+msgstr "משאב"
+
+#. module: modryn_staff
+#: model:ir.model.fields,field_description:modryn_staff.field_modryn_staff_notification__res_model
+msgid "Res Model"
+msgstr "מודל המשאב"
+
+#. module: modryn_staff
+#: model:ir.model.fields,field_description:modryn_staff.field_modryn_fitting_room__sequence
+#: model:ir.model.fields,field_description:modryn_staff.field_modryn_staff_role__sequence
+msgid "Sequence"
+msgstr "סדר"
+
+#. module: modryn_staff
+#: model:ir.model,name:modryn_staff.model_modryn_staff_notification
+msgid "Something a staff member should see"
+msgstr "משהו שעובדת אמורה לראות"
+
+#. module: modryn_staff
+#: model:ir.model.fields,field_description:modryn_staff.field_modryn_sos_call__state
+msgid "State"
+msgstr "מצב"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.staff_profile
+msgid "Up to 10 MB per file."
+msgstr "עד 10 MB לקובץ."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.staff_profile
+msgid "Upload"
+msgstr "העלאה"
+
+#. module: modryn_staff
+#: model:ir.model.fields,field_description:modryn_staff.field_modryn_staff_notification__actor_name
+msgid "Who did it"
+msgstr "מי ביצעה"
+
+#. module: modryn_staff
+#: model:ir.model.fields,field_description:modryn_staff.field_modryn_staff_notification__employee_id
+msgid "Who it is for"
+msgstr "למי זה מיועד"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.staff_layout
+msgid "<span class=\"visually-hidden\">Notifications</span>"
+msgstr "<span class=\"visually-hidden\">התראות</span>"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.staff_profile
+msgid "<span class=\"modryn_strong\">Roles:</span>"
+msgstr "<span class=\"modryn_strong\">תפקידים:</span>"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.staff_profile
+msgid ""
+"Keep these right and the boutique can always reach you.\n"
+"                Your roles and permission level are set by the owner."
+msgstr ""
+"שמרי על הפרטים האלה מעודכנים כדי שהבוטיק תמיד יוכל להשיג אותך.\n"
+"                התפקידים ורמת ההרשאה נקבעים על ידי בעלת הבוטיק.\n"
+"            "

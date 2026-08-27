@@ -85,13 +85,17 @@ class ModrynRolePage(models.Model):
             return True
         employee = self.env['hr.employee'].sudo().search(
             [('user_id', '=', user.id)], limit=1)
-        role = employee.modryn_role_id if employee else None
-        if not role:
+        # The UNION of her roles' grants, not her first role's. A woman who is
+        # a seamstress AND a saleswoman can open what either job opens - the
+        # alternative is an owner having to remember which of her two roles is
+        # listed first, which is not a thing the Team page even shows.
+        roles = employee.modryn_role_ids if employee else None
+        if not roles:
             return False
         # sudo(): portal users have no ACL on this model, deliberately —
         # the grant table is data ABOUT them, not data OF theirs.
         return bool(self.sudo().search_count([
-            ('role_id', '=', role.id), ('page_key', '=', page_key)]))
+            ('role_id', 'in', roles.ids), ('page_key', '=', page_key)]))
 
     @api.model
     def modryn_nav(self):

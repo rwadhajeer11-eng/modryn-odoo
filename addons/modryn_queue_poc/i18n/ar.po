@@ -111,7 +111,8 @@ msgstr "الانضمام إلى الطابور"
 msgid ""
 "Make yourself at home — feel free to browse while you wait.\n"
 "                            We'll text you when we're ready."
-msgstr "اعتبري نفسك في بيتك — تجوّلي بحرية بينما تنتظرين. سنراسلك عندما نكون جاهزين."
+msgstr ""
+"اعتبري نفسك في بيتك — تجوّلي بحرية بينما تنتظرين. سنراسلك عندما نكون جاهزين."
 
 #. module: modryn_queue_poc
 #: model:ir.ui.menu,name:modryn_queue_poc.menu_modryn_queue_root
@@ -364,14 +365,19 @@ msgstr "أهلاً وسهلاً"
 #. module: modryn_queue_poc
 #. odoo-python
 #: code:addons/modryn_queue_poc/models/queue_entry.py:0
-msgid "You're in the queue — and you're next. We'll be with you in a moment. Your ticket: %(link)s"
-msgstr "أنتِ في قائمة الانتظار — ودورك التالي. سنكون معك بعد لحظات. تذكرتك: %(link)s"
+msgid ""
+"You're in the queue — and you're next. We'll be with you in a moment. Your "
+"ticket: %(link)s"
+msgstr ""
+"أنتِ في قائمة الانتظار — ودورك التالي. سنكون معك بعد لحظات. تذكرتك: %(link)s"
 
 #. module: modryn_queue_poc
 #. odoo-python
 #: code:addons/modryn_queue_poc/models/queue_entry.py:0
-msgid "You're in the queue. We'll text you when you're next. Your ticket: %(link)s"
-msgstr "أنتِ في قائمة الانتظار. سنرسل لك رسالة عندما يحين دورك. تذكرتك: %(link)s"
+msgid ""
+"You're in the queue. We'll text you when you're next. Your ticket: %(link)s"
+msgstr ""
+"أنتِ في قائمة الانتظار. سنرسل لك رسالة عندما يحين دورك. تذكرتك: %(link)s"
 
 #. module: modryn_queue_poc
 #: model_terms:ir.ui.view,arch_db:modryn_queue_poc.ticket
@@ -383,3 +389,48 @@ msgstr "أنت التالية"
 #: code:addons/modryn_queue_poc/models/queue_entry.py:0
 msgid "You're next — we'll be with you in a moment."
 msgstr "أنت التالية — سنكون معك بعد لحظات."
+
+#. module: modryn_queue_poc
+#: model_terms:ir.ui.view,arch_db:modryn_queue_poc.queue_sign
+msgid "QR"
+msgstr "QR"
+
+#. module: modryn_queue_poc
+#: model:ir.model.fields,field_description:modryn_queue_poc.field_modryn_queue_entry__access_token
+msgid "Access Token"
+msgstr "رمز الوصول"
+
+#. module: modryn_queue_poc
+#: model:ir.model.fields,field_description:modryn_queue_poc.field_modryn_queue_entry__create_uid
+msgid "Created by"
+msgstr "أنشأه"
+
+#. module: modryn_queue_poc
+#: model:ir.model.fields,field_description:modryn_queue_poc.field_modryn_queue_entry__create_date
+msgid "Created on"
+msgstr "أُنشئ في"
+
+#. module: modryn_queue_poc
+#: model:ir.model.fields,field_description:modryn_queue_poc.field_modryn_queue_entry__display_name
+msgid "Display Name"
+msgstr "الاسم المعروض"
+
+#. module: modryn_queue_poc
+#: model:ir.model.fields,field_description:modryn_queue_poc.field_modryn_queue_entry__id
+msgid "ID"
+msgstr "المعرّف"
+
+#. module: modryn_queue_poc
+#: model:ir.model.fields,field_description:modryn_queue_poc.field_modryn_queue_entry__write_uid
+msgid "Last Updated by"
+msgstr "آخر تحديث بواسطة"
+
+#. module: modryn_queue_poc
+#: model:ir.model.fields,field_description:modryn_queue_poc.field_modryn_queue_entry__write_date
+msgid "Last Updated on"
+msgstr "آخر تحديث في"
+
+#. module: modryn_queue_poc
+#: model:ir.model.fields,field_description:modryn_queue_poc.field_modryn_queue_entry__state
+msgid "State"
+msgstr "الحالة"

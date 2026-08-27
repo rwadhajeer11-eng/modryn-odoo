@@ -347,3 +347,54 @@ msgstr "פתוחות"
 #: model_terms:ir.ui.view,arch_db:modryn_atelier.dashboard
 msgid "overdue"
 msgstr "באיחור"
+
+#. module: modryn_atelier
+#: model:ir.model.fields,field_description:modryn_atelier.field_modryn_garment_piece__name
+msgid "Name"
+msgstr "שם"
+
+#. module: modryn_atelier
+#: model:ir.model.fields,field_description:modryn_atelier.field_modryn_garment_piece__active
+msgid "Active"
+msgstr "פעיל"
+
+#. module: modryn_atelier
+#: model:ir.model.fields,field_description:modryn_atelier.field_modryn_alteration_task__create_uid
+#: model:ir.model.fields,field_description:modryn_atelier.field_modryn_garment_piece__create_uid
+msgid "Created by"
+msgstr "נוצר על ידי"
+
+#. module: modryn_atelier
+#: model:ir.model.fields,field_description:modryn_atelier.field_modryn_alteration_task__create_date
+#: model:ir.model.fields,field_description:modryn_atelier.field_modryn_garment_piece__create_date
+msgid "Created on"
+msgstr "נוצר בתאריך"
+
+#. module: modryn_atelier
+#: model:ir.model.fields,field_description:modryn_atelier.field_modryn_alteration_task__display_name
+#: model:ir.model.fields,field_description:modryn_atelier.field_modryn_garment_piece__display_name
+msgid "Display Name"
+msgstr "שם לתצוגה"
+
+#. module: modryn_atelier
+#: model:ir.model.fields,field_description:modryn_atelier.field_modryn_alteration_task__id
+#: model:ir.model.fields,field_description:modryn_atelier.field_modryn_garment_piece__id
+msgid "ID"
+msgstr "מזהה"
+
+#. module: modryn_atelier
+#: model:ir.model.fields,field_description:modryn_atelier.field_modryn_alteration_task__write_uid
+#: model:ir.model.fields,field_description:modryn_atelier.field_modryn_garment_piece__write_uid
+msgid "Last Updated by"
+msgstr "עודכן לאחרונה על ידי"
+
+#. module: modryn_atelier
+#: model:ir.model.fields,field_description:modryn_atelier.field_modryn_alteration_task__write_date
+#: model:ir.model.fields,field_description:modryn_atelier.field_modryn_garment_piece__write_date
+msgid "Last Updated on"
+msgstr "עודכן לאחרונה בתאריך"
+
+#. module: modryn_atelier
+#: model:ir.model.fields,field_description:modryn_atelier.field_modryn_garment_piece__sequence
+msgid "Sequence"
+msgstr "סדר"

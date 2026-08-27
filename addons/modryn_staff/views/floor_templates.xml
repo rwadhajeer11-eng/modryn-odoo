@@ -55,9 +55,23 @@
                          count is what says otherwise. -->
                     <a href="/staff/notifications"
                        t-attf-class="modryn_admin_link modryn_bell #{'has_unread' if unread_count else ''}"
-                       t-att-title="'Notifications'"
-                       t-attf-aria-label="Notifications#{', %s unread' % unread_count if unread_count else ''}">
+                       title="Notifications">
                         <i class="fa fa-bell-o modryn_admin_icon" aria-hidden="true"/>
+                        <!-- Plain attributes and plain text, NOT t-att-title or
+                             t-attf-aria-label. Odoo extracts the value of a
+                             static title/alt/aria-label, but it never looks
+                             inside a t-att expression - so `t-att-title="'Notifications'"`
+                             sat there reading English in Hebrew and in Arabic
+                             with the .po file looking complete.
+
+                             The count moves out of aria-label and into the link
+                             as real text: an aria-label REPLACES the element's
+                             content for a screen reader, so writing the number
+                             there was the only way she heard it - and that is
+                             exactly the string that could not be translated.
+                             Read out now as "Notifications 3", both parts
+                             translated, and the visible badge is unchanged. -->
+                        <span class="visually-hidden">Notifications</span>
                         <span t-if="unread_count" class="modryn_bell_count"
                               t-out="unread_count"/>
                     </a>
