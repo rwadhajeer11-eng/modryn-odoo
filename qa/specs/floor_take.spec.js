@@ -14,6 +14,7 @@
 const { test, expect } = require('@playwright/test');
 const { submitFormWith } = require('../lib/form.js');
 const { requirePeople } = require('../lib/people.js');
+const { startShift, endShift } = require('../lib/shift.js');
 
 const PASSWORD = process.env.MODRYN_DEMO_PASSWORD;
 const TENANT = new URL(process.env.BASE_URL || 'http://qa.localtest.me:8069').hostname.split('.')[0];
@@ -67,6 +68,10 @@ test('@writes a worker can be given the board, and take a customer on it', async
     await signIn(page, PEOPLE.staff);
     const res = await page.goto('/floor');
     expect(res.status()).toBe(200);
+    // Through the door first. /floor answers 200 either way - the entry card is
+    // a page, not a refusal - so the status alone no longer says the board is
+    // there, which is exactly why the assertion below follows the press.
+    await startShift(page);
     await expect(page.locator('owl-component[name="modryn_staff.floor_board"]')).toHaveCount(1);
 
     // The board PAINTS before anything can be pressed. modryn_panel is the
@@ -101,6 +106,7 @@ test('@writes a worker can be given the board, and take a customer on it', async
     // Whatever the queue held, the manager-only actions must NOT be offered to
     // her - their routes refuse her, so a visible button would simply error.
     await expect(page.getByRole('button', { name: /^Invite to book$/i })).toHaveCount(0);
+    await endShift(page);
   } finally {
     // ---- hand the grant back, whatever happened above -------------------
     // act 5c asserts the floor is not a staff page by default. Leaving this

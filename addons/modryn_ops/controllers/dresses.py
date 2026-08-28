@@ -1,5 +1,6 @@
 import base64
 import io
+import re
 
 import werkzeug.urls
 from PIL import Image
@@ -102,6 +103,23 @@ class ModrynDresses(ModrynManage):
         })
 
     # ------------------------------------------------------------- helpers
+    def _back(self, post):
+        """/manage/dresses, landing on the row she was working on.
+
+        Every form here used to redirect to the bare page, so the browser went
+        to the top and she scrolled back down to the dress she had just touched
+        - on a rail of thirty, that is the whole page every time she changes a
+        number.
+
+        The fragment is validated rather than reflected: it is echoed into a
+        Location header, and anything the page did not put there has no business
+        being in one.
+        """
+        anchor = (post.get('back') or '').strip()
+        if anchor and re.fullmatch(r'dress-\d+', anchor):
+            return '/manage/dresses#%s' % anchor
+        return '/manage/dresses'
+
     def _kinds(self):
         return request.env['modryn.dress.type'].sudo().search([])
 
@@ -450,13 +468,13 @@ class ModrynDresses(ModrynManage):
         try:
             count = int(post.get('stock') or 0)
         except ValueError:
-            return request.redirect(
-                '/manage/dresses?error=%s' % _("Please enter a whole number"))
+            return request.redirect('%s?error=%s' % (
+                self._back(post), _("Please enter a whole number")))
         if count < 0:
-            return request.redirect(
-                '/manage/dresses?error=%s' % _("Stock cannot go below zero."))
+            return request.redirect('%s?error=%s' % (
+                self._back(post), _("Stock cannot go below zero.")))
         variant.modryn_stock = count
-        return request.redirect('/manage/dresses')
+        return request.redirect(self._back(post))
 
     @http.route('/manage/dresses/serial', type='http', auth='user', website=True,
                 methods=['POST'], csrf=True, sitemap=False)
@@ -467,4 +485,4 @@ class ModrynDresses(ModrynManage):
             int(post.get('dress_id') or 0)).exists()
         if dress:
             dress.modryn_serial = (post.get('serial') or '').strip() or False
-        return request.redirect('/manage/dresses')
+        return request.redirect(self._back(post))

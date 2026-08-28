@@ -129,9 +129,55 @@
         </t>
     </template>
 
+    <!-- The door onto the floor.
+         Shown INSTEAD of the board, never as an overlay on top of it: a screen
+         left open on an empty counter should not be showing the room's live
+         state, and "who is on the floor" should be something somebody typed
+         rather than something inferred from an open tab. -->
+    <template id="floor_start" name="MODRYN start of shift">
+        <t t-call="modryn_staff.staff_layout">
+            <t t-set="active_tab" t-value="'floor'"/>
+            <div class="modryn_shift_gate">
+                <div class="modryn_shift_card">
+                    <div class="modryn_shift_mark" aria-hidden="true">
+                        <i class="fa fa-diamond"/>
+                    </div>
+                    <h1 class="mb-1">Start my shift</h1>
+                    <p class="modryn_sub mb-4">
+                        <t t-esc="me.name"/> — the floor opens once you are on it.
+                    </p>
+                    <form action="/floor/shift/start" method="post">
+                        <input type="hidden" name="csrf_token"
+                               t-att-value="request.csrf_token()"/>
+                        <button type="submit" class="btn btn-primary modryn_shift_go">
+                            I'm on the floor
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </t>
+    </template>
+
     <template id="floor_page" name="MODRYN floor terminal">
         <t t-call="modryn_staff.staff_layout">
             <t t-set="active_tab" t-value="'floor'"/>
+            <!-- The way out, in the corner. A form and not a button on the OWL
+                 board: leaving is not a board action, the board is what
+                 disappears, and a plain post needs no listener that could be
+                 lost when the component re-renders. -->
+            <div t-if="on_shift_since" class="modryn_shift_out">
+                <span class="modryn_sub">
+                    On the floor since
+                    <strong dir="ltr" t-esc="on_shift_since.strftime('%H:%M')"/>
+                </span>
+                <form action="/floor/shift/end" method="post" class="d-inline">
+                    <input type="hidden" name="csrf_token"
+                           t-att-value="request.csrf_token()"/>
+                    <button type="submit" class="btn btn-sm btn-outline-dark">
+                        End my shift
+                    </button>
+                </form>
+            </div>
             <!-- The board is an OWL component so it can hold a live bus
                  subscription. Mounted by web's public_components interaction,
                  which scans for <owl-component name=...>. -->

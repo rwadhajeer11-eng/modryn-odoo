@@ -29,7 +29,7 @@ therefore never touch hr.employee directly.
     # the ORM. A version bumped without that directory records the number
     # against every database and the migration is skipped FOREVER on exactly
     # the tenants holding data.
-    'version': '19.0.1.7.0',
+    'version': '19.0.1.8.0',
     'depends': [
         'hr',
         'portal',

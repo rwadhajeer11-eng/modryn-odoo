@@ -90,6 +90,14 @@ class HrEmployee(models.Model):
     # hr with no gender column at all, and the selection here is the boutique's
     # own - the team is overwhelmingly women and "prefer not to say" is a real
     # answer that a two-value field cannot hold.
+    # When she came onto the floor, or nothing if she is not on it.
+    #
+    # A TIMESTAMP and not a boolean, because the two questions the boutique
+    # actually asks are "who is here" and "since when" - and a boolean answers
+    # only the first while looking like it answers both. It also survives a
+    # server restart with its meaning intact, which a session flag would not.
+    modryn_on_shift_since = fields.Datetime(readonly=True, copy=False)
+
     modryn_gender = fields.Selection(
         selection=[('female', "Female"), ('male', "Male"), ('other', "Prefer not to say")],
         string="Gender")

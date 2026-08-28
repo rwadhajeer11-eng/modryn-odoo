@@ -55,6 +55,18 @@ class ModrynAlterationTask(models.Model):
     # Required by the shift manager at creation (the controller refuses a task
     # without it); the default only backfills rows that predate the field.
     priority = fields.Selection(PRIORITIES, default='1', required=True, index=True)
+
+    @api.model
+    def modryn_selection(self, field_name):
+        """A field's selection as [(code, label)], with the labels TRANSLATED.
+
+        The module-level STATES and PRIORITIES lists are plain Python and are
+        the definition, not the display: reading them straight gives the English
+        the file was written in. Odoo stores each label as an
+        ir.model.fields.selection row and translates it, and fields_get is the
+        supported way to ask for that in the reader's language.
+        """
+        return self.fields_get([field_name])[field_name]['selection']
     # Nullable at the DB level — legacy rows have no due date and inventing one
     # would be data fiction — but required at the single creation door.
     due_date = fields.Date(string="Due")

@@ -1921,3 +1921,33 @@ msgstr ""
 "                <span data-code=\"missing_customer\">يرجى تحديد لمين هذا.</span>\n"
 "                <span data-code=\"missing_priority\">يرجى اختيار أولوية.</span>\n"
 "                <span data-code=\"missing_due\">يرجى اختيار تاريخ التسليم — طابور الورشة بيشتغل عليه.</span>"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.floor_start
+msgid "Start my shift"
+msgstr "بدء الوردية"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.floor_start
+msgid "I'm on the floor"
+msgstr "أنا على الأرض"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.floor_page
+msgid "End my shift"
+msgstr "إنهاء الوردية"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.floor_page
+msgid "On the floor since"
+msgstr "على الأرض منذ"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.floor_start
+msgid "— the floor opens once you are on it."
+msgstr "— الأرض بتفتح لمّا تكوني عليها."
+
+#. module: modryn_staff
+#: model:ir.model.fields,field_description:modryn_staff.field_hr_employee__modryn_on_shift_since
+msgid "Modryn On Shift Since"
+msgstr "على الأرض منذ"

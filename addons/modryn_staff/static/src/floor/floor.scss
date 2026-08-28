@@ -162,7 +162,7 @@
     border: 1px solid $modryn-border;
 
     &.is_free  { color: $modryn-success; border-color: rgba(46, 107, 79, 0.4); }
-    &.is_busy  { color: $modryn-gold-text; border-color: rgba(197, 160, 89, 0.6); }
+    &.is_busy  { color: $modryn-gold-text; border-color: rgba(201, 162, 39, 0.6); }
     &.is_wait  { color: $modryn-ink-muted; }
     &.is_muted { color: $modryn-ink-muted; }
 }
@@ -235,7 +235,7 @@
 
     &.is_primary {
         border-color: $modryn-gold;
-        background: rgba(197, 160, 89, 0.12);
+        background: rgba(201, 162, 39, 0.12);
         font-weight: 600;
     }
 
@@ -264,12 +264,12 @@
 // gets a faint outline so the manager can see where a chip may land.
 .modryn_drop_hover {
     border-color: $modryn-gold !important;
-    box-shadow: 0 0 0 3px rgba(197, 160, 89, 0.25);
+    box-shadow: 0 0 0 3px rgba(201, 162, 39, 0.25);
 }
 
 .is_dragging {
     [data-drop-target] {
-        outline: 1px dashed rgba(197, 160, 89, 0.5);
+        outline: 1px dashed rgba(201, 162, 39, 0.5);
         outline-offset: 2px;
     }
 }
@@ -360,7 +360,7 @@
 
     &:has(input:checked) {
         border-color: $modryn-gold;
-        background: rgba(197, 160, 89, 0.10);
+        background: rgba(201, 162, 39, 0.10);
     }
 }
 
@@ -370,18 +370,27 @@
     gap: 24px;
 }
 
+// Every section on these pages. Softer corners and a shadow that lifts the card
+// off the cream, so the page reads as paper on a table rather than as boxes
+// drawn on a form. The heading keeps a gold hairline under it - one line of
+// metal per section is enough to feel gilded; a gold border on every panel would
+// be a page of highlighter.
 .modryn_panel {
     background: #FFFFFF;
     border: 1px solid $modryn-border;
-    border-radius: 8px;
+    border-radius: 14px;
     padding: 20px 24px;
+    box-shadow: 0 1px 2px rgba(43, 33, 24, 0.05),
+                0 12px 28px rgba(43, 33, 24, 0.06);
 }
 
 .modryn_panel_head {
     display: flex;
     align-items: baseline;
     justify-content: space-between;
-    margin-block-end: 12px;
+    margin-block-end: 14px;
+    padding-block-end: 10px;
+    border-block-end: 1px solid $modryn-gold-light;
 
     h2 { font-size: 1.25rem; margin: 0; }
 }
@@ -439,7 +448,7 @@
     gap: 12px;
     padding: 10px 14px;
     border-radius: 8px;
-    background: rgba(197, 160, 89, 0.12);
+    background: rgba(201, 162, 39, 0.12);
     border: 1px solid $modryn-gold;
     font-size: 0.9375rem;
 }
@@ -628,31 +637,54 @@
 // ===================== the main screen's week =====================
 // rgba() only. LibSass rejects Color Level 4 and drops the WHOLE frontend
 // bundle when it meets it, not just the offending rule.
+// One shift, one card. These were rows divided by hairlines - readable, and
+// flat. A boutique that sells on how it looks should show a woman her week as a
+// set of objects, not as a list, and a card is also easier to find with a thumb
+// on a phone than a row.
+//
+// The gilded edge is two borders on the same hue rather than one: a hairline in
+// the metal itself and a soft outer glow. One flat gold line reads as a
+// highlighter; two read as an edge with light falling on it.
 .modryn_myshift {
     display: flex;
     flex-wrap: wrap;
     align-items: baseline;
     gap: 8px;
-    padding-block: 6px;
+    padding: 12px 16px;
+    margin-block-end: 10px;
+    background: linear-gradient(180deg, #FFFFFF 0%, $modryn-gold-wash 100%);
+    border: 1px solid $modryn-gold-light;
+    border-inline-start: 3px solid $modryn-gold;
+    border-radius: 12px;
+    box-shadow: 0 1px 2px rgba(43, 33, 24, 0.04),
+                0 8px 20px rgba(201, 162, 39, 0.10);
 
-    & + & {
-        border-block-start: 1px solid $modryn-border;
+    &:last-child {
+        margin-block-end: 0;
     }
 }
 
+// One day, one card, so the week reads as seven objects.
 .modryn_weekday {
-    padding-block: 8px;
+    padding: 12px 16px;
+    margin-block-end: 10px;
+    background: #FFFFFF;
+    border: 1px solid $modryn-border;
+    border-radius: 12px;
+    box-shadow: 0 1px 2px rgba(43, 33, 24, 0.04);
 
-    & + & {
-        border-block-start: 1px solid $modryn-border;
+    &:last-child {
+        margin-block-end: 0;
     }
 
-    // Today, marked with a rule down the leading edge rather than a fill: the
-    // panel already carries chips and badges, and another background would make
-    // the one row she is looking for harder to find, not easier.
+    // Today, in the metal. The whole card is lifted rather than given a stripe:
+    // among seven cards the one she wants should be findable at arm's length.
     &.is_today {
+        border-color: $modryn-gold-light;
         border-inline-start: 3px solid $modryn-gold;
-        padding-inline-start: 10px;
+        background: linear-gradient(180deg, #FFFFFF 0%, $modryn-gold-wash 100%);
+        box-shadow: 0 1px 2px rgba(43, 33, 24, 0.04),
+                    0 8px 22px rgba(201, 162, 39, 0.14);
     }
 }
 
@@ -668,19 +700,25 @@
     gap: 6px;
 }
 
+// One shift inside a day, boxed in its own right so two shifts on the same day
+// cannot be read as one long line of chips.
 .modryn_weekslot {
     display: flex;
     flex-wrap: wrap;
     align-items: baseline;
     gap: 6px;
+    padding: 8px 10px;
+    background: $modryn-bg;
+    border: 1px solid $modryn-border;
+    border-radius: 9px;
 
-    // Her own shift, inside a list of everybody's. Weight and a tint, so it
-    // still reads on a printed rota where the tint is gone.
+    // Hers, inside a list of everybody's. Weight AND the metal, so it still
+    // reads on a printed rota where the tint is gone.
     &.is_mine {
         font-weight: 600;
-        background: rgba(197, 160, 89, 0.08);
-        border-radius: 6px;
-        padding: 4px 6px;
+        background: linear-gradient(180deg, #FFFFFF 0%, $modryn-gold-wash 100%);
+        border-color: $modryn-gold-light;
+        border-inline-start: 3px solid $modryn-gold;
     }
 }
 
@@ -702,7 +740,9 @@
     padding: 0 4px;
     border-radius: 8px;
     background: $modryn-gold;
-    color: #FFFFFF;
+    // Ink on gold: white measured 2.4:1 here, which for a two-digit count in a
+    // 0.62rem font is the least legible thing on the page.
+    color: $modryn-ink;
     font-size: 0.62rem;
     line-height: 16px;
     text-align: center;
@@ -858,4 +898,70 @@
 
 [dir="rtl"] .modryn_becomes::before {
     content: "\2190";               // ←
+}
+
+
+// The catalogue's inline confirmation - never window.confirm(), which is system
+// chrome in a font this boutique does not use and cannot be translated.
+.modryn_confirm {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 8px;
+    background: $modryn-gold-wash;
+    border: 1px solid $modryn-gold-light;
+    border-radius: 999px;
+}
+
+// ==================== the door onto the floor ====================
+// The entry card is the first thing a woman sees at the start of her day, so it
+// is the one screen in the product that is allowed to be mostly empty space.
+.modryn_shift_gate {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-block-size: 60vh;
+    padding: 24px;
+}
+
+.modryn_shift_card {
+    text-align: center;
+    max-inline-size: 420px;
+    inline-size: 100%;
+    padding: 40px 32px;
+    background: linear-gradient(180deg, #FFFFFF 0%, $modryn-gold-wash 100%);
+    border: 1px solid $modryn-gold-light;
+    border-radius: 18px;
+    box-shadow: 0 2px 4px rgba(43, 33, 24, 0.05),
+                0 20px 44px rgba(201, 162, 39, 0.16);
+}
+
+.modryn_shift_mark {
+    inline-size: 56px;
+    block-size: 56px;
+    margin: 0 auto 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: linear-gradient(180deg, $modryn-gold-light 0%, $modryn-gold 55%, $modryn-gold-deep 100%);
+    // Ink, not white: white on this gold is 2.4:1.
+    color: $modryn-ink;
+    font-size: 1.4rem;
+}
+
+.modryn_shift_go {
+    inline-size: 100%;
+    padding-block: 12px;
+    font-size: 1.05rem;
+}
+
+// The way out. Aligned to the trailing edge so it mirrors with the language and
+// never lands under the RTL page's own margin.
+.modryn_shift_out {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-block-end: 12px;
 }

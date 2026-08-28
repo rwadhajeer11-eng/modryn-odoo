@@ -18,12 +18,20 @@
 
             <div t-if="error" class="modryn_field_error mb-3" role="alert" t-out="error"/>
 
+            <!-- The script guards on this id: dresses.js rides the frontend
+                 bundle onto every page in the product and must do nothing on
+                 the other ones. -->
+            <div id="modryn_dresses_page"/>
+
             <div t-if="not dresses" class="modryn_empty">
                 Nothing here yet. Press <strong>Add one</strong> to put your first
                 dress on the rail.
             </div>
 
-            <div t-foreach="dresses" t-as="d"
+            <!-- An id per dress, so every form on this page can send the
+                 browser back to the row it belongs to instead of to the top of
+                 the catalogue. -->
+            <div t-foreach="dresses" t-as="d" t-attf-id="dress-#{d['id']}"
                  t-attf-class="modryn_panel mb-3 #{'modryn_archived' if not d['active'] else ''}">
                 <div class="modryn_dress_head">
                     <!-- The main photo. /web/image serves a placeholder for a
@@ -114,10 +122,17 @@
                             </td>
                             <td class="text-end">
                                 <form action="/manage/dresses/stock" method="post"
-                                      class="d-flex gap-1 justify-content-end">
+                                      data-confirm-stock="1"
+                                      class="d-flex gap-1 justify-content-end align-items-center flex-wrap">
                                     <input type="hidden" name="csrf_token"
                                            t-att-value="request.csrf_token()"/>
                                     <input type="hidden" name="variant_id" t-att-value="v['id']"/>
+                                    <!-- Where to land afterwards. Sent by the
+                                         form rather than worked out on the
+                                         server, so the page decides where its
+                                         own rows are. -->
+                                    <input type="hidden" name="back"
+                                           t-attf-value="dress-#{d['id']}"/>
                                     <!-- str(), because t-att-value DROPS the
                                          attribute entirely when the value is
                                          falsy - and 0 is falsy. The box for a
@@ -130,7 +145,19 @@
                                            class="form-control form-control-sm"
                                            style="max-width: 90px;" dir="ltr"
                                            t-att-value="str(v['stock'])"/>
-                                    <button type="submit" class="btn btn-sm btn-outline-dark">Set</button>
+                                    <!-- Ask, then do. A replace-set is not a
+                                         nudge: a mistyped 0 puts the dress out
+                                         of stock on the shop, and the number
+                                         she is replacing is gone. -->
+                                    <button type="button" data-role="ask"
+                                            class="btn btn-sm btn-outline-dark">Set</button>
+                                    <span data-role="confirm" class="d-none modryn_confirm">
+                                        <span class="modryn_sub">Save this number?</span>
+                                        <button type="submit" data-role="yes"
+                                                class="btn btn-sm btn-primary">Confirm</button>
+                                        <button type="button" data-role="no"
+                                                class="btn btn-sm btn-link">Cancel</button>
+                                    </span>
                                 </form>
                             </td>
                         </tr>

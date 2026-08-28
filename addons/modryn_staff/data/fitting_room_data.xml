@@ -4,15 +4,15 @@
          noupdate so a boutique's own edits survive every module upgrade. -->
     <data noupdate="1">
         <record id="room_1" model="modryn.fitting.room">
-            <field name="name">Room 1</field>
+            <field name="name">חדר 1</field>
             <field name="sequence">10</field>
         </record>
         <record id="room_2" model="modryn.fitting.room">
-            <field name="name">Room 2</field>
+            <field name="name">חדר 2</field>
             <field name="sequence">20</field>
         </record>
         <record id="room_suite" model="modryn.fitting.room">
-            <field name="name">Bridal suite</field>
+            <field name="name">סוויטת כלה</field>
             <field name="sequence">30</field>
         </record>
     </data>

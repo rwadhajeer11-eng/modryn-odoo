@@ -3,6 +3,7 @@ const { test, expect } = require('@playwright/test');
 const { submitFormWith } = require('../lib/form.js');
 
 const { requirePeople } = require('../lib/people.js');
+const { startShift, endShift } = require('../lib/shift.js');
 const { qaPhone, readOtp } = require('../lib/otp.js');
 
 const PASSWORD = process.env.MODRYN_DEMO_PASSWORD;
@@ -32,6 +33,9 @@ test('act 5 — a manager lands on the floor board, and it paints', async ({ pag
   // accident of Odoo's default redirect.
   await expect(page).toHaveURL(/\/floor/);
 
+  // The board is behind a door now: she starts her shift and the room appears.
+  await startShift(page);
+
   // THE ASSERTION verify.sh §10a CANNOT MAKE. It proves /floor answers 200.
   // A 200 carrying a JS exception that leaves an empty div is exactly the shape
   // of the bug §10a was written after, and §10a still cannot see it.
@@ -48,6 +52,12 @@ test('act 5 — a manager lands on the floor board, and it paints', async ({ pag
   ).catch(() => {});
   const painted = await page.evaluate(() => document.body.innerText.trim().length);
   expect(painted, '/floor returned 200 and rendered nothing — a JS exception left the board empty').toBeGreaterThan(120);
+
+  // Off the floor again. Being on it is stored on hr.employee, so a spec that
+  // clocks in and never out leaves somebody permanently on shift and the NEXT
+  // run measures that as the starting state - the trap the roster's window
+  // override already taught this suite once.
+  await endShift(page);
 });
 
 test('act 5b — staff-level access stops where it should', async ({ page }) => {
@@ -90,6 +100,10 @@ test('act 6 — a walk-in appears on the board without a reload @writes', async 
     await board.fill('input[name="password"]', PASSWORD);
     await submitFormWith(board, 'username');
     await expect(board).toHaveURL(/\/floor/);
+    // The watcher has to be ON the floor, or there is no board to watch: /floor
+    // shows the entry card until she starts her shift, and this act is about
+    // what arrives over the socket once the room is open.
+    await startShift(board);
 
     const before = await board.evaluate(() => document.body.innerText);
 
@@ -127,6 +141,7 @@ test('act 6 — a walk-in appears on the board without a reload @writes', async 
       expect(now).toContain(name);
     }).toPass({ timeout: 15000 });
   } finally {
+    await endShift(await watcher.newPage()).catch(() => {});
     await watcher.close();
     await walkin.close();
   }

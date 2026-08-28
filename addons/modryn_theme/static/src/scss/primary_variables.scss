@@ -27,8 +27,14 @@ $modryn-bg: #FDFBF7;
 $modryn-surface: #F6F0E6;
 $modryn-ink: #2B2118;
 $modryn-ink-muted: #6B5D4F;
-$modryn-gold: #C5A059;
-$modryn-gold-text: #7F612B; // the ONLY gold that may carry text (AA)
+$modryn-gold: #C9A227;          // the accent itself - a true gold, not a tan
+$modryn-gold-light: #E6C766;    // the lit edge of the metal
+$modryn-gold-deep: #9A7B1B;     // its shadowed edge
+// A wash for surfaces that should feel gilded rather than painted. Written out
+// as a solid rather than an rgba() so it can be used as a gradient stop, which
+// LibSass will not do with a transparent colour.
+$modryn-gold-wash: #FBF5E4;
+$modryn-gold-text: #6F5410;     // the ONLY gold that may carry text (AA)
 $modryn-border: #E4DACA;
 $modryn-danger: #A03232;
 $modryn-success: #2E6B4F;

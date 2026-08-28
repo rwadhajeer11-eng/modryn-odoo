@@ -47,7 +47,7 @@
     // reinforcement rather than the only signal.
     &.is_short {
         border-inline-start: 3px solid $modryn-gold;
-        background: rgba(197, 160, 89, 0.06);
+        background: rgba(201, 162, 39, 0.06);
     }
 
     &.is_published {
@@ -166,19 +166,23 @@
     // rgba() only - LibSass rejects Color Level 4 and drops the WHOLE frontend
     // bundle when it meets it, not just the offending rule.
     &:hover:not(:disabled) {
-        background: rgba(197, 160, 89, 0.10);
+        background: rgba(201, 162, 39, 0.10);
     }
 
     // She can work this one. Gold fill AND a tick: colour is never the only
     // signal, because roughly one man in twelve cannot tell this gold from
     // this grey, and because a printed rota loses colour entirely.
     &.is_on {
-        background: $modryn-gold;
-        border-color: $modryn-gold;
-        color: #FFFFFF;
+        // A gilded cell: the metal, with a lit top edge and a darker rim.
+        background: linear-gradient(180deg, $modryn-gold-light 0%, $modryn-gold 55%, $modryn-gold-deep 100%);
+        border-color: $modryn-gold-deep;
+        // INK, not white. White on this gold is 2.4:1 - under AA, and it always
+        // was. The boutique's own ink is 6.5:1 on the same fill, and dark
+        // lettering on gold is what gilding looks like anyway.
+        color: $modryn-ink;
 
         &:hover:not(:disabled) {
-            background: rgba(197, 160, 89, 0.85);
+            background: rgba(201, 162, 39, 0.85);
         }
     }
 
@@ -188,14 +192,14 @@
     // between them.
     &.is_saving {
         border-color: $modryn-gold;
-        box-shadow: 0 0 0 3px rgba(197, 160, 89, 0.28);
+        box-shadow: 0 0 0 3px rgba(201, 162, 39, 0.28);
     }
 
     // Keyboard focus gets the same ring the finger gets.
     &:focus-visible {
         outline: none;
         border-color: $modryn-gold;
-        box-shadow: 0 0 0 3px rgba(197, 160, 89, 0.35);
+        box-shadow: 0 0 0 3px rgba(201, 162, 39, 0.35);
     }
 
     // A locked week is READ-ONLY, not greyed into illegibility: she still has
@@ -209,8 +213,8 @@
 
         &.is_on {
             // Still clearly hers - just not hers to change any more.
-            background: rgba(197, 160, 89, 0.35);
-            border-color: rgba(197, 160, 89, 0.55);
+            background: rgba(201, 162, 39, 0.35);
+            border-color: rgba(201, 162, 39, 0.55);
             color: $modryn-gold-text;
         }
     }
@@ -259,7 +263,7 @@
     border: 1px solid $modryn-gold;
     border-inline-start: 4px solid $modryn-gold;
     border-radius: 10px;
-    background: rgba(197, 160, 89, 0.10);
+    background: rgba(201, 162, 39, 0.10);
     color: $modryn-gold-text;
     font-size: 0.9rem;
 }

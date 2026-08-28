@@ -71,8 +71,14 @@ class ModrynHomeAtelier(ModrynHome):
         # 'delivered' is excluded on purpose. It stamps delivered_at and releases
         # her to the next job; it is a one-way door and does not belong in a row
         # of toggles.
-        home['task_states'] = [(code, label) for code, label in STATES
-                               if code in OPEN_STATES]
+        # Off the FIELD, not off the constant: these three words are buttons on
+        # her main screen and the constant is plain English Python. Odoo
+        # translates a Selection's labels; it cannot translate a list nobody
+        # asked it about.
+        labels = dict(request.env['modryn.alteration.task'].sudo()
+                      .modryn_selection('state'))
+        home['task_states'] = [(code, labels.get(code, code))
+                               for code in OPEN_STATES]
         return home
 
 

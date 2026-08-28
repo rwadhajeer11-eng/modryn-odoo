@@ -28,7 +28,7 @@ seamstress is not the same as one of each, even though both are "two people".
     # migration is a PRE-migrate, because the new columns must be filled before
     # _auto_init ever sees them empty - see the file for why a post-migrate here
     # would print green and silently orphan every tick.
-    'version': '19.0.1.2.0',
+    'version': '19.0.1.3.0',
     'depends': [
         'modryn_staff',
     ],

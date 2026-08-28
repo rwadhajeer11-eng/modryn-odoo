@@ -25,11 +25,6 @@ msgstr ""
 "                </select>"
 
 #. module: modryn_ops
-#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_audit
-msgid "<span class=\"modryn_sub\"> → </span>"
-msgstr "<span class=\"modryn_sub\"> ← </span>"
-
-#. module: modryn_ops
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_audit_log__actor_name
 msgid "Actor Name"
 msgstr "שם המבצעת"
@@ -1083,3 +1078,13 @@ msgstr "לאיזו מהקטגוריות של הבוטיק זה שייך."
 #: model:ir.model.fields,field_description:modryn_ops.field_calendar_event__modryn_stock_taken
 msgid "Modryn Stock Taken"
 msgstr "נלקח מהמלאי"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_dresses
+msgid "Confirm"
+msgstr "אישור"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_dresses
+msgid "<span class=\"modryn_sub\">Save this number?</span>"
+msgstr "<span class=\"modryn_sub\">לשמור את המספר הזה?</span>"

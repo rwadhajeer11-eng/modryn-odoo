@@ -35,6 +35,13 @@ the hooks this module defines.
     # hand-built ones upgrade (migrations/) — see schema_guard.py.
     'pre_init_hook': 'pre_init_hook',
     'post_init_hook': 'post_init_hook',
+    'assets': {
+        # Plain script, guarded by an element only the catalogue renders - the
+        # same shape as modryn_staff's home.js, which also rides this bundle.
+        'web.assets_frontend': [
+            'modryn_ops/static/src/dresses.js',
+        ],
+    },
     'author': 'MODRYN',
     'license': 'LGPL-3',
 }

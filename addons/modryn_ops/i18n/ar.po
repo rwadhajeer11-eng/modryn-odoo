@@ -666,11 +666,6 @@ msgid "<span class=\"modryn_sub\">–</span>"
 msgstr "<span class=\"modryn_sub\">–</span>"
 
 #. module: modryn_ops
-#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_audit
-msgid "<span class=\"modryn_sub\"> → </span>"
-msgstr "<span class=\"modryn_sub\"> → </span>"
-
-#. module: modryn_ops
 #: model_terms:ir.ui.view,arch_db:modryn_ops.manage_dresses
 msgid "Save"
 msgstr "حفظ"
@@ -1085,3 +1080,13 @@ msgstr "لأي فئة من فئات البوتيك ينتمي هذا."
 #: model:ir.model.fields,field_description:modryn_ops.field_calendar_event__modryn_stock_taken
 msgid "Modryn Stock Taken"
 msgstr "أُخذ من المخزون"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_dresses
+msgid "Confirm"
+msgstr "تأكيد"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_dresses
+msgid "<span class=\"modryn_sub\">Save this number?</span>"
+msgstr "<span class=\"modryn_sub\">نحفظ هذا الرقم؟</span>"

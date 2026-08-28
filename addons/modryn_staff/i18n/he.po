@@ -1915,3 +1915,33 @@ msgstr ""
 "                <span data-code=\"missing_customer\">נא לציין למי זה.</span>\n"
 "                <span data-code=\"missing_priority\">נא לבחור עדיפות.</span>\n"
 "                <span data-code=\"missing_due\">נא לבחור תאריך יעד — תור הסדנה עובד לפיו.</span>"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.floor_start
+msgid "Start my shift"
+msgstr "תחילת המשמרת"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.floor_start
+msgid "I'm on the floor"
+msgstr "אני על הרצפה"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.floor_page
+msgid "End my shift"
+msgstr "סיום המשמרת"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.floor_page
+msgid "On the floor since"
+msgstr "על הרצפה מאז"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.floor_start
+msgid "— the floor opens once you are on it."
+msgstr "— הרצפה נפתחת ברגע שאת עליה."
+
+#. module: modryn_staff
+#: model:ir.model.fields,field_description:modryn_staff.field_hr_employee__modryn_on_shift_since
+msgid "Modryn On Shift Since"
+msgstr "על הרצפה מאז"

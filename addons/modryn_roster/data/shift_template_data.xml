@@ -4,35 +4,35 @@
          own hours survive every upgrade. -->
     <data noupdate="1">
         <record id="shift_sun_day" model="modryn.shift.template">
-            <field name="name">Sunday</field>
+            <field name="name">ראשון</field>
             <field name="weekday">6</field>
             <field name="start_hour">10.0</field>
             <field name="end_hour">18.0</field>
             <field name="sequence">10</field>
         </record>
         <record id="shift_mon_day" model="modryn.shift.template">
-            <field name="name">Monday</field>
+            <field name="name">שני</field>
             <field name="weekday">0</field>
             <field name="start_hour">10.0</field>
             <field name="end_hour">18.0</field>
             <field name="sequence">20</field>
         </record>
         <record id="shift_tue_day" model="modryn.shift.template">
-            <field name="name">Tuesday</field>
+            <field name="name">שלישי</field>
             <field name="weekday">1</field>
             <field name="start_hour">10.0</field>
             <field name="end_hour">18.0</field>
             <field name="sequence">30</field>
         </record>
         <record id="shift_wed_day" model="modryn.shift.template">
-            <field name="name">Wednesday</field>
+            <field name="name">רביעי</field>
             <field name="weekday">2</field>
             <field name="start_hour">10.0</field>
             <field name="end_hour">18.0</field>
             <field name="sequence">40</field>
         </record>
         <record id="shift_thu_late" model="modryn.shift.template">
-            <field name="name">Thursday late</field>
+            <field name="name">חמישי ערב</field>
             <field name="weekday">3</field>
             <field name="start_hour">12.0</field>
             <field name="end_hour">21.0</field>

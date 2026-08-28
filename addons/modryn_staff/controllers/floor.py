@@ -2,7 +2,7 @@ from datetime import datetime, time
 
 import pytz
 
-from odoo import http
+from odoo import fields, http
 from odoo.exceptions import ValidationError
 from odoo.http import request
 
@@ -149,10 +149,45 @@ class ModrynFloor(http.Controller):
         # The PAGE asks the matrix; every ACTION below keeps its level gate.
         if not access.can_view('floor'):
             return access.deny()
+        me = self._my_employee()
+        # The door. Until she has started her shift the board is not drawn at
+        # all - not merely hidden - so a screen left open on an empty counter
+        # shows an entry card rather than the room's live state, and "who is on
+        # the floor" has an answer somebody typed rather than one inferred from
+        # an open tab.
+        if me and not me.modryn_on_shift_since:
+            return request.render('modryn_staff.floor_start', {
+                'me': me,
+                'is_manager': self._is_manager(),
+            })
         return request.render('modryn_staff.floor_page', {
             'board': self._board(),
             'is_manager': self._is_manager(),
+            'on_shift_since': me.modryn_on_shift_since if me else None,
         })
+
+    @http.route('/floor/shift/start', type='http', auth='user', website=True,
+                methods=['POST'], csrf=True, sitemap=False)
+    def floor_shift_start(self, **post):
+        if not access.can_view('floor'):
+            return access.deny()
+        me = self._my_employee()
+        if me and not me.modryn_on_shift_since:
+            # sudo(): a portal staff member has no write access to her own
+            # hr.employee row, the same reason every other write on this
+            # controller goes through it. The group check above is the gate.
+            me.sudo().modryn_on_shift_since = fields.Datetime.now()
+        return request.redirect('/floor')
+
+    @http.route('/floor/shift/end', type='http', auth='user', website=True,
+                methods=['POST'], csrf=True, sitemap=False)
+    def floor_shift_end(self, **post):
+        if not access.can_view('floor'):
+            return access.deny()
+        me = self._my_employee()
+        if me:
+            me.sudo().modryn_on_shift_since = False
+        return request.redirect('/floor')
 
     # ------------------------------------------------------------------ data
     @http.route('/floor/data', type='jsonrpc', auth='user')
