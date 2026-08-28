@@ -40,6 +40,19 @@ async function signIn(page, login) {
 // closed fold above it.
 async function openWindowPanel(page) {
   const panel = page.locator('details:has(#open_weekday)');
+  // count() FIRST. getAttribute on a locator that matches nothing does not
+  // return null - it waits the full actionability timeout and then throws
+  // "locator.getAttribute: Timeout 15000ms exceeded", which points at this line
+  // and says nothing about the real problem: the manager's window panel was not
+  // on the page at all. Fifteen wasted seconds and a message that sends you to
+  // the wrong file.
+  if ((await panel.count()) === 0) {
+    throw new Error(
+      'the submission-window panel is not on this page — either the sign-in ' +
+      'did not land as a manager, or the week on screen is one whose window ' +
+      'cannot be set'
+    );
+  }
   if (!(await panel.getAttribute('open'))) {
     await panel.locator('summary').click();
   }

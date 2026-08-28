@@ -1,4 +1,4 @@
-from odoo import api, models
+from odoo import api, fields, models
 
 
 class CalendarEvent(models.Model):
@@ -17,6 +17,15 @@ class CalendarEvent(models.Model):
     """
 
     _inherit = 'calendar.event'
+
+    # Whether THIS appointment actually took a dress off the rail. Stored,
+    # because putting one back is only honest if one was taken, and by the time
+    # the outcome is corrected the count no longer remembers. Without it the
+    # pair was asymmetric and invented stock: a dress sold while the count said
+    # zero takes nothing (correctly), and correcting that outcome then handed
+    # the boutique a dress it never owned. Measured: 0 -> take -> None -> put
+    # back -> 1.
+    modryn_stock_taken = fields.Boolean(default=False, copy=False, readonly=True)
 
     @api.model
     def _modryn_stock_relevant(self, vals):
@@ -39,15 +48,22 @@ class CalendarEvent(models.Model):
                     not is_sold or event.modryn_variant_id != was_variant):
                 # It is no longer a sale of THAT dress - either the outcome was
                 # corrected, or the stylist fixed which size it actually was.
-                was_variant.modryn_put_one_back()
+                # Only give one back if one was actually taken: the sale may
+                # have been recorded against a size the count already said was
+                # empty, and putting a dress back on a rail it never left is
+                # how a boutique ends up believing in stock it does not have.
+                if event.modryn_stock_taken:
+                    was_variant.modryn_put_one_back()
+                    event.sudo().modryn_stock_taken = False
 
             if is_sold and event.modryn_variant_id and (
                     not was_sold or event.modryn_variant_id != was_variant):
-                # Ignoring the None answer on purpose: a sale of a dress the
-                # count says is not there still happened, and the correct
-                # response is a count that says zero rather than a refused
-                # sale. modryn_take_one leaves it at zero instead of going
-                # negative, and the owner can see the discrepancy on the
-                # catalogue page.
-                event.modryn_variant_id.modryn_take_one()
+                # A sale of a dress the count says is not there still happened,
+                # and the right answer is a count that reads zero rather than a
+                # refused sale - the owner sees the discrepancy on the
+                # catalogue page. But whether one came off the rail is recorded,
+                # so undoing this later gives back exactly what was taken and
+                # nothing more.
+                took = event.modryn_variant_id.modryn_take_one()
+                event.sudo().modryn_stock_taken = took is not None
         return res

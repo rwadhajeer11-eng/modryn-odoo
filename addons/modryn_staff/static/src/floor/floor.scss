@@ -732,3 +732,130 @@
         font-size: 0.58rem;
     }
 }
+
+// ----------------------------------------------------- the catalogue rows
+// These classes were written into modryn_ops' dress template and never given a
+// stylesheet, so the page rendered as a full-size photograph with the facts
+// underneath it and a QR code the width of the screen. They live HERE because
+// every other class that page uses - .modryn_panel, .modryn_table,
+// .modryn_piece_check - is defined here too: floor.scss is already the shared
+// stylesheet for the whole staff section, and modryn_roster's templates borrow
+// from it the same way.
+//
+// Logical properties throughout, never left/right: these pages are Hebrew first
+// and the whole layout mirrors.
+.modryn_dress_head {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+    flex-wrap: wrap;
+}
+
+.modryn_dress_photo {
+    inline-size: 120px;
+    block-size: 160px;
+    object-fit: cover;
+    border-radius: 10px;
+    border: 1px solid $modryn-border;
+    background: #FFFFFF;
+    flex: 0 0 auto;
+}
+
+.modryn_dress_facts {
+    // The only part that may take the leftover width, so the photo and the QR
+    // keep their size and the text reflows between them.
+    flex: 1 1 220px;
+    min-inline-size: 200px;
+}
+
+.modryn_dress_qr {
+    flex: 0 0 auto;
+    text-align: center;
+    max-inline-size: 140px;
+
+    img {
+        inline-size: 120px;
+        block-size: 120px;
+        display: block;
+        margin-inline: auto;
+    }
+}
+
+// The extra photos. A strip rather than a grid: there are two or three of them,
+// and a grid of three items reads as a grid with holes in it.
+.modryn_dress_strip {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.modryn_dress_thumb {
+    text-align: center;
+
+    img {
+        inline-size: 64px;
+        block-size: 84px;
+        object-fit: cover;
+        border-radius: 8px;
+        border: 1px solid $modryn-border;
+        display: block;
+    }
+}
+
+// A small standing label - the kind of thing, next to the name.
+.modryn_chip:not(.is_primary) {
+    display: inline-block;
+    padding: 1px 8px;
+    margin-inline-start: 6px;
+    border: 1px solid $modryn-border;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    color: $modryn-ink-muted;
+    vertical-align: middle;
+}
+
+// ------------------------------------------- wide tables on a narrow phone
+@media (max-width: 767.98px) {
+    // Nine tables across the staff and manage sections carry six or seven
+    // columns and no width limit. On a 390px phone each one is around 720px
+    // wide, and because a <table> cannot scroll on its own the PAGE scrolls
+    // instead - so reading the last column drags the heading, the buttons and
+    // the fixed nav bar sideways with it. Measured on /manage/staff:
+    // scrollWidth 720 against a clientWidth of 390.
+    //
+    // display:block is what lets a table scroll inside itself. It is scoped to
+    // the phone breakpoint ONLY: at that width every one of these tables
+    // overflows anyway, and on a desktop, where they all fit, the normal table
+    // layout is left completely alone.
+    //
+    // The Team page keeps its own .modryn_table_scroll wrapper. A wrapper is
+    // the better mechanism where the markup can carry one - it leaves the table
+    // a table - and this rule is the blanket for the eight that cannot be
+    // wrapped without nine separate pieces of XML surgery.
+    .modryn_table:not(.modryn_table_scroll .modryn_table) {
+        display: block;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        white-space: nowrap;
+    }
+}
+
+// "became" — the arrow in the audit trail.
+//
+// A hardcoded → in the markup does not mirror, so on a Hebrew or Arabic page it
+// pointed from the NEW value back to the old one and read as the change having
+// run backwards. Drawn from CSS instead, where the direction can follow the
+// document: content is chosen per direction, and the space around it belongs to
+// the glyph rather than to the text nodes either side.
+.modryn_becomes {
+    display: inline-block;
+    margin-inline: 6px;
+
+    &::before {
+        content: "\2192";           // →
+    }
+}
+
+[dir="rtl"] .modryn_becomes::before {
+    content: "\2190";               // ←
+}

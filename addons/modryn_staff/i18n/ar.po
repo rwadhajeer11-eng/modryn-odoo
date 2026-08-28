@@ -1886,3 +1886,21 @@ msgstr ""
 "حافظي على هذه التفاصيل محدّثة كي يتمكّن البوتيك من الوصول إليك دائمًا.\n"
 "                الأدوار ومستوى الصلاحية تحدّدهما مالكة البوتيك.\n"
 "            "
+
+#. module: modryn_staff
+#. odoo-python
+#: code:addons/modryn_staff/controllers/auth.py:0
+msgid "Please choose a file."
+msgstr "يرجى اختيار ملف."
+
+#. module: modryn_staff
+#. odoo-python
+#: code:addons/modryn_staff/controllers/auth.py:0
+msgid "That file is too large — the limit is 10 MB."
+msgstr "هذا الملف كبير جدًا — الحد الأقصى 10 ميغابايت."
+
+#. module: modryn_staff
+#. odoo-python
+#: code:addons/modryn_staff/models/hr_employee.py:0
+msgid "That username is already taken."
+msgstr "اسم المستخدم هذا مأخوذ بالفعل."

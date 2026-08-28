@@ -43,7 +43,6 @@ class ModrynRolePage(models.Model):
 
     # ------------------------------------------------------------------ read
     @api.model
-    @api.model
     def modryn_unread(self):
         """Unread count for the navbar bell, for the signed-in woman.
 
@@ -59,6 +58,31 @@ class ModrynRolePage(models.Model):
             [('user_id', '=', user.id)], limit=1)
         return self.env['modryn.staff.notification'].sudo().modryn_unread_count(
             employee)
+
+    @api.model
+    def modryn_page_title(self, page_key):
+        """The browser-tab title for a page, in the reader's language.
+
+        Read off the nav registry rather than written a second time: every page
+        already has a translated label there, and a title maintained separately
+        is a title that drifts from the tab it sits next to.
+
+        It exists because a QWeb template's `name` attribute lands in
+        ir.ui.view.name, which is a plain varchar and NOT translatable - so every
+        browser tab on this Hebrew-first product read English ("MODRYN staff
+        home") with no way to translate it. Odoo's website layout takes
+        `additional_title` from the render context if the page supplies one, so
+        supplying it here fixes every page at once.
+
+        Returns False, not '', when there is no such page: the layout tests it
+        with `if not additional_title`, and an empty string would take the same
+        branch while reading as a title somebody meant to be blank.
+        """
+        entry = nav.page(page_key) if page_key else None
+        # str(), because the label is a LazyTranslate that only resolves when
+        # something asks for its text - and the concatenation in the website
+        # layout would otherwise stringify it at a point we do not control.
+        return str(entry['label']) if entry else False
 
     def modryn_can_view(self, page_key):
         """May the signed-in user open this page?

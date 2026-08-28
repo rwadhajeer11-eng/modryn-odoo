@@ -110,3 +110,24 @@ body {
 #products_grid_before + div h1 {
     margin-block-end: 32px;
 }
+
+// A dress that has gone, said on the shop.
+//
+// rgba() only - LibSass rejects Color Level 4 and drops the WHOLE frontend
+// bundle when it meets it, not just the offending rule.
+.modryn_sold_out_badge {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 999px;
+    background: rgba(160, 50, 50, 0.10);
+    border: 1px solid rgba(160, 50, 50, 0.35);
+    color: #A03232;
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+}
+
+.modryn_sold_out_note {
+    color: #6B5D4F;
+    font-size: 0.9rem;
+}

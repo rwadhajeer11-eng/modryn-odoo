@@ -102,7 +102,12 @@
                     <t t-foreach="home['shift']" t-as="s">
                         <div>
                             <span class="modryn_strong" t-out="s['name']"/>
-                            <span class="modryn_sub ms-2" t-out="s['hours']"/>
+                            <!-- dir="ltr", like the other three places this
+                                 same range is printed. Without it the bidi
+                                 algorithm reads "09:00-17:00" right to left
+                                 with the Hebrew around it and shows a shift
+                                 that ends before it starts. -->
+                            <span class="modryn_sub ms-2" dir="ltr" t-out="s['hours']"/>
                         </div>
                     </t>
                 </div>

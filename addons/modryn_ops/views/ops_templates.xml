@@ -194,12 +194,21 @@
                 </thead>
                 <tbody>
                     <tr t-foreach="rows" t-as="r">
-                        <td class="modryn_sub"><t t-esc="r['when']"/></td>
+                        <!-- dir="ltr" on the timestamp: it is a date and a
+                             time, and inside Hebrew prose the bidi algorithm
+                             puts the clock before the calendar. -->
+                        <td class="modryn_sub" dir="ltr"><t t-esc="r['when']"/></td>
                         <td><t t-esc="r['actor']"/></td>
                         <td><t t-esc="r['label']"/></td>
+                        <!-- The arrow means "became", so it has to point the way
+                             the reader is going. In Hebrew and Arabic that is
+                             right to left, and a hardcoded → says the change ran
+                             backwards - the new value turning into the old one.
+                             The cell mirrors as a whole and the glyph follows
+                             the language. -->
                         <td>
                             <span class="modryn_sub"><t t-esc="r['old'] or '—'"/></span>
-                            <span class="modryn_sub"> → </span>
+                            <span class="modryn_sub modryn_becomes" aria-hidden="true"/>
                             <span class="modryn_strong"><t t-esc="r['new'] or '—'"/></span>
                         </td>
                     </tr>

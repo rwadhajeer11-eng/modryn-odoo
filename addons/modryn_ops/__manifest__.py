@@ -17,13 +17,19 @@ Later features hang follow-up tasks (modryn.task), bride categories and the KPI 
 the hooks this module defines.
 """,
     'category': 'Website',
-    'version': '19.0.1.3.0',
+    # 19.0.1.4.0 ships WITH migrations/19.0.1.4.0/. The catalogue gains a
+    # kind, a description and photos, and the repair for stock counts that
+    # went below zero before the constraint existed. A version bumped without
+    # that directory records the number against every database and the
+    # migration is then skipped FOREVER on exactly the tenants holding data.
+    'version': '19.0.1.4.0',
     'depends': ['modryn_staff', 'modryn_portal'],
     'data': [
         'security/ir.model.access.csv',
         'data/ir_cron_data.xml',
         'views/ops_templates.xml',
         'views/dress_templates.xml',
+        'views/shop_templates.xml',
     ],
     # Wired to BOTH lifecycle paths: cloned tenants INSTALL (hooks), the
     # hand-built ones upgrade (migrations/) — see schema_guard.py.

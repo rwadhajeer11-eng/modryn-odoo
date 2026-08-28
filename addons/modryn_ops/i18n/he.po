@@ -397,11 +397,6 @@ msgid "No closed appointments with an assigned stylist in this range yet."
 msgstr "אין עדיין פגישות סגורות עם סטייליסטית משויכת בטווח הזה."
 
 #. module: modryn_ops
-#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_dresses
-msgid "No dresses yet."
-msgstr "עדיין אין שמלות."
-
-#. module: modryn_ops
 #: model:ir.model.fields.selection,name:modryn_ops.selection__calendar_event__modryn_outcome__no_show
 msgid "No-show"
 msgstr "לא הגיעה"
@@ -415,11 +410,6 @@ msgstr "תיאום אחרי אי-הגעה"
 #: model_terms:ir.ui.view,arch_db:modryn_ops.manage_reports
 msgid "No-shows"
 msgstr "אי-הגעות"
-
-#. module: modryn_ops
-#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_dresses
-msgid "None left"
-msgstr "לא נשאר"
 
 #. module: modryn_ops
 #: model_terms:ir.ui.view,arch_db:modryn_ops.manage_dresses
@@ -569,11 +559,6 @@ msgid "sold /"
 msgstr "נמכרו /"
 
 #. module: modryn_ops
-#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_dresses
-msgid "Sold out"
-msgstr "אזלה"
-
-#. module: modryn_ops
 #. odoo-python
 #: code:addons/modryn_ops/controllers/dresses.py:0
 #: code:addons/modryn_ops/models/dress.py:0
@@ -676,13 +661,6 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:modryn_ops.manage_audit
 msgid "What"
 msgstr "מה"
-
-#. module: modryn_ops
-#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_dresses
-msgid ""
-"What is on the rail, in each size. A dress with nothing left in\n"
-"                any size is sold out on the shop."
-msgstr "מה יש על המוט, בכל מידה. שמלה שלא נשארה באף מידה מסומנת כאזלה בחנות."
 
 #. module: modryn_ops
 #: model_terms:ir.ui.view,arch_db:modryn_ops.manage_audit
@@ -827,3 +805,281 @@ msgstr "מצב"
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_audit_log__user_id
 msgid "User"
 msgstr "משתמשת"
+
+#. module: modryn_ops
+#. odoo-python
+#: code:addons/modryn_ops/controllers/dresses.py:0
+msgid "%(name)s is not a picture we can read - try a JPG or a PNG."
+msgstr "%(name)s הוא לא תמונה שאנחנו יודעים לקרוא — נסי JPG או PNG."
+
+#. module: modryn_ops
+#. odoo-python
+#: code:addons/modryn_ops/controllers/dresses.py:0
+msgid "%(name)s is too big - photos have to be under %(mb)s MB."
+msgstr "%(name)s גדולה מדי — תמונות צריכות להיות מתחת ל-%(mb)s MB."
+
+#. module: modryn_ops
+#. odoo-python
+#: code:addons/modryn_ops/controllers/dresses.py:0
+msgid "Please give it a name."
+msgstr "נא לתת שם."
+
+#. module: modryn_ops
+#. odoo-python
+#: code:addons/modryn_ops/controllers/dresses.py:0
+msgid "Please type a name."
+msgstr "נא להקליד שם."
+
+#. module: modryn_ops
+#. odoo-python
+#: code:addons/modryn_ops/controllers/dresses.py:0
+msgid "The price has to be a number."
+msgstr "המחיר צריך להיות מספר."
+
+#. module: modryn_ops
+#. odoo-python
+#: code:addons/modryn_ops/controllers/dresses.py:0
+msgid "The price cannot be less than zero."
+msgstr "המחיר לא יכול להיות פחות מאפס."
+
+#. module: modryn_ops
+#. odoo-python
+#: code:addons/modryn_ops/controllers/dresses.py:0
+#: code:addons/modryn_ops/models/dress_type.py:0
+msgid "That kind already exists."
+msgstr "הסוג הזה כבר קיים."
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_dresses
+msgid "Dresses and accessories"
+msgstr "שמלות ואקססוריז"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_dresses
+msgid "Add one"
+msgstr "הוספה"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_dress_form
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_dress_kinds
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_dresses
+msgid "Kinds"
+msgstr "סוגים"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_dress_form
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_dresses
+msgid "Edit"
+msgstr "עריכה"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_dress_form
+msgid "Cancel"
+msgstr "ביטול"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_dresses
+msgid "Remove"
+msgstr "הסרה"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_dresses
+msgid "Archived"
+msgstr "בארכיון"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_dress_kinds
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_dresses
+msgid "Bring back"
+msgstr "החזרה"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_dresses
+msgid "Out of stock"
+msgstr "אזל המלאי"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_dresses
+msgid "This size has gone"
+msgstr "המידה הזו אזלה"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_dress_kinds
+msgid "Actions"
+msgstr "פעולות"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_dress_kinds
+msgid "In use"
+msgstr "בשימוש"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_dress_kinds
+msgid "Accessory"
+msgstr "אקססורי"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_dress_kinds
+msgid "Yes"
+msgstr "כן"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_dress_kinds
+msgid "No kinds yet."
+msgstr "אין עדיין סוגים."
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_dress_kinds
+msgid "A new kind"
+msgstr "סוג חדש"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_dresses
+msgid ""
+"What is on the rail, in each size. A size with none left says so,\n"
+"                and an item with nothing left in any size stops on the shop."
+msgstr ""
+"מה יש על המתלה, בכל מידה. מידה שאזלה אומרת זאת,\n"
+"                ופריט שלא נשאר ממנו כלום באף מידה נעצר בחנות."
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_dresses
+msgid ""
+"Nothing here yet. Press <strong>Add one</strong> to put your first\n"
+"                dress on the rail."
+msgstr ""
+"אין כאן עדיין כלום. לחצי <strong>הוספה</strong> כדי לשים את\n"
+"                השמלה הראשונה שלך על המתלה."
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_dresses
+msgid "One size. Set how many there are from <strong>Edit</strong>."
+msgstr "מידה אחת. קבעי כמה יש מתוך <strong>עריכה</strong>."
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_dress_form
+msgid "Add a dress or accessory"
+msgstr "הוספת שמלה או אקססורי"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_dress_form
+msgid "Description"
+msgstr "תיאור"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_dress_form
+msgid "Sizes"
+msgstr "מידות"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_dress_form
+msgid "Photos"
+msgstr "תמונות"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_dress_form
+msgid "Price (₪)"
+msgstr "מחיר (₪)"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_dress_form
+msgid "What you would tell a bride about it."
+msgstr "מה שהיית מספרת לכלה עליה."
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_dress_form
+msgid "Add or change these under"
+msgstr "אפשר להוסיף או לשנות תחת"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_dress_form
+msgid "The first one becomes the main photo. Up to"
+msgstr "הראשונה הופכת לתמונה הראשית. עד"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_dress_form
+msgid "MB each."
+msgstr "MB לכל אחת."
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_dress_form
+msgid "Adding more keeps the ones already there."
+msgstr "הוספה של עוד שומרת על אלה שכבר קיימות."
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_dress_form
+msgid ""
+"Separated by commas. Leave it empty for one size — a veil,\n"
+"                        say. <strong>Removing a size deletes how many of it you\n"
+"                        had</strong>, so take it out only when the boutique\n"
+"                        really stops carrying it."
+msgstr ""
+"מופרדות בפסיקים. השאירי ריק למידה אחת — הינומה, למשל.\n"
+"                        <strong>הסרת מידה מוחקת כמה היו לך ממנה</strong>,\n"
+"                        אז הוציאי אותה רק כשהבוטיק באמת מפסיק להחזיק אותה."
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_dress_kinds
+msgid ""
+"Your own words for what you sell — נסיכה, מרמייד, הינומה. Mark the\n"
+"                ones that are accessories: those are asked for without sizes."
+msgstr ""
+"המילים שלך למה שאת מוכרת — נסיכה, מרמייד, הינומה. סמני את\n"
+"                אלה שהם אקססוריז: אותם מבקשים בלי מידות."
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_dress_kinds
+msgid "<span>It is an accessory</span>"
+msgstr "<span>זה אקססורי</span>"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_dress_form
+msgid "<span>Show it on the shop</span>"
+msgstr "<span>להציג בחנות</span>"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_dress_form
+msgid "<option value=\"\">—</option>"
+msgstr "<option value=\"\">—</option>"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.products_item_sold_out
+msgid "<span>Sold out</span>"
+msgstr "<span>אזל המלאי</span>"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.product_sold_out
+msgid "<span class=\"modryn_sold_out_badge\"><span>Sold out</span></span>"
+msgstr "<span class=\"modryn_sold_out_badge\"><span>אזל המלאי</span></span>"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.product_sold_out
+msgid ""
+"This one has gone. Come and see us — we will find you\n"
+"                    something like it."
+msgstr ""
+"השמלה הזו אזלה. בואי לראות אותנו — נמצא לך משהו\n"
+"                    דומה."
+
+#. module: modryn_ops
+#: model:ir.model,name:modryn_ops.model_modryn_dress_type
+msgid "Kind of dress or accessory"
+msgstr "סוג של שמלה או אקססורי"
+
+#. module: modryn_ops
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_dress_type__is_accessory
+#: model:ir.model.fields,field_description:modryn_ops.field_product_product__modryn_is_accessory
+#: model:ir.model.fields,field_description:modryn_ops.field_product_template__modryn_is_accessory
+msgid "This is an accessory, not a dress"
+msgstr "זה אקססורי, לא שמלה"
+
+#. module: modryn_ops
+#: model:ir.model.fields,help:modryn_ops.field_product_product__modryn_type_id
+#: model:ir.model.fields,help:modryn_ops.field_product_template__modryn_type_id
+msgid "Which of the boutique's own categories this belongs to."
+msgstr "לאיזו מהקטגוריות של הבוטיק זה שייך."
+
+#. module: modryn_ops
+#: model:ir.model.fields,field_description:modryn_ops.field_calendar_event__modryn_stock_taken
+msgid "Modryn Stock Taken"
+msgstr "נלקח מהמלאי"

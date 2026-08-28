@@ -13,13 +13,28 @@ class ProductTemplate(models.Model):
 
     _inherit = 'product.template'
 
-    # A dress the boutique refers to out loud: "bring me 1042". default_code is
-    # Odoo's own internal reference and is already indexed and searchable, so
-    # this is a friendlier label for the same field rather than a second one
-    # that can disagree with it.
-    modryn_serial = fields.Char(
-        related='default_code', readonly=False, store=False,
-        string="Serial number")
+    # A dress the boutique refers to out loud: "bring me 1042".
+    #
+    # A REAL stored column, and not related='default_code' as it started out.
+    # product.template.default_code is not a column at all - it is a non-stored
+    # compute over the variants, writable only when a template has exactly one
+    # of them. Every dress here has three sizes, so writing it did nothing:
+    # the owner typed a serial, the form said saved, and the value was silently
+    # discarded. Measured on a fresh dress - three sizes, serial typed,
+    # default_code came back False.
+    #
+    # Stored here also matches what the number MEANS. It names the dress, not
+    # one size of it, and Odoo's field would have made "1042 in a 36" and
+    # "1042 in a 38" separately editable and free to disagree.
+    modryn_serial = fields.Char(string="Serial number", index=True)
+
+    modryn_type_id = fields.Many2one(
+        'modryn.dress.type', string="Kind",
+        help="Which of the boutique's own categories this belongs to.")
+    # Read off the type rather than stored again here: two facts about one thing
+    # drift the moment somebody edits one of them.
+    modryn_is_accessory = fields.Boolean(
+        related='modryn_type_id.is_accessory', readonly=True)
 
     modryn_in_stock = fields.Integer(
         string="In stock", compute='_compute_modryn_in_stock',
@@ -69,7 +84,18 @@ class ProductProduct(models.Model):
         return self.modryn_stock
 
     def modryn_put_one_back(self):
-        """A sale was undone. The mirror of modryn_take_one."""
+        """A sale was undone. The exact mirror of modryn_take_one.
+
+        Returns what is left, or None if there was nothing to give back.
+
+        It has to be told whether one was ever taken, which is why the caller
+        passes that in rather than this method assuming it. Unconditional, it
+        INVENTED stock: mark an appointment sold for a dress the count says is
+        not there (take_one correctly refuses and leaves it at zero), then
+        correct the outcome - and the boutique now believes it owns a dress
+        that never existed. Measured on a real variant: 0 -> take_one() -> None
+        -> put_one_back() -> 1.
+        """
         self.ensure_one()
         self.sudo().modryn_stock += 1
         return self.modryn_stock

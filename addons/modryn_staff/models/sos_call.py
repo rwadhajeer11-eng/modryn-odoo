@@ -78,11 +78,28 @@ class ModrynSosCall(models.Model):
 
     # ----------------------------------------------------------------- notify
     def _notify(self):
-        """Push to every open board; each one decides if it is being called."""
+        """Ring every open board. The RING only - never what it is about.
+
+        'modryn_queue' is a plain string channel, and Odoo's
+        ir.websocket._build_bus_channel_list hands back the channel list the
+        CLIENT asked for, unfiltered - so anyone who knows or guesses that name
+        receives everything published on it. Odoo's own _sendone docstring says
+        a string target "should not be guessable by an attacker".
+
+        This used to push the whole _row(): the customer's name, which room she
+        is in, the staff member calling, and the free-text note. The queue's own
+        publisher was narrowed for exactly this reason and the SOS one was
+        missed.
+
+        Nothing is lost by sending the id alone. floor_board.js subscribes with
+        `this.onBusEvent = () => this.refresh()` - it ignores the payload
+        entirely and re-fetches the board through an authenticated route, which
+        is the only place the names should ever have come from.
+        """
         for call in self:
             self.env['bus.bus']._sendone(
                 'modryn_queue', 'modryn_queue/update',
-                {'kind': 'sos', 'call': call._row()},
+                {'kind': 'sos', 'id': call.id},
             )
 
     @api.model_create_multi

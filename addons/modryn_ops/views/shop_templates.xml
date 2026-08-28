@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!--
+        Sold out, storefront side.
+
+        modryn_sold_out was computed from the rail count and read by exactly one
+        screen: the owner's. A bride could browse, and book a fitting for, a
+        dress the boutique had none of in any size - which costs her a trip and
+        the boutique an appointment slot, and neither of them finds out until she
+        is standing in the room.
+
+        These live in modryn_ops and NOT in modryn_theme with the shop's other
+        overrides, even though that is where they would read most naturally. The
+        field is defined here, and modryn_theme cannot depend on modryn_ops:
+        modryn_ops -> modryn_portal -> modryn_theme already, so the arrow the
+        other way is a cycle and the registry refuses to build. modryn_ops
+        reaches website_sale through that same chain, so inheriting its
+        templates from here works without adding any dependency at all.
+    -->
+
+    <!-- The shop grid tile. Both touch points are overridden for the same
+         reason the price is: Odoo renders the tile and the detail page from
+         different templates, and a badge on only one of them is a promise the
+         other quietly breaks. -->
+    <template id="products_item_sold_out"
+              inherit_id="website_sale.products_item"
+              name="MODRYN: sold out on the grid tile">
+        <xpath expr="//div[hasclass('product_price')]" position="before">
+            <div t-if="product.modryn_sold_out" class="modryn_sold_out_badge">
+                <span>Sold out</span>
+            </div>
+        </xpath>
+    </template>
+
+    <template id="product_sold_out"
+              inherit_id="website_sale.product_price"
+              name="MODRYN: sold out on the product page">
+        <xpath expr="//div[@name='product_price']" position="before">
+            <div t-if="product.modryn_sold_out" class="modryn_sold_out_note mb-2">
+                <span class="modryn_sold_out_badge"><span>Sold out</span></span>
+                <!-- Not a dead end. This one has gone, and the boutique would
+                     still rather she came in - a bridal shop sells the fitting,
+                     not the rail. -->
+                <div class="mt-1">
+                    This one has gone. Come and see us — we will find you
+                    something like it.
+                </div>
+            </div>
+        </xpath>
+    </template>
+
+</odoo>

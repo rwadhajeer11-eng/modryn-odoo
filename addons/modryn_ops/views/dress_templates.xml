@@ -4,40 +4,85 @@
     <!-- ============================== the rail ============================= -->
     <template id="manage_dresses" name="MODRYN dresses">
         <t t-call="modryn_staff.manage_layout">
-            <h1 class="mb-2">Dresses</h1>
+            <div class="d-flex align-items-center justify-content-between mb-2">
+                <h1 class="mb-0">Dresses and accessories</h1>
+                <div class="d-flex gap-2">
+                    <a href="/manage/dress-kinds" class="btn btn-outline-dark">Kinds</a>
+                    <a href="/manage/dresses/new" class="btn btn-primary">Add one</a>
+                </div>
+            </div>
             <p class="text-muted mb-4">
-                What is on the rail, in each size. A dress with nothing left in
-                any size is sold out on the shop.
+                What is on the rail, in each size. A size with none left says so,
+                and an item with nothing left in any size stops on the shop.
             </p>
 
             <div t-if="error" class="modryn_field_error mb-3" role="alert" t-out="error"/>
 
-            <div t-if="not dresses" class="modryn_empty">No dresses yet.</div>
+            <div t-if="not dresses" class="modryn_empty">
+                Nothing here yet. Press <strong>Add one</strong> to put your first
+                dress on the rail.
+            </div>
 
-            <div t-foreach="dresses" t-as="d" class="modryn_panel mb-3">
+            <div t-foreach="dresses" t-as="d"
+                 t-attf-class="modryn_panel mb-3 #{'modryn_archived' if not d['active'] else ''}">
                 <div class="modryn_dress_head">
+                    <!-- The main photo. /web/image serves a placeholder for a
+                         product that has none, so the row never collapses into
+                         a broken-image icon. -->
                     <img t-attf-src="/web/image/product.template/#{d['id']}/image_128"
                          t-att-alt="d['name']" class="modryn_dress_photo"/>
                     <div class="modryn_dress_facts">
                         <div>
                             <span class="modryn_strong" t-out="d['name']"/>
-                            <span t-if="d['sold_out']" class="modryn_badge is_busy">Sold out</span>
+                            <span t-if="d['kind']" class="modryn_chip" t-out="d['kind']"/>
+                            <!-- Three different sentences, never one badge. "We
+                                 have none at all" and "she took it off the shop"
+                                 are different decisions with different fixes. -->
+                            <span t-if="not d['active']" class="modryn_badge is_muted">Archived</span>
+                            <span t-elif="d['sold_out']" class="modryn_badge is_busy">Out of stock</span>
                             <span t-elif="not d['published']" class="modryn_badge is_muted">Not on the shop</span>
                         </div>
                         <div class="modryn_sub" dir="ltr">
                             <t t-esc="'%.0f' % d['price']"/> ₪
                             · <t t-esc="d['in_stock']"/> on the rail
+                            <t t-if="d['serial']"> · <t t-esc="d['serial']"/></t>
+                        </div>
+                        <div t-if="d['description']" class="modryn_sub mt-1"
+                             t-out="d['description']"/>
+
+                        <!-- Every extra photo, each with its own way out. The
+                             main one has no delete: replacing it is what the
+                             edit form is for, and a dress with no picture at all
+                             is not a state the shop should be able to reach from
+                             a stray click. -->
+                        <div t-if="len(d['images']) &gt; 1" class="modryn_dress_strip mt-2">
+                            <t t-foreach="d['images']" t-as="img">
+                                <div t-if="not img['main']" class="modryn_dress_thumb">
+                                    <img t-attf-src="/web/image/product.image/#{img['id']}/image_128"
+                                         t-att-alt="d['name']"/>
+                                    <form t-attf-action="/manage/dresses/photo/#{img['id']}/delete"
+                                          method="post">
+                                        <input type="hidden" name="csrf_token"
+                                               t-att-value="request.csrf_token()"/>
+                                        <button type="submit" class="btn btn-sm btn-link p-0">Remove</button>
+                                    </form>
+                                </div>
+                            </t>
                         </div>
 
-                        <form t-attf-action="/manage/dresses/serial" method="post"
-                              class="d-flex gap-2 mt-2" style="max-width: 320px;">
-                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
-                            <input type="hidden" name="dress_id" t-att-value="d['id']"/>
-                            <input type="text" name="serial" class="form-control form-control-sm"
-                                   dir="ltr" placeholder="Serial number"
-                                   t-att-value="d['serial']"/>
-                            <button type="submit" class="btn btn-sm btn-outline-dark">Save</button>
-                        </form>
+                        <div class="d-flex gap-2 mt-2">
+                            <a t-attf-href="/manage/dresses/edit/#{d['id']}"
+                               class="btn btn-sm btn-outline-dark">Edit</a>
+                            <form t-attf-action="/manage/dresses/archive/#{d['id']}"
+                                  method="post" class="d-inline">
+                                <input type="hidden" name="csrf_token"
+                                       t-att-value="request.csrf_token()"/>
+                                <button type="submit" class="btn btn-sm btn-outline-dark">
+                                    <t t-if="d['active']">Archive</t>
+                                    <t t-else="">Bring back</t>
+                                </button>
+                            </form>
+                        </div>
                     </div>
 
                     <!-- The QR, drawn by Odoo's own barcode route - no library
@@ -52,13 +97,19 @@
                     </div>
                 </div>
 
-                <table class="table modryn_table align-middle mt-3 mb-0"
-                       style="max-width: 420px;">
+                <div t-if="not d['sizes']" class="modryn_sub mt-3">
+                    One size. Set how many there are from <strong>Edit</strong>.
+                </div>
+                <table t-else="" class="table modryn_table align-middle mt-3 mb-0"
+                       style="max-width: 460px;">
                     <tbody>
                         <tr t-foreach="d['sizes']" t-as="v">
                             <td t-out="v['label']"/>
                             <td>
-                                <span t-if="not v['stock']" class="modryn_badge is_muted">None left</span>
+                                <!-- Per SIZE, because "we have none of this one"
+                                     is the sentence the bride in front of you is
+                                     actually asking about. -->
+                                <span t-if="v['sold_out']" class="modryn_badge is_muted">This size has gone</span>
                                 <span t-else="" class="modryn_badge is_free"><t t-esc="v['stock']"/></span>
                             </td>
                             <td class="text-end">
@@ -67,11 +118,177 @@
                                     <input type="hidden" name="csrf_token"
                                            t-att-value="request.csrf_token()"/>
                                     <input type="hidden" name="variant_id" t-att-value="v['id']"/>
+                                    <!-- str(), because t-att-value DROPS the
+                                         attribute entirely when the value is
+                                         falsy - and 0 is falsy. The box for a
+                                         size with none left rendered with no
+                                         value at all, so the owner read an
+                                         empty field where the count should say
+                                         zero, on exactly the sizes she most
+                                         needs to see a number for. -->
                                     <input type="number" name="stock" min="0" step="1"
                                            class="form-control form-control-sm"
                                            style="max-width: 90px;" dir="ltr"
-                                           t-att-value="v['stock']"/>
+                                           t-att-value="str(v['stock'])"/>
                                     <button type="submit" class="btn btn-sm btn-outline-dark">Set</button>
+                                </form>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </t>
+    </template>
+
+    <!-- ====================== adding and changing one ====================== -->
+    <template id="manage_dress_form" name="MODRYN dress form">
+        <t t-call="modryn_staff.manage_layout">
+            <h1 class="mb-4">
+                <t t-if="dress">Edit</t>
+                <t t-else="">Add a dress or accessory</t>
+            </h1>
+
+            <!-- enctype, or the browser posts only the file NAMES and every
+                 photo arrives empty with nothing to say why. -->
+            <form t-attf-action="/manage/dresses/#{'edit/%s' % dress.id if dress else 'new'}"
+                  method="post" enctype="multipart/form-data" style="max-width: 640px;">
+                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+
+                <div class="mb-3">
+                    <label class="form-label" for="name">Name</label>
+                    <input id="name" type="text" name="name" class="form-control"
+                           t-att-value="values.get('name', '')"/>
+                    <div t-if="errors.get('name')" class="modryn_field_error" t-out="errors['name']"/>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label" for="kind_id">Kind</label>
+                    <select id="kind_id" name="kind_id" class="form-select">
+                        <option value="">—</option>
+                        <t t-foreach="kinds" t-as="kind">
+                            <option t-att-value="kind.id"
+                                    t-att-selected="'selected' if str(values.get('kind_id', '')) == str(kind.id) else None"
+                                    t-out="kind.name"/>
+                        </t>
+                    </select>
+                    <div class="modryn_sub">
+                        Add or change these under <a href="/manage/dress-kinds">Kinds</a>.
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label" for="price">Price (₪)</label>
+                    <input id="price" type="text" name="price" class="form-control"
+                           dir="ltr" inputmode="decimal"
+                           t-att-value="values.get('price', '')"/>
+                    <div t-if="errors.get('price')" class="modryn_field_error" t-out="errors['price']"/>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label" for="serial">Serial number</label>
+                    <input id="serial" type="text" name="serial" class="form-control"
+                           dir="ltr" t-att-value="values.get('serial', '')"/>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label" for="description">Description</label>
+                    <textarea id="description" name="description" class="form-control"
+                              rows="3" t-out="values.get('description', '')"/>
+                    <div class="modryn_sub">What you would tell a bride about it.</div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label" for="sizes">Sizes</label>
+                    <input id="sizes" type="text" name="sizes" class="form-control"
+                           dir="ltr" placeholder="34, 36, 38"
+                           t-att-value="values.get('sizes', '')"/>
+                    <div class="modryn_sub">
+                        Separated by commas. Leave it empty for one size — a veil,
+                        say. <strong>Removing a size deletes how many of it you
+                        had</strong>, so take it out only when the boutique
+                        really stops carrying it.
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label" for="images">Photos</label>
+                    <input id="images" type="file" name="images" class="form-control"
+                           accept="image/*" multiple="multiple"/>
+                    <div class="modryn_sub">
+                        The first one becomes the main photo. Up to
+                        <t t-esc="max_mb"/> MB each.
+                        <t t-if="dress"> Adding more keeps the ones already there.</t>
+                    </div>
+                    <div t-if="errors.get('images')" class="modryn_field_error" t-out="errors['images']"/>
+                </div>
+
+                <div class="mb-4">
+                    <label class="modryn_piece_check">
+                        <input type="checkbox" name="published" value="1"
+                               t-att-checked="'checked' if values.get('published') else None"/>
+                        <span>Show it on the shop</span>
+                    </label>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Save</button>
+                <a href="/manage/dresses" class="btn btn-link">Cancel</a>
+            </form>
+        </t>
+    </template>
+
+    <!-- ========================= the boutique's kinds ====================== -->
+    <template id="manage_dress_kinds" name="MODRYN dress kinds">
+        <t t-call="modryn_staff.manage_layout">
+            <h1 class="mb-2">Kinds</h1>
+            <p class="text-muted mb-4">
+                Your own words for what you sell — נסיכה, מרמייד, הינומה. Mark the
+                ones that are accessories: those are asked for without sizes.
+            </p>
+
+            <div t-if="error" class="modryn_field_error mb-3" role="alert" t-out="error"/>
+
+            <form action="/manage/dress-kinds" method="post"
+                  class="d-flex gap-2 flex-wrap align-items-center mb-4"
+                  style="max-width: 560px;">
+                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                <input type="text" name="name" class="form-control"
+                       style="max-width: 240px;" placeholder="A new kind"/>
+                <label class="modryn_piece_check">
+                    <input type="checkbox" name="is_accessory" value="1"/>
+                    <span>It is an accessory</span>
+                </label>
+                <button type="submit" class="btn btn-primary">Add</button>
+            </form>
+
+            <div t-if="not kinds" class="modryn_empty">No kinds yet.</div>
+            <div class="modryn_table_scroll" t-else="">
+                <table class="table modryn_table align-middle">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Accessory</th>
+                            <th>In use</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr t-foreach="kinds" t-as="kind"
+                            t-attf-class="#{'modryn_archived' if not kind['active'] else ''}">
+                            <td t-out="kind['name']"/>
+                            <td>
+                                <span t-if="kind['is_accessory']" class="modryn_badge is_free">Yes</span>
+                                <span t-else="" class="modryn_sub">—</span>
+                            </td>
+                            <td t-out="kind['used']"/>
+                            <td class="text-end">
+                                <form t-attf-action="/manage/dress-kinds/archive/#{kind['id']}"
+                                      method="post" class="d-inline">
+                                    <input type="hidden" name="csrf_token"
+                                           t-att-value="request.csrf_token()"/>
+                                    <button type="submit" class="btn btn-sm btn-outline-dark">
+                                        <t t-if="kind['active']">Archive</t>
+                                        <t t-else="">Bring back</t>
+                                    </button>
                                 </form>
                             </td>
                         </tr>

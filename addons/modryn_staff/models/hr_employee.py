@@ -215,7 +215,12 @@ class HrEmployee(models.Model):
         Users = self.env['res.users'].sudo()
 
         if Users.with_context(active_test=False).search_count([('login', '=', username)]):
-            raise ValueError("That username is already taken.")
+            # _(), because this sentence reaches the owner's screen: the hire
+            # form catches this ValueError and renders str(exc) as the username
+            # field's error. It is the most likely thing to go wrong on that
+            # form, and it was the one message on it that could never be
+            # anything but English.
+            raise ValueError(_("That username is already taken."))
 
         if self.modryn_level == LEVEL_OWNER:
             base_group = self.env.ref('base.group_user')

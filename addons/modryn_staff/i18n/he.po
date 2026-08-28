@@ -1880,3 +1880,21 @@ msgstr ""
 "שמרי על הפרטים האלה מעודכנים כדי שהבוטיק תמיד יוכל להשיג אותך.\n"
 "                התפקידים ורמת ההרשאה נקבעים על ידי בעלת הבוטיק.\n"
 "            "
+
+#. module: modryn_staff
+#. odoo-python
+#: code:addons/modryn_staff/controllers/auth.py:0
+msgid "Please choose a file."
+msgstr "נא לבחור קובץ."
+
+#. module: modryn_staff
+#. odoo-python
+#: code:addons/modryn_staff/controllers/auth.py:0
+msgid "That file is too large — the limit is 10 MB."
+msgstr "הקובץ הזה גדול מדי — המגבלה היא 10 MB."
+
+#. module: modryn_staff
+#. odoo-python
+#: code:addons/modryn_staff/models/hr_employee.py:0
+msgid "That username is already taken."
+msgstr "שם המשתמש הזה כבר תפוס."

@@ -1,6 +1,7 @@
 import odoo
 from odoo import _, http
 from odoo.http import content_disposition, request
+from odoo.tools.translate import LazyTranslate
 
 # Where each level lands after signing in. The owner configures, the manager
 # runs the room, and plain staff get their own day — not the whole floor.
@@ -15,6 +16,9 @@ def landing_for(user):
     if user.has_group('modryn_staff.group_shift_manager'):
         return LANDING_FLOOR
     return LANDING_HOME
+
+
+_lt = LazyTranslate(__name__)
 
 
 class ModrynStaffAuth(http.Controller):
@@ -263,10 +267,17 @@ class ModrynStaffAuth(http.Controller):
 
     # Messages for the redirect-carried upload errors. A redirect cannot carry a
     # rendered page, so the failure travels as a CODE and is turned back into a
-    # sentence here - which also keeps the sentence translatable.
+    # sentence here.
+    #
+    # _lt and NOT a plain string later passed through _(). The old shape was
+    # `_(self.UPLOAD_ERRORS[error])` - calling _() on a VARIABLE - and Odoo's
+    # extractor only ever sees literals, so neither sentence entered the .pot at
+    # all. Both were untranslatable no matter what anybody wrote in he.po, while
+    # the code around them looked like it had been handled. _lt puts the literal
+    # where the extractor can find it and resolves in her language at render.
     UPLOAD_ERRORS = {
-        'nofile': "Please choose a file.",
-        'toobig': "That file is too large — the limit is 10 MB.",
+        'nofile': _lt("Please choose a file."),
+        'toobig': _lt("That file is too large — the limit is 10 MB."),
     }
 
     @http.route('/staff/profile', type='http', auth='user', website=True,
@@ -280,7 +291,7 @@ class ModrynStaffAuth(http.Controller):
         request.session.touch()
         return request.render('modryn_staff.staff_profile', self._profile_context(
             me, saved=bool(saved),
-            error=_(self.UPLOAD_ERRORS[error]) if error in self.UPLOAD_ERRORS else None))
+            error=str(self.UPLOAD_ERRORS[error]) if error in self.UPLOAD_ERRORS else None))
 
     @http.route('/staff/profile', type='http', auth='user', website=True,
                 methods=['POST'], csrf=True, sitemap=False)
