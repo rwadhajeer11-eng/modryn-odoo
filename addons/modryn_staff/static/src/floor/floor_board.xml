@@ -338,7 +338,7 @@
                                         <span t-if="task.assignee" class="modryn_badge is_muted"><t t-esc="task.assignee"/></span>
                                     </td>
                                     <td>
-                                        <span t-attf-class="modryn_badge #{task.overdue ? 'is_busy' : 'is_muted'}">
+                                        <span dir="ltr" t-attf-class="modryn_badge #{task.overdue ? 'is_busy' : 'is_muted'}">
                                             <t t-esc="task.due_date"/> <t t-esc="task.due"/>
                                         </span>
                                     </td>
@@ -549,7 +549,7 @@
                     <table t-if="state.unclosedList.length" class="table modryn_table align-middle">
                         <tbody>
                             <tr t-foreach="state.unclosedList" t-as="u" t-key="u.id">
-                                <td class="modryn_sub"><t t-esc="u.when"/></td>
+                                <td class="modryn_sub" dir="ltr"><t t-esc="u.when"/></td>
                                 <td>
                                     <div class="modryn_strong"><t t-esc="u.title"/></div>
                                     <div t-if="u.phone" class="modryn_sub" dir="ltr"><t t-esc="u.phone"/></div>

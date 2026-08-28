@@ -135,14 +135,35 @@ class ModrynShiftSlot(models.Model):
         Notification = self.env['modryn.staff.notification'].sudo()
         actor = self.env['hr.employee'].sudo().search(
             [('user_id', '=', self.env.uid)], limit=1)
+        Notify = self.env['modryn.staff.notify'].sudo()
         for week in set(self.mapped('week_start')):
             slots = self.filtered(lambda s: s.week_start == week)
-            body = _("The rota for the week of %s is published.") % week.strftime('%d.%m')
             for employee in slots.mapped('employee_ids'):
                 if not employee.active:
                     continue
+                # Composed INSIDE the loop, in HER language - not once in the
+                # manager's. _() resolves against the session that happens to be
+                # publishing, so a manager working in Hebrew stored a Hebrew
+                # sentence in the bell of a woman whose screen is Arabic, and
+                # the notification body is plain text that nothing translates
+                # later. Every other message in this product already does it
+                # this way (booking_comms._localised, day_waitlist, the task
+                # escalation); the rota was the one that did not.
+                body = self.with_context(
+                    lang=Notify.modryn_lang(employee),
+                )._modryn_published_body(week)
                 Notification.modryn_notify(employee, body, actor=actor)
         return self
+
+    def _modryn_published_body(self, week):
+        """The sentence, resolved in whatever language self carries.
+
+        A method and not an inline _() so that with_context(lang=...) is in
+        force at the moment the translation is looked up. Calling _() before
+        switching context reads the caller's language and no amount of
+        with_context afterwards changes the string that already came back.
+        """
+        return _("The rota for the week of %s is published.") % week.strftime('%d.%m')
 
     # ----------------------------------------------------------------- reading
     @api.model
@@ -183,8 +204,21 @@ class ModrynShiftSlot(models.Model):
         self.ensure_one()
         assigned = {}
         for employee in self.employee_ids:
-            role = employee.modryn_role_id
-            if role:
+            # EVERY role she holds, not just the first. modryn_role_id became a
+            # non-stored compute over modryn_role_ids when a woman was allowed
+            # to hold more than one job, and this counter was missed in that
+            # sweep: a seamstress who also sells counted only towards the sales
+            # target, so a Thursday with a seamstress rostered on it reported
+            # "short one seamstress" and the manager went looking for cover she
+            # already had.
+            #
+            # She counts towards each of them, which slightly OVER-states a
+            # shift needing two different jobs at the same instant - one woman
+            # cannot cut and sell simultaneously. That is the right way round to
+            # be wrong here: this badge answers "is anybody on who can do this
+            # job", and the alternative was answering "no" when the answer is
+            # plainly yes.
+            for role in employee.modryn_role_ids:
                 assigned[role.id] = assigned.get(role.id, 0) + 1
         rows = []
         for target in self.template_id.target_ids:

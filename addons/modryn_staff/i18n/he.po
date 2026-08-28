@@ -1898,3 +1898,20 @@ msgstr "הקובץ הזה גדול מדי — המגבלה היא 10 MB."
 #: code:addons/modryn_staff/models/hr_employee.py:0
 msgid "That username is already taken."
 msgstr "שם המשתמש הזה כבר תפוס."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.staff_home
+msgid ""
+"<span data-code=\"forbidden\">You don't have permission for that.</span>\n"
+"                <span data-code=\"not_found\">That item is gone — refresh the page.</span>\n"
+"                <span data-code=\"invalid_transition\">That step isn't possible from here.</span>\n"
+"                <span data-code=\"missing_customer\">Please say who it is for.</span>\n"
+"                <span data-code=\"missing_priority\">Please pick a priority.</span>\n"
+"                <span data-code=\"missing_due\">Please pick a due date — the workshop queue runs on it.</span>"
+msgstr ""
+"<span data-code=\"forbidden\">אין לך הרשאה לזה.</span>\n"
+"                <span data-code=\"not_found\">הפריט הזה כבר לא קיים — רענני את הדף.</span>\n"
+"                <span data-code=\"invalid_transition\">השלב הזה לא אפשרי מכאן.</span>\n"
+"                <span data-code=\"missing_customer\">נא לציין למי זה.</span>\n"
+"                <span data-code=\"missing_priority\">נא לבחור עדיפות.</span>\n"
+"                <span data-code=\"missing_due\">נא לבחור תאריך יעד — תור הסדנה עובד לפיו.</span>"

@@ -210,9 +210,7 @@ class ModrynQueueEntry(models.Model):
         for entry in self.filtered(lambda e: e.state in ('pending', 'waiting')):
             entry.state = 'redirected'
             if notify and entry.phone:
-                entry._send(_(
-                    "We're fully booked today. Book a fitting with us here: %(link)s"
-                ) % {'link': '%s/book' % entry._base_url()})
+                entry._localised()._send_full_today()
         # Sending the front of the line home promotes whoever was behind her, so
         # her heads-up goes out now. Every other exit from the line already does
         # this; redirect did not, and acceptance used to cover for it.
@@ -226,6 +224,61 @@ class ModrynQueueEntry(models.Model):
     def _ticket_url(self):
         self.ensure_one()
         return '%s/q/%s' % (self._base_url(), self.access_token)
+
+    def _modryn_lang(self):
+        """The language the boutique writes to its customers in.
+
+        A walk-in leaves a name and a phone and nothing else, so there is no
+        customer language to read. The boutique's own default is the honest
+        answer and - unlike what was here before - it is the SAME for every
+        customer instead of depending on who is holding the screen.
+        """
+        website = self.env['website'].sudo().search([], limit=1)
+        return (website.default_lang_id.code if website.default_lang_id
+                else 'he_IL')
+
+    def _localised(self):
+        """This entry, in the language her texts should be written in.
+
+        Every other outbound message in this product already does this -
+        modryn_portal's booking_comms._localised, day_waitlist, the task
+        escalation - and the walk-in queue was the one that did not. Its four
+        SMS bodies were composed with a bare _(), which resolves against
+        whoever is holding the screen: a stylist who switched her own interface
+        to English started texting every waiting customer in English on a
+        Hebrew-first boutique, and nothing anywhere reported it.
+
+        The switch has to happen BEFORE the sentence is composed. _() finds its
+        language by looking at the calling frame's `self`, so a string built at
+        the call site and passed in here has already been resolved in the wrong
+        language and no later context can change it. That is why each body
+        below is a method rather than an argument.
+        """
+        return self.with_context(lang=self._modryn_lang())
+
+    # Each body is a method so that `self` inside it is the LOCALISED recordset.
+    def _send_joined(self, next_up):
+        self.ensure_one()
+        if next_up:
+            self._send(_(
+                "You're in the queue — and you're next. We'll be with you in a "
+                "moment. Your ticket: %(link)s"
+            ) % {'link': self._ticket_url()})
+        else:
+            self._send(_(
+                "You're in the queue. We'll text you when you're next. "
+                "Your ticket: %(link)s"
+            ) % {'link': self._ticket_url()})
+
+    def _send_next(self):
+        self.ensure_one()
+        self._send(_("You're next — we'll be with you in a moment."))
+
+    def _send_full_today(self):
+        self.ensure_one()
+        self._send(_(
+            "We're fully booked today. Book a fitting with us here: %(link)s"
+        ) % {'link': '%s/book' % self._base_url()})
 
     def _send(self, body):
         self.ensure_one()
@@ -265,16 +318,10 @@ class ModrynQueueEntry(models.Model):
         first = self.sudo().search(
             [('state', '=', 'waiting')], order='create_date asc', limit=1)
         if first == self:
-            self._send(_(
-                "You're in the queue — and you're next. We'll be with you in a "
-                "moment. Your ticket: %(link)s"
-            ) % {'link': self._ticket_url()})
+            self._localised()._send_joined(next_up=True)
             self.next_notified_at = fields.Datetime.now()
         else:
-            self._send(_(
-                "You're in the queue. We'll text you when you're next. "
-                "Your ticket: %(link)s"
-            ) % {'link': self._ticket_url()})
+            self._localised()._send_joined(next_up=False)
 
     @api.model
     def _notify_next_in_line(self):
@@ -285,7 +332,7 @@ class ModrynQueueEntry(models.Model):
         """
         first = self.sudo().search([('state', '=', 'waiting')], order='create_date asc', limit=1)
         if first and not first.next_notified_at:
-            first._send(_("You're next — we'll be with you in a moment."))
+            first._localised()._send_next()
             first.next_notified_at = fields.Datetime.now()
 
     def modryn_call(self, employee=None):

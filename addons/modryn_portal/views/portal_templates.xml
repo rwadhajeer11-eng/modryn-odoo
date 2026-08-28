@@ -118,7 +118,11 @@
                 <div class="container py-5" style="max-width: 520px;">
                     <h1 class="mb-3">Cancel this appointment?</h1>
                     <p class="mb-4">
-                        <strong><t t-out="date"/> · <t t-out="time"/></strong>
+                        <!-- dir="ltr": this is the one line on the page that
+                             tells her WHICH appointment she is about to cancel,
+                             and it is a date beside a time inside Hebrew or
+                             Arabic prose. -->
+                        <strong dir="ltr"><t t-out="date"/> · <t t-out="time"/></strong>
                     </p>
 
                     <!-- The boutique's own terms, shown at the moment of cancelling

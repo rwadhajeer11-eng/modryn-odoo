@@ -1904,3 +1904,20 @@ msgstr "هذا الملف كبير جدًا — الحد الأقصى 10 ميغ�
 #: code:addons/modryn_staff/models/hr_employee.py:0
 msgid "That username is already taken."
 msgstr "اسم المستخدم هذا مأخوذ بالفعل."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.staff_home
+msgid ""
+"<span data-code=\"forbidden\">You don't have permission for that.</span>\n"
+"                <span data-code=\"not_found\">That item is gone — refresh the page.</span>\n"
+"                <span data-code=\"invalid_transition\">That step isn't possible from here.</span>\n"
+"                <span data-code=\"missing_customer\">Please say who it is for.</span>\n"
+"                <span data-code=\"missing_priority\">Please pick a priority.</span>\n"
+"                <span data-code=\"missing_due\">Please pick a due date — the workshop queue runs on it.</span>"
+msgstr ""
+"<span data-code=\"forbidden\">ما عندك صلاحية لهذا.</span>\n"
+"                <span data-code=\"not_found\">هذا العنصر ما عاد موجود — حدّثي الصفحة.</span>\n"
+"                <span data-code=\"invalid_transition\">هذه الخطوة مش ممكنة من هون.</span>\n"
+"                <span data-code=\"missing_customer\">يرجى تحديد لمين هذا.</span>\n"
+"                <span data-code=\"missing_priority\">يرجى اختيار أولوية.</span>\n"
+"                <span data-code=\"missing_due\">يرجى اختيار تاريخ التسليم — طابور الورشة بيشتغل عليه.</span>"

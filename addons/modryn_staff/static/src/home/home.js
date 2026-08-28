@@ -20,10 +20,18 @@
         return (data && data.result) || {};
     }
 
-    function fail(message) {
+    // A server code turned into a sentence she can act on. The words are
+    // rendered by the template as hidden text - this file is plain script and
+    // cannot import _t, and Odoo does not extract data-* attributes, so text
+    // nodes are the only place the translator can reach.
+    // An unrecognised code is shown as it came rather than swallowed: a mystery
+    // word beats a button that does nothing.
+    function fail(code) {
         const box = document.getElementById("modryn_home_error");
         if (!box) { return; }
-        box.textContent = message;
+        const said = document.querySelector(
+            '#modryn_home_messages [data-code="' + code + '"]');
+        box.textContent = said ? said.textContent.trim() : code;
         box.classList.remove("d-none");
     }
 

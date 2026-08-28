@@ -235,6 +235,27 @@
 
             <!-- One error line for the action buttons; home.js fills it. -->
             <div id="modryn_home_error" class="alert alert-danger d-none" role="alert"/>
+
+            <!-- The sentences behind the server's error codes, as TEXT.
+                 home.js is plain script in an IIFE and cannot import _t, so the
+                 words have to come from the page - and a raw code printed at her
+                 ("forbidden", "invalid_transition") is neither translated nor
+                 anything she can act on.
+                 Text nodes, NOT data-* attributes: Odoo extracts a fixed list of
+                 attributes and data-* is not on it, so a first attempt at this
+                 was exactly as untranslatable as the codes it replaced. The
+                 data-code key is markup nobody reads; only the words beside it
+                 need a translator.
+                 An unknown code still falls through verbatim in home.js rather
+                 than being swallowed - a mystery word beats a silent button. -->
+            <div id="modryn_home_messages" class="d-none" aria-hidden="true">
+                <span data-code="forbidden">You don't have permission for that.</span>
+                <span data-code="not_found">That item is gone — refresh the page.</span>
+                <span data-code="invalid_transition">That step isn't possible from here.</span>
+                <span data-code="missing_customer">Please say who it is for.</span>
+                <span data-code="missing_priority">Please pick a priority.</span>
+                <span data-code="missing_due">Please pick a due date — the workshop queue runs on it.</span>
+            </div>
         </t>
     </template>
 
