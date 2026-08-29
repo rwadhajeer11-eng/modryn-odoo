@@ -844,6 +844,7 @@ msgid "Nothing yet."
 msgstr "لسا ما في إشي."
 
 #. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.staff_layout
 #: model_terms:ir.ui.view,arch_db:modryn_staff.staff_notifications
 msgid "Notifications"
 msgstr "الإشعارات"
@@ -1128,8 +1129,6 @@ msgstr "استعادة"
 
 #. module: modryn_staff
 #: model:ir.model.fields,field_description:modryn_staff.field_modryn_role_page__role_id
-#: model_terms:ir.ui.view,arch_db:modryn_staff.manage_staff_form
-#: model_terms:ir.ui.view,arch_db:modryn_staff.manage_staff_list
 msgid "Role"
 msgstr "الوظيفة"
 
@@ -1137,6 +1136,7 @@ msgstr "الوظيفة"
 #. odoo-python
 #: code:addons/modryn_staff/nav.py:0
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manage_roles
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manage_staff_list
 msgid "Roles"
 msgstr "الوظائف"
 

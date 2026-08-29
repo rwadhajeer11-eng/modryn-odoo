@@ -579,6 +579,7 @@ msgstr ""
 
 #. module: modryn_roster
 #. odoo-python
+#: code:addons/modryn_roster/controllers/roster.py:0
 #: code:addons/modryn_roster/models/availability.py:0
 msgid "That week is already published - ask your manager to change it."
 msgstr "هذا الأسبوع منشور بالفعل - اطلبي من مديرة المناوبة تغييره."

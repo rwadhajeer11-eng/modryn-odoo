@@ -232,7 +232,8 @@ msgid "Friday"
 msgstr "שישי"
 
 #. module: modryn_roster
-#: model_terms:ir.ui.view,arch_db:modryn_roster.roster_page
+#. odoo-javascript
+#: code:addons/modryn_roster/static/src/roster.js:0
 msgid "I can work this"
 msgstr "אני יכולה לעבוד"
 
@@ -568,6 +569,7 @@ msgstr "השבוע הזה כבר בעבודה — קבעי את השעות לש�
 
 #. module: modryn_roster
 #. odoo-python
+#: code:addons/modryn_roster/controllers/roster.py:0
 #: code:addons/modryn_roster/models/availability.py:0
 msgid "That week is already published - ask your manager to change it."
 msgstr "השבוע הזה כבר פורסם — פני לאחראית המשמרת לשינוי."

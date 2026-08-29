@@ -101,6 +101,7 @@ msgid "is waiting for you."
 msgstr "מחכה לך."
 
 #. module: modryn_queue_poc
+#: model_terms:ir.ui.view,arch_db:modryn_queue_poc.checkin_form
 #: model_terms:ir.ui.view,arch_db:modryn_queue_poc.queue_sign
 #: model_terms:ir.ui.view,arch_db:modryn_queue_poc.verify_form
 msgid "Join the queue"
@@ -432,3 +433,8 @@ msgstr "עודכן לאחרונה בתאריך"
 #: model:ir.model.fields,field_description:modryn_queue_poc.field_modryn_queue_entry__state
 msgid "State"
 msgstr "מצב"
+
+#. module: modryn_queue_poc
+#: model_terms:ir.ui.view,arch_db:modryn_queue_poc.ticket
+msgid "Your place in the queue"
+msgstr "המקום שלך בתור"

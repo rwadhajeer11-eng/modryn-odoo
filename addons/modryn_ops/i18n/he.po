@@ -36,11 +36,14 @@ msgstr "משימה מזדמנת"
 
 #. module: modryn_ops
 #: model_terms:ir.ui.view,arch_db:modryn_ops.manage_checklists
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_dress_kinds
 msgid "Add"
 msgstr "הוספה"
 
 #. module: modryn_ops
 #: model_terms:ir.ui.view,arch_db:modryn_ops.manage_checklists
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_dress_kinds
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_dresses
 msgid "Archive"
 msgstr "לארכיון"
 
@@ -168,7 +171,6 @@ msgstr "בוצעה על ידי"
 #. module: modryn_ops
 #. odoo-python
 #: code:addons/modryn_ops/controllers/dresses.py:0
-#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_dresses
 msgid "Dresses"
 msgstr "שמלות"
 
@@ -261,6 +263,9 @@ msgstr "פריט"
 
 #. module: modryn_ops
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_task_template__kind
+#: model:ir.model.fields,field_description:modryn_ops.field_product_product__modryn_type_id
+#: model:ir.model.fields,field_description:modryn_ops.field_product_template__modryn_type_id
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_dress_form
 msgid "Kind"
 msgstr "סוג"
 
@@ -528,7 +533,7 @@ msgstr "סרקי לעמוד השמלה"
 #. module: modryn_ops
 #: model:ir.model.fields,field_description:modryn_ops.field_product_product__modryn_serial
 #: model:ir.model.fields,field_description:modryn_ops.field_product_template__modryn_serial
-#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_dresses
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_dress_form
 msgid "Serial number"
 msgstr "מספר סידורי"
 
@@ -561,6 +566,8 @@ msgid "Stock cannot go below zero."
 msgstr "המלאי לא יכול לרדת מתחת לאפס."
 
 #. module: modryn_ops
+#. odoo-python
+#: code:addons/modryn_ops/models/audit_log.py:0
 #: model_terms:ir.ui.view,arch_db:modryn_ops.manage_reports
 msgid "Stylist"
 msgstr "סטייליסטית"
@@ -674,13 +681,16 @@ msgid "<span class=\"modryn_sub\">–</span>"
 msgstr "<span class=\"modryn_sub\">–</span>"
 
 #. module: modryn_ops
-#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_dresses
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_dress_form
 msgid "Save"
 msgstr "שמירה"
 
 #. module: modryn_ops
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_dress_type__name
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_task__name
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_task_template__name
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_dress_form
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_dress_kinds
 msgid "Name"
 msgstr "שם"
 
@@ -701,6 +711,7 @@ msgid "Across every size."
 msgstr "סך הכול בכל המידות."
 
 #. module: modryn_ops
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_dress_type__active
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_task_template__active
 msgid "Active"
 msgstr "פעיל"
@@ -712,6 +723,7 @@ msgstr "אירוע ביומן"
 
 #. module: modryn_ops
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_audit_log__create_uid
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_dress_type__create_uid
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_task__create_uid
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_task_template__create_uid
 msgid "Created by"
@@ -719,6 +731,7 @@ msgstr "נוצר על ידי"
 
 #. module: modryn_ops
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_audit_log__create_date
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_dress_type__create_date
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_task__create_date
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_task_template__create_date
 msgid "Created on"
@@ -727,6 +740,7 @@ msgstr "נוצר בתאריך"
 #. module: modryn_ops
 #: model:ir.model.fields,field_description:modryn_ops.field_calendar_event__display_name
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_audit_log__display_name
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_dress_type__display_name
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_task__display_name
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_task_template__display_name
 #: model:ir.model.fields,field_description:modryn_ops.field_product_product__display_name
@@ -743,6 +757,7 @@ msgstr "עובדת"
 #. module: modryn_ops
 #: model:ir.model.fields,field_description:modryn_ops.field_calendar_event__id
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_audit_log__id
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_dress_type__id
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_task__id
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_task_template__id
 #: model:ir.model.fields,field_description:modryn_ops.field_product_product__id
@@ -753,6 +768,7 @@ msgstr "מזהה"
 
 #. module: modryn_ops
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_audit_log__write_uid
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_dress_type__write_uid
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_task__write_uid
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_task_template__write_uid
 msgid "Last Updated by"
@@ -760,6 +776,7 @@ msgstr "עודכן לאחרונה על ידי"
 
 #. module: modryn_ops
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_audit_log__write_date
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_dress_type__write_date
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_task__write_date
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_task_template__write_date
 msgid "Last Updated on"
@@ -787,6 +804,7 @@ msgid "Product Variant"
 msgstr "וריאנט מוצר"
 
 #. module: modryn_ops
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_dress_type__sequence
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_task_template__sequence
 msgid "Sequence"
 msgstr "סדר"
@@ -869,6 +887,7 @@ msgstr "עריכה"
 
 #. module: modryn_ops
 #: model_terms:ir.ui.view,arch_db:modryn_ops.manage_dress_form
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_dresses
 msgid "Cancel"
 msgstr "ביטול"
 

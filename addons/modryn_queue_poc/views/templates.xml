@@ -11,6 +11,10 @@
          `<div id="wrap">`, so ours stands down rather than duplicate the id. -->
     <template id="checkin_form" name="MODRYN walk-in check-in">
         <t t-call="{{ layout }}">
+            <!-- Not the h1 ("Welcome"), which says nothing in a browser tab
+                 among six other tabs. The same words the QR sign uses, so the
+                 page she scanned and the page she lands on agree. -->
+            <t t-set="additional_title">Join the queue</t>
             <div t-att-id="not staff and 'wrap'" t-att-class="not staff and 'oe_structure'">
                 <div class="container py-5" style="max-width: 520px;">
                     <h1 class="mb-4">Welcome</h1>
@@ -59,6 +63,10 @@
          ticket rather than after it. -->
     <template id="verify_form" name="MODRYN walk-in verification">
         <t t-call="{{ layout }}">
+            <!-- The layout here is chosen at render time (a staff page wears
+                 the staff shell, a customer's wears the website one), and both
+                 of them honour additional_title. -->
+            <t t-set="additional_title">Enter your code</t>
             <div t-att-id="not staff and 'wrap'" t-att-class="not staff and 'oe_structure'">
                 <div class="container py-5" style="max-width: 520px;">
                     <h1 class="mb-2">Enter your code</h1>
@@ -103,6 +111,7 @@
          a premium boutique keeps its line invisible. -->
     <template id="ticket" name="MODRYN walk-in ticket">
         <t t-call="website.layout">
+            <t t-set="additional_title">Your place in the queue</t>
             <div id="wrap" class="oe_structure">
                 <div class="container py-5 text-center" style="max-width: 520px;"
                      t-att-data-refresh="'1' if entry.state in ('pending','waiting','called') else None">
@@ -174,6 +183,7 @@
     <!-- The lounge sign. Print it, frame it, done. -->
     <template id="queue_sign" name="MODRYN queue QR sign">
         <t t-call="website.layout">
+            <t t-set="additional_title">Join the queue</t>
             <div id="wrap" class="oe_structure">
                 <div class="container py-5 text-center" style="max-width: 520px;">
                     <h1 class="mb-2">Join the queue</h1>

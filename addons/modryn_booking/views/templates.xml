@@ -4,6 +4,7 @@
     <!-- ================= Booking form (both paths) ================= -->
     <template id="booking_form" name="MODRYN booking form">
         <t t-call="website.layout">
+            <t t-set="additional_title">Book a fitting</t>
             <div id="wrap" class="oe_structure">
                 <div class="container py-5" style="max-width: 720px;">
 
@@ -145,6 +146,7 @@
     <!-- ================= Confirmation ================= -->
     <template id="booking_confirmed" name="MODRYN booking confirmed">
         <t t-call="website.layout">
+            <t t-set="additional_title">Your appointment is booked</t>
             <div id="wrap" class="oe_structure">
                 <div class="container py-5 text-center" style="max-width: 640px;">
                     <h1 class="mb-3">Your appointment is booked</h1>

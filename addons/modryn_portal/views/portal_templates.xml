@@ -5,6 +5,7 @@
          language switcher) rather than the bare staff shell. -->
     <template id="login" name="Customer login">
         <t t-call="website.layout">
+            <t t-set="additional_title">My appointments</t>
             <div id="wrap" class="oe_structure">
                 <div class="container py-5" style="max-width: 460px;">
                     <h1 class="mb-2">My appointments</h1>
@@ -33,6 +34,7 @@
 
     <template id="verify" name="Customer code verification">
         <t t-call="website.layout">
+            <t t-set="additional_title">Enter your code</t>
             <div id="wrap" class="oe_structure">
                 <div class="container py-5" style="max-width: 460px;">
                     <h1 class="mb-2">Enter your code</h1>
@@ -69,6 +71,7 @@
 
     <template id="bookings" name="Customer bookings">
         <t t-call="website.layout">
+            <t t-set="additional_title">My appointments</t>
             <div id="wrap" class="oe_structure">
                 <div class="container py-5" style="max-width: 720px;">
                     <div class="d-flex align-items-center justify-content-between mb-4">
@@ -114,6 +117,7 @@
 
     <template id="cancel_confirm" name="Confirm cancellation">
         <t t-call="website.layout">
+            <t t-set="additional_title">Cancel this appointment?</t>
             <div id="wrap" class="oe_structure">
                 <div class="container py-5" style="max-width: 520px;">
                     <h1 class="mb-3">Cancel this appointment?</h1>
