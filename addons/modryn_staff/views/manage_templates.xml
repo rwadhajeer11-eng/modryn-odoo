@@ -396,8 +396,13 @@
                 </select>
                 <!-- type="time" so the browser does the parsing and the owner
                      never has to think of half past ten as 10.5. -->
-                <input type="time" name="opens" class="form-control w-auto" dir="ltr" value="10:00"/>
-                <input type="time" name="closes" class="form-control w-auto" dir="ltr" value="18:00"/>
+                <!-- values is what she typed on an attempt that was refused,
+                     and empty on a normal visit - so one expression both
+                     re-fills the form and keeps the shipped default. -->
+                <input type="time" name="opens" class="form-control w-auto" dir="ltr"
+                       t-att-value="values.get('opens') or '10:00'"/>
+                <input type="time" name="closes" class="form-control w-auto" dir="ltr"
+                       t-att-value="values.get('closes') or '18:00'"/>
                 <!-- Spelt out, unlike the two time boxes: a bare number next to a
                      clock reads as minutes. Defaulted to one so an owner who
                      ignores it keeps the week she already had. min="1" is the
@@ -406,7 +411,8 @@
                 <label class="d-flex align-items-center gap-2 mb-0" for="capacity">
                     <span class="text-muted">How many fittings at once</span>
                     <input type="number" id="capacity" name="capacity" min="1" step="1"
-                           value="1" dir="ltr" class="form-control w-auto"
+                           t-att-value="values.get('capacity') or '1'"
+                           dir="ltr" class="form-control w-auto"
                            style="max-width: 5.5rem;"/>
                 </label>
                 <button type="submit" class="btn btn-primary">Add</button>
@@ -471,20 +477,30 @@
             <form action="/manage/hours/closure/new" method="post"
                   class="d-flex gap-2 mb-4 flex-wrap" style="max-width: 640px;">
                 <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                <!-- t-att-value on all five: a rejected attempt comes back
+                     through the session, and being told one date is wrong is
+                     not a reason to take back the reason, the other date and
+                     both times. On a normal visit values is empty and the form
+                     opens blank exactly as it always did. -->
                 <input type="text" name="name" class="form-control w-auto"
+                       t-att-value="values.get('name')"
                        placeholder="What for?"/>
                 <!-- type="date" so the browser supplies the calendar and the
                      format, exactly as type="time" does for the windows above. -->
-                <input type="date" name="date_from" class="form-control w-auto" dir="ltr"/>
-                <input type="date" name="date_to" class="form-control w-auto" dir="ltr"/>
+                <input type="date" name="date_from" class="form-control w-auto" dir="ltr"
+                       t-att-value="values.get('date_from')"/>
+                <input type="date" name="date_to" class="form-control w-auto" dir="ltr"
+                       t-att-value="values.get('date_to')"/>
                 <!-- Leave both empty for the whole day, which is what a closure
                      has always been. Fill both to shut only part of it: the day
                      still appears on /book with the hours that remain. One
                      without the other is treated as a half-typed form, not as
                      "from 14:00 until whenever". -->
                 <input type="time" name="start_hour" class="form-control w-auto" dir="ltr"
+                       t-att-value="values.get('start_hour')"
                        aria-label="Closed from"/>
                 <input type="time" name="end_hour" class="form-control w-auto" dir="ltr"
+                       t-att-value="values.get('end_hour')"
                        aria-label="Closed until"/>
                 <button type="submit" class="btn btn-primary">Add</button>
             </form>

@@ -557,15 +557,37 @@ class ModrynManage(http.Controller):
             'active': c.active,
         } for c in closures]
 
+    # The key the two forms on this page park a rejected attempt under.
+    HOURS_FORM = 'modryn_hours_form'
+
+    def _hours_bounce(self, post, message):
+        """Back to the page with the message AND what she had typed.
+
+        Both forms here redirect on a validation failure, which loses every
+        field - a closure has five, and being told one of them is wrong is not a
+        reason to take the other four away.
+
+        The session, not the query string: a closure's reason is the boutique's
+        own words, and a URL is the one thing on a web server that reaches an
+        access log, the browser's history and whatever she pastes into a message
+        asking for help.
+        """
+        request.session[self.HOURS_FORM] = dict(post)
+        return request.redirect('/manage/hours?error=%s' % message)
+
     @http.route('/manage/hours', type='http', auth='user', website=True, sitemap=False)
     def hours_list(self, error=None, **kw):
         if not self._require_owner():
             return request.not_found()
+        # POPPED, not read: it re-fills the form exactly once. Left in place it
+        # would resurrect a rejected attempt days later, on a page she opened
+        # for something else entirely.
         return request.render('modryn_staff.manage_hours', {
             'hours': self._hour_rows(),
             'weekdays': self._weekdays(),
             'closures': self._closure_rows(),
             'error': error,
+            'values': request.session.pop(self.HOURS_FORM, {}) if error else {},
             'active_tab': 'hours',
         })
 
@@ -577,27 +599,27 @@ class ModrynManage(http.Controller):
 
         weekday = post.get('weekday')
         if weekday not in WEEK_ORDER:
-            return request.redirect('/manage/hours?error=%s' % _("Please choose a day"))
+            return self._hours_bounce(post, _("Please choose a day"))
         opens = _clock_to_float(post.get('opens'))
         closes = _clock_to_float(post.get('closes'))
         if opens is None or closes is None:
-            return request.redirect(
-                '/manage/hours?error=%s' % _("Please enter an opening and a closing time"))
+            return self._hours_bounce(
+                post, _("Please enter an opening and a closing time"))
         if closes <= opens:
-            return request.redirect(
-                '/manage/hours?error=%s' % _("A day has to close after it opens"))
+            return self._hours_bounce(
+                post, _("A day has to close after it opens"))
         capacity = _to_capacity(post.get('capacity'))
         # Checked here as well as by the model's @api.constrains, for the reason
         # closure_new() checks its dates: the owner reads a sentence, not a
         # traceback.
         if capacity is None:
-            return request.redirect('/manage/hours?error=%s' % _(
+            return self._hours_bounce(post, _(
                 "Please say how many fittings you can take at once — one or more"))
 
         taken = _("You already open at that time on that day")
         Hours = self._hours()
         if Hours.search_count([('weekday', '=', weekday), ('start_hour', '=', opens)]):
-            return request.redirect('/manage/hours?error=%s' % taken)
+            return self._hours_bounce(post, taken)
         try:
             # Savepoint so a duplicate that slips past the check above — or any
             # constraint the model enforces — is refused in words rather than
@@ -607,7 +629,7 @@ class ModrynManage(http.Controller):
                     'weekday': weekday, 'start_hour': opens, 'end_hour': closes,
                     'capacity': capacity})
         except (ValidationError, IntegrityError):
-            return request.redirect('/manage/hours?error=%s' % taken)
+            return self._hours_bounce(post, taken)
         return request.redirect('/manage/hours')
 
     @http.route('/manage/hours/capacity/<int:hours_id>', type='http', auth='user',
@@ -629,7 +651,7 @@ class ModrynManage(http.Controller):
             return request.not_found()
         capacity = _to_capacity(post.get('capacity'))
         if capacity is None:
-            return request.redirect('/manage/hours?error=%s' % (
+            return self._hours_bounce(post, (
                 _("Fittings at once has to be a whole number between 1 and %d.") % MAX_CAPACITY))
         # Lowering it below what is already booked cancels nothing — those
         # fittings stand, and the hour simply stops being offered until they
@@ -660,11 +682,11 @@ class ModrynManage(http.Controller):
 
         name = (post.get('name') or '').strip()
         if not name:
-            return request.redirect(
-                '/manage/hours?error=%s' % _("Please say what the closure is for"))
+            return self._hours_bounce(
+                post, _("Please say what the closure is for"))
         date_from = _to_date(post.get('date_from'))
         if date_from is None:
-            return request.redirect('/manage/hours?error=%s' % _("Please choose a date"))
+            return self._hours_bounce(post, _("Please choose a date"))
         # One day is the common case, so an empty second field means "just that
         # day" rather than an error. Typing the same date twice is the kind of
         # friction that leaves a feature unused.
@@ -672,8 +694,8 @@ class ModrynManage(http.Controller):
         # Checked HERE and not only by the model's @api.constrains, so the owner
         # reads a sentence instead of meeting a traceback.
         if date_to < date_from:
-            return request.redirect(
-                '/manage/hours?error=%s' % _("A closure has to end on or after the day it starts"))
+            return self._hours_bounce(
+                post, _("A closure has to end on or after the day it starts"))
         # Both hours empty means the whole day — what a closure has always been,
         # and what every row written before today still is. One hour without the
         # other is a half-typed form, not a closure "from 14:00 to whenever".
@@ -681,8 +703,8 @@ class ModrynManage(http.Controller):
         end_hour = _clock_to_float(post.get('end_hour'))
         full_day = start_hour is None or end_hour is None
         if not full_day and end_hour <= start_hour:
-            return request.redirect(
-                '/manage/hours?error=%s' % _("A part-day closure has to end after it starts"))
+            return self._hours_bounce(
+                post, _("A part-day closure has to end after it starts"))
         # Refuse to shut a day that already has brides booked into it, and say
         # how many. A closure only stops a date being OFFERED — it cancels
         # nothing — so without this the fittings survive, the 24h reminder cron
@@ -720,7 +742,7 @@ class ModrynManage(http.Controller):
                 ])
                 day += timedelta(days=1)
         if booked:
-            return request.redirect('/manage/hours?error=%s' % (
+            return self._hours_bounce(post, (
                 _("%s fittings are already booked on those dates. Cancel them from the floor"
                   " first — that is what tells each bride and frees her slot.") % booked))
         # Savepoint for roles_new()'s reason: a constraint the model enforces must
@@ -733,8 +755,7 @@ class ModrynManage(http.Controller):
                     'start_hour': 0.0 if full_day else start_hour,
                     'end_hour': 0.0 if full_day else end_hour})
         except (ValidationError, IntegrityError):
-            return request.redirect(
-                '/manage/hours?error=%s' % _("Those dates aren't valid"))
+            return self._hours_bounce(post, _("Those dates aren't valid"))
         return request.redirect('/manage/hours')
 
     @http.route('/manage/hours/closure/archive/<int:closure_id>', type='http', auth='user',
