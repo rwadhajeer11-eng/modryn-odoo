@@ -46,6 +46,10 @@ class ModrynShiftSlot(models.Model):
 
     template_id = fields.Many2one(
         'modryn.shift.template', required=True, ondelete='cascade', index=True)
+    # Written from the template when the week is generated. Kept as a record of
+    # what it was called then, and as a fallback - but NOT what the screens
+    # show: read modryn_name for that, or a rename never reaches an existing
+    # week.
     name = fields.Char(required=True)
     day = fields.Date(required=True, index=True)
     start_hour = fields.Float(required=True)
@@ -231,6 +235,18 @@ class ModrynShiftSlot(models.Model):
             })
         return rows
 
+    def modryn_name(self):
+        """What this shift is called NOW, not what it was called when the week
+        was generated.
+
+        The column is a copy taken at generation time, so an owner who renames a
+        shift at /manage/shifts sees the new name there and the old one on the
+        rota, the main screen and every card - for every week that already
+        exists, which is all of them.
+        """
+        self.ensure_one()
+        return self.template_id.name or self.name
+
     def _row(self, employee=None, available_ids=None):
         """One real shift, for the manager's side of the grid.
 
@@ -255,7 +271,7 @@ class ModrynShiftSlot(models.Model):
         mine = bool(employee and employee.id in available_ids)
         return {
             'id': self.id,
-            'name': self.name,
+            'name': self.modryn_name(),
             'day': self.day.strftime('%Y-%m-%d'),
             'day_label': self.day.strftime('%d.%m'),
             'weekday': weekday_name(self.day),

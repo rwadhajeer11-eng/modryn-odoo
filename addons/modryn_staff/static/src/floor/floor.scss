@@ -965,3 +965,71 @@
     gap: 10px;
     margin-block-end: 12px;
 }
+
+// ================= the main screen, as boxes beside each other =================
+//
+// These blocks were stacked tables and a column of full-width day rows: seven
+// days down the screen, each one a line with most of its width empty. A week
+// that fits twice over side by side was scrolling.
+//
+// auto-fill with a minimum, so the number of columns follows the width rather
+// than being declared: three across on a desktop, two on a tablet, one on a
+// phone, and no breakpoint anywhere deciding that. RTL needs nothing - a grid
+// flows with the document's direction, so the first day lands on the right of
+// its own accord.
+.modryn_cards,
+.modryn_week {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 12px;
+}
+
+// A day is wider than a customer card - it carries its own shifts inside it.
+.modryn_week {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+}
+
+// One thing, in its own box.
+.modryn_card {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 12px 14px;
+    background: #FFFFFF;
+    border: 1px solid $modryn-border;
+    border-radius: 12px;
+    box-shadow: 0 1px 2px rgba(43, 33, 24, 0.04);
+}
+
+// The badges along the top of a card - a row that wraps rather than a column,
+// so a card with three marks does not become three lines tall.
+.modryn_card_marks {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-items: center;
+}
+
+// Buttons sit at the bottom of the card and stay there however tall its text
+// grows, so a row of cards has its actions on one line.
+.modryn_card_actions {
+    margin-block-start: auto;
+    padding-block-start: 8px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+// Inside the grid a shift card no longer needs its own bottom margin - the gap
+// does that - and it must fill its cell so a row of them lines up.
+.modryn_cards .modryn_myshift,
+.modryn_week .modryn_weekday {
+    margin-block-end: 0;
+    block-size: 100%;
+}
+
+// The catalogue's search box. Wide enough to type a dress name into and no
+// wider: a full-width input on a 1400px screen reads as a form, not a filter.
+.modryn_dress_search {
+    max-inline-size: 420px;
+}

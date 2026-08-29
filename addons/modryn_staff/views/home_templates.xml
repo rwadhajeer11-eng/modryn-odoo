@@ -37,7 +37,7 @@
                 <p t-if="not home['my_shifts']" class="modryn_empty">
                     You're not on this week's published rota.
                 </p>
-                <div t-else="" class="p-3">
+                <div t-else="" class="modryn_cards">
                     <div t-foreach="home['my_shifts']" t-as="s" class="modryn_myshift">
                         <span class="modryn_strong"><t t-esc="s['weekday']"/></span>
                         <span class="modryn_sub" dir="ltr"><t t-esc="s['day_label']"/></span>
@@ -56,7 +56,7 @@
                  only one of those is worth asking about. -->
             <section t-if="home.get('week_shifts')" class="modryn_panel mb-4">
                 <header class="modryn_panel_head"><h2>This week's shifts</h2></header>
-                <div class="p-3">
+                <div class="modryn_week">
                     <!-- Three states, not two. "No rota yet" and "a published
                          day nobody is on" are different facts and only one of
                          them is worth asking the manager about - noga trades
@@ -132,25 +132,23 @@
                 <p t-if="not home['walkins'] and not home['bookings']" class="modryn_empty">
                     Nobody is assigned to you right now.
                 </p>
-                <table t-else="" class="table modryn_table align-middle">
-                    <tbody>
-                        <tr t-foreach="home['walkins']" t-as="w">
-                            <td><span class="modryn_strong" t-out="w['name']"/></td>
-                            <td><span class="modryn_badge is_free">Walk-in</span></td>
-                            <td>
-                                <span t-if="w['state'] == 'called'" class="modryn_badge is_busy">With you now</span>
-                                <span t-else="" class="modryn_badge is_muted">Waiting</span>
-                            </td>
-                        </tr>
-                        <tr t-foreach="home['bookings']" t-as="b">
-                            <td><span class="modryn_strong" t-out="b['title']"/></td>
-                            <td><span class="modryn_badge is_muted" t-out="b['time']"/></td>
-                            <td>
-                                <span t-if="b['helper']" class="modryn_badge is_muted">Helping</span>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div t-else="" class="modryn_cards">
+                    <div t-foreach="home['walkins']" t-as="w" class="modryn_card">
+                        <div class="modryn_strong" t-out="w['name']"/>
+                        <div class="modryn_card_marks">
+                            <span class="modryn_badge is_free">Walk-in</span>
+                            <span t-if="w['state'] == 'called'" class="modryn_badge is_busy">With you now</span>
+                            <span t-else="" class="modryn_badge is_muted">Waiting</span>
+                        </div>
+                    </div>
+                    <div t-foreach="home['bookings']" t-as="b" class="modryn_card">
+                        <div class="modryn_strong" t-out="b['title']"/>
+                        <div class="modryn_card_marks">
+                            <span class="modryn_badge is_muted" t-out="b['time']"/>
+                            <span t-if="b['helper']" class="modryn_badge is_muted">Helping</span>
+                        </div>
+                    </div>
+                </div>
             </section>
 
             <!-- My alterations (modryn_atelier) -->
@@ -163,27 +161,22 @@
                 <p t-if="not home['my_tasks']" class="modryn_empty">
                     Your rail is clear — new work is assigned automatically when it lands.
                 </p>
-                <table t-else="" class="table modryn_table align-middle">
-                    <tbody>
-                        <tr t-foreach="home['my_tasks']" t-as="task">
-                            <td style="width: 1%;">
-                                <span t-if="task['priority'] == '2'" class="modryn_badge is_busy">High</span>
-                                <span t-elif="task['priority'] == '0'" class="modryn_badge is_muted">Low</span>
-                            </td>
-                            <td>
-                                <div class="modryn_strong" t-out="task['customer']"/>
-                                <div t-if="task['dress']" class="modryn_sub">
-                                    <t t-out="task['dress']"/>
-                                    <t t-if="task['size']"> · <t t-out="task['size']"/></t>
-                                </div>
-                                <div t-if="task['note']" class="modryn_sub" t-out="task['note']"/>
-                            </td>
-                            <td>
-                                <span t-if="task['due']"
-                                      t-attf-class="modryn_badge #{'is_busy' if task['overdue'] else 'is_muted'}"
-                                      t-out="task['due']"/>
-                            </td>
-                            <td class="text-end">
+                <div t-else="" class="modryn_cards">
+                    <div t-foreach="home['my_tasks']" t-as="task" class="modryn_card">
+                        <div class="modryn_card_marks">
+                            <span t-if="task['priority'] == '2'" class="modryn_badge is_busy">High</span>
+                            <span t-elif="task['priority'] == '0'" class="modryn_badge is_muted">Low</span>
+                            <span t-if="task['due']"
+                                  t-attf-class="modryn_badge #{'is_busy' if task['overdue'] else 'is_muted'}"
+                                  dir="ltr" t-out="task['due']"/>
+                        </div>
+                        <div class="modryn_strong" t-out="task['customer']"/>
+                        <div t-if="task['dress']" class="modryn_sub">
+                            <t t-out="task['dress']"/>
+                            <t t-if="task['size']"> · <t t-out="task['size']"/></t>
+                        </div>
+                        <div t-if="task['note']" class="modryn_sub" t-out="task['note']"/>
+                        <div class="modryn_card_actions">
                                 <!-- All three working states, always, with the
                                      current one held down. She taps whichever
                                      the garment is actually in — INCLUDING
@@ -208,10 +201,9 @@
                                                 t-out="ts[1]"/>
                                     </t>
                                 </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                        </div>
+                    </div>
+                </div>
             </section>
 
             <!-- My follow-ups (modryn_ops) -->
@@ -222,25 +214,20 @@
                     <span class="modryn_count" t-out="len(home['ops_tasks'])"/>
                 </header>
                 <p t-if="not home['ops_tasks']" class="modryn_empty">Nothing to chase.</p>
-                <table t-else="" class="table modryn_table align-middle">
-                    <tbody>
-                        <tr t-foreach="home['ops_tasks']" t-as="task">
-                            <td>
-                                <div class="modryn_strong" t-out="task['name']"/>
-                                <div t-if="task.get('customer')" class="modryn_sub" t-out="task['customer']"/>
-                            </td>
-                            <td>
-                                <span t-if="task.get('due')"
-                                      t-attf-class="modryn_badge #{'is_busy' if task.get('overdue') else 'is_muted'}"
-                                      t-out="task['due']"/>
-                            </td>
-                            <td class="text-end">
-                                <button class="btn btn-sm btn-outline-dark"
-                                        t-att-data-task-done="task['id']">Done</button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div t-else="" class="modryn_cards">
+                    <div t-foreach="home['ops_tasks']" t-as="task" class="modryn_card">
+                        <div t-if="task.get('due')" class="modryn_card_marks">
+                            <span t-attf-class="modryn_badge #{'is_busy' if task.get('overdue') else 'is_muted'}"
+                                  dir="ltr" t-out="task['due']"/>
+                        </div>
+                        <div class="modryn_strong" t-out="task['name']"/>
+                        <div t-if="task.get('customer')" class="modryn_sub" t-out="task['customer']"/>
+                        <div class="modryn_card_actions">
+                            <button class="btn btn-sm btn-outline-dark"
+                                    t-att-data-task-done="task['id']">Done</button>
+                        </div>
+                    </div>
+                </div>
             </section>
 
             <!-- One error line for the action buttons; home.js fills it. -->

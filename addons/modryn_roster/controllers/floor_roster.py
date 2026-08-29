@@ -55,14 +55,14 @@ class ModrynHomeRoster(ModrynHome):
         # question narrowed to one day, so it reads off the same query rather
         # than running a second one.
         home['shift'] = [{
-            'name': slot.name,
+            'name': slot.modryn_name(),
             'hours': '%s-%s' % (_clock(slot.start_hour), _clock(slot.end_hour)),
         } for slot in slots if slot.day == today() and me in slot.employee_ids]
 
         by_day = {}
         for slot in slots:
             row = {
-                'name': slot.name,
+                'name': slot.modryn_name(),
                 'hours': '%s-%s' % (_clock(slot.start_hour), _clock(slot.end_hour)),
                 'type': slot._shift_type(),
                 'type_label': type_labels.get(slot._shift_type(), ''),

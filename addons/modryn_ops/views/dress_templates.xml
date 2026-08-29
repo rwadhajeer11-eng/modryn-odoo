@@ -18,10 +18,43 @@
 
             <div t-if="error" class="modryn_field_error mb-3" role="alert" t-out="error"/>
 
-            <!-- The script guards on this id: dresses.js rides the frontend
-                 bundle onto every page in the product and must do nothing on
-                 the other ones. -->
-            <div id="modryn_dresses_page"/>
+            <!-- The script guards on this id, and everything it touches lives
+                 INSIDE it: dresses.js rides the frontend bundle onto every page
+                 in the product and must do nothing on the other ones. -->
+            <div id="modryn_dresses_page">
+
+            <!-- The sentences the confirmation uses, as TEXT so the extractor
+                 finds them - this file's script cannot import _t, and Odoo does
+                 not extract data-* attributes. {count} is filled in by the
+                 script.
+                 The key beside each one is markup nobody reads. -->
+            <div id="modryn_dress_words" class="d-none" aria-hidden="true">
+                <!-- {count} and never a printf placeholder. Odoo's data loader
+                     treats percent-paren-name-paren-s inside a file as a
+                     reference to a record's external id and substitutes it at
+                     load time - EVEN INSIDE AN XML COMMENT, which is how the
+                     first attempt at this comment kept the module broken after
+                     the markup itself had been fixed. The module failed to
+                     install with "External ID not found in the system:
+                     modryn_ops.n". -->
+                <span data-code="add">Add {count} to this size?</span>
+                <span data-code="remove">Take {count} off this size?</span>
+                <span data-code="same">That is already the number here.</span>
+            </div>
+
+            <div class="modryn_dress_search mb-4">
+                <label class="form-label" for="modryn_dress_search">Search</label>
+                <input type="search" id="modryn_dress_search" class="form-control"
+                       autocomplete="off"
+                       placeholder="A name, a serial number, or a kind"/>
+                <div class="modryn_sub">
+                    From two letters onwards. A kind brings back everything in it.
+                </div>
+            </div>
+
+            <div id="modryn_dress_noresult" class="modryn_empty" hidden="hidden">
+                Nothing matches that.
+            </div>
 
             <div t-if="not dresses" class="modryn_empty">
                 Nothing here yet. Press <strong>Add one</strong> to put your first
@@ -31,7 +64,14 @@
             <!-- An id per dress, so every form on this page can send the
                  browser back to the row it belongs to instead of to the top of
                  the catalogue. -->
+            <!-- data-* here is not translatable text - it is the three things
+                 she searches by, in a form the script can match a prefix
+                 against without walking the rendered markup. -->
             <div t-foreach="dresses" t-as="d" t-attf-id="dress-#{d['id']}"
+                 data-dress="1"
+                 t-att-data-name="d['name']"
+                 t-att-data-serial="d['serial']"
+                 t-att-data-kind="d['kind']"
                  t-attf-class="modryn_panel mb-3 #{'modryn_archived' if not d['active'] else ''}">
                 <div class="modryn_dress_head">
                     <!-- The main photo. /web/image serves a placeholder for a
@@ -141,18 +181,27 @@
                                          empty field where the count should say
                                          zero, on exactly the sizes she most
                                          needs to see a number for. -->
+                                    <!-- data-current is what the rail holds RIGHT
+                                         NOW, straight off the server. The
+                                         confirmation works the change out from
+                                         it, so pressing Set twice cannot
+                                         compound its own arithmetic. -->
                                     <input type="number" name="stock" min="0" step="1"
                                            class="form-control form-control-sm"
                                            style="max-width: 90px;" dir="ltr"
+                                           t-att-data-current="str(v['stock'])"
                                            t-att-value="str(v['stock'])"/>
                                     <!-- Ask, then do. A replace-set is not a
                                          nudge: a mistyped 0 puts the dress out
                                          of stock on the shop, and the number
                                          she is replacing is gone. -->
                                     <button type="button" data-role="ask"
-                                            class="btn btn-sm btn-outline-dark">Set</button>
-                                    <span data-role="confirm" class="d-none modryn_confirm">
-                                        <span class="modryn_sub">Save this number?</span>
+                                            class="btn btn-sm btn-outline-dark">Update</button>
+                                    <!-- hidden, not .d-none: the script toggles
+                                         these with el.hidden, and a class the
+                                         stylesheet also owns would fight it. -->
+                                    <span data-role="confirm" class="modryn_confirm" hidden="hidden">
+                                        <span class="modryn_sub" data-role="words"/>
                                         <button type="submit" data-role="yes"
                                                 class="btn btn-sm btn-primary">Confirm</button>
                                         <button type="button" data-role="no"
@@ -163,6 +212,7 @@
                         </tr>
                     </tbody>
                 </table>
+            </div>
             </div>
         </t>
     </template>

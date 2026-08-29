@@ -538,11 +538,6 @@ msgid "Serial number"
 msgstr "מספר סידורי"
 
 #. module: modryn_ops
-#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_dresses
-msgid "Set"
-msgstr "עדכון"
-
-#. module: modryn_ops
 #: model_terms:ir.ui.view,arch_db:modryn_ops.manage_reports
 msgid "Show"
 msgstr "הצגה"
@@ -1104,11 +1099,6 @@ msgid "Confirm"
 msgstr "אישור"
 
 #. module: modryn_ops
-#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_dresses
-msgid "<span class=\"modryn_sub\">Save this number?</span>"
-msgstr "<span class=\"modryn_sub\">לשמור את המספר הזה?</span>"
-
-#. module: modryn_ops
 #. odoo-python
 #: code:addons/modryn_ops/models/audit_log.py:0
 msgid "Outcome"
@@ -1137,3 +1127,39 @@ msgstr "הערה לתוצאה"
 #: code:addons/modryn_ops/models/audit_log.py:0
 msgid "Closed by"
 msgstr "נסגר על ידי"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_dresses
+msgid "Search"
+msgstr "חיפוש"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_dresses
+msgid "Update"
+msgstr "עדכון"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_dresses
+msgid "Nothing matches that."
+msgstr "אין התאמות."
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_dresses
+msgid "A name, a serial number, or a kind"
+msgstr "שם, מספר סידורי או סוג"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_dresses
+msgid "From two letters onwards. A kind brings back everything in it."
+msgstr "משתי אותיות והלאה. סוג מחזיר את כל מה שבתוכו."
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_dresses
+msgid ""
+"<span data-code=\"add\">Add {count} to this size?</span>\n"
+"                <span data-code=\"remove\">Take {count} off this size?</span>\n"
+"                <span data-code=\"same\">That is already the number here.</span>"
+msgstr ""
+"<span data-code=\"add\">להוסיף {count} למידה הזו?</span>\n"
+"                <span data-code=\"remove\">להוריד {count} מהמידה הזו?</span>\n"
+"                <span data-code=\"same\">זה כבר המספר שיש כאן.</span>"
