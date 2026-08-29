@@ -320,12 +320,16 @@ grep -q 'dir="rtl"' "$PAGE" && ok "he: RTL" || bad "he RTL" "no dir=rtl"
 # What this CANNOT see: an English string that was never added to the .po at
 # all. That needs Odoo's own extractor, which this suite deliberately cannot
 # start (see the note at "10c"). Run scripts/sync_translations.py for that.
-.venv/bin/python - <<'PY' && ok "every shipped .po entry is translated"   || bad "translation coverage" "blank msgstr found — that term renders English"
+# Three outcomes, not two. 0 clean, 1 blank entries found, 2 could not run -
+# because a check that could not run has NOT passed, and the first version of
+# this exited 0 when polib was missing, printing PASS over a check that never
+# opened a file. That is the exact shape this suite exists to hunt.
+.venv/bin/python - <<'PY'
 import glob, os, sys
 try:
     import polib
 except ImportError:
-    sys.exit(0)          # not installed: report nothing rather than a false red
+    sys.exit(2)          # could not run - reported as a skip, never as a pass
 blank = []
 for path in sorted(glob.glob('addons/*/i18n/*.po')):
     for entry in polib.pofile(path):
@@ -335,6 +339,11 @@ for line in blank[:8]:
     print(line)
 sys.exit(1 if blank else 0)
 PY
+case $? in
+  0) ok "every shipped .po entry is translated" ;;
+  2) skip "translation coverage" "polib is not installed in .venv — this check did not run" ;;
+  *) bad "translation coverage" "blank msgstr found — that term renders English" ;;
+esac
 
 fetch "$BELLA/ar/shop"
 grep -q 'lang="ar-001"' "$PAGE" && ok "ar: storefront serves ar-001" || bad "Arabic storefront" "no lang=ar-001"

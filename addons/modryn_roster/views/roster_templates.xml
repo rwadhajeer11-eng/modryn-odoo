@@ -383,7 +383,20 @@
                 </div>
             </section>
 
-            <div t-if="is_manager" class="mt-4">
+            <!-- Once the week is out, the button is not an action any more -
+                 it re-publishes what is already published, tells nobody
+                 anything, and sits there looking like the week still needs
+                 doing. The page already knows the week is frozen; it says so
+                 here instead. -->
+            <div t-if="is_manager and week_frozen" class="mt-4 modryn_panel">
+                <span class="modryn_badge is_free">Published</span>
+                <span class="modryn_sub ms-2">
+                    The team can see this week, and availability is closed. Ask
+                    for a change on the shift itself.
+                </span>
+            </div>
+
+            <div t-if="is_manager and not week_frozen" class="mt-4">
                 <button type="button" class="btn btn-primary" id="modryn_publish_week">
                     Publish this week
                 </button>

@@ -857,3 +857,18 @@ msgid ""
 msgstr ""
 ".\n"
 "                    מה שהצעת מופיע למטה, והוא נשאר כפי שהוא."
+
+#. module: modryn_roster
+#: model_terms:ir.ui.view,arch_db:modryn_roster.roster_page
+msgid ""
+"<span class=\"modryn_badge is_free\">Published</span>\n"
+"                <span class=\"modryn_sub ms-2\">\n"
+"                    The team can see this week, and availability is closed. Ask\n"
+"                    for a change on the shift itself.\n"
+"                </span>"
+msgstr ""
+"<span class=\"modryn_badge is_free\">פורסם</span>\n"
+"                <span class=\"modryn_sub ms-2\">\n"
+"                    הצוות רואה את השבוע הזה, והזמינות סגורה. בקשי שינוי\n"
+"                    על המשמרת עצמה.\n"
+"                </span>"

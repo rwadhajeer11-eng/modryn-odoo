@@ -1951,3 +1951,12 @@ msgstr "— الأرض بتفتح لمّا تكوني عليها."
 #: model:ir.model.fields,field_description:modryn_staff.field_hr_employee__modryn_on_shift_since
 msgid "Modryn On Shift Since"
 msgstr "على الأرض منذ"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.staff_home
+msgid ""
+"This account isn't linked to anyone on the team yet, so there is\n"
+"                nothing here to show. Ask the owner to add you on the Team page."
+msgstr ""
+"هذا الحساب لسّه مش مربوط بحدا من الطاقم، فما في إشي نعرضه هون.\n"
+"                اطلبي من مالكة البوتيك تضيفك بصفحة الطاقم."

@@ -1090,3 +1090,33 @@ msgstr "تأكيد"
 #: model_terms:ir.ui.view,arch_db:modryn_ops.manage_dresses
 msgid "<span class=\"modryn_sub\">Save this number?</span>"
 msgstr "<span class=\"modryn_sub\">نحفظ هذا الرقم؟</span>"
+
+#. module: modryn_ops
+#. odoo-python
+#: code:addons/modryn_ops/models/audit_log.py:0
+msgid "Outcome"
+msgstr "النتيجة"
+
+#. module: modryn_ops
+#. odoo-python
+#: code:addons/modryn_ops/models/audit_log.py:0
+msgid "Sale amount"
+msgstr "مبلغ البيع"
+
+#. module: modryn_ops
+#. odoo-python
+#: code:addons/modryn_ops/models/audit_log.py:0
+msgid "Sale items"
+msgstr "القطع المباعة"
+
+#. module: modryn_ops
+#. odoo-python
+#: code:addons/modryn_ops/models/audit_log.py:0
+msgid "Outcome note"
+msgstr "ملاحظة على النتيجة"
+
+#. module: modryn_ops
+#. odoo-python
+#: code:addons/modryn_ops/models/audit_log.py:0
+msgid "Closed by"
+msgstr "أُغلق بواسطة"
