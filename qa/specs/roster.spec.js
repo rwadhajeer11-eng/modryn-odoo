@@ -86,12 +86,41 @@ test.afterAll(async ({ browser }) => {
   }
 });
 
-// The week AFTER the one being planned. Deliberately not week=0: a tenant that
-// has already published next week freezes it, and a frozen grid is disabled —
-// which would look exactly like the feature being broken.
-const WEEK = '/roster?week=1';
+// WHICH week these acts work on, asked of the page rather than assumed.
+//
+// It was pinned to week=1 to dodge a tenant that has already published week 0.
+// That dodge was wrong in the other direction: a submission window belongs to
+// the week BEFORE the one it serves, so a window for week=1 falls two weeks out
+// and the fixed dates below are legitimately refused. The suite went red on a
+// Sunday on code that had not changed.
+//
+// week=0 is the week being planned and the one the recurring rule opens. If a
+// tenant has already published it — the case the old comment worried about, and
+// a real one — week=1 is the fallback.
+let WEEK = '/roster?week=0';
+
+async function pickWeek(page) {
+  for (const offset of [0, 1]) {
+    await page.goto(`/roster?week=${offset}`);
+    const grid = page.locator('.modryn_roster_grid');
+    if ((await grid.count()) === 0) {
+      continue;
+    }
+    // A published week can never be planned, whatever the window says; any
+    // other lock is one the manager can lift by setting the window herself,
+    // which is exactly what these acts do next.
+    if (!(await grid.getAttribute('class')).includes('is_locked')
+        || !(await page.locator('.modryn_badge', { hasText: /Published|פורסם|نُشر/ }).count())) {
+      WEEK = `/roster?week=${offset}`;
+      return WEEK;
+    }
+  }
+  return WEEK;
+}
 
 test('the week is seven days by three, always', async ({ page }) => {
+  await signIn(page, PEOPLE.manager);
+  await pickWeek(page);
   await signIn(page, PEOPLE.staff);
   await page.goto(WEEK);
 
@@ -120,6 +149,8 @@ test('the week is seven days by three, always', async ({ page }) => {
 });
 
 test('@writes a cell remembers being pressed, and un-pressed', async ({ page }) => {
+  await signIn(page, PEOPLE.manager);
+  await pickWeek(page);
   // The manager opens the window for this week first. Without it the cells are
   // legitimately disabled and the test below would be asserting on a deadline
   // rather than on the grid.
@@ -213,6 +244,8 @@ test('@writes the manager can say when the team may answer', async ({ page }) =>
 // week is not hers to change — reported as "it doesn't work", which is what a
 // grid of twenty-one buttons that silently refuse every press looks like.
 test('@writes the deadline passing locks the grid, and she can still read her own answer', async ({ page }) => {
+  await signIn(page, PEOPLE.manager);
+  await pickWeek(page);
   const day = (n) => new Date(Date.now() + n * 86400000).toISOString().slice(0, 10);
 
   const setWindow = async (fromDay, fromTime, toDay, toTime) => {

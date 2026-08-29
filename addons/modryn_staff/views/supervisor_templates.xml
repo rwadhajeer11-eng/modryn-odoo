@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ==================== the shift supervisor's screen ==================== -->
+    <template id="shift_supervisor" name="MODRYN shift supervisor">
+        <t t-call="modryn_staff.staff_layout">
+            <t t-set="active_tab" t-value="'supervisor'"/>
+            <t t-set="additional_title">Shift supervisor</t>
+
+            <div class="d-flex align-items-baseline justify-content-between mb-1">
+                <h1 class="mb-0">Shift supervisor</h1>
+                <span class="modryn_sub" dir="ltr" t-out="day_label"/>
+            </div>
+            <p class="text-muted mb-4">
+                Who is on the floor, since when, and who they are with.
+            </p>
+
+            <!-- Work nobody has taken. First, because it is the only thing on
+                 this screen that needs somebody to do something about it -
+                 everything below is a record of what is already happening. -->
+            <section t-if="unassigned" class="modryn_panel mb-4">
+                <header class="modryn_panel_head">
+                    <h2>Waiting for somebody</h2>
+                    <span class="modryn_count" t-out="len(unassigned)"/>
+                </header>
+                <div class="modryn_cards">
+                    <div t-foreach="unassigned" t-as="c" class="modryn_card">
+                        <div class="modryn_strong" t-out="c['name']"/>
+                        <div t-if="c['phone']" class="modryn_sub" dir="ltr" t-out="c['phone']"/>
+                        <div class="modryn_card_marks">
+                            <span t-if="c['kind'] == 'queue'" class="modryn_badge is_muted">Walk-in</span>
+                            <span t-else="" class="modryn_badge is_muted">Booking</span>
+                            <span t-if="c.get('time')" class="modryn_badge is_muted"
+                                  dir="ltr" t-out="c['time']"/>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <div t-if="not rows" class="modryn_empty">Nobody on the team yet.</div>
+
+            <div class="modryn_cards">
+                <section t-foreach="rows" t-as="r"
+                         t-attf-class="modryn_card modryn_super_card #{'is_on' if r['on_floor'] else ''}">
+                    <div class="modryn_card_marks">
+                        <span class="modryn_strong" t-out="r['name']"/>
+                        <span t-if="r['on_floor']" class="modryn_badge is_free">On the floor</span>
+                        <span t-else="" class="modryn_badge is_muted">Off</span>
+                    </div>
+                    <div t-if="r['roles']" class="modryn_sub" t-out="r['roles']"/>
+
+                    <!-- When the rota says she should be here, next to when she
+                         actually was. Both, or neither number means anything:
+                         "came on at 10:14" is only late against a shift that
+                         started at 10:00. -->
+                    <div class="modryn_super_times">
+                        <div>
+                            <span class="modryn_sub">Expected</span>
+                            <t t-if="r['expected']">
+                                <strong dir="ltr">
+                                    <t t-esc="r['expected']['from']"/>–<t t-esc="r['expected']['to']"/>
+                                </strong>
+                                <span class="modryn_sub" t-out="r['expected']['names']"/>
+                            </t>
+                            <span t-else="" class="modryn_sub">Not on today's rota</span>
+                        </div>
+                        <div>
+                            <span class="modryn_sub">Actually</span>
+                            <t t-if="r['spells']">
+                                <div t-foreach="r['spells']" t-as="sp">
+                                    <strong dir="ltr" t-out="sp['in']"/>
+                                    <t t-if="sp['out']">
+                                        – <strong dir="ltr" t-out="sp['out']"/>
+                                    </t>
+                                    <span t-else="" class="modryn_sub">— still on</span>
+                                </div>
+                            </t>
+                            <span t-else="" class="modryn_sub">Has not come on today</span>
+                        </div>
+                    </div>
+
+                    <div class="modryn_card_marks">
+                        <span class="modryn_sub">With her now</span>
+                        <span class="modryn_badge is_muted" t-out="r['count']"/>
+                    </div>
+
+                    <p t-if="not r['customers']" class="modryn_sub mb-0">Nobody right now.</p>
+                    <div t-else="" class="modryn_super_clients">
+                        <div t-foreach="r['customers']" t-as="c" class="modryn_super_client">
+                            <div class="modryn_strong" t-out="c['name']"/>
+                            <div class="modryn_card_marks">
+                                <span t-if="c['kind'] == 'queue'" class="modryn_badge is_muted">Walk-in</span>
+                                <span t-else="" class="modryn_badge is_muted">Booking</span>
+                                <span t-if="c.get('time')" class="modryn_badge is_muted"
+                                      dir="ltr" t-out="c['time']"/>
+                                <span t-if="c['client_type'] == 'bride'" class="modryn_badge is_free">Bride</span>
+                                <span t-if="c['state'] == 'called'" class="modryn_badge is_busy">With her now</span>
+                            </div>
+                            <div t-if="c['phone']" class="modryn_sub" dir="ltr" t-out="c['phone']"/>
+                            <div t-if="c['note']" class="modryn_sub" t-out="c['note']"/>
+                            <div t-if="c['helpers']" class="modryn_sub">
+                                <t t-esc="', '.join(c['helpers'])"/>
+                            </div>
+
+                            <!-- How the visit went. Five plain buttons and a
+                                 line of text: a supervisor marks this while
+                                 standing up, between two other things. -->
+                            <form action="/shift-supervisor/rate" method="post"
+                                  class="modryn_rate">
+                                <input type="hidden" name="csrf_token"
+                                       t-att-value="request.csrf_token()"/>
+                                <input type="hidden" name="kind" t-att-value="c['kind']"/>
+                                <input type="hidden" name="record_id" t-att-value="c['id']"/>
+                                <div class="modryn_rate_stars">
+                                    <t t-foreach="[1, 2, 3, 4, 5]" t-as="n">
+                                        <button type="submit" name="rating" t-att-value="n"
+                                                t-attf-class="modryn_rate_star #{'is_on' if c['rating'] &gt;= n else ''}"
+                                                t-attf-aria-label="#{n} out of 5"
+                                                t-attf-title="#{n} out of 5">★</button>
+                                    </t>
+                                </div>
+                                <input type="text" name="note" class="form-control form-control-sm"
+                                       t-att-value="c['rating_note']"
+                                       placeholder="Anything worth remembering?"/>
+                            </form>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </t>
+    </template>
+
+</odoo>

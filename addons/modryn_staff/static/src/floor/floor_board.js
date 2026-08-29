@@ -186,10 +186,54 @@ export class FloorBoard extends Component {
                 customer: board.finished.customer,
                 phone: board.finished.phone,
                 variants: board.finished.variants,
+                // What she has typed into the dress box, and the one she picked.
+                dressQuery: "",
+                dressLabel: "",
                 form: { variant_id: "", piece_ids: [], note: "", due_date: "", seamstress_id: "", priority: "1" },
                 error: "",
             };
         }
+    }
+
+    // The dresses matching what she has typed, at most a handful.
+    //
+    // Prefix and not "contains", per WORD as well as per field: typing 10 offers
+    // 1042 and 1099 rather than every dress with a 10 buried in it, and "אמי"
+    // finds "שמלת כלה אמילי" because a name is several words and only the first
+    // of them starts the string. The same rule the catalogue's own search uses,
+    // so the two screens behave the same way.
+    get dressMatches() {
+        const f = this.state.finish;
+        if (!f) {
+            return [];
+        }
+        const q = (f.dressQuery || "").trim().toLowerCase();
+        if (q.length < 2) {
+            return [];
+        }
+        const starts = (hay, needle) =>
+            String(hay || "").toLowerCase().split(/\s+/).some((w) => w.startsWith(needle));
+        return f.variants
+            .filter((v) => starts(v.name, q) || starts(v.serial, q) || starts(v.kind, q))
+            // Capped, because a kind can match hundreds and a list that long
+            // inside a dialog is the wall this replaced.
+            .slice(0, 12);
+    }
+
+    pickDress(v) {
+        const f = this.state.finish;
+        f.form.variant_id = String(v.id);
+        f.dressLabel = v.label;
+        // The box is cleared so the list collapses: she has chosen, and a list
+        // still hanging open over the rest of the form reads as unfinished.
+        f.dressQuery = "";
+    }
+
+    clearDress() {
+        const f = this.state.finish;
+        f.form.variant_id = "";
+        f.dressLabel = "";
+        f.dressQuery = "";
     }
 
     // ------------------------------------------------------------------- dnd

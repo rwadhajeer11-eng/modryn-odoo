@@ -1033,3 +1033,123 @@
 .modryn_dress_search {
     max-inline-size: 420px;
 }
+
+// ==================== the shift supervisor's screen ====================
+// One card per woman, in the same wrapping grid the main screen uses, so the
+// two pages read as one product.
+.modryn_super_card {
+    gap: 8px;
+
+    // On the floor right now, in the metal. The whole card is lifted rather
+    // than given a dot: among a dozen cards the ones that matter are the
+    // people actually in the room.
+    &.is_on {
+        border-color: $modryn-gold-light;
+        border-inline-start: 3px solid $modryn-gold;
+        background: linear-gradient(180deg, #FFFFFF 0%, $modryn-gold-wash 100%);
+    }
+}
+
+// Expected against actual, side by side. Two columns, because the whole point
+// is the comparison - one under the other and the eye stops making it.
+.modryn_super_times {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    padding-block: 8px;
+    border-block: 1px solid $modryn-border;
+    font-size: 0.875rem;
+}
+
+.modryn_super_clients {
+    display: grid;
+    gap: 8px;
+}
+
+.modryn_super_client {
+    padding: 8px 10px;
+    background: $modryn-bg;
+    border: 1px solid $modryn-border;
+    border-radius: 9px;
+}
+
+// The rating. Buttons, not a select: a supervisor marks this standing up,
+// between two other things, and a dropdown is three taps where this is one.
+.modryn_rate {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-block-start: 8px;
+}
+
+.modryn_rate_stars {
+    display: flex;
+    gap: 2px;
+}
+
+.modryn_rate_star {
+    background: none;
+    border: none;
+    padding: 0 2px;
+    font-size: 1.1rem;
+    line-height: 1;
+    cursor: pointer;
+    // Unset stars stay visible rather than disappearing: she has to be able to
+    // press the fourth one, which means seeing where it is.
+    color: $modryn-border;
+
+    &.is_on {
+        color: $modryn-gold;
+    }
+
+    &:hover {
+        color: $modryn-gold-light;
+    }
+}
+
+// The finish dialog's dress picker: a search box and its hits, in place of a
+// <select> that listed every published variant in the shop.
+.modryn_dress_picked {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 8px 10px;
+    background: $modryn-gold-wash;
+    border: 1px solid $modryn-gold-light;
+    border-radius: 9px;
+}
+
+.modryn_dress_hits {
+    display: grid;
+    gap: 4px;
+    margin-block-start: 6px;
+    // Capped and scrolled: a kind can match dozens, and a dialog that grows
+    // past the screen puts its own Save button out of reach.
+    max-block-size: 240px;
+    overflow-y: auto;
+}
+
+.modryn_dress_hit {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    inline-size: 100%;
+    text-align: start;
+    padding: 8px 10px;
+    background: #FFFFFF;
+    border: 1px solid $modryn-border;
+    border-radius: 9px;
+    cursor: pointer;
+
+    &:hover {
+        border-color: $modryn-gold;
+        background: $modryn-gold-wash;
+    }
+
+    // The count sits at the trailing edge whatever the name's length.
+    .modryn_badge {
+        margin-inline-start: auto;
+    }
+}

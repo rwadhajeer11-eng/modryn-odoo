@@ -177,6 +177,11 @@ class ModrynFloor(http.Controller):
             # hr.employee row, the same reason every other write on this
             # controller goes through it. The group check above is the gate.
             me.sudo().modryn_on_shift_since = fields.Datetime.now()
+            # And a row that survives her leaving. The field answers "is she
+            # here"; the supervisor's screen asks when she came and when she
+            # went, and the field is cleared at exactly the moment the second
+            # half of that becomes interesting.
+            request.env['modryn.shift.attendance'].sudo().modryn_open(me)
         return request.redirect('/floor')
 
     @http.route('/floor/shift/end', type='http', auth='user', website=True,
@@ -187,6 +192,7 @@ class ModrynFloor(http.Controller):
         me = self._my_employee()
         if me:
             me.sudo().modryn_on_shift_since = False
+            request.env['modryn.shift.attendance'].sudo().modryn_close(me)
         return request.redirect('/floor')
 
     # ------------------------------------------------------------------ data
@@ -417,12 +423,23 @@ class ModrynFloor(http.Controller):
         board['finished'] = {
             'customer': entry.name,
             'phone': entry.phone or '',
+            # name, serial and kind travel with each row so the picker can
+            # match a prefix in the browser: a thousand dresses is a wall in a
+            # <select>, and a round trip per keystroke is worse.
             'variants': [{
                 'id': v.id,
                 'label': '%s · %s' % (
                     v.product_tmpl_id.name,
                     v.product_template_attribute_value_ids[:1].name or v.name,
                 ),
+                'name': v.product_tmpl_id.name or '',
+                'serial': v.product_tmpl_id.modryn_serial or '',
+                'kind': v.product_tmpl_id.modryn_type_id.name or '',
+                'size': v.product_template_attribute_value_ids[:1].name or '',
+                # Shown beside each one: "which did she take" and "is there
+                # another" are the same question at the moment of writing it
+                # down, and a size at zero is worth seeing before it is chosen.
+                'stock': v.modryn_stock,
             } for v in variants],
         }
         return board

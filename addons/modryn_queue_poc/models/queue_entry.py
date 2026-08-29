@@ -52,6 +52,12 @@ class ModrynQueueEntry(models.Model):
     # to its template, so this note is one careless t-out away from the
     # customer's own screen. verify.sh plants a note and asserts it never
     # appears there; if you add it to that template, the gate will say so.
+    # How the visit went, as the person watching the room saw it. 0 means nobody
+    # has said - deliberately not 1, so "unrated" and "poor" cannot be confused
+    # by anything that sorts or averages these later.
+    modryn_visit_rating = fields.Integer(default=0, copy=False)
+    modryn_visit_note = fields.Text(copy=False)
+
     staff_note = fields.Text(string="Note for the team")
     # A verified check-in joins the line directly. The old `pending` front door —
     # a scan parked her here until a staff member accepted her — is gone: proving

@@ -7,3 +7,4 @@ from . import notify
 from . import assignment
 from . import sos_call
 from . import ir_http
+from . import shift_attendance

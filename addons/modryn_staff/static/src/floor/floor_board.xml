@@ -691,12 +691,38 @@
 
                     <div class="mb-3">
                         <label class="form-label">Dress</label>
-                        <select class="form-select" t-model="state.finish.form.variant_id">
-                            <option value="">— Choose a dress —</option>
-                            <t t-foreach="state.finish.variants" t-as="v" t-key="v.id">
-                                <option t-att-value="v.id"><t t-esc="v.label"/></option>
-                            </t>
-                        </select>
+                        <!-- Chosen already: her answer, and a way to change it.
+                             No list, no box - the question is settled. -->
+                        <div t-if="state.finish.form.variant_id" class="modryn_dress_picked">
+                            <span class="modryn_strong" t-esc="state.finish.dressLabel"/>
+                            <button type="button" class="btn btn-sm btn-link"
+                                    t-on-click="clearDress">Change</button>
+                        </div>
+                        <t t-else="">
+                            <input type="search" class="form-control"
+                                   t-model="state.finish.dressQuery"
+                                   placeholder="Name, serial number, or kind"/>
+                            <div class="modryn_sub">From two letters onwards.</div>
+                            <div t-if="dressMatches.length" class="modryn_dress_hits">
+                                <button t-foreach="dressMatches" t-as="v" t-key="v.id"
+                                        type="button" class="modryn_dress_hit"
+                                        t-on-click="() => this.pickDress(v)">
+                                    <span t-esc="v.label"/>
+                                    <span t-if="v.serial" class="modryn_sub" dir="ltr"
+                                          t-esc="v.serial"/>
+                                    <!-- What is left of that size. A stylist
+                                         about to write down the last one should
+                                         be able to see that it is the last
+                                         one. -->
+                                    <span t-attf-class="modryn_badge #{v.stock > 0 ? 'is_free' : 'is_muted'}">
+                                        <t t-if="v.stock > 0"><t t-esc="v.stock"/></t>
+                                        <t t-else="">None left</t>
+                                    </span>
+                                </button>
+                            </div>
+                            <div t-elif="state.finish.dressQuery.trim().length >= 2"
+                                 class="modryn_sub">Nothing matches that.</div>
+                        </t>
                     </div>
 
                     <div class="mb-3">
