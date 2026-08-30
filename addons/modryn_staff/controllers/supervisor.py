@@ -171,6 +171,44 @@ class ModrynSupervisor(http.Controller):
             # make a supervisor read past it.
         return now, later
 
+    def _open_calls(self):
+        """Every call for help still standing, newest first.
+
+        EVERY one, unlike the floor board, which deliberately shows a stylist
+        only the calls that concern her. Whoever is running the shift is the
+        person the general bell rings for, and a screen that filtered by
+        involvement would have shown her the one thing she cannot help with.
+        """
+        Call = request.env['modryn.sos.call'].sudo()
+        return [{
+            'id': c.id,
+            'caller': c.caller_id.name or '',
+            'target': c.target_id.name or '',
+            'where': c._where(),
+            'note': c.note or '',
+            'state': c.state,
+            'acked_by': c.acked_by_id.name or '',
+            'escalated': bool(c.escalated_at),
+            'at': _local(c.create_date).strftime('%H:%M') if c.create_date else '',
+        } for c in Call.search([('state', 'in', ('open', 'acked'))])]
+
+    @http.route('/shift-supervisor/sos/resolve', type='http', auth='user',
+                website=True, methods=['POST'], csrf=True, sitemap=False)
+    def sos_resolve(self, **post):
+        """Somebody went and helped. Closes the call from this screen.
+
+        The board has a resolve of its own, reached from the caller's overlay -
+        which is the wrong screen for the person who actually answered, and on a
+        busy floor is a screen she is not looking at.
+        """
+        if not access.can_view('supervisor'):
+            return access.deny()
+        call = request.env['modryn.sos.call'].sudo().browse(
+            int(post.get('call_id') or 0)).exists()
+        if call and call.state != 'resolved':
+            call.modryn_resolve()
+        return request.redirect('/shift-supervisor')
+
     @http.route('/shift-supervisor', type='http', auth='user', website=True,
                 sitemap=False)
     def supervisor(self, **kw):
@@ -229,6 +267,7 @@ class ModrynSupervisor(http.Controller):
         # itself. The number is the part she cannot get anywhere else.
         later_loose = len(coming.get(None, []))
         return request.render('modryn_staff.shift_supervisor', {
+            'calls': self._open_calls(),
             'rows': rows,
             # The first handful and a count, never the whole line. A tenant
             # holding 99 unclaimed walk-ins turned this panel into the entire

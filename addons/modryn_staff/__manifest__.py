@@ -47,6 +47,7 @@ therefore never touch hr.employee directly.
         'views/manage_templates.xml',
         'views/floor_templates.xml',
         'views/supervisor_templates.xml',
+        'views/manager_templates.xml',
         'views/home_templates.xml',
     ],
     'assets': {

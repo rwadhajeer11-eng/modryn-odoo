@@ -10,3 +10,4 @@ access_modryn_sos_call_internal,modryn.sos.call.internal,model_modryn_sos_call,b
 access_modryn_opening_hours_owner,modryn.opening.hours.owner,modryn_booking.model_modryn_opening_hours,modryn_staff.group_boutique_owner,1,1,1,1
 access_modryn_closure_owner,modryn.closure.owner,modryn_booking.model_modryn_closure,modryn_staff.group_boutique_owner,1,1,1,1
 access_shift_attendance_internal,modryn.shift.attendance.internal,model_modryn_shift_attendance,base.group_user,1,0,0,0
+access_modryn_announcement_internal,modryn.announcement.internal,model_modryn_announcement,base.group_user,1,0,0,0

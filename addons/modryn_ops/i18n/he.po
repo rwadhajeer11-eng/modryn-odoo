@@ -150,6 +150,7 @@ msgstr "טלפון הלקוחה"
 
 #. module: modryn_ops
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_task__day
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_reports
 msgid "Day"
 msgstr "יום"
 
@@ -991,6 +992,7 @@ msgstr "תמונות"
 
 #. module: modryn_ops
 #: model_terms:ir.ui.view,arch_db:modryn_ops.manage_dress_form
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_reports
 msgid "Price (₪)"
 msgstr "מחיר (₪)"
 
@@ -1193,3 +1195,35 @@ msgstr "השמלה שהיא לקחה"
 #: model:ir.model,name:modryn_ops.model_modryn_queue_entry
 msgid "Walk-in queue entry"
 msgstr "רישום בתור ללא תור"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_reports
+msgid "Gowns"
+msgstr "שמלות"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_reports
+msgid "Gowns sold"
+msgstr "שמלות שנמכרו"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_reports
+msgid "No gown has left the rail in this range yet."
+msgstr "עדיין לא ירדה שמלה מהמתלה בטווח הזה."
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_reports
+msgid "Walk-in"
+msgstr "ללא תור"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_reports
+msgid ""
+"What the gowns are priced at in the catalogue, not what was taken\n"
+"                at the till."
+msgstr "המחיר של השמלות בקטלוג, לא מה שנכנס לקופה."
+
+#. module: modryn_ops
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_queue_entry__modryn_outcome_at
+msgid "When it was recorded"
+msgstr "מתי זה נרשם"

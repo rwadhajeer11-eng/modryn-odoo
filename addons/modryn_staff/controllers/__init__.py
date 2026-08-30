@@ -4,3 +4,4 @@ from . import manage
 from . import floor
 from . import home
 from . import supervisor
+from . import manager

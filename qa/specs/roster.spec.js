@@ -171,27 +171,52 @@ test('@writes a cell remembers being pressed, and un-pressed', async ({ page }) 
 
   // Friday evening: the corner of the week this boutique has never had a shift
   // in, which is precisely why it has to be pressable.
-  const cell = page.locator('.modryn_avail_cell[data-type="night"]').nth(5);
+  const NIGHT = '.modryn_avail_cell[data-type="night"]';
+  const cell = page.locator(NIGHT).nth(5);
   await expect(cell).toBeEnabled();
-  await expect(cell).not.toHaveClass(/is_on/);
 
+  // Tested RELATIVE to wherever the cell starts, not from a state this act
+  // assumes somebody left it in. It used to open by asserting the cell was off,
+  // so a run that died between the press and the un-press below left every
+  // later run red on its own setup - a failure about a starting condition,
+  // reading as the feature being broken.
+  //
+  // What the act is actually about is the toggle, and a toggle can be tested
+  // from either end: press it and it flips, press it again and it flips back.
+  const startedOn = /is_on/.test((await cell.getAttribute('class')) || '');
+  const flipped = startedOn ? /^((?!is_on).)*$/ : /is_on/;
+  const back = startedOn ? /is_on/ : /^((?!is_on).)*$/;
+
+  // Press, and wait for the WRITE - not for the paint. roster.js flips the class
+  // before it calls the server, on purpose: the gold has to settle in the same
+  // instant her finger lands, or she presses again thinking the first press
+  // missed. So the class means "pressed", never "stored", and an act that
+  // reloads on the strength of it is racing the request it is about to assert
+  // survived. It lost that race on a busy run and reported that un-pressing does
+  // not stick, while the row was already gone from the database.
+  const stored = () => page.waitForResponse(
+    (r) => r.url().includes('/roster/available'));
+
+  let saved = stored();
   await cell.click();
+  await saved;
   // Repainted in place, with NO reload — the old page reloaded on every single
   // tap, which for twenty-one cells is twenty-one full round trips.
-  await expect(cell).toHaveClass(/is_on/);
-  await expect(cell).toHaveAttribute('aria-pressed', 'true');
+  await expect(cell).toHaveClass(flipped);
+  await expect(cell).toHaveAttribute('aria-pressed', String(!startedOn));
 
   // It survives leaving the page, which is the only proof it was ever stored.
   await page.reload();
-  const again = page.locator('.modryn_avail_cell[data-type="night"]').nth(5);
-  await expect(again).toHaveClass(/is_on/);
+  const again = page.locator(NIGHT).nth(5);
+  await expect(again).toHaveClass(flipped);
 
   // And pressing it again takes it back.
+  saved = stored();
   await again.click();
-  await expect(again).not.toHaveClass(/is_on/);
+  await saved;
+  await expect(again).toHaveClass(back);
   await page.reload();
-  await expect(page.locator('.modryn_avail_cell[data-type="night"]').nth(5))
-    .not.toHaveClass(/is_on/);
+  await expect(page.locator(NIGHT).nth(5)).toHaveClass(back);
 
   // Put the tenant back on its usual window, and wait for it.
   await signIn(page, PEOPLE.manager);

@@ -15,6 +15,46 @@
                 Who is on the floor, since when, and who they are with.
             </p>
 
+            <!-- Somebody has put her hand up. ABOVE the unclaimed queue and
+                 above the team, because everything else on this page can wait a
+                 minute and this cannot: a stylist is standing in a fitting room
+                 with a customer and a problem.
+                 -->
+            <section t-if="calls" class="modryn_panel modryn_super_calls mb-4">
+                <header class="modryn_panel_head">
+                    <h2>Someone needs help</h2>
+                    <span class="modryn_count" t-out="len(calls)"/>
+                </header>
+                <div class="modryn_cards">
+                    <div t-foreach="calls" t-as="c"
+                         t-attf-class="modryn_card modryn_super_call #{'is_late' if c['escalated'] else ''}">
+                        <div class="modryn_card_marks">
+                            <span class="modryn_strong" t-out="c['caller']"/>
+                            <span t-if="c['at']" class="modryn_badge is_muted"
+                                  dir="ltr" t-out="c['at']"/>
+                            <span t-if="c['state'] == 'acked'" class="modryn_badge is_free">On the way</span>
+                            <span t-else="" class="modryn_badge is_busy">Waiting</span>
+                        </div>
+                        <!-- Where to go. The whole reason this record carries
+                             context: "Dana needs help" sends a colleague across
+                             a boutique asking questions. -->
+                        <div t-if="c['where']" class="modryn_sub" t-out="c['where']"/>
+                        <div t-if="c['note']" t-out="c['note']"/>
+                        <div t-if="c['target']" class="modryn_sub">
+                            <t t-out="c['target']"/>
+                        </div>
+                        <div t-if="c['acked_by']" class="modryn_sub" t-out="c['acked_by']"/>
+                        <form action="/shift-supervisor/sos/resolve" method="post"
+                              class="modryn_card_actions">
+                            <input type="hidden" name="csrf_token"
+                                   t-att-value="request.csrf_token()"/>
+                            <input type="hidden" name="call_id" t-att-value="c['id']"/>
+                            <button type="submit" class="btn btn-sm btn-primary">Sorted</button>
+                        </form>
+                    </div>
+                </div>
+            </section>
+
             <!-- Work nobody has taken. First, because it is the only thing on
                  this screen that needs somebody to do something about it -
                  everything below is a record of what is already happening. -->

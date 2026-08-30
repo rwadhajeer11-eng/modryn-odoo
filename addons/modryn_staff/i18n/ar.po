@@ -865,6 +865,7 @@ msgstr "أنا في الطريق"
 #. odoo-javascript
 #: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
 #: model:ir.model.fields.selection,name:modryn_staff.selection__modryn_sos_call__state__acked
+#: model_terms:ir.ui.view,arch_db:modryn_staff.shift_supervisor
 msgid "On the way"
 msgstr "في الطريق"
 
@@ -1262,6 +1263,7 @@ msgstr "إحداهن في الطريق إليكِ."
 #. module: modryn_staff
 #. odoo-javascript
 #: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+#: model_terms:ir.ui.view,arch_db:modryn_staff.shift_supervisor
 msgid "Someone needs help"
 msgstr "إحداهن تحتاج إلى مساعدة"
 
@@ -1474,6 +1476,7 @@ msgstr "اسم المستخدم"
 #. module: modryn_staff
 #. odoo-javascript
 #: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+#: model_terms:ir.ui.view,arch_db:modryn_staff.shift_supervisor
 #: model_terms:ir.ui.view,arch_db:modryn_staff.staff_home
 msgid "Waiting"
 msgstr "في الانتظار"
@@ -1666,6 +1669,7 @@ msgid "Active"
 msgstr "نشط"
 
 #. module: modryn_staff
+#: model:ir.model.fields,field_description:modryn_staff.field_modryn_announcement__body
 #: model:ir.model.fields,field_description:modryn_staff.field_modryn_staff_notification__body
 msgid "Body"
 msgstr "المحتوى"
@@ -1686,6 +1690,7 @@ msgid "Calendar Event"
 msgstr "حدث في التقويم"
 
 #. module: modryn_staff
+#: model:ir.model.fields,field_description:modryn_staff.field_modryn_announcement__create_uid
 #: model:ir.model.fields,field_description:modryn_staff.field_modryn_fitting_room__create_uid
 #: model:ir.model.fields,field_description:modryn_staff.field_modryn_floor_helper__create_uid
 #: model:ir.model.fields,field_description:modryn_staff.field_modryn_role_page__create_uid
@@ -1697,6 +1702,7 @@ msgid "Created by"
 msgstr "أنشأه"
 
 #. module: modryn_staff
+#: model:ir.model.fields,field_description:modryn_staff.field_modryn_announcement__create_date
 #: model:ir.model.fields,field_description:modryn_staff.field_modryn_fitting_room__create_date
 #: model:ir.model.fields,field_description:modryn_staff.field_modryn_floor_helper__create_date
 #: model:ir.model.fields,field_description:modryn_staff.field_modryn_role_page__create_date
@@ -1711,6 +1717,7 @@ msgstr "أُنشئ في"
 #: model:ir.model.fields,field_description:modryn_staff.field_calendar_event__display_name
 #: model:ir.model.fields,field_description:modryn_staff.field_hr_employee__display_name
 #: model:ir.model.fields,field_description:modryn_staff.field_ir_http__display_name
+#: model:ir.model.fields,field_description:modryn_staff.field_modryn_announcement__display_name
 #: model:ir.model.fields,field_description:modryn_staff.field_modryn_fitting_room__display_name
 #: model:ir.model.fields,field_description:modryn_staff.field_modryn_floor_helper__display_name
 #: model:ir.model.fields,field_description:modryn_staff.field_modryn_helper_mixin__display_name
@@ -1741,6 +1748,7 @@ msgstr "توجيه HTTP"
 #: model:ir.model.fields,field_description:modryn_staff.field_calendar_event__id
 #: model:ir.model.fields,field_description:modryn_staff.field_hr_employee__id
 #: model:ir.model.fields,field_description:modryn_staff.field_ir_http__id
+#: model:ir.model.fields,field_description:modryn_staff.field_modryn_announcement__id
 #: model:ir.model.fields,field_description:modryn_staff.field_modryn_fitting_room__id
 #: model:ir.model.fields,field_description:modryn_staff.field_modryn_floor_helper__id
 #: model:ir.model.fields,field_description:modryn_staff.field_modryn_helper_mixin__id
@@ -1756,6 +1764,7 @@ msgid "ID"
 msgstr "المعرّف"
 
 #. module: modryn_staff
+#: model:ir.model.fields,field_description:modryn_staff.field_modryn_announcement__write_uid
 #: model:ir.model.fields,field_description:modryn_staff.field_modryn_fitting_room__write_uid
 #: model:ir.model.fields,field_description:modryn_staff.field_modryn_floor_helper__write_uid
 #: model:ir.model.fields,field_description:modryn_staff.field_modryn_role_page__write_uid
@@ -1767,6 +1776,7 @@ msgid "Last Updated by"
 msgstr "آخر تحديث بواسطة"
 
 #. module: modryn_staff
+#: model:ir.model.fields,field_description:modryn_staff.field_modryn_announcement__write_date
 #: model:ir.model.fields,field_description:modryn_staff.field_modryn_fitting_room__write_date
 #: model:ir.model.fields,field_description:modryn_staff.field_modryn_floor_helper__write_date
 #: model:ir.model.fields,field_description:modryn_staff.field_modryn_role_page__write_date
@@ -2239,3 +2249,109 @@ msgstr "إرسال للورشة"
 #: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
 msgid "What the workshop needs to know."
 msgstr "شو بدها الورشة تعرف."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.shift_supervisor
+msgid "Sorted"
+msgstr "تمّت"
+
+#. module: modryn_staff
+#: model:ir.model,name:modryn_staff.model_modryn_announcement
+msgid "A message from the manager to the team"
+msgstr "رسالة من المسؤول للطاقم"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "Already sent"
+msgstr "الي انبعت"
+
+#. module: modryn_staff
+#: model:ir.model.fields,field_description:modryn_staff.field_modryn_announcement__author_id
+msgid "Author"
+msgstr "مين كتب"
+
+#. module: modryn_staff
+#: model:ir.model.fields,help:modryn_staff.field_modryn_announcement__employee_ids
+msgid "Empty means the whole team."
+msgstr "فاضي يعني كل الطاقم."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "Everyone"
+msgstr "الكل"
+
+#. module: modryn_staff
+#. odoo-python
+#: code:addons/modryn_staff/controllers/manager.py:0
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "Manager screen"
+msgstr "شاشة المسؤول"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "Nothing has been sent yet."
+msgstr "لسّا ما انبعت ولا رسالة."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "Send it"
+msgstr "إرسال"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "Take it back"
+msgstr "سحب الرسالة"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "Tell the team"
+msgstr "رسالة للطاقم"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid ""
+"That only goes to you. Tick somebody else, or tick nobody to\n"
+"                    tell the whole team."
+msgstr ""
+"هاي بتوصل إلك بس. علّمي على حدا تاني، أو ما تعلّمي على حدا\n"
+"                    عشان توصل لكل الطاقم."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "The delivery is late — nobody promise Thursday."
+msgstr "الإرسالية متأخّرة — ما حدا يوعد بيوم الخميس."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "The message"
+msgstr "الرسالة"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "The things that reach the whole team."
+msgstr "الأشياء الي بتوصل لكل الطاقم."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "Tick nobody and it goes to the whole team."
+msgstr "بدون ما تعلّمي على حدا — بتروح لكل الطاقم."
+
+#. module: modryn_staff
+#: model:ir.model.fields,field_description:modryn_staff.field_modryn_announcement__employee_ids
+msgid "Who it went to"
+msgstr "لمين انبعتت"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "Who reads it"
+msgstr "مين بيقراها"
+
+#. module: modryn_staff
+#: model:ir.model.fields,field_description:modryn_staff.field_modryn_announcement__author_name
+msgid "Who sent it"
+msgstr "مين بعتها"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "Write the message first."
+msgstr "أوّلًا اكتبي الرسالة."

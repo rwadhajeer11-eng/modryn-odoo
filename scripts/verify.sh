@@ -726,7 +726,7 @@ if [ "$SESSION" = "200" ]; then
   # in English, and the .po check a few hundred lines up says in its own comment
   # that it cannot see a string that was never added to the file at all. This is
   # the check that can: it reads the rendered page.
-  curl -sg -b "$JAR" "$BELLA/shift-supervisor" | grep -q 'אחראית משמרת'     && ok "he: the supervisor screen is translated"     || bad "supervisor translation" "the Hebrew heading is missing - the screen is shipping in English"
+  curl -sg -b "$JAR" "$BELLA/shift-supervisor" | grep -q 'אחראי משמרת'     && ok "he: the supervisor screen is translated"     || bad "supervisor translation" "the Hebrew heading is missing - the screen is shipping in English"
 else
   bad "10a. staff sign-in" "sara could not sign in (/floor answered $SESSION, not 200). The exported MODRYN_DEMO_PASSWORD does not match the value these databases were seeded with — they predate the credential-hygiene change. Fix: export MODRYN_DEMO_PASSWORD as the seeded value, or re-seed with 'MODRYN_DEMO_PASSWORD=... .venv/bin/python scripts/seed_staff.py' (which rotates the developer's own manual login too). Every 10a assertion below is skipped, not passed."
 fi

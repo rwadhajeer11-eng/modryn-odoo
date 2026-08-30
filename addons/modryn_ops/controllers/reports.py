@@ -110,6 +110,99 @@ def _range_stats(cr, date_from, date_to, employee_id=None):
     return stats
 
 
+# Both halves of a sale, as one list of gowns.
+#
+# A UNION rather than two queries stitched in Python: the day grouping has to
+# see both, and two sorted lists merged by hand is where an off-by-one day lands
+# on a boutique's month end.
+#
+# The date is worked out in JERUSALEM, not UTC. A gown sold at half past nine in
+# the evening is stored as 18:30 UTC and belongs to that evening's takings - a
+# UTC date would move every late sale of the summer into the following day.
+_SOLD_GOWNS = """
+    WITH sold AS (
+        SELECT coalesce(c.modryn_outcome_at, c.start) AS at,
+               c.modryn_variant_id                    AS variant_id,
+               'booking'                              AS kind
+          FROM calendar_event c
+         WHERE c.modryn_is_booking IS TRUE
+           AND c.modryn_cancelled_at IS NULL
+           AND c.modryn_outcome = 'sold'
+           AND c.modryn_variant_id IS NOT NULL
+        UNION ALL
+        SELECT coalesce(q.modryn_outcome_at, q.write_date) AS at,
+               q.modryn_variant_id                         AS variant_id,
+               'walkin'                                    AS kind
+          FROM modryn_queue_entry q
+         WHERE q.modryn_outcome = 'sold'
+           AND q.modryn_variant_id IS NOT NULL
+    )
+    SELECT ((s.at AT TIME ZONE 'UTC') AT TIME ZONE %(tz)s)::date AS day,
+           s.kind,
+           t.id                                                  AS tmpl_id,
+           t.name ->> 'en_US'                                    AS tmpl_name,
+           t.modryn_serial                                       AS serial,
+           coalesce(t.list_price, 0)                             AS price,
+           v.id                                                  AS variant_id
+      FROM sold s
+      JOIN product_product v  ON v.id = s.variant_id
+      JOIN product_template t ON t.id = v.product_tmpl_id
+     WHERE s.at >= %(dfrom)s AND s.at < %(dto)s
+     ORDER BY day DESC, tmpl_name
+"""
+
+
+def _gowns_by_day(env, dfrom, dto):
+    """Rows per day, each carrying the gowns that left that day.
+
+    The size lives on the variant's attribute values, which is an ORM read and
+    not a column - so the ids come back from SQL and the labels are fetched in
+    one browse rather than one query per row.
+    """
+    env.cr.execute(_SOLD_GOWNS, {'dfrom': dfrom, 'dto': dto, 'tz': str(TZ)})
+    rows = env.cr.dictfetchall()
+    if not rows:
+        return [], {'count': 0, 'value': 0}
+
+    variants = env['product.product'].sudo().browse(
+        list({r['variant_id'] for r in rows}))
+    size_of = {
+        v.id: (v.product_template_attribute_value_ids[:1].name or '')
+        for v in variants
+    }
+    # The template name is jsonb, and ->> 'en_US' is the SOURCE term, not what
+    # this boutique renamed it to. Read it through the ORM so a Hebrew catalogue
+    # reports Hebrew names.
+    templates = env['product.template'].sudo().browse(
+        list({r['tmpl_id'] for r in rows}))
+    name_of = {t.id: t.name for t in templates}
+
+    days, index = [], {}
+    for row in rows:
+        day = row['day']
+        if day not in index:
+            index[day] = {'day': day, 'label': day.strftime('%d.%m.%Y'),
+                          'count': 0, 'value': 0.0, 'gowns': []}
+            days.append(index[day])
+        bucket = index[day]
+        bucket['count'] += 1
+        bucket['value'] += row['price']
+        bucket['gowns'].append({
+            'name': name_of.get(row['tmpl_id']) or '',
+            'size': size_of.get(row['variant_id'], ''),
+            'serial': row['serial'] or '',
+            'price': round(row['price']),
+            'kind': row['kind'],
+        })
+    for bucket in days:
+        bucket['value'] = round(bucket['value'])
+    total = {
+        'count': sum(d['count'] for d in days),
+        'value': sum(d['value'] for d in days),
+    }
+    return days, total
+
+
 class ModrynOpsReports(http.Controller):
     """Conversion and completion, computed from outcomes and tasks.
 
@@ -200,9 +293,13 @@ class ModrynOpsReports(http.Controller):
                 'atv': round(row['revenue'] / row['sold']) if row['sold'] else 0,
             })
 
+        gown_days, gown_total = _gowns_by_day(request.env, dfrom, dto)
+
         return request.render('modryn_ops.manage_reports', {
             'stats': stats,
             'stylists': stylists,
+            'gown_days': gown_days,
+            'gown_total': gown_total,
             'date_from': start.strftime('%Y-%m-%d'),
             'date_to': end.strftime('%Y-%m-%d'),
             'active_tab': 'reports',

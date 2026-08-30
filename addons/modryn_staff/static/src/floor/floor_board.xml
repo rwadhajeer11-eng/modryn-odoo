@@ -566,13 +566,20 @@
                     <h2 class="modryn_sos_who"><t t-esc="c.caller_name"/></h2>
                     <p t-if="c.where" class="modryn_sos_where"><t t-esc="c.where"/></p>
                     <p t-if="c.note" class="modryn_sos_note"><t t-esc="c.note"/></p>
+                    <!-- Classed, so anything driving this overlay finds the
+                         button rather than the word. The words are translated
+                         three ways and one of them - "تمت المعالجة" - is not
+                         even a prefix of the others, which is how a helper
+                         written against the labels quietly stopped clearing
+                         anything in Arabic. -->
                     <div class="modryn_sos_actions">
-                        <button t-if="c.state === 'open'" class="btn btn-primary btn-lg"
+                        <button t-if="c.state === 'open'"
+                                class="btn btn-primary btn-lg modryn_sos_ack"
                                 t-on-click="() => this.ackSos(c.id)">On my way</button>
                         <button t-else="" class="btn btn-primary btn-lg" disabled="disabled">
                             On the way
                         </button>
-                        <button class="btn btn-outline-dark btn-lg"
+                        <button class="btn btn-outline-dark btn-lg modryn_sos_done"
                                 t-on-click="() => this.resolveSos(c.id)">Handled</button>
                     </div>
                     <p t-if="incomingSos.length > 1" class="modryn_sub mt-3">

@@ -98,11 +98,22 @@ class QueueEntry(models.Model):
     modryn_variant_id = fields.Many2one(
         'product.product', string="The dress she took", copy=False)
     modryn_stock_taken = fields.Boolean(default=False, copy=False, readonly=True)
+    # WHEN it was recorded, which is the only honest date for "gowns sold on
+    # Tuesday". The alternative is create_date, and a bride who walks in at ten
+    # to six and buys at half past is not a Monday sale because she queued on a
+    # Monday. The booking half has carried this since outcomes existed.
+    modryn_outcome_at = fields.Datetime(
+        string="When it was recorded", readonly=True, copy=False)
 
     def write(self, vals):
         if not _relevant(vals):
             return super().write(vals)
         before = {e.id: (e.modryn_outcome, e.modryn_variant_id) for e in self}
+        # Stamped here rather than by every caller: there is one route that
+        # writes an outcome today and there will be more, and a timestamp that
+        # depends on being remembered is a timestamp that goes missing.
+        if 'modryn_outcome' in vals and vals.get('modryn_outcome'):
+            vals = dict(vals, modryn_outcome_at=fields.Datetime.now())
         res = super().write(vals)
         for entry in self:
             _settle(entry, *before.get(entry.id, (None, None)))

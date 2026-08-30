@@ -22,6 +22,7 @@ const { test, expect } = require('@playwright/test');
 const { submitFormWith } = require('../lib/form.js');
 const { requirePeople } = require('../lib/people.js');
 const { startShift, endShift } = require('../lib/shift.js');
+const { qaPhone, readOtp } = require('../lib/otp.js');
 
 const PASSWORD = process.env.MODRYN_DEMO_PASSWORD;
 const TENANT = new URL(process.env.BASE_URL || 'http://qa.localtest.me:8069').hostname.split('.')[0];
@@ -92,6 +93,22 @@ async function stockOnHit(hit) {
   const text = (await hit.locator('.modryn_badge').innerText()).trim();
   const n = parseInt(text, 10);
   return Number.isNaN(n) ? 0 : n;
+}
+
+// One walk-in, in through the front door: the form, the code, the verification.
+// Not an insert - a spec that reaches behind the check-in would keep passing on
+// a day the check-in was broken. The number is minted per call because a
+// repeated one is refused as a duplicate while her first visit is still open.
+async function checkInWalkIn(page, label) {
+  const phone = qaPhone();
+  await page.goto('/queue/checkin');
+  await page.fill('input[name="name"]', label);
+  await page.fill('input[name="phone"]', phone);
+  await submitFormWith(page, 'name');
+  await expect(page).toHaveURL(/\/queue\/verify/);
+  await page.fill('input[name="code"]', readOtp(TENANT, phone));
+  await submitFormWith(page, 'code');
+  return phone;
 }
 
 async function openBoard(page) {
@@ -172,6 +189,13 @@ test('@writes a customer is listed under the woman holding her, and goes back to
 
 test('@writes the dress is found by typing, confirmed, and comes off the rail', async ({ page }) => {
   const term = await searchTermFromShop(page);
+
+  // Bring the customers this act is going to spend. It finishes two of them for
+  // good, and a spec that eats its tenant a bride at a time eventually reports
+  // "nobody is waiting" on a completely different file.
+  const stamp = Date.now() % 100000;
+  await checkInWalkIn(page, `QA Finish A ${stamp}`);
+  await checkInWalkIn(page, `QA Finish B ${stamp}`);
 
   await signIn(page, PEOPLE.manager);
   await openBoard(page);
@@ -298,6 +322,14 @@ test('@writes the dress is found by typing, confirmed, and comes off the rail', 
       'a customer who bought nothing still moved the count').toBe(stockBefore - 1);
   }
   await modal.locator('button').filter({ hasText: CLOSE }).click();
+  await expect(modal).toBeHidden({ timeout: 15000 });
+
+  // That last one was never answered for, so she is still held. Back in the
+  // line she goes: the act should cost the tenant exactly the two customers it
+  // deliberately spent, and no more.
+  await panel.locator('.modryn_team_client[data-kind="queue"]').first()
+    .locator(BACK).first().click();
+  await expect(take.first()).toBeVisible({ timeout: 20000 });
 
   await endShift(page);
 

@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ====================== the manager's own screen ====================== -->
+    <template id="manager_screen" name="MODRYN manager screen">
+        <t t-call="modryn_staff.staff_layout">
+            <t t-set="active_tab" t-value="'boss'"/>
+            <t t-set="additional_title">Manager screen</t>
+
+            <h1 class="mb-1">Manager screen</h1>
+            <p class="text-muted mb-4">The things that reach the whole team.</p>
+
+            <!-- ===================== say something ===================== -->
+            <section class="modryn_panel mb-4">
+                <header class="modryn_panel_head">
+                    <h2>Tell the team</h2>
+                </header>
+
+                <div t-if="error == 'empty'" class="modryn_field_error mb-3" role="alert">
+                    Write the message first.
+                </div>
+                <div t-if="error == 'nobody'" class="modryn_field_error mb-3" role="alert">
+                    That only goes to you. Tick somebody else, or tick nobody to
+                    tell the whole team.
+                </div>
+
+                <form action="/manage/team-screen/announce" method="post">
+                    <input type="hidden" name="csrf_token"
+                           t-att-value="request.csrf_token()"/>
+
+                    <div class="mb-3">
+                        <label class="form-label" for="body">The message</label>
+                        <textarea id="body" name="body" rows="3" class="form-control"
+                                  placeholder="The delivery is late — nobody promise Thursday."
+                                  t-esc="draft"/>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Who reads it</label>
+                        <!-- Nobody ticked means EVERYONE, said on the screen and
+                             not only in the code. A separate "send to all"
+                             switch would be a second way of saying the same
+                             thing, and the two of them disagree eventually. -->
+                        <p class="modryn_sub mb-2">
+                            Tick nobody and it goes to the whole team.
+                        </p>
+                        <div class="modryn_piece_grid">
+                            <label t-foreach="team" t-as="member" t-key="member['id']"
+                                   class="modryn_piece_check">
+                                <input type="checkbox" name="employee_ids"
+                                       t-att-value="member['id']"
+                                       t-att-checked="member['id'] in picked"/>
+                                <span t-out="member['name']"/>
+                            </label>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Send it</button>
+                </form>
+            </section>
+
+            <!-- ===================== what has been said ===================== -->
+            <section class="modryn_panel">
+                <header class="modryn_panel_head">
+                    <h2>Already sent</h2>
+                    <span class="modryn_count" t-out="len(announcements)"/>
+                </header>
+
+                <p t-if="not announcements" class="modryn_empty">
+                    Nothing has been sent yet.
+                </p>
+
+                <!-- A column, not the card grid the rest of the product uses.
+                     What is on these cards is a SENTENCE, and a sentence in a
+                     240px column is four words a line. -->
+                <div class="modryn_sent_list">
+                    <article t-foreach="announcements" t-as="a" t-key="a['id']"
+                             class="modryn_card modryn_announcement">
+                        <div class="modryn_card_marks">
+                            <span t-if="a['everyone']" class="modryn_badge is_free">Everyone</span>
+                            <span t-else="" class="modryn_badge is_muted" t-out="a['to']"/>
+                            <span class="modryn_sub ms-auto" dir="ltr" t-out="a['at']"/>
+                        </div>
+                        <p class="mb-2" t-out="a['body']"/>
+                        <div class="modryn_sub" t-if="a['author']" t-out="a['author']"/>
+                        <!-- Unsend, not hide. It takes the message off the bells
+                             it already rang - a manager who regrets an
+                             announcement has not un-sent it by removing it from
+                             her own list. -->
+                        <form action="/manage/team-screen/unsend" method="post"
+                              class="modryn_card_actions">
+                            <input type="hidden" name="csrf_token"
+                                   t-att-value="request.csrf_token()"/>
+                            <input type="hidden" name="announcement_id" t-att-value="a['id']"/>
+                            <button type="submit" class="btn btn-sm btn-outline-dark">
+                                Take it back
+                            </button>
+                        </form>
+                    </article>
+                </div>
+            </section>
+        </t>
+    </template>
+
+</odoo>

@@ -1254,3 +1254,68 @@
         gap: 6px;
     }
 }
+
+// ==================== somebody has put her hand up ====================
+// Red, and only here. The rest of this screen is a record of what is happening;
+// this is the one block on it that needs somebody to walk somewhere now, and it
+// should not have to compete with gold for the eye.
+.modryn_super_calls {
+    border-color: $modryn-danger;
+
+    .modryn_panel_head h2 {
+        color: $modryn-danger;
+    }
+}
+
+.modryn_super_call {
+    border-inline-start: 3px solid $modryn-danger;
+
+    // Nobody has even said they are coming, for long enough that the model
+    // escalated it. Filled rather than outlined: at that point it has stopped
+    // being a notice and started being a problem.
+    &.is_late {
+        background: rgba($modryn-danger, 0.06);
+    }
+}
+
+// The gowns that left on one day, opened out of the reports table. A list and
+// not a nested table: it sits inside a cell, and a table inside a table wraps
+// badly on the tablet the owner actually reads this on.
+.modryn_gown_list {
+    list-style: none;
+    margin: 8px 0 4px;
+    padding: 0;
+
+    li {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 8px;
+        padding-block: 4px;
+
+        & + li {
+            border-block-start: 1px solid $modryn-border;
+        }
+    }
+}
+
+// One thing the manager told the team. Wider than the cards beside it because
+// what matters on it is a sentence, and a sentence in a 240px column is four
+// words a line.
+.modryn_announcement {
+    p {
+        white-space: pre-wrap;
+    }
+
+    .modryn_card_actions {
+        margin-block-start: 8px;
+    }
+}
+
+// What the manager has already told the team. One per line and full width: the
+// card grid this product uses everywhere else is sized for a name and a badge,
+// and these carry a sentence.
+.modryn_sent_list {
+    display: grid;
+    gap: 10px;
+}

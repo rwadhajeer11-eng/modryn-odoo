@@ -147,7 +147,64 @@
                 </div>
             </div>
 
-            <h2 class="mb-2">By stylist</h2>
+            <!-- ================= gowns off the rail ================= -->
+            <!-- Counted in GOWNS, not appointments. A walk-in has no
+                 appointment at all, so until the walk-in half of the outcome
+                 shipped every dress a bride carried out without booking first
+                 was invisible to every number above this. -->
+            <div class="d-flex align-items-baseline justify-content-between mb-2 flex-wrap gap-2">
+                <h2 class="mb-0">Gowns sold</h2>
+                <span class="modryn_sub">
+                    <strong class="modryn_strong" t-out="gown_total['count']"/>
+                    <t t-out="' · '"/>
+                    <strong class="modryn_strong" t-out="'{:,}'.format(gown_total['value'])"/> ₪
+                </span>
+            </div>
+            <p class="modryn_sub mb-3">
+                What the gowns are priced at in the catalogue, not what was taken
+                at the till.
+            </p>
+
+            <p t-if="not gown_days" class="modryn_empty">
+                No gown has left the rail in this range yet.
+            </p>
+            <table t-if="gown_days" class="table modryn_table align-middle">
+                <thead>
+                    <tr>
+                        <th>Day</th><th>Gowns</th><th>Price (₪)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr t-foreach="gown_days" t-as="d">
+                        <td>
+                            <!-- Open the day to see what left it. A disclosure
+                                 the browser draws itself: no script to lose, it
+                                 works from the keyboard, and it prints open. -->
+                            <details>
+                                <summary class="modryn_strong" dir="ltr" t-out="d['label']"/>
+                                <ul class="modryn_gown_list">
+                                    <li t-foreach="d['gowns']" t-as="g">
+                                        <span class="modryn_strong" t-out="g['name']"/>
+                                        <span t-if="g['size']" class="modryn_badge is_muted"
+                                              t-out="g['size']"/>
+                                        <span t-if="g['serial']" class="modryn_sub" dir="ltr"
+                                              t-out="g['serial']"/>
+                                        <span class="modryn_sub" dir="ltr">
+                                            <t t-out="'{:,}'.format(g['price'])"/> ₪
+                                        </span>
+                                        <span t-if="g['kind'] == 'walkin'"
+                                              class="modryn_badge is_muted">Walk-in</span>
+                                    </li>
+                                </ul>
+                            </details>
+                        </td>
+                        <td class="modryn_strong" t-out="d['count']"/>
+                        <td t-out="'{:,}'.format(d['value'])"/>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h2 class="mb-2 mt-4">By stylist</h2>
             <p t-if="not stylists" class="modryn_empty">
                 No closed appointments with an assigned stylist in this range yet.
             </p>
