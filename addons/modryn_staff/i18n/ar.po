@@ -62,7 +62,7 @@ msgid "<span class=\"modryn_strong\">ID number:</span>"
 msgstr "<span class=\"modryn_strong\">رقم الهوية:</span>"
 
 #. module: modryn_staff
-#: model_terms:ir.ui.view,arch_db:modryn_staff.manage_hours
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
 msgid "<span class=\"text-muted\">How many fittings at once</span>"
 msgstr "<span class=\"text-muted\">عدد القياسات في وقت واحد</span>"
 
@@ -90,7 +90,7 @@ msgid "A fitting room needs a name."
 msgstr "غرفة القياس تحتاج إلى اسم."
 
 #. module: modryn_staff
-#: model_terms:ir.ui.view,arch_db:modryn_staff.manage_hours
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
 msgid ""
 "A holiday, a wedding, stocktaking. A closed date disappears from the\n"
 "                booking page completely — no times, and no waitlist either, because\n"
@@ -127,9 +127,9 @@ msgid "Actions"
 msgstr "إجراءات"
 
 #. module: modryn_staff
-#: model_terms:ir.ui.view,arch_db:modryn_staff.manage_hours
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manage_roles
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manage_rooms
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
 msgid "Add"
 msgstr "إضافة"
 
@@ -217,7 +217,7 @@ msgid "Assigns staff to customers and dispatches the walk-in queue."
 msgstr "تُسند الموظفات إلى العميلات وتدير طابور الاستقبال."
 
 #. module: modryn_staff
-#: model_terms:ir.ui.view,arch_db:modryn_staff.manage_hours
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
 msgid "At once"
 msgstr "في وقت واحد"
 
@@ -318,27 +318,27 @@ msgstr "المدينة"
 #. module: modryn_staff
 #. odoo-javascript
 #: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
-#: model_terms:ir.ui.view,arch_db:modryn_staff.manage_hours
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
 msgid "Close"
 msgstr "إغلاق"
 
 #. module: modryn_staff
-#: model_terms:ir.ui.view,arch_db:modryn_staff.manage_hours
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
 msgid "Close again"
 msgstr "إعادة الإغلاق"
 
 #. module: modryn_staff
-#: model_terms:ir.ui.view,arch_db:modryn_staff.manage_hours
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
 msgid "Closed from"
 msgstr "مغلق من"
 
 #. module: modryn_staff
-#: model_terms:ir.ui.view,arch_db:modryn_staff.manage_hours
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
 msgid "Closed until"
 msgstr "مغلق حتى"
 
 #. module: modryn_staff
-#: model_terms:ir.ui.view,arch_db:modryn_staff.manage_hours
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
 msgid "Closes"
 msgstr "يغلق"
 
@@ -365,18 +365,18 @@ msgid "Customer card with helpers"
 msgstr "بطاقة عميلة مع مساعدات"
 
 #. module: modryn_staff
-#: model_terms:ir.ui.view,arch_db:modryn_staff.manage_hours
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
 msgid "Dates"
 msgstr "التواريخ"
 
 #. module: modryn_staff
-#: model_terms:ir.ui.view,arch_db:modryn_staff.manage_hours
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
 #: model_terms:ir.ui.view,arch_db:modryn_staff.staff_profile
 msgid "Day"
 msgstr "اليوم"
 
 #. module: modryn_staff
-#: model_terms:ir.ui.view,arch_db:modryn_staff.manage_hours
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
 msgid "Days you are closed"
 msgstr "أيام الإغلاق"
 
@@ -535,8 +535,7 @@ msgstr "عالية"
 
 #. module: modryn_staff
 #. odoo-python
-#: code:addons/modryn_staff/nav.py:0
-#: model_terms:ir.ui.view,arch_db:modryn_staff.manage_hours
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
 #: model_terms:ir.ui.view,arch_db:modryn_staff.staff_profile
 msgid "Hours"
 msgstr "الساعات"
@@ -739,7 +738,7 @@ msgid "No appointments today."
 msgstr "لا مواعيد اليوم."
 
 #. module: modryn_staff
-#: model_terms:ir.ui.view,arch_db:modryn_staff.manage_hours
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
 msgid "No closed days — the booking page offers every day above."
 msgstr "لا أيام إغلاق — صفحة الحجز تعرض كل الأيام أعلاه."
 
@@ -831,7 +830,7 @@ msgid "Nothing on this day."
 msgstr "ما في ورديات بهذا اليوم."
 
 #. module: modryn_staff
-#: model_terms:ir.ui.view,arch_db:modryn_staff.manage_hours
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
 msgid ""
 "Nothing set yet — the booking page has no times to offer. Add your first day"
 " above."
@@ -885,17 +884,17 @@ msgid "open"
 msgstr "مفتوحة"
 
 #. module: modryn_staff
-#: model_terms:ir.ui.view,arch_db:modryn_staff.manage_hours
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
 msgid "Open again"
 msgstr "إعادة الفتح"
 
 #. module: modryn_staff
-#: model_terms:ir.ui.view,arch_db:modryn_staff.manage_hours
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
 msgid "Opening hours"
 msgstr "ساعات العمل"
 
 #. module: modryn_staff
-#: model_terms:ir.ui.view,arch_db:modryn_staff.manage_hours
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
 msgid "Opens"
 msgstr "يفتح"
 
@@ -1108,7 +1107,7 @@ msgid "Ready"
 msgstr "جاهز"
 
 #. module: modryn_staff
-#: model_terms:ir.ui.view,arch_db:modryn_staff.manage_hours
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
 msgid "Reason"
 msgstr "السبب"
 
@@ -1167,8 +1166,8 @@ msgstr "المبيعات"
 #. module: modryn_staff
 #. odoo-javascript
 #: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
-#: model_terms:ir.ui.view,arch_db:modryn_staff.manage_hours
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manage_staff_form
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
 #: model_terms:ir.ui.view,arch_db:modryn_staff.staff_profile
 msgid "Save"
 msgstr "حفظ"
@@ -1385,7 +1384,7 @@ msgid "The floor board needs JavaScript."
 msgstr "لوحة الصالة تحتاج إلى JavaScript."
 
 #. module: modryn_staff
-#: model_terms:ir.ui.view,arch_db:modryn_staff.manage_hours
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
 msgid ""
 "The hours the boutique takes fittings. This is exactly what the booking\n"
 "                page offers — change it here and the next customer sees the new times.\n"
@@ -1530,7 +1529,7 @@ msgid "What do you need? (optional)"
 msgstr "ماذا تحتاجين؟ (اختياري)"
 
 #. module: modryn_staff
-#: model_terms:ir.ui.view,arch_db:modryn_staff.manage_hours
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
 msgid "What for?"
 msgstr "ما السبب؟"
 
@@ -2707,3 +2706,14 @@ msgstr "تلفون إضافي"
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
 msgid "With"
 msgstr "معها"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid ""
+"<i class=\"fa fa-clock-o\" aria-hidden=\"true\"/>\n"
+"                    <span class=\"modryn_strong\">Opening hours</span>\n"
+"                    <span class=\"modryn_sub\">When the boutique takes fittings, and the days it closes.</span>"
+msgstr ""
+"<i class=\"fa fa-clock-o\" aria-hidden=\"true\"/>\n"
+"                    <span class=\"modryn_strong\">ساعات الفتح</span>\n"
+"                    <span class=\"modryn_sub\">إمتى البوتيك بياخد قياسات، والأيام الي بيسكّر فيها.</span>"

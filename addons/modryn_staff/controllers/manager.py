@@ -109,11 +109,11 @@ class ModrynManagerScreen(http.Controller):
     # rather than a template full of hard-coded tiles: adding the next one is a
     # line here, and the tiles and the routing cannot disagree about what
     # exists.
-    VIEWS = ('announce', 'team')
+    VIEWS = ('announce', 'team', 'hours')
 
     def _render(self, error=None, draft=None, picked=None, file_error=None,
                 file_for=None, view=None):
-        return request.render('modryn_staff.manager_screen', {
+        context = {
             # None means the tiles themselves. Anything unrecognised falls back
             # to them rather than 404ing: a stale link should land somewhere
             # useful, not on an error.
@@ -135,7 +135,14 @@ class ModrynManagerScreen(http.Controller):
             'draft': draft or '',
             'picked': picked or [],
             'active_tab': 'boss',
-        })
+        }
+        # The opening-hours rows, and only when she is going to see them: the
+        # panel is the owner's, and building a closures list for a manager who
+        # will never be shown it is work for nobody.
+        if view == 'hours' and access.is_owner():
+            context.update(ModrynManage().hours_context(
+                error=request.params.get('error')))
+        return request.render('modryn_staff.manager_screen', context)
 
     @http.route('/manage/team-screen', type='http', auth='user', website=True,
                 sitemap=False)

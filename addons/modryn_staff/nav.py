@@ -80,4 +80,8 @@ register('checkin', '/queue/checkin', _lt("Walk-in check-in"), 60, icon='fa-qrco
 register('staff', '/manage/staff', _lt("Team"), 10, 'manage', 'fa-users')
 register('roles', '/manage/roles', _lt("Roles"), 20, 'manage', 'fa-briefcase')
 register('rooms', '/manage/rooms', _lt("Rooms"), 40, 'manage', 'fa-building')
-register('hours', '/manage/hours', _lt("Hours"), 50, 'manage', 'fa-clock-o')
+# Opening hours are a TILE on the manager's screen now, not a row of their own -
+# one page holding one job, sitting between the dresses and the reports. The
+# routes still live in manage.py and still refuse anybody but the owner; what
+# went is the navbar entry.
+

@@ -1,5 +1,7 @@
 from datetime import timedelta
 
+import werkzeug.urls
+
 from psycopg2 import IntegrityError
 
 from odoo import _, fields, http
@@ -574,23 +576,36 @@ class ModrynManage(http.Controller):
         asking for help.
         """
         request.session[self.HOURS_FORM] = dict(post)
-        return request.redirect('/manage/hours?error=%s' % message)
+        return request.redirect('/manage/team-screen?view=hours&error=%s' % message)
 
-    @http.route('/manage/hours', type='http', auth='user', website=True, sitemap=False)
-    def hours_list(self, error=None, **kw):
-        if not self._require_owner():
-            return request.not_found()
-        # POPPED, not read: it re-fills the form exactly once. Left in place it
-        # would resurrect a rejected attempt days later, on a page she opened
-        # for something else entirely.
-        return request.render('modryn_staff.manage_hours', {
+    def hours_context(self, error=None):
+        """Everything the opening-hours panel needs, wherever it is drawn.
+
+        Public because the manager's screen renders that panel now and this is
+        where the rows are built - one builder, two readers, rather than a
+        second copy that starts disagreeing about which days are closed.
+        """
+        return {
             'hours': self._hour_rows(),
             'weekdays': self._weekdays(),
             'closures': self._closure_rows(),
-            'error': error,
-            'values': request.session.pop(self.HOURS_FORM, {}) if error else {},
-            'active_tab': 'hours',
-        })
+            'hours_error': error,
+            # POPPED, not read: it re-fills the form exactly once. Left in place
+            # it would resurrect a rejected attempt days later, on a page she
+            # opened for something else entirely.
+            'hours_values': request.session.pop(self.HOURS_FORM, {}) if error else {},
+        }
+
+    @http.route('/manage/hours', type='http', auth='user', website=True, sitemap=False)
+    def hours_list(self, error=None, **kw):
+        """The old address. Somebody has it in a tab, so it moves her along
+        rather than 404ing at her."""
+        if not self._require_owner():
+            return request.not_found()
+        target = '/manage/team-screen?view=hours'
+        if error:
+            target += '&error=%s' % werkzeug.urls.url_quote(error)
+        return request.redirect(target)
 
     @http.route('/manage/hours/new', type='http', auth='user', website=True,
                 methods=['POST'], csrf=True, sitemap=False)
@@ -631,7 +646,7 @@ class ModrynManage(http.Controller):
                     'capacity': capacity})
         except (ValidationError, IntegrityError):
             return self._hours_bounce(post, taken)
-        return request.redirect('/manage/hours')
+        return request.redirect('/manage/team-screen?view=hours')
 
     @http.route('/manage/hours/capacity/<int:hours_id>', type='http', auth='user',
                 website=True, methods=['POST'], csrf=True, sitemap=False)
@@ -659,7 +674,7 @@ class ModrynManage(http.Controller):
         # drain. Refusing here would strand an owner who has just lost a
         # fitting room and cannot say so.
         window.capacity = capacity
-        return request.redirect('/manage/hours')
+        return request.redirect('/manage/team-screen?view=hours')
 
     @http.route('/manage/hours/archive/<int:hours_id>', type='http', auth='user',
                 website=True, methods=['POST'], csrf=True, sitemap=False)
@@ -672,7 +687,7 @@ class ModrynManage(http.Controller):
             # week and wants it back, and bookings already taken in it must
             # still read correctly.
             window.active = not window.active
-        return request.redirect('/manage/hours')
+        return request.redirect('/manage/team-screen?view=hours')
 
     # ------------------------------------------------------------- closures
     @http.route('/manage/hours/closure/new', type='http', auth='user', website=True,
@@ -757,7 +772,7 @@ class ModrynManage(http.Controller):
                     'end_hour': 0.0 if full_day else end_hour})
         except (ValidationError, IntegrityError):
             return self._hours_bounce(post, _("Those dates aren't valid"))
-        return request.redirect('/manage/hours')
+        return request.redirect('/manage/team-screen?view=hours')
 
     @http.route('/manage/hours/closure/archive/<int:closure_id>', type='http', auth='user',
                 website=True, methods=['POST'], csrf=True, sitemap=False)
@@ -770,4 +785,4 @@ class ModrynManage(http.Controller):
             # Archive, never delete: a holiday recurs, and an owner who reopens
             # a date wants last year's row back rather than a retyped one.
             closure.active = not closure.active
-        return request.redirect('/manage/hours')
+        return request.redirect('/manage/team-screen?view=hours')

@@ -469,6 +469,20 @@
                             <t t-out="slot['name']"/>
                             <span dir="ltr" t-out="slot['hours']"/>
                         </div>
+                        <!-- WHAT THIS SHIFT NEEDS, from the targets table
+                             further down this same page. Without it a manager
+                             filling the week is guessing: she can see who
+                             offered and who is on, and nothing tells her that
+                             Wednesday wants two saleswomen and a seamstress.
+                             Gold while a role is still short, quiet once it is
+                             covered, so the eye finds the holes. -->
+                        <div t-if="slot['shortages']" class="modryn_planner_need">
+                            <span t-foreach="slot['shortages']" t-as="need" t-key="need['role']"
+                                  t-attf-class="modryn_badge #{'is_wait' if need['short'] else 'is_free'}">
+                                <t t-out="need['have']"/>/<t t-out="need['required']"/>
+                                <t t-out="need['role']"/>
+                            </span>
+                        </div>
                         <!-- ON the shift. Pressing one takes her off again: a
                              manager who mis-taps has to be able to undo it
                              without going anywhere else. -->

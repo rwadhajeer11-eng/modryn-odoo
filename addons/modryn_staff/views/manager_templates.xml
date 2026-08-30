@@ -28,6 +28,12 @@
                     <span class="modryn_strong">The team</span>
                     <span class="modryn_sub">Who works here, and the papers on file.</span>
                 </a>
+                <!-- The owner's. These hours decide what a customer can book. -->
+                <a t-if="is_owner" class="modryn_tile" href="/manage/team-screen?view=hours">
+                    <i class="fa fa-clock-o" aria-hidden="true"/>
+                    <span class="modryn_strong">Opening hours</span>
+                    <span class="modryn_sub">When the boutique takes fittings, and the days it closes.</span>
+                </a>
             </div>
 
             <a t-if="view" class="modryn_back" href="/manage/team-screen">Back</a>
@@ -190,6 +196,176 @@
                         </form>
                     </article>
                 </div>
+            </section>
+
+            <!-- ==================== opening hours ==================== -->
+            <!-- Lifted whole from the page it used to be. The OWNER's
+                 only: these hours decide what a customer can book, and
+                 the routes behind the forms refuse anybody else - the
+                 tile is simply not drawn for a manager. -->
+            <section t-if="view == 'hours' and is_owner" class="modryn_panel mb-4">
+            <h1 class="mb-2">Opening hours</h1>
+            <p class="text-muted mb-4">
+                The hours the boutique takes fittings. This is exactly what the booking
+                page offers — change it here and the next customer sees the new times.
+                A day can have two windows if you close for the afternoon, and if
+                two brides can be in at the same hour, say so — the booking page
+                will offer that hour twice.
+            </p>
+
+            <div t-if="hours_error" class="modryn_field_error mb-3" role="alert" t-out="hours_error"/>
+
+            <form action="/manage/hours/new" method="post" class="d-flex gap-2 mb-4 flex-wrap"
+                  style="max-width: 640px;">
+                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                <select name="weekday" class="form-select w-auto">
+                    <t t-foreach="weekdays" t-as="day">
+                        <option t-att-value="day[0]" t-out="day[1]"/>
+                    </t>
+                </select>
+                <!-- type="time" so the browser does the parsing and the owner
+                     never has to think of half past ten as 10.5. -->
+                <!-- values is what she typed on an attempt that was refused,
+                     and empty on a normal visit - so one expression both
+                     re-fills the form and keeps the shipped default. -->
+                <input type="time" name="opens" class="form-control w-auto" dir="ltr"
+                       t-att-value="hours_values.get('opens') or '10:00'"/>
+                <input type="time" name="closes" class="form-control w-auto" dir="ltr"
+                       t-att-value="hours_values.get('closes') or '18:00'"/>
+                <!-- Spelt out, unlike the two time boxes: a bare number next to a
+                     clock reads as minutes. Defaulted to one so an owner who
+                     ignores it keeps the week she already had. min="1" is the
+                     browser's half of the check — the route re-checks it, because
+                     a hand-made POST is not obliged to obey an attribute. -->
+                <label class="d-flex align-items-center gap-2 mb-0" for="capacity">
+                    <span class="text-muted">How many fittings at once</span>
+                    <input type="number" id="capacity" name="capacity" min="1" step="1"
+                           t-att-value="hours_values.get('capacity') or '1'"
+                           dir="ltr" class="form-control w-auto"
+                           style="max-width: 5.5rem;"/>
+                </label>
+                <button type="submit" class="btn btn-primary">Add</button>
+            </form>
+
+            <p t-if="not hours" class="modryn_empty">
+                Nothing set yet — the booking page has no times to offer. Add your first day above.
+            </p>
+
+            <table t-if="hours" class="table modryn_table align-middle" style="max-width: 640px;">
+                <thead>
+                    <tr><th>Day</th><th>Opens</th><th>Closes</th><th>At once</th><th/></tr>
+                </thead>
+                <tbody>
+                    <tr t-foreach="hours" t-as="h"
+                        t-attf-class="#{'modryn_archived' if not h['active'] else ''}">
+                        <td t-out="h['day']"/>
+                        <td dir="ltr" t-out="h['opens']"/>
+                        <td dir="ltr" t-out="h['closes']"/>
+                        <!-- Editable in place. Every window a boutique owns was
+                             seeded at one fitting, and a window's day and start
+                             time cannot be re-used, so a read-only cell here
+                             would mean the number could never be corrected. -->
+                        <td dir="ltr">
+                            <form t-attf-action="/manage/hours/capacity/#{h['id']}" method="post"
+                                  class="d-flex align-items-center gap-1">
+                                <input type="hidden" name="csrf_token"
+                                       t-att-value="request.csrf_token()"/>
+                                <input type="number" name="capacity" min="1" max="20" step="1"
+                                       class="form-control form-control-sm" style="width: 4.5rem"
+                                       t-att-value="h['capacity']"/>
+                                <button type="submit" class="btn btn-sm btn-outline-dark">Save</button>
+                            </form>
+                        </td>
+                        <td class="text-end">
+                            <form t-attf-action="/manage/hours/archive/#{h['id']}" method="post"
+                                  class="d-inline">
+                                <input type="hidden" name="csrf_token"
+                                       t-att-value="request.csrf_token()"/>
+                                <button type="submit" class="btn btn-sm btn-outline-dark">
+                                    <t t-if="h['active']">Close</t>
+                                    <t t-else="">Open again</t>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h2 class="h4 mt-5 mb-2">Days you are closed</h2>
+            <p class="text-muted mb-4">
+                A holiday, a wedding, stocktaking. A closed date disappears from the
+                booking page completely — no times, and no waitlist either, because
+                there is nothing to queue for. Leave the second date empty to close
+                a single day.
+                <br/>
+                To shut only part of a day — you close at 14:00 for a wedding —
+                fill in the two times as well. The day still appears, offering the
+                hours you are open.
+            </p>
+
+            <form action="/manage/hours/closure/new" method="post"
+                  class="d-flex gap-2 mb-4 flex-wrap" style="max-width: 640px;">
+                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                <!-- t-att-value on all five: a rejected attempt comes back
+                     through the session, and being told one date is wrong is
+                     not a reason to take back the reason, the other date and
+                     both times. On a normal visit values is empty and the form
+                     opens blank exactly as it always did. -->
+                <input type="text" name="name" class="form-control w-auto"
+                       t-att-value="hours_values.get('name')"
+                       placeholder="What for?"/>
+                <!-- type="date" so the browser supplies the calendar and the
+                     format, exactly as type="time" does for the windows above. -->
+                <input type="date" name="date_from" class="form-control w-auto" dir="ltr"
+                       t-att-value="hours_values.get('date_from')"/>
+                <input type="date" name="date_to" class="form-control w-auto" dir="ltr"
+                       t-att-value="hours_values.get('date_to')"/>
+                <!-- Leave both empty for the whole day, which is what a closure
+                     has always been. Fill both to shut only part of it: the day
+                     still appears on /book with the hours that remain. One
+                     without the other is treated as a half-typed form, not as
+                     "from 14:00 until whenever". -->
+                <input type="time" name="start_hour" class="form-control w-auto" dir="ltr"
+                       t-att-value="hours_values.get('start_hour')"
+                       aria-label="Closed from"/>
+                <input type="time" name="end_hour" class="form-control w-auto" dir="ltr"
+                       t-att-value="hours_values.get('end_hour')"
+                       aria-label="Closed until"/>
+                <button type="submit" class="btn btn-primary">Add</button>
+            </form>
+
+            <p t-if="not closures" class="modryn_empty">
+                No closed days — the booking page offers every day above.
+            </p>
+
+            <table t-if="closures" class="table modryn_table align-middle"
+                   style="max-width: 640px;">
+                <thead>
+                    <tr><th>Reason</th><th>Dates</th><th>Hours</th><th/></tr>
+                </thead>
+                <tbody>
+                    <tr t-foreach="closures" t-as="c"
+                        t-attf-class="#{'modryn_archived' if not c['active'] else ''}">
+                        <td t-out="c['name']"/>
+                        <td dir="ltr" t-out="c['when']"/>
+                        <!-- Blank means the whole day. Saying "All day" in every
+                             ordinary row would bury the part-day ones, which are
+                             the only rows where the hours carry information. -->
+                        <td dir="ltr" class="modryn_sub" t-out="c['hours']"/>
+                        <td class="text-end">
+                            <form t-attf-action="/manage/hours/closure/archive/#{c['id']}"
+                                  method="post" class="d-inline">
+                                <input type="hidden" name="csrf_token"
+                                       t-att-value="request.csrf_token()"/>
+                                <button type="submit" class="btn btn-sm btn-outline-dark">
+                                    <t t-if="c['active']">Open again</t>
+                                    <t t-else="">Close again</t>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
             </section>
 
             <!-- ===================== what has been said ===================== -->

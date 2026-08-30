@@ -341,3 +341,13 @@
         opacity: 0.5;
     }
 }
+
+// What a shift still needs, per role. Gold while short, quiet once covered -
+// a manager filling a week is looking for the holes, and the holes should be
+// the thing that catches her eye.
+.modryn_planner_need {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-block-start: 4px;
+}
