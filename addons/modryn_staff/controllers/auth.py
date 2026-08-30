@@ -5,7 +5,7 @@ from odoo.tools.translate import LazyTranslate
 
 # Where each level lands after signing in. The owner configures, the manager
 # runs the room, and plain staff get their own day — not the whole floor.
-LANDING_OWNER = '/manage/staff'
+LANDING_OWNER = '/manage/team-screen?view=team'
 LANDING_FLOOR = '/floor'
 LANDING_HOME = '/staff/home'
 

@@ -45,204 +45,16 @@
     </template>
 
     <!-- ============================ staff list ============================ -->
-    <template id="manage_staff_list" name="MODRYN staff list">
-        <t t-call="modryn_staff.manage_layout">
-            <div class="d-flex align-items-center justify-content-between mb-4">
-                <h1 class="mb-0">Team</h1>
-                <a href="/manage/staff/new" class="btn btn-primary">Add a team member</a>
-            </div>
+    <!-- The team list is the box on the manager's screen. Its cards carry
+         what this table did AND the papers the boutique holds, which was
+         the point of merging them. -->
 
-            <div t-if="not employees" class="modryn_empty">No team members yet.</div>
-
-            <!-- The scroll belongs to the TABLE, not to the page. Seven
-                 columns come to 720px and the phone is 390, so without this the
-                 whole screen slid sideways - headings, buttons and all - and
-                 the owner had to drag the page back to read the next column.
-                 Now the table scrolls inside its own box and nothing else
-                 moves. The other tables on these pages carry an explicit
-                 max-width and already fit; this one never had one. -->
-            <div t-else="" class="modryn_table_scroll">
-            <table class="table modryn_table align-middle">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Roles</th>
-                        <th>Permission level</th>
-                        <th>Username</th>
-                        <th>Phone</th>
-                        <th>Status</th>
-                        <th class="text-end">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr t-foreach="employees" t-as="e"
-                        t-attf-class="#{'modryn_archived' if not e['active'] else ''}">
-                        <td>
-                            <t t-out="e['name']"/>
-                            <!-- Where she lives, under her name rather than in
-                                 columns of its own: this table already carries
-                                 seven, and an eighth and ninth would push the
-                                 Actions column off a phone. -->
-                            <div t-if="e['city'] or e['street']" class="modryn_sub">
-                                <t t-out="e['street']"/><t t-if="e['street'] and e['city']">, </t><t t-out="e['city']"/>
-                            </div>
-                        </td>
-                        <td t-out="e['role']"/>
-                        <td t-out="e['level']"/>
-                        <td dir="ltr" t-out="e['login']"/>
-                        <td dir="ltr">
-                            <t t-out="e['phone']"/>
-                            <!-- The second number, marked as the second number.
-                                 Printing them as two bare lines would leave
-                                 whoever is ringing round no way to tell which
-                                 one to try first. -->
-                            <div t-if="e['backup_phone']" class="modryn_sub">
-                                <t t-out="e['backup_phone']"/>
-                                <span dir="auto">· backup</span>
-                            </div>
-                        </td>
-                        <td>
-                            <span t-if="not e['active']" class="modryn_badge is_muted">Archived</span>
-                            <span t-elif="e['occupied']" class="modryn_badge is_busy">
-                                Busy<t t-if="e['occupied_with']"> · <t t-out="e['occupied_with']"/></t>
-                            </span>
-                            <span t-else="" class="modryn_badge is_free">Available</span>
-                        </td>
-                        <td class="text-end">
-                            <a t-attf-href="/manage/staff/edit/#{e['id']}"
-                               class="btn btn-sm btn-outline-dark">Edit</a>
-                            <form t-attf-action="/manage/staff/archive/#{e['id']}" method="post"
-                                  class="d-inline">
-                                <input type="hidden" name="csrf_token"
-                                       t-att-value="request.csrf_token()"/>
-                                <button type="submit" class="btn btn-sm btn-outline-dark">
-                                    <t t-if="e['active']">Archive</t>
-                                    <t t-else="">Restore</t>
-                                </button>
-                            </form>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-            </div>
-        </t>
-    </template>
 
     <!-- ========================== staff add / edit ======================== -->
-    <template id="manage_staff_form" name="MODRYN staff form">
-        <t t-call="modryn_staff.manage_layout">
-            <h1 class="mb-4">
-                <t t-if="employee">Edit team member</t>
-                <t t-else="">Add a team member</t>
-            </h1>
+    <!-- The team's add/edit form is a state of the box on the manager's
+         screen now (modryn_staff.manager_screen, ?view=team&amp;edit=<id>).
+         The routes that write it did not move and are still owner-only. -->
 
-            <form method="post" class="modryn_form"
-                  t-attf-action="/manage/staff/#{'edit/%s' % employee.id if employee else 'new'}">
-                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
-
-                <div class="mb-3">
-                    <label class="form-label" for="name">Name</label>
-                    <input type="text" id="name" name="name" class="form-control"
-                           t-att-value="values.get('name', '')"/>
-                    <div t-if="errors.get('name')" class="modryn_field_error" t-out="errors['name']"/>
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label" for="phone">Phone</label>
-                    <input type="tel" id="phone" name="phone" class="form-control" dir="ltr"
-                           t-att-value="values.get('phone', '')"/>
-                </div>
-
-                <!-- Who she is, as opposed to what she does. Kept together and
-                     kept ABOVE the job fields: an owner filling this in is
-                     copying off one document, and interleaving it with role and
-                     permission level would make her put it down and pick it up
-                     four times. -->
-                <fieldset class="mb-3">
-                    <legend class="h6 text-muted">Personal details</legend>
-
-                    <div class="mb-3">
-                        <label class="form-label" for="backup_phone">Backup phone</label>
-                        <input type="tel" id="backup_phone" name="backup_phone"
-                               class="form-control" dir="ltr"
-                               t-att-value="values.get('backup_phone', '')"/>
-                        <div class="form-text">The number to try when the first one doesn't answer.</div>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label" for="id_number">ID number</label>
-                        <input type="text" id="id_number" name="id_number"
-                               class="form-control" dir="ltr" inputmode="numeric"
-                               t-att-value="values.get('id_number', '')"/>
-                        <div t-if="errors.get('id_number')" class="modryn_field_error"
-                             t-out="errors['id_number']"/>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label" for="city">City</label>
-                        <input type="text" id="city" name="city" class="form-control"
-                               t-att-value="values.get('city', '')"/>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label" for="street">Street and number</label>
-                        <input type="text" id="street" name="street" class="form-control"
-                               t-att-value="values.get('street', '')"/>
-                    </div>
-                </fieldset>
-
-                <!-- Tick boxes, not a dropdown: a woman does more than one
-                     job here, and the seamstress who also sells on a Saturday
-                     was the case the single dropdown could not describe. -->
-                <div class="mb-3">
-                    <span class="form-label d-block">Roles</span>
-                    <t t-foreach="roles" t-as="role">
-                        <label class="modryn_piece_check me-3">
-                            <input type="checkbox" name="role_ids" t-att-value="role.id"
-                                   t-att-checked="'checked' if role.id in (values.get('role_ids') or []) else None"/>
-                            <span t-out="role.name"/>
-                        </label>
-                    </t>
-                    <div t-if="errors.get('role_id')" class="modryn_field_error" t-out="errors['role_id']"/>
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label" for="level">Permission level</label>
-                    <select id="level" name="level" class="form-select">
-                        <t t-foreach="levels" t-as="lvl">
-                            <option t-att-value="lvl[0]"
-                                    t-att-selected="'selected' if values.get('level') == lvl[0] else None"
-                                    t-out="lvl[1]"/>
-                        </t>
-                    </select>
-                    <div t-if="errors.get('level')" class="modryn_field_error" t-out="errors['level']"/>
-                </div>
-
-                <!-- Credentials are set once, at hire. Changing them later is a
-                     separate concern (reset flow) and deliberately not here. -->
-                <t t-if="not employee">
-                    <hr class="my-4"/>
-                    <div class="mb-3">
-                        <label class="form-label" for="username">Username</label>
-                        <input type="text" id="username" name="username" class="form-control" dir="ltr"
-                               t-att-value="values.get('username', '')"/>
-                        <div t-if="errors.get('username')" class="modryn_field_error"
-                             t-out="errors['username']"/>
-                    </div>
-                    <div class="mb-4">
-                        <label class="form-label" for="password">Password</label>
-                        <input type="password" id="password" name="password" class="form-control"
-                               dir="ltr"/>
-                        <div t-if="errors.get('password')" class="modryn_field_error"
-                             t-out="errors['password']"/>
-                    </div>
-                </t>
-
-                <button type="submit" class="btn btn-primary btn-lg">Save</button>
-                <a href="/manage/staff" class="btn btn-link">Cancel</a>
-            </form>
-        </t>
-    </template>
 
     <!-- ============================== roles =============================== -->
     <template id="manage_roles" name="MODRYN roles">
@@ -333,44 +145,9 @@
         </t>
     </template>
 
-    <template id="manage_rooms" name="Fitting rooms">
-        <t t-call="modryn_staff.manage_layout">
-            <h1 class="mb-2">Fitting rooms</h1>
-            <p class="text-muted mb-4">
-                Name your rooms the way your team says them out loud. When someone
-                calls for help, the room is what tells a colleague where to go.
-            </p>
+    <!-- The fitting rooms are a tile on the manager's screen, the way the
+         opening hours went. Owner-only there, as here. -->
 
-            <div t-if="error" class="modryn_field_error mb-3" role="alert" t-out="error"/>
-
-            <form action="/manage/rooms/new" method="post" class="d-flex gap-2 mb-4"
-                  style="max-width: 480px;">
-                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
-                <input type="text" name="name" class="form-control" placeholder="New room"/>
-                <button type="submit" class="btn btn-primary">Add</button>
-            </form>
-
-            <table class="table modryn_table align-middle" style="max-width: 480px;">
-                <tbody>
-                    <tr t-foreach="rooms" t-as="room" t-key="room.id"
-                        t-attf-class="#{'modryn_archived' if not room.active else ''}">
-                        <td t-out="room.name"/>
-                        <td class="text-end">
-                            <form t-attf-action="/manage/rooms/archive/#{room.id}" method="post"
-                                  class="d-inline">
-                                <input type="hidden" name="csrf_token"
-                                       t-att-value="request.csrf_token()"/>
-                                <button type="submit" class="btn btn-sm btn-outline-dark">
-                                    <t t-if="room.active">Archive</t>
-                                    <t t-else="">Restore</t>
-                                </button>
-                            </form>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </t>
-    </template>
 
     <!-- ========================== opening hours =========================== -->
     <!-- The opening-hours page is gone: its panel is a tile on the

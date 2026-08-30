@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- A starting set the owner can rename, archive or extend at /manage/rooms.
+    <!-- A starting set the owner can rename, archive or extend in the
+         fitting-rooms box on the manager's screen.
          noupdate so a boutique's own edits survive every module upgrade. -->
     <data noupdate="1">
         <record id="room_1" model="modryn.fitting.room">

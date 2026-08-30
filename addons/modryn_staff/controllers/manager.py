@@ -19,7 +19,7 @@ from odoo.tools.translate import LazyTranslate
 
 from .. import nav
 from . import access
-from .manage import ModrynManage
+from .manage import ModrynManage, _levels, _personal_from
 
 _lt = LazyTranslate(__name__)
 
@@ -109,10 +109,45 @@ class ModrynManagerScreen(http.Controller):
     # rather than a template full of hard-coded tiles: adding the next one is a
     # line here, and the tiles and the routing cannot disagree about what
     # exists.
-    VIEWS = ('announce', 'team', 'hours')
+    VIEWS = ('announce', 'team', 'hours', 'rooms')
+
+    def _account_form(self, editing=None, adding=False, errors=None, values=None):
+        """The add/edit form's context, or nothing at all.
+
+        Returned empty unless the box is actually showing the form, so a manager
+        reading the cards never has a roles list and a levels list built for a
+        form she is not going to be shown.
+        """
+        if not (adding or editing):
+            return {}
+        employee = None
+        if editing:
+            employee = request.env['hr.employee'].sudo().with_context(
+                active_test=False).browse(editing).exists()
+            if not employee:
+                return {}
+        if values is None:
+            # Her stored answers, or an empty form. The same shape
+            # staff_edit_form built, so the lifted markup reads it unchanged.
+            values = dict(
+                _personal_from(employee),
+                name=employee.name,
+                phone=employee.work_phone or '',
+                role_ids=employee.modryn_role_ids.ids,
+                level=employee.modryn_level,
+            ) if employee else {}
+        return {
+            'form_open': True,
+            'roles': ModrynManage()._roles(),
+            'levels': _levels(),
+            'employee': employee,
+            'errors': errors or {},
+            'values': values,
+        }
 
     def _render(self, error=None, draft=None, picked=None, file_error=None,
-                file_for=None, view=None):
+                file_for=None, view=None, editing=None, adding=False,
+                form_errors=None, form_values=None):
         context = {
             # None means the tiles themselves. Anything unrecognised falls back
             # to them rather than 404ing: a stale link should land somewhere
@@ -136,12 +171,20 @@ class ModrynManagerScreen(http.Controller):
             'picked': picked or [],
             'active_tab': 'boss',
         }
-        # The opening-hours rows, and only when she is going to see them: the
-        # panel is the owner's, and building a closures list for a manager who
-        # will never be shown it is work for nobody.
-        if view == 'hours' and access.is_owner():
-            context.update(ModrynManage().hours_context(
-                error=request.params.get('error')))
+        # The owner's panels, and only when she is going to see them: building a
+        # closures list, or a roles list, for a manager who will never be shown
+        # either is work for nobody.
+        if access.is_owner():
+            if view == 'hours':
+                context.update(ModrynManage().hours_context(
+                    error=request.params.get('error')))
+            elif view == 'rooms':
+                context.update(ModrynManage().rooms_context(
+                    error=request.params.get('error')))
+            elif view == 'team':
+                context.update(self._account_form(
+                    editing=editing, adding=adding,
+                    errors=form_errors, values=form_values))
         return request.render('modryn_staff.manager_screen', context)
 
     @http.route('/manage/team-screen', type='http', auth='user', website=True,
@@ -155,7 +198,16 @@ class ModrynManagerScreen(http.Controller):
         # of it is the boutique's administration and stays granted.
         if not (access.is_manager() or access.can_view('boss')):
             return access.deny()
-        return self._render(view=kw.get('view'))
+        # The form is a sub-state of the team tile, not a view of its own: a
+        # stale ?view=team&edit=<gone> falls back to the cards rather than to an
+        # error, because _account_form returns nothing for a person who is not
+        # there any more.
+        try:
+            editing = int(kw['edit']) if kw.get('edit') else None
+        except (TypeError, ValueError):
+            editing = None
+        return self._render(view=kw.get('view'), editing=editing,
+                            adding=bool(kw.get('new')))
 
     @http.route('/manage/team-screen/announce', type='http', auth='user',
                 website=True, methods=['POST'], csrf=True, sitemap=False)

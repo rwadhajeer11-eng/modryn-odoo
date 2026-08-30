@@ -9,10 +9,10 @@ filtered per user by modryn.role.page.
 
 `section` is 'staff' or 'manage' — the top row of the navbar and the bottom one.
 BOTH are grantable through the owner's access matrix, except the two pages in
-NEVER_GRANTABLE below: a matrix that can grant /manage/staff hands out account
-administration with a mis-tick, and one that can grant itself is not a
-permission system. Everything else in the bottom row is ordinary boutique work
-an owner should be able to delegate.
+NEVER_GRANTABLE below: a matrix that can grant account administration hands it
+out with a mis-tick, and one that can grant itself is not a permission system.
+Everything else in the bottom row is ordinary boutique work an owner should be
+able to delegate.
 `key` doubles as the page's active_tab value, so existing templates keep
 their highlight without changes.
 
@@ -37,6 +37,10 @@ PAGES = []
 #
 # Named here rather than in the screen that draws the matrix, because the rule
 # is about what these pages ARE and every reader of the matrix needs it.
+# 'staff' no longer resolves to a page - account administration is a state of
+# the manager's screen, gated on owner there. The key stays anyway: it costs
+# nothing, it refuses a hand-made grant for a key somebody might re-register
+# later, and it is the sentence that records WHY that power was never grantable.
 NEVER_GRANTABLE = ('staff', 'roles')
 
 
@@ -77,9 +81,12 @@ register('profile', '/staff/profile', _lt("My details"), 90, icon='fa-user-o')
 register('floor', '/floor', _lt("Floor board"), 10, icon='fa-th-large')
 register('roster', '/roster', _lt("Work schedule"), 20, icon='fa-calendar')
 register('checkin', '/queue/checkin', _lt("Walk-in check-in"), 60, icon='fa-qrcode')
-register('staff', '/manage/staff', _lt("Team"), 10, 'manage', 'fa-users')
+# The TEAM and the ROOMS are boxes on the manager's screen now, not rows of
+# their own - two screens about the same people was one too many, and a page
+# holding one job is a page. Their routes still live in manage.py and still
+# refuse anybody but the owner; what went is the navbar entry.
+
 register('roles', '/manage/roles', _lt("Roles"), 20, 'manage', 'fa-briefcase')
-register('rooms', '/manage/rooms', _lt("Rooms"), 40, 'manage', 'fa-building')
 # Opening hours are a TILE on the manager's screen now, not a row of their own -
 # one page holding one job, sitting between the dresses and the reports. The
 # routes still live in manage.py and still refuse anybody but the owner; what

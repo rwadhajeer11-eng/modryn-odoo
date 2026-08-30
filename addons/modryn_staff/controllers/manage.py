@@ -186,22 +186,20 @@ class ModrynManage(http.Controller):
     # ------------------------------------------------------------------ staff
     @http.route('/manage/staff', type='http', auth='user', website=True, sitemap=False)
     def staff_list(self, **kw):
+        """The old address. The team lives in a box on the manager's screen now,
+        with the papers the boutique holds for each of them - two screens about
+        the same people was one too many. Redirected rather than 404'd: somebody
+        has this URL in a tab, and the owner's sign-in used to land on it."""
         if not self._require_owner():
             return request.not_found()
-        return request.render('modryn_staff.manage_staff_list', {
-            'employees': self._employee_rows(),
-            'active_tab': 'staff',
-        })
+        return request.redirect('/manage/team-screen?view=team')
 
     @http.route('/manage/staff/new', type='http', auth='user', website=True,
                 methods=['GET'], sitemap=False)
     def staff_new_form(self, **kw):
         if not self._require_owner():
             return request.not_found()
-        return request.render('modryn_staff.manage_staff_form', {
-            'roles': self._roles(), 'levels': _levels(), 'employee': None,
-            'errors': {}, 'values': {}, 'active_tab': 'staff',
-        })
+        return request.redirect('/manage/team-screen?view=team&new=1')
 
     @http.route('/manage/staff/new', type='http', auth='user', website=True,
                 methods=['POST'], csrf=True, sitemap=False)
@@ -261,39 +259,29 @@ class ModrynManage(http.Controller):
                     employee.work_phone = phone
 
         if errors:
-            return request.render('modryn_staff.manage_staff_form', {
-                'roles': self._roles(), 'levels': _levels(), 'employee': None,
-                # role_ids OVER the raw post, deliberately. A form field arrives
-                # as a string, the template asks `role.id in values['role_ids']`,
-                # and an int against a string is a 500 - so a hire that trips any
-                # validation would crash instead of showing the error. It also
-                # keeps her ticks: re-rendering from the raw post dropped every
-                # role the owner had chosen.
-                'errors': errors, 'values': dict(post, role_ids=role_ids),
-                'active_tab': 'staff',
-            })
-        return request.redirect('/manage/staff')
+            # Back into the box with the form open, which is where she pressed
+            # Save from. role_ids OVER the raw post, deliberately: a form field
+            # arrives as a string, the template asks `role.id in
+            # values['role_ids']`, and an int against a string is a 500 - so a
+            # hire that trips any validation would crash instead of showing the
+            # error. It also keeps her ticks; re-rendering from the raw post
+            # dropped every role the owner had chosen.
+            # Imported HERE and not at the top: manager.py imports this module
+            # for its row builder, so a top-level import back is a cycle that
+            # only shows up as a module that will not load.
+            from .manager import ModrynManagerScreen
+            return ModrynManagerScreen()._render(
+                view='team', adding=True,
+                form_errors=errors, form_values=dict(post, role_ids=role_ids))
+        return request.redirect('/manage/team-screen?view=team')
 
     @http.route('/manage/staff/edit/<int:employee_id>', type='http', auth='user',
                 website=True, methods=['GET'], sitemap=False)
     def staff_edit_form(self, employee_id, **kw):
         if not self._require_owner():
             return request.not_found()
-        employee = request.env['hr.employee'].sudo().with_context(
-            active_test=False).browse(employee_id).exists()
-        if not employee:
-            return request.not_found()
-        return request.render('modryn_staff.manage_staff_form', {
-            'roles': self._roles(), 'levels': _levels(), 'employee': employee,
-            'errors': {}, 'values': dict(
-                _personal_from(employee),
-                name=employee.name,
-                phone=employee.work_phone or '',
-                role_ids=employee.modryn_role_ids.ids,
-                level=employee.modryn_level,
-            ),
-            'active_tab': 'staff',
-        })
+        return request.redirect(
+            '/manage/team-screen?view=team&edit=%d' % employee_id)
 
     @http.route('/manage/staff/edit/<int:employee_id>', type='http', auth='user',
                 website=True, methods=['POST'], csrf=True, sitemap=False)
@@ -326,11 +314,10 @@ class ModrynManage(http.Controller):
             errors['id_number'] = id_error
 
         if errors:
-            return request.render('modryn_staff.manage_staff_form', {
-                'roles': self._roles(), 'levels': _levels(), 'employee': employee,
-                'errors': errors, 'values': dict(post, role_ids=role_ids),
-                'active_tab': 'staff',
-            })
+            from .manager import ModrynManagerScreen
+            return ModrynManagerScreen()._render(
+                view='team', editing=employee.id,
+                form_errors=errors, form_values=dict(post, role_ids=role_ids))
 
         level_changed = level != employee.modryn_level
         employee.write(dict(
@@ -354,7 +341,7 @@ class ModrynManage(http.Controller):
                 'group_ids': [(3, g.id) for g in all_levels] + [(4, new_group.id)],
             })
 
-        return request.redirect('/manage/staff')
+        return request.redirect('/manage/team-screen?view=team')
 
     @http.route('/manage/staff/archive/<int:employee_id>', type='http', auth='user',
                 website=True, methods=['POST'], csrf=True, sitemap=False)
@@ -369,7 +356,7 @@ class ModrynManage(http.Controller):
             employee.active = not employee.active
             if employee.user_id:
                 employee.user_id.sudo().active = employee.active
-        return request.redirect('/manage/staff')
+        return request.redirect('/manage/team-screen?view=team')
 
     # ------------------------------------------------------------------ roles
     @http.route('/manage/roles', type='http', auth='user', website=True, sitemap=False)
@@ -466,16 +453,28 @@ class ModrynManage(http.Controller):
         return request.redirect('/manage/roles')
 
     # -------------------------------------------------------- fitting rooms
-    @http.route('/manage/rooms', type='http', auth='user', website=True, sitemap=False)
-    def rooms_list(self, error=None, **kw):
-        if not self._require_owner():
-            return request.not_found()
-        return request.render('modryn_staff.manage_rooms', {
+    def rooms_context(self, error=None):
+        """The fitting rooms, wherever the panel is drawn.
+
+        Public for the same reason hours_context is: the manager's screen renders
+        that panel now, and one builder with two readers cannot start disagreeing
+        about which rooms are archived.
+        """
+        return {
             'rooms': request.env['modryn.fitting.room'].sudo().with_context(
                 active_test=False).search([]),
-            'error': error,
-            'active_tab': 'rooms',
-        })
+            'rooms_error': error,
+        }
+
+    @http.route('/manage/rooms', type='http', auth='user', website=True, sitemap=False)
+    def rooms_list(self, error=None, **kw):
+        """The old address, moved along to the box that holds the panel now."""
+        if not self._require_owner():
+            return request.not_found()
+        target = '/manage/team-screen?view=rooms'
+        if error:
+            target += '&error=%s' % werkzeug.urls.url_quote(error)
+        return request.redirect(target)
 
     @http.route('/manage/rooms/new', type='http', auth='user', website=True,
                 methods=['POST'], csrf=True, sitemap=False)
@@ -484,13 +483,15 @@ class ModrynManage(http.Controller):
             return request.not_found()
         name = (post.get('name') or '').strip()
         if not name:
-            return request.redirect('/manage/rooms?error=%s' % _("Please enter a name"))
+            return request.redirect(
+                '/manage/team-screen?view=rooms&error=%s' % _("Please enter a name"))
         Room = request.env['modryn.fitting.room'].sudo()
         if Room.with_context(active_test=False).search_count([('name', '=ilike', name)]):
             return request.redirect(
-                '/manage/rooms?error=%s' % _("That fitting room already exists"))
+                '/manage/team-screen?view=rooms&error=%s'
+                % _("That fitting room already exists"))
         Room.create({'name': name})
-        return request.redirect('/manage/rooms')
+        return request.redirect('/manage/team-screen?view=rooms')
 
     @http.route('/manage/rooms/archive/<int:room_id>', type='http', auth='user',
                 website=True, methods=['POST'], csrf=True, sitemap=False)
@@ -502,7 +503,7 @@ class ModrynManage(http.Controller):
         if room:
             # Archive, never delete: cards still point at this room.
             room.active = not room.active
-        return request.redirect('/manage/rooms')
+        return request.redirect('/manage/team-screen?view=rooms')
 
     # -------------------------------------------------------- opening hours
     def _hours(self):

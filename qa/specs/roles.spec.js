@@ -42,11 +42,15 @@ const ticks = (page) => page.locator('input[name="role_ids"]');
 const tickedValues = async (page) =>
   (await ticks(page).evaluateAll((els) => els.filter((e) => e.checked).map((e) => e.value))).sort();
 
-// Her edit page, found by name on the Team list.
+// Her edit form, found by name in the team box on the manager's screen. The
+// Team screen folded into that box, so a row is a card and the form is a state
+// of the tile rather than a page of its own.
+const herCard = (page) =>
+  page.locator('article.modryn_team_card', { hasText: HIRE.name }).first();
+
 async function hersHref(page) {
-  await page.goto('/manage/staff');
-  const row = page.locator('tr', { hasText: HIRE.name }).first();
-  return await row.locator('a[href*="/manage/staff/edit/"]').first().getAttribute('href');
+  await page.goto('/manage/team-screen?view=team');
+  return await herCard(page).locator('a[href*="edit="]').first().getAttribute('href');
 }
 
 // Archived whatever happened above, so a failure cannot leave a spare account
@@ -56,13 +60,13 @@ test.afterAll(async ({ browser }) => {
   const page = await browser.newPage();
   try {
     await signInOwner(page);
-    await page.goto('/manage/staff');
-    const row = page.locator('tr', { hasText: HIRE.name }).first();
+    await page.goto('/manage/team-screen?view=team');
+    const row = herCard(page);
     if (await row.count()) {
       // Archive is a form POST, not a link — it changes state, so it may not be
       // something a crawler or a prefetch can trigger by following an href.
       await Promise.all([
-        page.waitForURL(/\/manage\/staff(\?|$)/),
+        page.waitForURL(/view=team/),
         row.locator('form[action*="/manage/staff/archive/"] button[type="submit"]')
           .first().click(),
       ]);
@@ -76,7 +80,7 @@ test.afterAll(async ({ browser }) => {
 
 test('act 9 — hiring with two roles ticked, and both survive the save', async ({ page }) => {
   await signInOwner(page);
-  await page.goto('/manage/staff/new');
+  await page.goto('/manage/team-screen?view=team&new=1');
 
   const boxes = await ticks(page).all();
   expect(boxes.length, 'the role field is not a set of tick boxes').toBeGreaterThan(1);
@@ -88,11 +92,10 @@ test('act 9 — hiring with two roles ticked, and both survive the save', async 
   await boxes[0].setChecked(true);
   await boxes[1].setChecked(true);
   const want = [await boxes[0].getAttribute('value'), await boxes[1].getAttribute('value')].sort();
-  await Promise.all([page.waitForURL(/\/manage\/staff(\?|$)/), submitFormWith(page, 'name')]);
+  await Promise.all([page.waitForURL(/view=team/), submitFormWith(page, 'name')]);
 
-  // The Team list shows both, not whichever sorts first.
-  const row = page.locator('tr', { hasText: HIRE.name }).first();
-  await expect(row).toContainText('·');
+  // Her card shows both, not whichever sorts first.
+  await expect(herCard(page)).toContainText('·');
 
   await page.goto(await hersHref(page));
   expect(await tickedValues(page), 'the second role was dropped on save').toEqual(want);
@@ -137,7 +140,7 @@ test('act 9c — a hire that trips another rule keeps every role already ticked'
   // It also threw the ticks away, which is its own small cruelty on a form
   // with three of them.
   await signInOwner(page);
-  await page.goto('/manage/staff/new');
+  await page.goto('/manage/team-screen?view=team&new=1');
   const boxes = await ticks(page).all();
   await page.fill('input[name="name"]', `Roles Probe Reject ${STAMP}`);
   await page.fill('input[name="username"]', `rolesreject${STAMP}`);
@@ -153,6 +156,7 @@ test('act 9c — a hire that trips another rule keeps every role already ticked'
   expect(await tickedValues(page), 'the error re-render dropped the roles she had chosen')
     .toEqual(want);
   // Nobody was hired, so there is nothing for afterAll to clean up here.
-  await page.goto('/manage/staff');
-  await expect(page.locator('tr', { hasText: `Roles Probe Reject ${STAMP}` })).toHaveCount(0);
+  await page.goto('/manage/team-screen?view=team');
+  await expect(page.locator('article.modryn_team_card',
+                            { hasText: `Roles Probe Reject ${STAMP}` })).toHaveCount(0);
 });

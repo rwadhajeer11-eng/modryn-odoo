@@ -69,6 +69,14 @@ test('act 5b — staff-level access stops where it should', async ({ page }) => 
     status === 403 || status === 404 || !/\/manage\/staff/.test(url),
     `a staff-level user reached /manage/staff (status ${status}, url ${url})`
   ).toBeTruthy();
+
+  // And she did not arrive at account administration by being forwarded to it.
+  // That address is a redirect into the manager's screen now, so the clause
+  // above is satisfied by the forward itself - it would keep passing even if
+  // the box at the far end let her in. These two say she is not looking at the
+  // team, whichever page she ended up on.
+  await expect(page.locator('article.modryn_team_card')).toHaveCount(0);
+  await expect(page.locator('input[name="role_ids"]')).toHaveCount(0);
 });
 
 test('act 5c — plain staff land on their own page, and the floor is not theirs by default', async ({ page }) => {

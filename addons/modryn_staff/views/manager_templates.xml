@@ -28,6 +28,11 @@
                     <span class="modryn_strong">The team</span>
                     <span class="modryn_sub">Who works here, and the papers on file.</span>
                 </a>
+                <a t-if="is_owner" class="modryn_tile" href="/manage/team-screen?view=rooms">
+                    <i class="fa fa-building" aria-hidden="true"/>
+                    <span class="modryn_strong">Fitting rooms</span>
+                    <span class="modryn_sub">The rooms a customer can be shown into.</span>
+                </a>
                 <!-- The owner's. These hours decide what a customer can book. -->
                 <a t-if="is_owner" class="modryn_tile" href="/manage/team-screen?view=hours">
                     <i class="fa fa-clock-o" aria-hidden="true"/>
@@ -87,12 +92,133 @@
                 </form>
             </section>
 
+            <!-- ==================== the team: her account ==================== -->
+            <!-- The add/edit form, lifted whole from the page it used to be. A
+                 STATE of this tile rather than a view of its own: she pressed
+                 Edit from the cards and comes back to them, and a refused save
+                 lands here with everything she typed still in it.
+                 Owner-only twice over - this route refuses a manager, and the
+                 controller does not even build the context for her. -->
+            <section t-if="view == 'team' and form_open and is_owner" class="modryn_panel mb-4">
+                <a class="modryn_back" href="/manage/team-screen?view=team">Back to the team</a>
+            <h1 class="mb-4">
+                <t t-if="employee">Edit team member</t>
+                <t t-else="">Add a team member</t>
+            </h1>
+
+            <form method="post" class="modryn_form"
+                  t-attf-action="/manage/staff/#{'edit/%s' % employee.id if employee else 'new'}">
+                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+
+                <div class="mb-3">
+                    <label class="form-label" for="name">Name</label>
+                    <input type="text" id="name" name="name" class="form-control"
+                           t-att-value="values.get('name', '')"/>
+                    <div t-if="errors.get('name')" class="modryn_field_error" t-out="errors['name']"/>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label" for="phone">Phone</label>
+                    <input type="tel" id="phone" name="phone" class="form-control" dir="ltr"
+                           t-att-value="values.get('phone', '')"/>
+                </div>
+
+                <!-- Who she is, as opposed to what she does. Kept together and
+                     kept ABOVE the job fields: an owner filling this in is
+                     copying off one document, and interleaving it with role and
+                     permission level would make her put it down and pick it up
+                     four times. -->
+                <fieldset class="mb-3">
+                    <legend class="h6 text-muted">Personal details</legend>
+
+                    <div class="mb-3">
+                        <label class="form-label" for="backup_phone">Backup phone</label>
+                        <input type="tel" id="backup_phone" name="backup_phone"
+                               class="form-control" dir="ltr"
+                               t-att-value="values.get('backup_phone', '')"/>
+                        <div class="form-text">The number to try when the first one doesn't answer.</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label" for="id_number">ID number</label>
+                        <input type="text" id="id_number" name="id_number"
+                               class="form-control" dir="ltr" inputmode="numeric"
+                               t-att-value="values.get('id_number', '')"/>
+                        <div t-if="errors.get('id_number')" class="modryn_field_error"
+                             t-out="errors['id_number']"/>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label" for="city">City</label>
+                        <input type="text" id="city" name="city" class="form-control"
+                               t-att-value="values.get('city', '')"/>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label" for="street">Street and number</label>
+                        <input type="text" id="street" name="street" class="form-control"
+                               t-att-value="values.get('street', '')"/>
+                    </div>
+                </fieldset>
+
+                <!-- Tick boxes, not a dropdown: a woman does more than one
+                     job here, and the seamstress who also sells on a Saturday
+                     was the case the single dropdown could not describe. -->
+                <div class="mb-3">
+                    <span class="form-label d-block">Roles</span>
+                    <t t-foreach="roles" t-as="role">
+                        <label class="modryn_piece_check me-3">
+                            <input type="checkbox" name="role_ids" t-att-value="role.id"
+                                   t-att-checked="'checked' if role.id in (values.get('role_ids') or []) else None"/>
+                            <span t-out="role.name"/>
+                        </label>
+                    </t>
+                    <div t-if="errors.get('role_id')" class="modryn_field_error" t-out="errors['role_id']"/>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label" for="level">Permission level</label>
+                    <select id="level" name="level" class="form-select">
+                        <t t-foreach="levels" t-as="lvl">
+                            <option t-att-value="lvl[0]"
+                                    t-att-selected="'selected' if values.get('level') == lvl[0] else None"
+                                    t-out="lvl[1]"/>
+                        </t>
+                    </select>
+                    <div t-if="errors.get('level')" class="modryn_field_error" t-out="errors['level']"/>
+                </div>
+
+                <!-- Credentials are set once, at hire. Changing them later is a
+                     separate concern (reset flow) and deliberately not here. -->
+                <t t-if="not employee">
+                    <hr class="my-4"/>
+                    <div class="mb-3">
+                        <label class="form-label" for="username">Username</label>
+                        <input type="text" id="username" name="username" class="form-control" dir="ltr"
+                               t-att-value="values.get('username', '')"/>
+                        <div t-if="errors.get('username')" class="modryn_field_error"
+                             t-out="errors['username']"/>
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label" for="password">Password</label>
+                        <input type="password" id="password" name="password" class="form-control"
+                               dir="ltr"/>
+                        <div t-if="errors.get('password')" class="modryn_field_error"
+                             t-out="errors['password']"/>
+                    </div>
+                </t>
+
+                <button type="submit" class="btn btn-primary btn-lg">Save</button>
+                <a href="/manage/team-screen?view=team" class="btn btn-link">Cancel</a>
+            </form>
+            </section>
+
             <!-- ========================= the team ========================= -->
-            <section t-if="view == 'team'" class="modryn_panel mb-4">
+            <section t-if="view == 'team' and not (form_open and is_owner)" class="modryn_panel mb-4">
                 <header class="modryn_panel_head">
                     <h2>The team</h2>
                     <span class="modryn_count" t-out="len(team_rows)"/>
-                    <a t-if="is_owner" href="/manage/staff/new"
+                    <a t-if="is_owner" href="/manage/team-screen?view=team&amp;new=1"
                        class="btn btn-sm btn-primary ms-auto">Add a team member</a>
                 </header>
                 <p class="modryn_sub mb-3">
@@ -150,8 +276,20 @@
                         </dl>
 
                         <div t-if="is_owner" class="modryn_card_actions">
-                            <a t-attf-href="/manage/staff/edit/#{member['id']}"
+                            <a t-attf-href="/manage/team-screen?view=team&amp;edit=#{member['id']}"
                                class="btn btn-sm btn-outline-dark">Edit her account</a>
+                            <!-- Archive, which the box did not carry and the old
+                                 table did. Without it the move would have lost
+                                 the only way to retire somebody. -->
+                            <form t-attf-action="/manage/staff/archive/#{member['id']}"
+                                  method="post" class="d-inline">
+                                <input type="hidden" name="csrf_token"
+                                       t-att-value="request.csrf_token()"/>
+                                <button type="submit" class="btn btn-sm btn-link">
+                                    <t t-if="member['active']">Archive</t>
+                                    <t t-else="">Bring her back</t>
+                                </button>
+                            </form>
                         </div>
 
                         <div t-if="file_error and file_for == member['id']"
@@ -360,6 +498,53 @@
                                 <button type="submit" class="btn btn-sm btn-outline-dark">
                                     <t t-if="c['active']">Open again</t>
                                     <t t-else="">Close again</t>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            </section>
+
+            <!-- ==================== fitting rooms ==================== -->
+            <!-- Lifted whole, the way the opening hours went. The OWNER's:
+                 a room is a thing the boutique has, and the routes behind
+                 these two forms refuse anybody else. -->
+            <section t-if="view == 'rooms' and is_owner" class="modryn_panel mb-4">
+            <h1 class="mb-2">Fitting rooms</h1>
+            <p class="text-muted mb-4">
+                Name your rooms the way your team says them out loud. When someone
+                calls for help, the room is what tells a colleague where to go.
+            </p>
+
+            <!-- rooms_error, not error: this panel now shares a template with
+                 the announcement form, whose own refusal already owns `error`.
+                 Reading the wrong one showed nothing at all - the duplicate-name
+                 refusal came back silent, which is a form that looks like it
+                 did nothing rather than one that said no. -->
+            <div t-if="rooms_error" class="modryn_field_error mb-3" role="alert"
+                 t-out="rooms_error"/>
+
+            <form action="/manage/rooms/new" method="post" class="d-flex gap-2 mb-4"
+                  style="max-width: 480px;">
+                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                <input type="text" name="name" class="form-control" placeholder="New room"/>
+                <button type="submit" class="btn btn-primary">Add</button>
+            </form>
+
+            <table class="table modryn_table align-middle" style="max-width: 480px;">
+                <tbody>
+                    <tr t-foreach="rooms" t-as="room" t-key="room.id"
+                        t-attf-class="#{'modryn_archived' if not room.active else ''}">
+                        <td t-out="room.name"/>
+                        <td class="text-end">
+                            <form t-attf-action="/manage/rooms/archive/#{room.id}" method="post"
+                                  class="d-inline">
+                                <input type="hidden" name="csrf_token"
+                                       t-att-value="request.csrf_token()"/>
+                                <button type="submit" class="btn btn-sm btn-outline-dark">
+                                    <t t-if="room.active">Archive</t>
+                                    <t t-else="">Restore</t>
                                 </button>
                             </form>
                         </td>
