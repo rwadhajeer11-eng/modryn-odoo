@@ -41,7 +41,8 @@ const FINISHED = '.modryn_team_finish';
 // rendered text, which carries the whitespace the template indents with.
 const TOOK_IT = /She took this one|היא לקחה את זו|أخذت هاي/i;
 const NO_BUY = /She left without buying|היא יצאה בלי לקנות|طلعت بدون شراء/i;
-const CLOSE = /Close|סגירה|إغلاق/i;
+const CLOSE = /^\s*(Close|סגירה|إغلاق)\s*$/i;
+const ALTER = /needs altering|צריכה תיקון|بدّه تعديل/i;
 
 // Each act signs in, walks through the shift door, waits for an OWL board to
 // paint and then finishes two or three customers through a dialog. The 30s
@@ -130,6 +131,36 @@ test('@writes a customer is listed under the woman holding her, and goes back to
   const group = panel.locator('.modryn_team_group').first();
   await expect(group).toBeVisible();
 
+  // And she is in ONE place. She used to be listed here AND left in the queue
+  // as though still waiting - one bride, two rows, and a waiting count that
+  // included people nobody was waiting on.
+  //
+  // WALK-INS only, against the WALK-IN queue. Three panels draw the same card
+  // class, and an appointment appearing both here and on today's schedule is
+  // correct - a schedule is not a line.
+  const taken = (await panel
+    .locator('.modryn_team_client[data-kind="queue"] .modryn_strong')
+    .allInnerTexts()).map((t) => t.trim());
+  const inQueue = (await page.locator('.modryn_queue_panel .modryn_customer_card .modryn_strong')
+    .allInnerTexts()).map((t) => t.trim());
+  for (const name of taken) {
+    expect(inQueue, `${name} is with somebody and still in the line`)
+      .not.toContain(name);
+  }
+
+  // Pressing Finished ASKS. It does not finish. Closing the dialog without
+  // answering has to leave her exactly where she was - the old behaviour closed
+  // her on the press, so a dismissed dialog lost a customer off the board with
+  // nothing recorded and no way back to her.
+  const walkIn = panel.locator('.modryn_team_client[data-kind="queue"]').first();
+  await walkIn.locator(FINISHED).first().click();
+  const modal = page.locator('.modryn_modal');
+  await expect(modal).toBeVisible({ timeout: 20000 });
+  await modal.locator('button').filter({ hasText: CLOSE }).click();
+  await expect(modal).toBeHidden({ timeout: 15000 });
+  await expect(clients, 'pressing Finished removed her before she was answered for')
+    .toHaveCount(before + 1);
+
   // Back to the line, pressed from the panel. She leaves it, and the board
   // offers to take her again - the same fact said from the queue's side.
   await group.locator(BACK).first().click();
@@ -215,9 +246,14 @@ test('@writes the dress is found by typing, confirmed, and comes off the rail', 
   await confirm.locator('button').first().click();
   await expect(modal.locator('.modryn_outcome_done'), 'nothing was recorded')
     .toBeVisible({ timeout: 20000 });
-  // The dialog stays open: the workshop is a second question, and closing it
-  // the moment she answers the first would lose it.
-  await expect(modal.locator('input[type="date"]')).toBeVisible();
+  // The dialog stays open, and asks for NOTHING else. The workshop used to sit
+  // under this with a required date, which is what made a bride whose gown fits
+  // look like unfinished paperwork. It is a question she opens now.
+  await expect(modal.locator('input[type="date"]'),
+    'the workshop form is open before anybody asked for it').toHaveCount(0);
+  await modal.locator('button').filter({ hasText: ALTER }).click();
+  await expect(modal.locator('input[type="date"]'),
+    'asking for the workshop did not open it').toBeVisible();
   await modal.locator('button').filter({ hasText: CLOSE }).click();
   await expect(modal).toBeHidden({ timeout: 15000 });
 
@@ -226,11 +262,20 @@ test('@writes the dress is found by typing, confirmed, and comes off the rail', 
   // is the number the next stylist sees, which is the one that matters.
   await finishNextWalkIn();
   await modal.locator('input[type="search"]').fill(term);
-  const same = hits.filter({ has: page.locator(`[data-variant="${takenVariant}"]`) })
-    .or(page.locator(`.modryn_dress_hit[data-variant="${takenVariant}"]`));
-  await expect(same.first()).toBeVisible({ timeout: 15000 });
-  expect(await stockOnHit(same.first()), 'the dress did not come off the rail')
-    .toBe(stockBefore - 1);
+  await expect(hits.first(), 'the search found nothing on the second pass')
+    .toBeVisible({ timeout: 15000 });
+  // A size with none left is not offered at all now, so taking the last one
+  // means the row is GONE rather than showing a nought. Both are the same
+  // claim - one fewer than there was - and the spec has to accept whichever
+  // shape this tenant's stock produces.
+  const same = page.locator(`.modryn_dress_hit[data-variant="${takenVariant}"]`);
+  if (stockBefore === 1) {
+    await expect(same, 'the last one is still being offered').toHaveCount(0);
+  } else {
+    await expect(same.first()).toBeVisible({ timeout: 15000 });
+    expect(await stockOnHit(same.first()), 'the dress did not come off the rail')
+      .toBe(stockBefore - 1);
+  }
 
   // ---- and the other ending takes nothing --------------------------------
   await modal.locator('button').filter({ hasText: NO_BUY }).click();
@@ -243,10 +288,15 @@ test('@writes the dress is found by typing, confirmed, and comes off the rail', 
 
   await finishNextWalkIn();
   await modal.locator('input[type="search"]').fill(term);
+  await expect(hits.first()).toBeVisible({ timeout: 15000 });
   const still = page.locator(`.modryn_dress_hit[data-variant="${takenVariant}"]`);
-  await expect(still.first()).toBeVisible({ timeout: 15000 });
-  expect(await stockOnHit(still.first()),
-    'a customer who bought nothing still moved the count').toBe(stockBefore - 1);
+  if (stockBefore === 1) {
+    await expect(still, 'a customer who bought nothing put one back')
+      .toHaveCount(0);
+  } else {
+    expect(await stockOnHit(still.first()),
+      'a customer who bought nothing still moved the count').toBe(stockBefore - 1);
+  }
   await modal.locator('button').filter({ hasText: CLOSE }).click();
 
   await endShift(page);

@@ -196,6 +196,10 @@ export class FloorBoard extends Component {
                 outcome: "",
                 // Which ending is waiting on a yes. null = nothing pending.
                 confirm: null,
+                // Has she asked for the workshop? Closed until she does: a
+                // bride whose gown fits needs no task, and a form sitting open
+                // with a required date reads as something she must finish.
+                workshop: false,
                 form: { variant_id: "", piece_ids: [], note: "", due_date: "", seamstress_id: "", priority: "1" },
                 error: "",
             };
@@ -263,6 +267,10 @@ export class FloorBoard extends Component {
 
     cancelOutcome() {
         this.state.finish.confirm = null;
+    }
+
+    openWorkshop() {
+        this.state.finish.workshop = true;
     }
 
     // The sentence on the confirmation strip. Spelled out with the dress in it,
@@ -480,6 +488,20 @@ export class FloorBoard extends Component {
         return me ? this.state.sos.filter((c) => c.caller_id === me.id) : [];
     }
 
+    // Is this walk-in with somebody right now? The one definition of it, used
+    // by both panels: the with-the-team list is built from it, and the queue
+    // list is built from its negation. Two copies would drift into a bride
+    // shown twice or shown nowhere.
+    isWithSomebody(entry) {
+        return Boolean(entry.employee_id) && entry.state === "called" && !entry.outcome;
+    }
+
+    // The line: people who are actually waiting. Somebody a stylist has taken
+    // is on the panel below and is not waiting for anybody.
+    get waitingQueue() {
+        return this.state.queue.filter((e) => !this.isWithSomebody(e));
+    }
+
     get colleagues() {
         const me = this.state.me;
         return this.state.staff.filter((s) => !me || s.id !== me.id);
@@ -505,7 +527,7 @@ export class FloorBoard extends Component {
             // is not with her yet. Listing her here made the panel claim
             // something untrue and, worse, offered a "Back to the line" that
             // did nothing: the release refuses a card that is not called.
-            if (e.employee_id && e.state === "called" && !e.outcome) {
+            if (this.isWithSomebody(e)) {
                 put(e.employee_id, e.employee_name, {
                     key: `q${e.id}`,
                     id: e.id,
@@ -810,8 +832,12 @@ export class FloorBoard extends Component {
         return entry.client_type === "bride" ? _t("Bride") : _t("Evening");
     }
 
+    // The number over the line counts the line. It counted state === 'waiting'
+    // only, which leaves out somebody called over with nobody assigned to her -
+    // she is on the list below the number and was not in it. A count that does
+    // not describe the rows under it is worse than no count.
     get waitingCount() {
-        return this.state.queue.filter((e) => e.state === "waiting").length;
+        return this.waitingQueue.length;
     }
 
     get freeCount() {

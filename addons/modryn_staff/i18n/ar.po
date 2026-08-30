@@ -2221,3 +2221,21 @@ msgstr "%(count)s كمان لاحقًا اليوم وما في حدا عليهم
 #: model:ir.model.constraint,message:modryn_staff.constraint_modryn_shift_attendance_one_open_spell
 msgid "That employee is already on the floor."
 msgstr "الموظفة أصلًا داخل الوردية."
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "The gown needs altering"
+msgstr "الفستان بدّه تعديل"
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "Send to the workshop"
+msgstr "إرسال للورشة"
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "What the workshop needs to know."
+msgstr "شو بدها الورشة تعرف."

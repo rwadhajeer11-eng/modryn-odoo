@@ -92,14 +92,26 @@ test('@writes a worker can be given the board, and take a customer on it', async
     const takeButtons = page.locator('.modryn_take_btn');
     await expect(takeButtons.first()).toBeVisible({ timeout: 10000 });
     {
-      await takeButtons.first().click();
-      // The card repaints in place: the same card now offers the way back.
-      await expect(
-        page.locator('.modryn_release_btn').first()
-      ).toBeVisible({ timeout: 10000 });
+      // Taking her MOVES her. She used to stay in the line as well as appear
+      // under her stylist - one bride in two panels, counted among the people
+      // waiting for somebody while somebody had her. So the assertion is the
+      // move: gone from the queue, arrived under her stylist, and back again
+      // when the stylist puts her back.
+      const inQueue = page.locator('.modryn_queue_panel .modryn_customer_card');
+      const withTeam = page.locator('.modryn_team_client[data-kind="queue"]');
+      const queued = await inQueue.count();
+      const held = await withTeam.count();
 
-      // Put her back, so the tenant is left as it was found.
-      await page.locator('.modryn_release_btn').first().click();
+      await takeButtons.first().click();
+      await expect(withTeam, 'she is not under the stylist who took her')
+        .toHaveCount(held + 1, { timeout: 10000 });
+      await expect(inQueue, 'she is with somebody and still in the line')
+        .toHaveCount(queued - 1, { timeout: 10000 });
+
+      // Put her back, so the tenant is left as it was found. The way back is
+      // on the panel she moved to.
+      await page.locator('.modryn_team_back').first().click();
+      await expect(inQueue).toHaveCount(queued, { timeout: 10000 });
       await expect(takeButtons.first()).toBeVisible({ timeout: 10000 });
     }
 

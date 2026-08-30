@@ -54,8 +54,15 @@ let walkin = 0;
 //                  creates and the accept branch below never fires. Left in
 //                  place because legacy pending rows still reach it, but it is
 //                  NO LONGER a source of ws_rt samples.
-//   /floor/finish  action_done() writes state='done' -> same guard. Now the
-//                  only clocked publish site this scenario actually reaches.
+//   /floor/walkin/outcome
+//                  action_done() writes state='done' -> same guard. The only
+//                  clocked publish site this scenario actually reaches.
+//
+//                  It used to be /floor/finish, which closed the walk-in on the
+//                  press. That route asks a question now and writes nothing, so
+//                  a clock on it would publish nothing and be stopped by the
+//                  next unrelated push - exactly the /floor/room failure
+//                  described below, where the number FALLS as load rises.
 //
 // /floor/room was clocked here too and publishes NOTHING: it writes only
 // modryn_room_id, which appears in no guard at any of the three sites. Its clock
@@ -207,21 +214,23 @@ function workTheFloor(t) {
     );
   }
 
-  // The most expensive single call in the system: a full board build plus a
-  // product.product search over every published variant. Clocked: it writes
-  // state='done', which publishes.
-  const done = clockedCall(t.baseUrl, '/floor/finish', { entry_id: card.id }, 'floor', card.id);
+  // The most expensive single response in the system: a full board build plus a
+  // product.product search over the sellable catalogue. NOT clocked - it opens
+  // the question and writes nothing, so there is no publish for a clock to wait
+  // on.
+  const done = call(
+    t.baseUrl, '/floor/finish', { entry_id: card.id }, 'rpc_write', 'floor');
   if (done.ok) {
-    // Half of a finish: the stylist then says how it ended. ALWAYS not_sold —
-    // 'sold' decrements a variant, and a few thousand of those would empty the
-    // seeded catalogue and leave the next run measuring an empty shop. The two
-    // branches are the same write, the same publish and the same board.
-    call(
+    // The half that ENDS the visit, and therefore the half that publishes.
+    // ALWAYS not_sold: 'sold' decrements a variant, and a few thousand of those
+    // would empty the seeded catalogue and leave the next run measuring an
+    // empty shop. The two branches are the same write and the same board.
+    clockedCall(
       t.baseUrl,
       '/floor/walkin/outcome',
       { entry_id: card.id, outcome: 'not_sold' },
-      'rpc_write',
-      'floor'
+      'floor',
+      card.id
     );
     if (Math.random() < 0.3) {
       handoffToAtelier(t, done.result);
@@ -280,7 +289,8 @@ function checkInWalkIn(t) {
   });
 }
 
-// /floor/finish returns the whole board with a `finished` key bolted on:
+// /floor/finish returns the whole board with a `finished` key bolted on, and
+// leaves the customer exactly where she was - the outcome is what ends her:
 // {entry_id, customer, phone, variants:[{id, label, name, serial, kind, size,
 // stock}]} — the modal's data, so the manager can record how the visit ended
 // and open an alteration task without a second round trip. The variant rows

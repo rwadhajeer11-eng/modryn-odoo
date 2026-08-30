@@ -448,11 +448,20 @@ class ModrynFloor(http.Controller):
 
     @http.route('/floor/finish', type='jsonrpc', auth='user')
     def finish(self, entry_id):
-        """Close a walk-in and hand the board what the finish modal needs.
+        """Ask how the visit ended. Do not end it.
 
-        Freeing the entry frees everyone on it (occupancy is derived), and the
-        response carries the customer + dress list so the manager can open an
-        alteration task without a second round-trip.
+        This used to close the walk-in on the press, so she left the queue
+        before anybody had said what happened - and a dialog closed, dismissed,
+        or handed to somebody else left her gone from the board with nothing
+        recorded and no way back to her. The press opens the question; the
+        ANSWER ends the visit, at /floor/walkin/outcome.
+
+        The response carries the customer and the dress list so the answer needs
+        no second round-trip.
+
+        Nobody is left on the board overnight by this: 'called' is in
+        OPEN_STATES, so the closing cron sweeps a visit whose ending was never
+        recorded, the same as it always has for a customer nobody got to.
         """
         if not self._is_staff():
             return {'error': 'forbidden'}
@@ -466,16 +475,28 @@ class ModrynFloor(http.Controller):
         # existed, so the walk-in was simply the half that never caught up.
         if not self._may_close(entry):
             return {'error': 'forbidden'}
+        # She stays in the line until the outcome is recorded - unless there is
+        # no outcome to record. modryn_ops is what carries those fields, and
+        # without it nothing could ever close the question, so a walk-in would
+        # sit on the board until the closing cron swept her at the end of the
+        # day. In that shop only, the press still finishes.
+        #
         # action_done(), not a bare write: it makes the same state change AND
-        # promotes whoever is now at the front. This route wrote the state
-        # directly, so finishing a customer on the floor terminal never sent the
-        # next bride her "you're next". It went unnoticed because every
-        # acceptance also swept the queue — and acceptance is now gone.
-        entry.action_done()
+        # promotes whoever is now at the front, which is how the next bride gets
+        # her "you're next".
+        if 'modryn_outcome' not in request.env['modryn.queue.entry']._fields:
+            entry.action_done()
 
+        # Only sizes that exist. The old list was every published variant with
+        # "None left" printed beside the empty ones, which was honest when it
+        # was a dropdown she scrolled - she could see why her size was missing.
+        # In a search box it is offering her something she cannot sell.
         variants = request.env['product.product'].sudo().search([
             ('product_tmpl_id.is_published', '=', True),
-        ])
+            ('modryn_stock', '>', 0),
+        ]) if 'modryn_stock' in request.env['product.product']._fields else (
+            request.env['product.product'].sudo().search([
+                ('product_tmpl_id.is_published', '=', True)]))
         board = self._board()
         board['finished'] = {
             # The modal writes an outcome back against this one, so it has to
@@ -498,7 +519,7 @@ class ModrynFloor(http.Controller):
                 'size': v.product_template_attribute_value_ids[:1].name or '',
                 # Shown beside each one: "which did she take" and "is there
                 # another" are the same question at the moment of writing it
-                # down, and a size at zero is worth seeing before it is chosen.
+                # down, and the last one is worth seeing that it is the last.
                 'stock': v.modryn_stock,
             } for v in variants],
         }

@@ -92,16 +92,25 @@
                     </section>
 
                     <!-- ============ walk-in queue ============ -->
-                    <section class="modryn_panel">
+                    <!-- Named, because three panels on this board draw the same
+                         customer card and nothing could tell them apart. "Is she
+                         in the queue as well as with somebody" is a real
+                         question about this panel and an entirely wrong one
+                         about the appointments below, which are a schedule. -->
+                    <section class="modryn_panel modryn_queue_panel">
                         <header class="modryn_panel_head">
                             <h2>Walk-in queue</h2>
                             <span class="modryn_count"><t t-esc="waitingCount"/> waiting</span>
                         </header>
 
-                        <p t-if="!state.queue.length" class="modryn_empty">No one is waiting.</p>
+                        <!-- waitingQueue, not state.queue: a customer a stylist
+                             has taken is on the panel below, and printing her
+                             here as well showed one bride twice and counted her
+                             among the people waiting for somebody. -->
+                        <p t-if="!waitingQueue.length" class="modryn_empty">No one is waiting.</p>
 
                         <div class="modryn_cards">
-                            <div t-foreach="state.queue" t-as="entry" t-key="entry.id"
+                            <div t-foreach="waitingQueue" t-as="entry" t-key="entry.id"
                                  class="modryn_customer_card"
                                  data-drop-target="queue" t-att-data-drop-id="entry.id">
                                 <div class="modryn_card_top">
@@ -269,7 +278,7 @@
                     </section>
 
                     <!-- ============ today's appointments ============ -->
-                    <section class="modryn_panel">
+                    <section class="modryn_panel modryn_bookings_panel">
                         <header class="modryn_panel_head">
                             <h2>Today's appointments</h2>
                             <span class="modryn_count"><t t-esc="state.bookings.length"/></span>
@@ -788,12 +797,13 @@
                                           t-esc="v.serial"/>
                                     <!-- What is left of that size. A stylist
                                          about to write down the last one should
-                                         be able to see that it is the last
-                                         one. -->
-                                    <span t-attf-class="modryn_badge #{v.stock > 0 ? 'is_free' : 'is_muted'}">
-                                        <t t-if="v.stock > 0"><t t-esc="v.stock"/></t>
-                                        <t t-else="">None left</t>
-                                    </span>
+                                         be able to see that it is the last one.
+                                         No "none left" branch: the server sends
+                                         only sizes that exist, so a nought here
+                                         could never render and a branch that
+                                         cannot render is a lie about what this
+                                         screen can say. -->
+                                    <span class="modryn_badge is_free" t-esc="v.stock"/>
                                 </button>
                             </div>
                             <div t-elif="state.finish.dressQuery.trim().length >= 2"
@@ -821,9 +831,21 @@
                     </div>
                     </t>
 
+                    <!-- The workshop, and ONLY once there is something to send
+                         it. A customer who bought nothing has nothing to alter;
+                         a bride whose gown fits has nothing to alter either, and
+                         a required date sitting under her name says otherwise.
+                         So it is a question she opens, not a form she closes. -->
+                    <t t-if="state.finish.outcome === 'sold' and !state.finish.workshop">
+                        <hr class="my-4"/>
+                        <button class="btn btn-outline-dark"
+                                t-on-click="openWorkshop">The gown needs altering</button>
+                    </t>
+
+                    <t t-if="state.finish.workshop">
                     <hr class="my-4"/>
                     <p class="modryn_sub mb-3">
-                        If the gown needs work, open a task for the workshop. Otherwise you're done.
+                        What the workshop needs to know.
                     </p>
 
                     <div class="mb-3">
@@ -868,15 +890,18 @@
                         </div>
                     </div>
 
+                    </t>
+
                     <div t-if="state.finish.error" class="alert alert-danger" role="alert">
                         <t t-esc="state.finish.error"/>
                     </div>
 
-                    <div class="d-flex gap-2">
-                        <button class="btn btn-primary" t-on-click="createTask">Create task</button>
+                    <div class="d-flex gap-2 mt-3">
+                        <button t-if="state.finish.workshop" class="btn btn-primary"
+                                t-on-click="createTask">Send to the workshop</button>
                         <!-- Not "Skip" any more: by the time she reaches this
-                             row the ending is usually recorded, and calling
-                             that "skip" reads as throwing it away. -->
+                             row the ending is recorded, and calling that "skip"
+                             reads as throwing it away. -->
                         <button class="btn btn-link" t-on-click="closeFinish">Close</button>
                     </div>
                 </div>
