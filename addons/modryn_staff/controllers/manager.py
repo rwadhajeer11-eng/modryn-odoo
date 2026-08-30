@@ -96,9 +96,19 @@ class ModrynManagerScreen(http.Controller):
             })
         return rows
 
+    # The blocks this screen is made of, in the order they are offered. A list
+    # rather than a template full of hard-coded tiles: adding the next one is a
+    # line here, and the tiles and the routing cannot disagree about what
+    # exists.
+    VIEWS = ('announce', 'team')
+
     def _render(self, error=None, draft=None, picked=None, file_error=None,
-                file_for=None):
+                file_for=None, view=None):
         return request.render('modryn_staff.manager_screen', {
+            # None means the tiles themselves. Anything unrecognised falls back
+            # to them rather than 404ing: a stale link should land somewhere
+            # useful, not on an error.
+            'view': view if view in self.VIEWS else None,
             'team': [{'id': e.id, 'name': e.name} for e in self._team()],
             'team_rows': self._team_rows(),
             'announcements': self._recent(),
@@ -117,9 +127,9 @@ class ModrynManagerScreen(http.Controller):
     @http.route('/manage/team-screen', type='http', auth='user', website=True,
                 sitemap=False)
     def manager_screen(self, **kw):
-        if not access.can_view('boss') or not access.is_manager():
+        if not access.can_view('boss'):
             return access.deny()
-        return self._render()
+        return self._render(view=kw.get('view'))
 
     @http.route('/manage/team-screen/announce', type='http', auth='user',
                 website=True, methods=['POST'], csrf=True, sitemap=False)
@@ -140,7 +150,7 @@ class ModrynManagerScreen(http.Controller):
         employees = request.env['hr.employee'].sudo().browse(ids).exists()
         if not body:
             return self._render(
-                error='empty', draft=body, picked=employees.ids)
+                error='empty', draft=body, picked=employees.ids, view='announce')
         record = request.env['modryn.announcement'].sudo().modryn_publish(
             body, employees, self._my_employee())
         if not record:
@@ -148,8 +158,8 @@ class ModrynManagerScreen(http.Controller):
             # author herself. Said out loud rather than redirecting to a list
             # that would show nothing new and leave her wondering.
             return self._render(
-                error='nobody', draft=body, picked=employees.ids)
-        return request.redirect('/manage/team-screen')
+                error='nobody', draft=body, picked=employees.ids, view='announce')
+        return request.redirect('/manage/team-screen?view=announce')
 
     # ------------------------------------------------------ her papers
     @http.route('/manage/team-screen/paper', type='http', auth='user',
@@ -161,16 +171,19 @@ class ModrynManagerScreen(http.Controller):
         employee = request.env['hr.employee'].sudo().browse(
             int(post.get('employee_id') or 0)).exists()
         if not employee:
-            return request.redirect('/manage/team-screen')
+            return request.redirect('/manage/team-screen?view=team')
 
         upload = request.httprequest.files.get('paper')
         if not upload or not upload.filename:
-            return self._render(file_error='nofile', file_for=employee.id)
+            return self._render(file_error='nofile', file_for=employee.id,
+                                view='team')
         data = upload.read(MAX_UPLOAD_BYTES + 1)
         if len(data) > MAX_UPLOAD_BYTES:
-            return self._render(file_error='toobig', file_for=employee.id)
+            return self._render(file_error='toobig', file_for=employee.id,
+                                view='team')
         if not data:
-            return self._render(file_error='nofile', file_for=employee.id)
+            return self._render(file_error='nofile', file_for=employee.id,
+                                view='team')
 
         request.env['ir.attachment'].sudo().create({
             'name': upload.filename,
@@ -181,7 +194,7 @@ class ModrynManagerScreen(http.Controller):
             # a URL anybody can fetch.
             'public': False,
         })
-        return request.redirect('/manage/team-screen')
+        return request.redirect('/manage/team-screen?view=team')
 
     @http.route('/manage/team-screen/paper/<int:attachment_id>', type='http',
                 auth='user', website=True, sitemap=False)
@@ -217,7 +230,7 @@ class ModrynManagerScreen(http.Controller):
             attachment_id).exists()
         if attachment and attachment.res_model == 'hr.employee':
             attachment.unlink()
-        return request.redirect('/manage/team-screen')
+        return request.redirect('/manage/team-screen?view=team')
 
     @http.route('/manage/team-screen/unsend', type='http', auth='user',
                 website=True, methods=['POST'], csrf=True, sitemap=False)
@@ -229,7 +242,7 @@ class ModrynManagerScreen(http.Controller):
             int(post.get('announcement_id') or 0)).exists()
         if record:
             record.modryn_unsend()
-        return request.redirect('/manage/team-screen')
+        return request.redirect('/manage/team-screen?view=announce')
 
 
 # The staff section, so a MANAGER gets it without the owner having to grant
@@ -237,5 +250,9 @@ class ModrynManagerScreen(http.Controller):
 # the owner can still hand it to a senior saleswoman by role. Not the manage
 # section, which is owner-only by design and would shut every manager out of the
 # screen named after her.
-nav.register('boss', '/manage/team-screen', _lt("Manager screen"), 18,
-             icon='fa-bullhorn')
+# The BOTTOM row, with the team, the dresses and the reports - the boutique's own
+# administration rather than the shift in front of her. Grantable through the
+# owner's matrix like everything else down there, so a senior saleswoman can be
+# given it without being made a manager.
+nav.register('boss', '/manage/team-screen', _lt("Manager screen"), 12,
+             'manage', 'fa-bullhorn')

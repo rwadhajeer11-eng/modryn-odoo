@@ -1332,3 +1332,50 @@
         max-inline-size: 200px;
     }
 }
+
+// ==================== a screen that is a room with doors ====================
+// A tile per job. Used by the manager's screen and by the profile, both of
+// which had grown into three unrelated blocks down one page - so "send the team
+// a message" meant scrolling past the whole team to reach the box.
+.modryn_tiles {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 14px;
+}
+
+.modryn_tile {
+    display: grid;
+    gap: 4px;
+    padding: 20px;
+    text-decoration: none;
+    color: inherit;
+    background: #FFFFFF;
+    border: 1px solid $modryn-border;
+    border-inline-start: 3px solid $modryn-gold;
+    border-radius: 12px;
+
+    .fa {
+        font-size: 22px;
+        color: $modryn-gold-deep;
+        margin-block-end: 4px;
+    }
+
+    &:hover,
+    &:focus-visible {
+        border-color: $modryn-gold;
+        background: $modryn-gold-wash;
+        color: inherit;
+    }
+}
+
+// The way back out of a tile. Small and quiet: it is the only thing on the page
+// that is not the job she came to do.
+.modryn_back {
+    display: inline-block;
+    margin-block-end: 12px;
+
+    &::before {
+        content: "\2190";          // ←
+        margin-inline-end: 6px;
+    }
+}

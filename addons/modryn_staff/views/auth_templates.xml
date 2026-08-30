@@ -47,7 +47,32 @@
     <template id="staff_profile" name="MODRYN my details">
         <t t-call="modryn_staff.staff_layout">
             <t t-set="active_tab" t-value="'profile'"/>
-            <h1 class="mb-2">My details</h1>
+            <h1 class="mb-2">My profile</h1>
+
+            <!-- Two doors. The details form and the hours table are different
+                 questions asked on different days, and stacked they made "how
+                 many hours did I do" a scroll past a form about her address. -->
+            <div t-if="not view" class="modryn_tiles">
+                <a class="modryn_tile" href="/staff/profile?view=details">
+                    <i class="fa fa-user" aria-hidden="true"/>
+                    <span class="modryn_strong">My details</span>
+                    <span class="modryn_sub">
+                        Your name, your phone, your language — and the papers the
+                        boutique holds for you.
+                    </span>
+                </a>
+                <a class="modryn_tile" href="/staff/profile?view=hours">
+                    <i class="fa fa-clock-o" aria-hidden="true"/>
+                    <span class="modryn_strong">My hours</span>
+                    <span class="modryn_sub">
+                        How long you were on the floor, day by day.
+                    </span>
+                </a>
+            </div>
+
+            <a t-if="view" class="modryn_back" href="/staff/profile">Back</a>
+
+            <t t-if="view == 'details'">
             <p class="modryn_sub mb-4">
                 Keep these right and the boutique can always reach you.
                 Your roles and permission level are set by the owner.
@@ -164,6 +189,7 @@
                     </div>
                 </div>
             </section>
+            </t>
 
             <!-- ==================== her hours ==================== -->
             <!-- TIME ON THE FLOOR, and the panel says so. It is counted from
@@ -171,7 +197,7 @@
                  again, which is the only record this product keeps - calling it
                  "hours worked" would be a claim about payroll that nothing here
                  can stand behind. -->
-            <section class="modryn_panel mt-4">
+            <section t-if="view == 'hours'" class="modryn_panel">
                 <div class="d-flex align-items-baseline justify-content-between flex-wrap gap-2">
                     <h2 class="h5 mb-0">My hours on the floor</h2>
                     <span class="modryn_sub">
@@ -191,6 +217,9 @@
                          before she was hired, which reads as lost data. -->
                     <form action="/staff/profile" method="get"
                           class="d-flex gap-2 align-items-center flex-wrap my-3">
+                        <!-- The panel travels with the month, or picking one
+                             would drop her back on the tiles. -->
+                        <input type="hidden" name="view" value="hours"/>
                         <label class="form-label mb-0" for="month">Month</label>
                         <select id="month" name="month" class="form-select w-auto">
                             <option t-foreach="months" t-as="m" t-key="m['key']"

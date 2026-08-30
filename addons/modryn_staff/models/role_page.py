@@ -103,9 +103,19 @@ class ModrynRolePage(models.Model):
         if user.has_group(GROUP_OWNER):
             return True
         entry = nav.page(page_key)
-        if entry is None or entry['section'] == 'manage':
+        if entry is None:
             return False
-        if user.has_group(GROUP_MANAGER):
+        # The two that would let a tick grant the power to tick. Owner-only
+        # whatever the matrix holds - and the check is here, not only on the
+        # screen that draws the matrix, so a hand-made POST cannot reach them
+        # either.
+        if page_key in nav.NEVER_GRANTABLE:
+            return False
+        # A manager gets the whole top row without anybody granting anything.
+        # The bottom row she needs granting for, the same as a saleswoman: it is
+        # the boutique's own administration, and "she manages a shift" is not
+        # the same claim as "she may change the catalogue".
+        if entry['section'] == 'staff' and user.has_group(GROUP_MANAGER):
             return True
         employee = self.env['hr.employee'].sudo().search(
             [('user_id', '=', user.id)], limit=1)

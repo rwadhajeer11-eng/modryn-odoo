@@ -382,6 +382,7 @@ msgstr "نشر هذا الأسبوع"
 
 #. module: modryn_roster
 #: model:ir.model.fields,field_description:modryn_roster.field_modryn_shift_slot__published
+#: model_terms:ir.ui.view,arch_db:modryn_roster.manage_week_planner
 #: model_terms:ir.ui.view,arch_db:modryn_roster.roster_page
 msgid "Published"
 msgstr "منشور"
@@ -444,6 +445,7 @@ msgstr "أُرسل"
 
 #. module: modryn_roster
 #: model_terms:ir.ui.view,arch_db:modryn_roster.manage_shifts
+#: model_terms:ir.ui.view,arch_db:modryn_roster.manage_week_planner
 msgid "Set"
 msgstr "تعيين"
 
@@ -893,3 +895,59 @@ msgstr ""
 "                    الطاقم بيشوف هذا الأسبوع، والتوفّر مسكّر. اطلبي التغيير\n"
 "                    على الوردية نفسها.\n"
 "                </span>"
+
+#. module: modryn_roster
+#: model_terms:ir.ui.view,arch_db:modryn_roster.manage_week_planner
+msgid ""
+"<span class=\"modryn_sub\">\n"
+"                    Everybody gets told, whether or not they are on it.\n"
+"                </span>"
+msgstr ""
+"<span class=\"modryn_sub\">\n"
+"                    الكل بيوصلهن خبر، حتى الي مش بالجدول.\n"
+"                </span>"
+
+#. module: modryn_roster
+#: model_terms:ir.ui.view,arch_db:modryn_roster.manage_week_planner
+msgid "Answers open"
+msgstr "الردود بتفتح"
+
+#. module: modryn_roster
+#: model_terms:ir.ui.view,arch_db:modryn_roster.manage_week_planner
+msgid "Clear"
+msgstr "مسح"
+
+#. module: modryn_roster
+#: model_terms:ir.ui.view,arch_db:modryn_roster.manage_week_planner
+msgid "Closed"
+msgstr "مسكّر"
+
+#. module: modryn_roster
+#: model_terms:ir.ui.view,arch_db:modryn_roster.manage_week_planner
+msgid "Next week's rota"
+msgstr "جدول الأسبوع الجاي"
+
+#. module: modryn_roster
+#: model_terms:ir.ui.view,arch_db:modryn_roster.manage_week_planner
+msgid "No shift."
+msgstr "ما في وردية."
+
+#. module: modryn_roster
+#: model_terms:ir.ui.view,arch_db:modryn_roster.manage_week_planner
+msgid "Nobody offered."
+msgstr "ما حدا عرض."
+
+#. module: modryn_roster
+#: model_terms:ir.ui.view,arch_db:modryn_roster.manage_week_planner
+msgid "Open for answers"
+msgstr "مفتوح للردود"
+
+#. module: modryn_roster
+#: model_terms:ir.ui.view,arch_db:modryn_roster.manage_week_planner
+msgid "Publish the week"
+msgstr "نشر الأسبوع"
+
+#. module: modryn_roster
+#: model_terms:ir.ui.view,arch_db:modryn_roster.manage_week_planner
+msgid "and close"
+msgstr "وبتسكّر"

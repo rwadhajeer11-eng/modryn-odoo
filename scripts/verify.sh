@@ -677,13 +677,23 @@ if [ "$SESSION" = "200" ]; then
   CELLS=$(curl -sg -b "$JAR" "$BELLA/roster" | grep -o 'modryn_avail_cell' | wc -l)
   [ "${CELLS:-0}" -eq 21 ] && ok "the week grid offers all 21 cells" \
     || bad "roster grid" "rendered ${CELLS:-0} cells, wanted 21 (7 days x morning/midday/evening)"
-  # /manage/shifts is deliberately NOT in this list. It is gated on
-  # _is_owner(), and sara is a shift MANAGER — so 404 is the correct answer and
-  # asserting 200 would have demanded that the owner-only gate be broken. It is
-  # asserted the other way round, immediately below.
+  # /manage/shifts carries TWO jobs now and they belong to different people:
+  # standing next week's rota, which is a shift manager's, and defining what
+  # shifts this boutique runs at all, which is the owner's. This used to assert
+  # a blanket 404 for a manager, which was right while the page only did the
+  # second one.
+  #
+  # Both halves are asserted, because the interesting failure is not "she is
+  # locked out" - it is her being let in and finding the shift editor as well.
+  curl -sg -b "$JAR" "$BELLA/manage/shifts" > "$PAGE"
   SHIFTS_MGR=$(curl -sg -b "$JAR" -o /dev/null -w "%{http_code}" "$BELLA/manage/shifts")
-  [ "$SHIFTS_MGR" = "404" ] && ok "/manage/shifts stays owner-only (a manager gets 404)" \
-    || bad "/manage/shifts owner gate" "a shift manager got $SHIFTS_MGR, wanted 404"
+  [ "$SHIFTS_MGR" = "200" ] && ok "/manage/shifts opens for a manager (she stands the rota)" \
+    || bad "/manage/shifts for a manager" "got $SHIFTS_MGR, wanted 200"
+  grep -q 'modryn_planner' "$PAGE" && ok "the week planner is on it" \
+    || bad "week planner" "a manager opened /manage/shifts and got no planner"
+  grep -q '/manage/shifts/new' "$PAGE" \
+    && bad "/manage/shifts owner gate" "a shift manager can reach the shift-template form" \
+    || ok "defining a shift stays the owner's (a manager gets no editor)"
   # The window belongs to the manager. Asserted with a real signed-in session,
   # because the anonymous check above can only ever reach Odoo's login redirect
   # — it never touches _is_manager() at all.

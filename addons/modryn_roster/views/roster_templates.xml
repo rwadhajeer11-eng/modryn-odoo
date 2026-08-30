@@ -408,9 +408,121 @@
     </template>
 
     <!-- ================= owner: the shifts this boutique runs ================= -->
+    <!-- ============ standing next week, on the shifts screen ============ -->
+    <!-- Here and not only on /roster because the two jobs are different: that
+         page is where a saleswoman answers for her own week, this is where
+         somebody builds one out of everybody's answers. The forms and presses
+         go to the SAME routes - there is one rota. -->
+    <template id="manage_week_planner" name="MODRYN week planner">
+        <section t-if="is_manager" class="modryn_panel mb-4 modryn_planner">
+            <header class="modryn_panel_head">
+                <h2>Next week's rota</h2>
+                <span t-if="week_published" class="modryn_badge is_free">Published</span>
+                <span t-elif="window_open_now" class="modryn_badge is_wait">Open for answers</span>
+                <span t-else="" class="modryn_badge is_muted">Closed</span>
+            </header>
+            <!-- The date on its own. "Week of <date>." split around the t-out
+                 and extracted as the bare fragment "Week of", which a
+                 translator cannot put in her own word order. The heading above
+                 already says what week this is. -->
+            <p class="modryn_sub" dir="ltr" t-out="week_start.strftime('%d.%m.%Y')"/>
+
+            <!-- WHEN the team may answer. The same form the roster page posts,
+                 so there is one window and not two that disagree. -->
+            <form action="/roster/window/week" method="post"
+                  class="modryn_planner_window">
+                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                <input type="hidden" name="week" t-att-value="str(week_offset)"/>
+                <div>
+                    <label class="form-label">Answers open</label>
+                    <div class="d-flex gap-1">
+                        <input type="date" name="opens_date" class="form-control form-control-sm"
+                               t-att-value="window_opens.strftime('%Y-%m-%d') if window_opens else ''"/>
+                        <input type="time" name="opens_time" class="form-control form-control-sm"
+                               t-att-value="window_opens.strftime('%H:%M') if window_opens else ''"/>
+                    </div>
+                </div>
+                <div>
+                    <label class="form-label">and close</label>
+                    <div class="d-flex gap-1">
+                        <input type="date" name="closes_date" class="form-control form-control-sm"
+                               t-att-value="window_closes.strftime('%Y-%m-%d') if window_closes else ''"/>
+                        <input type="time" name="closes_time" class="form-control form-control-sm"
+                               t-att-value="window_closes.strftime('%H:%M') if window_closes else ''"/>
+                    </div>
+                </div>
+                <div class="d-flex gap-2 align-items-end">
+                    <button type="submit" class="btn btn-sm btn-outline-dark">Set</button>
+                    <button type="submit" name="clear" value="1"
+                            class="btn btn-sm btn-link">Clear</button>
+                </div>
+            </form>
+
+            <div class="modryn_planner_grid">
+                <div t-foreach="week_days" t-as="day" t-key="day['date']"
+                     class="modryn_planner_day">
+                    <div class="modryn_strong" t-out="day['label']"/>
+                    <p t-if="not day['slots']" class="modryn_sub mb-0">No shift.</p>
+                    <div t-foreach="day['slots']" t-as="slot" t-key="slot['id']"
+                         class="modryn_planner_cell">
+                        <div class="modryn_sub">
+                            <t t-out="slot['name']"/>
+                            <span dir="ltr" t-out="slot['hours']"/>
+                        </div>
+                        <!-- ON the shift. Pressing one takes her off again: a
+                             manager who mis-taps has to be able to undo it
+                             without going anywhere else. -->
+                        <div t-if="slot['working']" class="modryn_planner_on">
+                            <button t-foreach="slot['working']" t-as="w" t-key="w['id']"
+                                    type="button"
+                                    class="modryn_badge is_free modryn_planner_pick"
+                                    t-att-data-slot="str(slot['id'])"
+                                    t-att-data-employee="str(w['id'])"
+                                    data-working="0"
+                                    t-out="w['name']"/>
+                        </div>
+                        <!-- OFFERED it and not on it yet. These are the women
+                             who said they could work this shift, which is the
+                             question a planner is asking. -->
+                        <div t-if="slot['available']" class="modryn_planner_free">
+                            <button t-foreach="slot['available']" t-as="a" t-key="a['id']"
+                                    type="button"
+                                    class="modryn_badge is_muted modryn_planner_pick"
+                                    t-att-data-slot="str(slot['id'])"
+                                    t-att-data-employee="str(a['id'])"
+                                    data-working="1"
+                                    t-out="a['name']"/>
+                        </div>
+                        <div t-if="not slot['working'] and not slot['available']"
+                             class="modryn_sub">Nobody offered.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex gap-2 align-items-center mt-3">
+                <button type="button" class="btn btn-primary modryn_planner_publish"
+                        t-att-data-week="str(week_offset)"
+                        t-att-disabled="'disabled' if week_published else None">
+                    Publish the week
+                </button>
+                <span class="modryn_sub">
+                    Everybody gets told, whether or not they are on it.
+                </span>
+            </div>
+        </section>
+    </template>
+
     <template id="manage_shifts" name="Shifts">
         <t t-call="modryn_staff.manage_layout">
             <h1 class="mb-2">Shifts</h1>
+            <t t-call="modryn_roster.manage_week_planner"/>
+
+            <!-- Everything below defines what shifts EXIST, which stays the
+                 owner's. A manager stands next week out of the shifts the
+                 boutique runs; inventing one is a decision about the business,
+                 and the routes refuse her anyway - this is so the page does not
+                 offer her buttons that 404. -->
+            <t t-if="is_owner">
             <p class="text-muted mb-4">
                 The shifts this boutique actually runs, and how many of each role each one needs.
             </p>
@@ -530,6 +642,7 @@
                     </tr>
                 </tbody>
             </table>
+            </t>
         </t>
     </template>
 

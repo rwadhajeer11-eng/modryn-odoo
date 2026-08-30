@@ -376,11 +376,12 @@ class ModrynManage(http.Controller):
             return request.not_found()
         roles = request.env['modryn.staff.role'].sudo().with_context(
             active_test=False).search([])
-        # The access matrix: staff-section pages only. 'home' is never a
-        # column (it cannot be configured away) and manage pages never enter
-        # the matrix at all — see nav.py.
-        pages = [p for p in nav.PAGES
-                 if p['section'] == 'staff' and p['key'] not in ALWAYS_OPEN]
+        # The access matrix: BOTH rows of the navbar now. It used to be the top
+        # row only, so an owner who wanted her manager in Dresses or Reports had
+        # nowhere to say so. 'home' and 'profile' are never columns - they
+        # cannot be configured away - and nav.NEVER_GRANTABLE holds the two that
+        # would let a tick grant the power to tick.
+        pages = [p for p in nav.grantable() if p['key'] not in ALWAYS_OPEN]
         granted = {}
         for grant in request.env['modryn.role.page'].sudo().search(
                 [('role_id', 'in', roles.ids)]):
@@ -398,8 +399,8 @@ class ModrynManage(http.Controller):
         whole grid travels in one POST."""
         if not self._require_owner():
             return request.not_found()
-        valid_keys = {p['key'] for p in nav.PAGES
-                      if p['section'] == 'staff' and p['key'] not in ALWAYS_OPEN}
+        valid_keys = {p['key'] for p in nav.grantable()
+                      if p['key'] not in ALWAYS_OPEN}
         Role = request.env['modryn.staff.role'].sudo().with_context(
             active_test=False)
         role_ids = set(Role.search([]).ids)

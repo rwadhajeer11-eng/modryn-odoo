@@ -78,6 +78,26 @@ class ModrynRoster(http.Controller):
                           available_ids=week_map.get((slot.day, slot._shift_type()), []))
                 for slot in slots]
 
+    def _planner_days(self, start):
+        """The week as the person BUILDING it reads it.
+
+        One entry per day, holding the real shifts on that day with who offered
+        each and who is on it. _days() answers the other side's question - "did
+        I offer this cell" - and carries no names at all, which is the whole of
+        what a planner needs.
+        """
+        rows = self._grid(start)
+        days = []
+        for offset in range(7):
+            day = start + timedelta(days=offset)
+            key = day.strftime('%Y-%m-%d')
+            days.append({
+                'date': key,
+                'label': '%s %s' % (weekday_name(day), day.strftime('%d.%m')),
+                'slots': [row for row in rows if row['day'] == key],
+            })
+        return days
+
     def _days(self, start, employee=None):
         """The week as seven days of three cells - the thing she actually taps.
 
@@ -578,9 +598,44 @@ class ModrynRoster(http.Controller):
 
     @http.route('/manage/shifts', type='http', auth='user', website=True, sitemap=False)
     def shifts(self, error=None, **kw):
-        if not self._is_owner():
-            return request.not_found()
+        # A MANAGER always, plus whoever the owner grants it to.
+        #
+        # This screen now carries the week's rota, and standing one is a shift
+        # manager's job by definition - an owner-only gate kept the person who
+        # builds the rota off the screen that builds it. A named exception
+        # rather than loosening the whole bottom row: everything else down there
+        # is the boutique's administration and stays behind a grant. Defining
+        # and archiving the shift templates themselves is still the owner's, and
+        # the page hides that half from a manager.
+        if not (access.is_manager() or access.can_view('shifts')):
+            return access.deny()
+        me = self._my_employee()
+        # Which week is being planned. Offset 0 is the one the team is
+        # answering for; the manager can look ahead with ?week=.
+        try:
+            offset = int(kw.get('week') or 0)
+        except (TypeError, ValueError):
+            offset = 0
+        offset = max(self.PLANNABLE_FROM, offset)
+        start = self._week(offset)
+        week_row = request.env['modryn.roster.week'].sudo().modryn_for(start)
+        opens, closes = week_row._window()
         return request.render('modryn_roster.manage_shifts', {
+            # ---- standing the week -------------------------------------
+            'is_manager': self._is_manager(),
+            # Defining what shifts EXIST stays the owner's. A manager stands
+            # next week out of the shifts the boutique runs; inventing a new one
+            # is a decision about the business. The routes below already refuse
+            # her - this is so the page does not offer her buttons that 404.
+            'is_owner': self._is_owner(),
+            'week_offset': offset,
+            'week_start': start,
+            'week_days': self._planner_days(start),
+            'window_opens': opens,
+            'window_closes': closes,
+            'window_open_now': week_row.modryn_is_open(),
+            'week_published': request.env['modryn.roster.week'].sudo(
+                ).modryn_is_frozen(start),
             'templates': request.env['modryn.shift.template'].sudo().with_context(
                 active_test=False).search([]),
             'roles': request.env['modryn.staff.role'].sudo().search([]),

@@ -165,6 +165,13 @@
                  board: leaving is not a board action, the board is what
                  disappears, and a plain post needs no listener that could be
                  lost when the component re-renders. -->
+            <!-- The door refused. She still has somebody in a fitting room, and
+                 walking out would leave that bride assigned to a woman who has
+                 gone home - which no panel on this board shows as needing
+                 anybody, because as far as they are concerned she is being
+                 served. Named, so she knows who to go and finish with. -->
+            <div t-if="holding" class="modryn_field_error mb-3" role="alert"
+                 t-out="holding"/>
             <div t-if="on_shift_since" class="modryn_shift_out">
                 <span class="modryn_sub">
                     On the floor since

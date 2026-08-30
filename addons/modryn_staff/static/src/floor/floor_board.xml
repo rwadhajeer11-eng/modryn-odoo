@@ -252,6 +252,16 @@
                                               class="modryn_badge is_muted ms-auto">Walk-in</span>
                                         <span t-else="" class="modryn_badge is_muted ms-auto">Booking</span>
                                     </div>
+                                    <div class="modryn_card_marks">
+                                        <span t-if="c.clientType === 'bride'"
+                                              class="modryn_badge is_free">Bride</span>
+                                        <span t-if="c.room" class="modryn_badge is_muted"
+                                              t-esc="c.room"/>
+                                    </div>
+                                    <!-- What the stylist wrote for the team. The
+                                         one field on this board meant to be read
+                                         by whoever picks her up next. -->
+                                    <div t-if="c.note" class="modryn_sub" t-esc="c.note"/>
                                     <div t-if="c.helpers.length" class="modryn_sub">
                                         <t t-foreach="c.helpers" t-as="h" t-key="h.id">
                                             <t t-esc="h.name"/><t t-if="!h_last">, </t>
@@ -468,10 +478,71 @@
                             </tbody>
                         </table>
                     </section>
+                    <!-- ============ anybody who has ever been in ============ -->
+                    <!-- Last, because every panel above it is about NOW and this
+                         one is the only way to reach a visit that is over. The
+                         moment a customer is finished she leaves every other
+                         list on this screen, so "the bride who came on Tuesday"
+                         had no answer anywhere in the product. -->
+                    <section class="modryn_panel modryn_lookup_panel">
+                        <header class="modryn_panel_head">
+                            <h2>Find a customer</h2>
+                        </header>
+                        <p class="modryn_sub">
+                            By name, phone or ticket number — including everyone
+                            who has already left.
+                        </p>
+                        <div class="d-flex gap-2 flex-wrap align-items-center">
+                            <input type="search" class="form-control w-auto"
+                                   t-model="state.lookup"
+                                   t-on-keyup="onLookupKey"
+                                   placeholder="Name, phone, or number"/>
+                            <button class="btn btn-sm btn-outline-dark modryn_lookup_go"
+                                    t-on-click="lookupCustomers">Look</button>
+                            <button t-if="state.lookupRows" class="btn btn-sm btn-link"
+                                    t-on-click="clearLookup">Clear</button>
+                            <span t-if="state.lookupBusy" class="modryn_sub">…</span>
+                        </div>
+
+                        <p t-if="state.lookupRows and !state.lookupRows.length"
+                           class="modryn_empty mt-3">Nobody by that.</p>
+                        <table t-if="state.lookupRows and state.lookupRows.length"
+                               class="table modryn_table align-middle mt-3">
+                            <tbody>
+                                <tr t-foreach="state.lookupRows" t-as="row"
+                                    t-key="row.kind + row.id">
+                                    <td>
+                                        <div class="modryn_strong"><t t-esc="row.name"/></div>
+                                        <div t-if="row.note" class="modryn_sub"><t t-esc="row.note"/></div>
+                                    </td>
+                                    <td class="modryn_sub" dir="ltr"><t t-esc="row.phone"/></td>
+                                    <td class="modryn_sub" dir="ltr"><t t-esc="row.id"/></td>
+                                    <td class="modryn_sub" dir="ltr"><t t-esc="row.when"/></td>
+                                    <td class="modryn_sub"><t t-esc="row.who"/></td>
+                                    <td>
+                                        <span t-if="row.kind === 'booking'"
+                                              class="modryn_badge is_muted">Booking</span>
+                                        <span t-else="" class="modryn_badge is_muted">Walk-in</span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </section>
                 </div>
 
                 <!-- ============ the bench: the whole team, live ============ -->
                 <aside class="modryn_bench" data-drop-target="bench">
+                    <!-- A hand up, from anywhere. Calling for help was reachable
+                         only from a CUSTOMER's card, so a woman who needs
+                         somebody for a hem, a delivery or the till had to pick
+                         a bride's card to ask through. This one belongs to no
+                         customer, which is most of the reasons to ask. -->
+                    <button t-if="state.canTake" class="btn btn-danger w-100 mb-3 modryn_sos_open"
+                            t-on-click="() => this.openSos(null, null)">
+                        <i class="fa fa-bell" aria-hidden="true"/>
+                        I need a hand
+                    </button>
+
                     <header class="modryn_panel_head">
                         <!-- Kept as "Team on shift" deliberately. The wording is
                              loose — this is every active staff member, so that
@@ -593,6 +664,12 @@
                 <div class="modryn_modal" role="dialog" aria-modal="true">
                     <h2 class="mb-3">Who do you need?</h2>
                     <div class="mb-3">
+                        <label class="form-label">Who</label>
+                        <!-- Only the women who are HERE. A colleague who went
+                             home an hour ago is a call nobody answers, and from
+                             a list of names the caller cannot tell which is
+                             which. "Any manager" stays first because it is the
+                             right answer when she does not mind who comes. -->
                         <select class="form-select" t-model="state.sosForm.target_id">
                             <option value="">Any manager</option>
                             <t t-foreach="colleagues" t-as="s" t-key="s.id">
@@ -603,8 +680,12 @@
                         </select>
                     </div>
                     <div class="mb-3">
+                        <label class="form-label">What for</label>
                         <input type="text" class="form-control" t-model="state.sosForm.note"
-                               placeholder="What do you need? (optional)"/>
+                               placeholder="A hand with a zip, a size from the back…"/>
+                        <div class="modryn_sub">
+                            She reads this before she walks over.
+                        </div>
                     </div>
                     <div class="d-flex gap-2">
                         <button class="btn btn-danger" t-on-click="sendSos">Call for help</button>

@@ -140,9 +140,15 @@ class ModrynShiftSlot(models.Model):
         actor = self.env['hr.employee'].sudo().search(
             [('user_id', '=', self.env.uid)], limit=1)
         Notify = self.env['modryn.staff.notify'].sudo()
+        # EVERYBODY, not only the women on the rota. A saleswoman who is not on
+        # next week needs the news more than one who is: "the rota is up" is how
+        # she finds out she has no shifts, and telling only the people already
+        # on it means the ones with a problem are the ones who never hear.
+        team = self.env['hr.employee'].sudo().search([
+            ('modryn_level', 'in', ('owner', 'manager', 'staff')),
+        ])
         for week in set(self.mapped('week_start')):
-            slots = self.filtered(lambda s: s.week_start == week)
-            for employee in slots.mapped('employee_ids'):
+            for employee in team:
                 if not employee.active:
                     continue
                 # Composed INSIDE the loop, in HER language - not once in the

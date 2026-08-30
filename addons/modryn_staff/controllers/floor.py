@@ -2,7 +2,7 @@ from datetime import datetime, time
 
 import pytz
 
-from odoo import fields, http
+from odoo import _, fields, http
 from odoo.exceptions import ValidationError
 from odoo.http import request
 
@@ -138,6 +138,10 @@ class ModrynFloor(http.Controller):
             'name': e.name,
             'role': e.modryn_role_id.name or '',
             'occupied': e.modryn_is_occupied,
+            # On the floor RIGHT NOW. Asking for help from somebody who went
+            # home an hour ago is a call nobody will answer, and the caller has
+            # no way of telling from a list of names.
+            'on_shift': bool(e.modryn_on_shift_since),
             'occupied_with': e.modryn_occupied_with or '',
         } for e in employees]
 
@@ -199,10 +203,25 @@ class ModrynFloor(http.Controller):
             # when she actually came on.
             request.env['modryn.shift.attendance'].sudo().modryn_open(
                 me, me.modryn_on_shift_since)
+        # The door refused because she still has somebody. Names, not ids: the
+        # redirect can only carry the ids, and a list of numbers is not an
+        # answer to "who?".
+        holding = []
+        if kw.get('holding'):
+            wanted = [int(part) for part in kw['holding'].split(',')
+                      if part.isdigit()]
+            names = request.env['modryn.queue.entry'].sudo().browse(
+                wanted).exists().mapped('name')
+            # One sentence, built here. Split around a t-out it extracts as the
+            # fragment "Finish with", and a translator handed that has nowhere
+            # to put the names her language wants them.
+            holding = _("Finish with %(names)s before you go.") % {
+                'names': ', '.join(names)} if names else ''
         return request.render('modryn_staff.floor_page', {
             'board': self._board(),
             'is_manager': self._is_manager(),
             'on_shift_since': me.modryn_on_shift_since if me else None,
+            'holding': holding,
         })
 
     @http.route('/floor/shift/start', type='http', auth='user', website=True,
@@ -234,6 +253,20 @@ class ModrynFloor(http.Controller):
             request.env['modryn.shift.attendance'].sudo().modryn_open(me, since)
         return request.redirect('/floor')
 
+    def _still_holding(self, employee):
+        """Customers this woman is the one serving, right now.
+
+        The PRIMARY only, not helpers: a colleague lending a hand with a zip can
+        walk away, and the customer is still with somebody. The woman whose name
+        is on the card cannot.
+        """
+        if not employee:
+            return request.env['modryn.queue.entry'].browse()
+        return request.env['modryn.queue.entry'].sudo().search([
+            ('state', '=', 'called'),
+            ('modryn_employee_id', '=', employee.id),
+        ])
+
     @http.route('/floor/shift/end', type='http', auth='user', website=True,
                 methods=['POST'], csrf=True, sitemap=False)
     def floor_shift_end(self, **post):
@@ -241,6 +274,18 @@ class ModrynFloor(http.Controller):
             return access.deny()
         me = self._my_employee()
         if me:
+            # She cannot walk out on a bride. Ending the shift takes her off
+            # the board, and the customer would be left assigned to somebody
+            # who has gone home - a state no screen shows as needing anybody,
+            # because as far as every panel is concerned she is being served.
+            #
+            # Refused with the names, not a bare "you cannot": she has to know
+            # which of them to go and finish with.
+            holding = self._still_holding(me)
+            if holding:
+                return request.redirect(
+                    '/floor?holding=%s' % ','.join(
+                        str(entry.id) for entry in holding))
             me.sudo().modryn_on_shift_since = False
             request.env['modryn.shift.attendance'].sudo().modryn_close(me)
         return request.redirect('/floor')
@@ -576,6 +621,61 @@ class ModrynFloor(http.Controller):
             entry.action_done()
         entry.write(values)
         return self._board()
+
+    @http.route('/floor/customers', type='jsonrpc', auth='user')
+    def customers(self, query=None):
+        """Look somebody up, however long ago she was here.
+
+        Two letters before it answers, the same floor the dress picker and the
+        catalogue use - one character matches most of a boutique and is not a
+        search, it is a list.
+        """
+        if not self._is_staff():
+            return {'error': 'forbidden'}
+        term = (query or '').strip()
+        if len(term) < 2:
+            return {'results': []}
+        like = '%%%s%%' % term
+
+        results = []
+        Entry = request.env['modryn.queue.entry'].sudo()
+        for entry in Entry.search(
+                ['|', '|', ('name', 'ilike', like), ('phone', 'ilike', like),
+                 ('id', '=', int(term) if term.isdigit() else 0)],
+                order='create_date desc', limit=25):
+            results.append({
+                'kind': 'queue',
+                'id': entry.id,
+                'name': entry.name or '',
+                'phone': entry.phone or '',
+                'state': entry.state,
+                'note': entry.staff_note or '',
+                'who': entry.modryn_employee_id.name or '',
+                'when': pytz.utc.localize(entry.create_date).astimezone(TZ)
+                            .strftime('%d.%m.%Y %H:%M') if entry.create_date else '',
+            })
+
+        Event = request.env['calendar.event'].sudo()
+        domain = [('modryn_is_booking', '=', True),
+                  '|', ('name', 'ilike', like),
+                  ('modryn_customer_phone', 'ilike', like)]
+        for event in Event.search(domain, order='start desc', limit=25):
+            results.append({
+                'kind': 'booking',
+                'id': event.id,
+                'name': event.name or '',
+                'phone': event.modryn_customer_phone or '',
+                'state': 'booking',
+                'note': '',
+                'who': event.modryn_employee_id.name or '',
+                'when': pytz.utc.localize(event.start).astimezone(TZ)
+                            .strftime('%d.%m.%Y %H:%M') if event.start else '',
+            })
+        # Newest first across both kinds. Sorted here rather than by asking for
+        # them in order: they come from two tables and a merge by hand is where
+        # an off-by-one lands on the one row somebody was looking for.
+        results.sort(key=lambda row: row['when'], reverse=True)
+        return {'results': results[:25]}
 
     # ------------------------------------------------------------- rooms
     @http.route('/floor/room', type='jsonrpc', auth='user')

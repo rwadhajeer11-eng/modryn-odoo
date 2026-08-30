@@ -7,9 +7,12 @@ full of links that 404 for her. Now each module registers its pages HERE at
 import time, and ONE template loops over the result, sorted by sequence,
 filtered per user by modryn.role.page.
 
-`section` is 'staff' or 'manage'. Manage pages are owner-only, always — they
-never enter the owner's access matrix, because a matrix that could grant
-/manage/staff would let a mis-tick hand out account administration.
+`section` is 'staff' or 'manage' — the top row of the navbar and the bottom one.
+BOTH are grantable through the owner's access matrix, except the two pages in
+NEVER_GRANTABLE below: a matrix that can grant /manage/staff hands out account
+administration with a mis-tick, and one that can grant itself is not a
+permission system. Everything else in the bottom row is ordinary boutique work
+an owner should be able to delegate.
 `key` doubles as the page's active_tab value, so existing templates keep
 their highlight without changes.
 
@@ -24,6 +27,22 @@ from odoo.tools.translate import LazyTranslate
 _lt = LazyTranslate(__name__)
 
 PAGES = []
+
+# The two pages no role may be granted, whatever the matrix says.
+#
+#   staff  - accounts, passwords and permission levels. A tick here hands out
+#            the ability to make somebody an owner.
+#   roles  - the matrix itself. A role that can open it can grant itself
+#            everything else on it.
+#
+# Named here rather than in the screen that draws the matrix, because the rule
+# is about what these pages ARE and every reader of the matrix needs it.
+NEVER_GRANTABLE = ('staff', 'roles')
+
+
+def grantable():
+    """Every page an owner may hand to a role, both rows."""
+    return [p for p in PAGES if p['key'] not in NEVER_GRANTABLE]
 
 
 def register(key, url, label, sequence, section='staff', icon='fa-circle-o'):

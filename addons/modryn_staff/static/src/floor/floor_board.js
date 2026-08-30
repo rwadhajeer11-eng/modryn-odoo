@@ -56,6 +56,11 @@ export class FloorBoard extends Component {
             modalError: null,
             // modryn_ops: the unclosed-bookings list the nag badge opens.
             unclosedList: null,
+            // Looking somebody up who is not on today's board. What she typed,
+            // and what came back.
+            lookup: "",
+            lookupRows: null,
+            lookupBusy: false,
         });
 
         onWillStart(async () => {
@@ -502,9 +507,13 @@ export class FloorBoard extends Component {
         return this.state.queue.filter((e) => !this.isWithSomebody(e));
     }
 
+    // Who she can ask. ON SHIFT only: a name on this list who went home an hour
+    // ago is a call nobody answers, and the caller has no way of telling one
+    // from the other. Whoever is here is who can come.
     get colleagues() {
         const me = this.state.me;
-        return this.state.staff.filter((s) => !me || s.id !== me.id);
+        return this.state.staff.filter(
+            (s) => (!me || s.id !== me.id) && s.on_shift);
     }
 
     // The customers being served right now, gathered under the woman serving
@@ -534,6 +543,15 @@ export class FloorBoard extends Component {
                     kind: "queue",
                     name: e.name,
                     detail: e.phone || "",
+                    // Who she is and what the stylist wrote about her. The note
+                    // is the one field on this board written to be read by
+                    // whoever picks the customer up next, and this panel - the
+                    // one place that says who is with whom - did not show it.
+                    clientType: e.client_type || "",
+                    note: e.staff_note || "",
+                    room: e.room_id
+                        ? (this.state.rooms.find((r) => r.id === e.room_id) || {}).name || ""
+                        : "",
                     helpers: e.helpers || [],
                 });
             }
@@ -549,6 +567,15 @@ export class FloorBoard extends Component {
                     kind: "booking",
                     name: b.title,
                     detail: b.time,
+                    clientType: "",
+                    // What she came for, and which gown she is in. An
+                    // appointment carries no team note - it has an outcome
+                    // instead - so the useful facts here are the dress and the
+                    // room.
+                    note: [b.dress, b.size].filter(Boolean).join(" · "),
+                    room: b.room_id
+                        ? (this.state.rooms.find((r) => r.id === b.room_id) || {}).name || ""
+                        : "",
                     helpers: b.helpers || [],
                     booking: b,
                 });
@@ -672,6 +699,36 @@ export class FloorBoard extends Component {
 
     closeUnclosed() {
         this.state.unclosedList = null;
+    }
+
+    // Two letters before it asks, the same floor the dress picker uses. A
+    // request per keystroke over a boutique's whole history is a request per
+    // keystroke over a boutique's whole history.
+    async lookupCustomers() {
+        const term = (this.state.lookup || "").trim();
+        if (term.length < 2) {
+            this.state.lookupRows = null;
+            return;
+        }
+        this.state.lookupBusy = true;
+        const result = await rpc("/floor/customers", { query: term });
+        this.state.lookupBusy = false;
+        this.state.lookupRows = (result && result.results) || [];
+    }
+
+    // Enter searches. Checked in the handler because OWL's event modifiers are
+    // .stop/.prevent/.self/.capture only - `t-on-keyup.enter` is not one of
+    // them and does not fail quietly: it throws at TEMPLATE COMPILE time, which
+    // takes the whole board down and leaves the floor blank. Measured.
+    onLookupKey(ev) {
+        if (ev.key === "Enter") {
+            this.lookupCustomers();
+        }
+    }
+
+    clearLookup() {
+        this.state.lookup = "";
+        this.state.lookupRows = null;
     }
 
     async acceptPending(entryId) {

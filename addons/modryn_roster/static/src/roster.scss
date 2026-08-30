@@ -278,3 +278,66 @@
         }
     }
 }
+
+// ==================== standing the week, on the shifts screen ====================
+// A column per day, and inside it the shifts that day actually runs. Not the
+// 7x3 grid the availability page draws: that one asks "did I offer this cell",
+// and this one asks "who offered this shift" - a different question with a
+// different shape.
+.modryn_planner_window {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: flex-end;
+    padding: 12px;
+    margin-block: 12px;
+    background: $modryn-gold-wash;
+    border: 1px solid $modryn-gold-light;
+    border-radius: 11px;
+}
+
+.modryn_planner_grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 10px;
+    margin-block-start: 12px;
+}
+
+.modryn_planner_day {
+    padding: 10px;
+    background: #FFFFFF;
+    border: 1px solid $modryn-border;
+    border-radius: 11px;
+}
+
+.modryn_planner_cell {
+    padding-block: 8px;
+
+    & + & {
+        border-block-start: 1px solid $modryn-border;
+    }
+}
+
+// The names ARE the buttons. Gold means she is on the shift, quiet means she
+// offered it and is not - and pressing either one flips it, so a mis-tap is
+// undone where it was made.
+.modryn_planner_on,
+.modryn_planner_free {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-block-start: 4px;
+}
+
+.modryn_planner_pick {
+    border: 1px solid transparent;
+    cursor: pointer;
+
+    &:hover:not(:disabled) {
+        border-color: $modryn-gold;
+    }
+
+    &:disabled {
+        opacity: 0.5;
+    }
+}

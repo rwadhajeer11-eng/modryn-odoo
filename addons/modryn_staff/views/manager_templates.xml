@@ -10,8 +10,30 @@
             <h1 class="mb-1">Manager screen</h1>
             <p class="text-muted mb-4">The things that reach the whole team.</p>
 
+            <!-- ========================= the doors ========================= -->
+            <!-- One tile per job, and the one she picks is the only thing she
+                 reads. Stacked, these were three unrelated blocks down a page,
+                 so "send the team a message" meant scrolling past the whole
+                 team first.
+                 Links and not a script: the back button works, a tile can be
+                 sent to somebody as a URL, and there is no state to lose. -->
+            <div t-if="not view" class="modryn_tiles">
+                <a class="modryn_tile" href="/manage/team-screen?view=announce">
+                    <i class="fa fa-bullhorn" aria-hidden="true"/>
+                    <span class="modryn_strong">Tell the team</span>
+                    <span class="modryn_sub">A message to everybody, or to one of them.</span>
+                </a>
+                <a class="modryn_tile" href="/manage/team-screen?view=team">
+                    <i class="fa fa-users" aria-hidden="true"/>
+                    <span class="modryn_strong">The team</span>
+                    <span class="modryn_sub">Who works here, and the papers on file.</span>
+                </a>
+            </div>
+
+            <a t-if="view" class="modryn_back" href="/manage/team-screen">Back</a>
+
             <!-- ===================== say something ===================== -->
-            <section class="modryn_panel mb-4">
+            <section t-if="view == 'announce'" class="modryn_panel mb-4">
                 <header class="modryn_panel_head">
                     <h2>Tell the team</h2>
                 </header>
@@ -60,7 +82,7 @@
             </section>
 
             <!-- ========================= the team ========================= -->
-            <section class="modryn_panel mb-4">
+            <section t-if="view == 'team'" class="modryn_panel mb-4">
                 <header class="modryn_panel_head">
                     <h2>The team</h2>
                     <span class="modryn_count" t-out="len(team_rows)"/>
@@ -123,7 +145,7 @@
             </section>
 
             <!-- ===================== what has been said ===================== -->
-            <section class="modryn_panel">
+            <section t-if="view == 'announce'" class="modryn_panel">
                 <header class="modryn_panel_head">
                     <h2>Already sent</h2>
                     <span class="modryn_count" t-out="len(announcements)"/>

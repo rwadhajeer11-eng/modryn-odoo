@@ -690,7 +690,6 @@ msgstr "הלקוחות שלי"
 #. module: modryn_staff
 #. odoo-python
 #: code:addons/modryn_staff/nav.py:0
-#: model_terms:ir.ui.view,arch_db:modryn_staff.staff_profile
 msgid "My details"
 msgstr "הפרטים שלי"
 
@@ -2520,3 +2519,144 @@ msgid ""
 msgstr ""
 "עדיין לא נרשם כלום — השעות מתחילות להיספר בפעם הראשונה\n"
 "                    שתפתחי את מסך המשמרת."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid ""
+"<i class=\"fa fa-bullhorn\" aria-hidden=\"true\"/>\n"
+"                    <span class=\"modryn_strong\">Tell the team</span>\n"
+"                    <span class=\"modryn_sub\">A message to everybody, or to one of them.</span>"
+msgstr ""
+"<i class=\"fa fa-bullhorn\" aria-hidden=\"true\"/>\n"
+"                    <span class=\"modryn_strong\">הודעה לצוות</span>\n"
+"                    <span class=\"modryn_sub\">הודעה לכולן, או לאחת מהן.</span>"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.staff_profile
+msgid ""
+"<i class=\"fa fa-clock-o\" aria-hidden=\"true\"/>\n"
+"                    <span class=\"modryn_strong\">My hours</span>\n"
+"                    <span class=\"modryn_sub\">\n"
+"                        How long you were on the floor, day by day.\n"
+"                    </span>"
+msgstr ""
+"<i class=\"fa fa-clock-o\" aria-hidden=\"true\"/>\n"
+"                    <span class=\"modryn_strong\">השעות שלי</span>\n"
+"                    <span class=\"modryn_sub\">\n"
+"                        כמה זמן היית במשמרת, יום אחרי יום.\n"
+"                    </span>"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.staff_profile
+msgid ""
+"<i class=\"fa fa-user\" aria-hidden=\"true\"/>\n"
+"                    <span class=\"modryn_strong\">My details</span>\n"
+"                    <span class=\"modryn_sub\">\n"
+"                        Your name, your phone, your language — and the papers the\n"
+"                        boutique holds for you.\n"
+"                    </span>"
+msgstr ""
+"<i class=\"fa fa-user\" aria-hidden=\"true\"/>\n"
+"                    <span class=\"modryn_strong\">הפרטים שלי</span>\n"
+"                    <span class=\"modryn_sub\">\n"
+"                        השם, הטלפון והשפה שלך — והמסמכים שהבוטיק שומר\n"
+"                        עלייך.\n"
+"                    </span>"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid ""
+"<i class=\"fa fa-users\" aria-hidden=\"true\"/>\n"
+"                    <span class=\"modryn_strong\">The team</span>\n"
+"                    <span class=\"modryn_sub\">Who works here, and the papers on file.</span>"
+msgstr ""
+"<i class=\"fa fa-users\" aria-hidden=\"true\"/>\n"
+"                    <span class=\"modryn_strong\">הצוות</span>\n"
+"                    <span class=\"modryn_sub\">מי עובדת כאן, והמסמכים בתיק.</span>"
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "A hand with a zip, a size from the back…"
+msgstr "יד עם רוכסן, מידה מהמחסן…"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+#: model_terms:ir.ui.view,arch_db:modryn_staff.staff_profile
+msgid "Back"
+msgstr "חזרה"
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid ""
+"By name, phone or ticket number — including everyone\n"
+"                            who has already left."
+msgstr ""
+"לפי שם, טלפון או מספר תור — כולל מי שכבר\n"
+"                            יצאה."
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "Clear"
+msgstr "ניקוי"
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "Find a customer"
+msgstr "חיפוש לקוחה"
+
+#. module: modryn_staff
+#. odoo-python
+#: code:addons/modryn_staff/controllers/floor.py:0
+msgid "Finish with %(names)s before you go."
+msgstr "סיימי עם %(names)s לפני שאת הולכת."
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "I need a hand"
+msgstr "צריכה עזרה"
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "Look"
+msgstr "חיפוש"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.staff_profile
+msgid "My profile"
+msgstr "הפרופיל שלי"
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "Name, phone, or number"
+msgstr "שם, טלפון או מספר"
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "Nobody by that."
+msgstr "אף אחת לא נמצאה."
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "She reads this before she walks over."
+msgstr "היא קוראת את זה לפני שהיא באה."
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "What for"
+msgstr "בשביל מה"
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "Who"
+msgstr "את מי"

@@ -259,7 +259,12 @@ class ModrynStaffAuth(http.Controller):
                       if chosen else None),
         }
 
-    def _profile_context(self, employee, saved=False, error=None, month=None):
+    # The two halves of this page. Anything unrecognised falls back to the
+    # tiles rather than 404ing: a stale link should land somewhere useful.
+    PROFILE_VIEWS = ('details', 'hours')
+
+    def _profile_context(self, employee, saved=False, error=None, month=None,
+                         view=None):
         genders = request.env['hr.employee']._fields['modryn_gender'].get_description(
             request.env)['selection']
         context = {
@@ -271,21 +276,30 @@ class ModrynStaffAuth(http.Controller):
             'error': error,
             'active_tab': 'profile',
         }
+        context.update({
+            'view': view if view in self.PROFILE_VIEWS else None,
+        })
         context.update(self._hours_context(employee, month))
         return context
 
     @http.route('/staff/profile', type='http', auth='user', website=True,
                 methods=['GET'], sitemap=False)
-    def profile_form(self, saved=None, month=None, **kw):
+    def profile_form(self, saved=None, month=None, view=None, **kw):
         if not self._is_staff():
             return request.not_found()
         me = self._my_employee()
         if not me:
             return request.not_found()
         request.session.touch()
+        # A save lands back on the details, and a month on the hours: the panel
+        # she was in is the panel she should come back to.
+        if saved and not view:
+            view = 'details'
+        if month and not view:
+            view = 'hours'
         return request.render('modryn_staff.staff_profile',
                               self._profile_context(me, saved=bool(saved),
-                                                    month=month))
+                                                    month=month, view=view))
 
     @http.route('/staff/profile', type='http', auth='user', website=True,
                 methods=['POST'], csrf=True, sitemap=False)
@@ -299,7 +313,7 @@ class ModrynStaffAuth(http.Controller):
         name = (post.get('name') or '').strip()
         if not name:
             return request.render('modryn_staff.staff_profile', self._profile_context(
-                me, error=_("Please enter your name.")))
+                me, error=_("Please enter your name."), view='details'))
 
         values = {'name': name, 'work_phone': (post.get('phone') or '').strip()}
         for field in self.HER_OWN:
