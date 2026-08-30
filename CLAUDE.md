@@ -147,7 +147,7 @@ bella is `miri` and on qa it is `qaowner`; `admin` exists only on the separate
 `platform` database. Odoo's own `/web/login` labels its field "Email" and there
 are no email addresses on any of these accounts — it takes the USERNAME.
 
-**Green baseline** (2026-08-30): `verify.sh` reports **400 passed, 0 failed,
+**Green baseline** (2026-08-30): `verify.sh` reports **401 passed, 0 failed,
 6 skipped**, and the browser suite **35 passed, 1 skipped** (the skip is
 `realsms.spec.js`, which needs Twilio credentials nobody should export here).
 Both are green —
