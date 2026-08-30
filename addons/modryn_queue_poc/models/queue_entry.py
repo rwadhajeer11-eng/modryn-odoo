@@ -55,8 +55,10 @@ class ModrynQueueEntry(models.Model):
     # How the visit went, as the person watching the room saw it. 0 means nobody
     # has said - deliberately not 1, so "unrated" and "poor" cannot be confused
     # by anything that sorts or averages these later.
-    modryn_visit_rating = fields.Integer(default=0, copy=False)
-    modryn_visit_note = fields.Text(copy=False)
+    modryn_visit_rating = fields.Integer(
+        string="How the visit went", default=0, copy=False)
+    modryn_visit_note = fields.Text(
+        string="Note about the visit", copy=False)
 
     staff_note = fields.Text(string="Note for the team")
     # A verified check-in joins the line directly. The old `pending` front door —

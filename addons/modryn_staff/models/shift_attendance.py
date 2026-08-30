@@ -23,16 +23,17 @@ class ModrynShiftAttendance(models.Model):
     """
 
     _name = 'modryn.shift.attendance'
-    _description = 'A stretch of time a woman was on the floor'
+    _description = 'Time on the floor'
     _order = 'started_at desc, id desc'
 
     employee_id = fields.Many2one(
         'hr.employee', required=True, index=True, ondelete='cascade')
-    started_at = fields.Datetime(required=True, index=True)
+    started_at = fields.Datetime(
+        string="Came on the floor", required=True, index=True)
     # Empty means she is still on the floor. Not defaulted to the start: a
     # zero-length shift and an open one would then look the same, and only one
     # of them is somebody standing in the room.
-    ended_at = fields.Datetime()
+    ended_at = fields.Datetime(string="Went off the floor")
 
     @api.model
     def modryn_open(self, employee):

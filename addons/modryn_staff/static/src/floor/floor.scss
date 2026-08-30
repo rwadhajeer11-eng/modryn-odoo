@@ -1153,3 +1153,61 @@
         margin-inline-start: auto;
     }
 }
+
+// The finish dialog's confirmation. Not .modryn_confirm: that one is an inline
+// pill sized for a table cell, and this is a sentence with two buttons under it.
+.modryn_finish_confirm {
+    padding: 12px 14px;
+    background: $modryn-gold-wash;
+    border: 1px solid $modryn-gold-light;
+    border-radius: 11px;
+
+    p {
+        font-weight: 600;
+    }
+}
+
+// What was recorded, once she has said it. Deliberately quiet - it is a receipt,
+// not a control, and there is nothing left to press.
+.modryn_outcome_done {
+    padding: 12px 14px;
+    background: $modryn-gold-wash;
+    border: 1px solid $modryn-gold-light;
+    border-radius: 11px;
+
+    .modryn_strong {
+        margin-inline-start: 8px;
+    }
+}
+
+// ==================== with the team right now ====================
+// One block per saleswoman, her customers stacked inside it. The grouping is
+// the point: the board could always tell you a customer was "being served", and
+// never who was serving her without reading every card.
+.modryn_with_team {
+    .modryn_cards {
+        // Wider than the queue's cards: a name over a name needs less room than
+        // a card with a note and a room select in it.
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    }
+}
+
+.modryn_team_group {
+    padding: 12px 14px;
+    background: #FFFFFF;
+    border: 1px solid $modryn-border;
+    border-inline-start: 3px solid $modryn-gold;
+    border-radius: 11px;
+}
+
+.modryn_team_client {
+    padding-block: 8px;
+
+    & + & {
+        border-block-start: 1px solid $modryn-border;
+    }
+
+    .modryn_card_actions {
+        margin-block-start: 6px;
+    }
+}

@@ -21,7 +21,7 @@
             <section t-if="unassigned" class="modryn_panel mb-4">
                 <header class="modryn_panel_head">
                     <h2>Waiting for somebody</h2>
-                    <span class="modryn_count" t-out="len(unassigned)"/>
+                    <span class="modryn_count" t-out="unassigned_total"/>
                 </header>
                 <div class="modryn_cards">
                     <div t-foreach="unassigned" t-as="c" class="modryn_card">
@@ -35,6 +35,7 @@
                         </div>
                     </div>
                 </div>
+                <p t-if="unassigned_note" class="modryn_sub mb-0" t-out="unassigned_note"/>
             </section>
 
             <div t-if="not rows" class="modryn_empty">Nobody on the team yet.</div>
@@ -111,12 +112,17 @@
                                        t-att-value="request.csrf_token()"/>
                                 <input type="hidden" name="kind" t-att-value="c['kind']"/>
                                 <input type="hidden" name="record_id" t-att-value="c['id']"/>
+                                <!-- The star's accessible name is "4 / 5", not
+                                     "4 out of 5": the sentence form extracted as
+                                     the msgid "{{0}} out of 5", which no
+                                     translator can make sense of, and a fraction
+                                     needs no words in any language. -->
                                 <div class="modryn_rate_stars">
                                     <t t-foreach="[1, 2, 3, 4, 5]" t-as="n">
                                         <button type="submit" name="rating" t-att-value="n"
                                                 t-attf-class="modryn_rate_star #{'is_on' if c['rating'] &gt;= n else ''}"
-                                                t-attf-aria-label="#{n} out of 5"
-                                                t-attf-title="#{n} out of 5">★</button>
+                                                t-attf-aria-label="#{n} / 5"
+                                                t-attf-title="#{n} / 5">★</button>
                                     </t>
                                 </div>
                                 <input type="text" name="note" class="form-control form-control-sm"

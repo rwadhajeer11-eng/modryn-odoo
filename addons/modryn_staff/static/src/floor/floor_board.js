@@ -186,9 +186,16 @@ export class FloorBoard extends Component {
                 customer: board.finished.customer,
                 phone: board.finished.phone,
                 variants: board.finished.variants,
+                entryId: board.finished.entry_id,
                 // What she has typed into the dress box, and the one she picked.
                 dressQuery: "",
                 dressLabel: "",
+                // What has been recorded so far: "" until she says. Once said,
+                // the question collapses into a line of text - re-asking a
+                // question already answered is how a double sale gets recorded.
+                outcome: "",
+                // Which ending is waiting on a yes. null = nothing pending.
+                confirm: null,
                 form: { variant_id: "", piece_ids: [], note: "", due_date: "", seamstress_id: "", priority: "1" },
                 error: "",
             };
@@ -234,6 +241,86 @@ export class FloorBoard extends Component {
         f.form.variant_id = "";
         f.dressLabel = "";
         f.dressQuery = "";
+        // A pending "she took this one" is about a dress that is no longer
+        // chosen. Leaving it open would confirm the wrong gown.
+        if (f.confirm === "sold") {
+            f.confirm = null;
+        }
+    }
+
+    // ------------------------------------------------------- how it ended
+    askOutcome(kind) {
+        const f = this.state.finish;
+        if (kind === "sold" && !f.form.variant_id) {
+            // Nothing to take off the rail. Said here rather than swallowed by
+            // the server, so she is told before she has confirmed anything.
+            f.error = this.errorText("missing_dress");
+            return;
+        }
+        f.error = "";
+        f.confirm = kind;
+    }
+
+    cancelOutcome() {
+        this.state.finish.confirm = null;
+    }
+
+    // The sentence on the confirmation strip. Spelled out with the dress in it,
+    // because "are you sure?" over a list of a thousand gowns tells her nothing
+    // about which one she is about to take off the rail.
+    get confirmSentence() {
+        const f = this.state.finish;
+        if (!f || !f.confirm) {
+            return "";
+        }
+        if (f.confirm === "not_sold") {
+            return _t("Record that %s left without buying anything?", f.customer);
+        }
+        const v = f.variants.find((x) => String(x.id) === String(f.form.variant_id));
+        if (!v) {
+            return "";
+        }
+        return _t("Take one %(dress)s off the rail? %(from)s left, then %(to)s.", {
+            dress: v.label,
+            from: v.stock,
+            to: Math.max(0, v.stock - 1),
+        });
+    }
+
+    async confirmOutcome() {
+        const f = this.state.finish;
+        const kind = f.confirm;
+        if (!kind) {
+            return;
+        }
+        const board = await rpc("/floor/walkin/outcome", {
+            entry_id: f.entryId,
+            outcome: kind,
+            variant_id: kind === "sold" ? parseInt(f.form.variant_id, 10) : null,
+        });
+        if (board && board.error) {
+            f.confirm = null;
+            f.error = this.errorText(board.error);
+            return;
+        }
+        // The modal stays OPEN. She may still have work for the workshop, and
+        // closing the dialog under her the moment she answers the first
+        // question would lose the second one.
+        f.confirm = null;
+        f.outcome = kind;
+        f.error = "";
+        this.applyBoardOnly(board);
+    }
+
+    // The board underneath, refreshed, without reopening the modal on top of
+    // itself: apply() reads `finished` and would build a second one.
+    applyBoardOnly(board) {
+        if (!board || !board.queue) {
+            return;
+        }
+        const keep = this.state.finish;
+        this.apply(board);
+        this.state.finish = keep;
     }
 
     // ------------------------------------------------------------------- dnd
@@ -396,6 +483,87 @@ export class FloorBoard extends Component {
         return this.state.staff.filter((s) => !me || s.id !== me.id);
     }
 
+    // The customers being served right now, gathered under the woman serving
+    // them. Walk-ins and today's bookings alike: from where a manager is
+    // standing they are the same thing, a person in the shop with somebody.
+    //
+    // A booking with an outcome already recorded drops out - it is over, and a
+    // panel about who is busy NOW should not still be listing it.
+    get withTeam() {
+        const groups = new Map();
+        const put = (id, name, row) => {
+            if (!groups.has(id)) {
+                groups.set(id, { id, name, customers: [] });
+            }
+            groups.get(id).customers.push(row);
+        };
+        for (const e of this.state.queue) {
+            // 'called' and not merely assigned. A manager can hand a WAITING
+            // customer to a stylist - "you take this one next" - and that woman
+            // is not with her yet. Listing her here made the panel claim
+            // something untrue and, worse, offered a "Back to the line" that
+            // did nothing: the release refuses a card that is not called.
+            if (e.employee_id && e.state === "called" && !e.outcome) {
+                put(e.employee_id, e.employee_name, {
+                    key: `q${e.id}`,
+                    id: e.id,
+                    kind: "queue",
+                    name: e.name,
+                    detail: e.phone || "",
+                    helpers: e.helpers || [],
+                });
+            }
+        }
+        for (const b of this.state.bookings) {
+            if (b.employee_id && !b.outcome) {
+                put(b.employee_id, b.employee_name, {
+                    key: `b${b.id}`,
+                    id: b.id,
+                    kind: "booking",
+                    name: b.title,
+                    detail: b.time,
+                    helpers: b.helpers || [],
+                    booking: b,
+                });
+            }
+        }
+        // Ordered by name so the panel does not reshuffle itself under a
+        // manager's finger every time the bus pushes a refresh.
+        return [...groups.values()].sort((a, b) => (a.name || "").localeCompare(b.name || ""));
+    }
+
+    // How many people are being served, across every stylist.
+    get withTeamCount() {
+        return this.withTeam.reduce((n, g) => n + g.customers.length, 0);
+    }
+
+    // May the signed-in user end this one? The same rule the server enforces:
+    // a manager, or the woman actually holding her. Drawn from it rather than
+    // guessed, so a button that appears always works.
+    mayClose(row) {
+        if (this.state.canAssign) {
+            return true;
+        }
+        const me = this.state.me;
+        if (!me) {
+            return false;
+        }
+        const card = row.kind === "queue"
+            ? this.state.queue.find((e) => e.id === row.id)
+            : this.state.bookings.find((b) => b.id === row.id);
+        return Boolean(card) && (card.employee_id === me.id
+            || (card.helpers || []).some((h) => h.id === me.id));
+    }
+
+    // "Finished" means different things to the two kinds, and both already
+    // have a screen for it - this only sends her to the right one.
+    endVisit(row) {
+        if (row.kind === "queue") {
+            return this.finish(row.id);
+        }
+        return this.openOutcome(row.booking);
+    }
+
     async finish(entryId) {
         await this.call("/floor/finish", { entry_id: entryId });
     }
@@ -542,6 +710,7 @@ export class FloorBoard extends Component {
             cancelled: _t("This booking was cancelled — it doesn't get an outcome."),
             invalid_amount: _t("Please enter a valid amount."),
             invalid_date: _t("Please enter a valid date."),
+            missing_dress: _t("Pick which dress she took first."),
             missing_due: _t("Please pick a due date — the workshop queue runs on it."),
             missing_priority: _t("Please pick a priority."),
             invalid_budget: _t("Please enter a valid budget."),

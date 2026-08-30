@@ -692,6 +692,18 @@ if [ "$SESSION" = "200" ]; then
     -d '{"jsonrpc":"2.0","method":"call","params":{}}' "$BELLA/floor/data")
   echo "$BOARD" | grep -q '"result"' && ok "/floor/data returns a board" || bad "/floor/data" "no result — server error?"
   echo "$BOARD" | grep -q '"pending"' && ok "board carries the arrivals gate" || bad "board pending panel" "key missing"
+  # No assertion here on the queue rows' own keys. They exist only while
+  # somebody is standing in the line, and bella's is empty in its seeded state -
+  # a check that can only run when a stranger happens to have walked in fails
+  # over nothing, which is the same fault as passing over nothing. The browser
+  # suite asserts the with-the-team panel with a customer actually in it.
+  SUP=$(curl -sg -b "$JAR" -o /dev/null -w "%{http_code}" "$BELLA/shift-supervisor")
+  [ "$SUP" = "200" ] && ok "/shift-supervisor renders for a manager"     || bad "/shift-supervisor for a manager" "got $SUP"
+  # TRANSLATED, not merely present. A new screen ships every one of its strings
+  # in English, and the .po check a few hundred lines up says in its own comment
+  # that it cannot see a string that was never added to the file at all. This is
+  # the check that can: it reads the rendered page.
+  curl -sg -b "$JAR" "$BELLA/shift-supervisor" | grep -q 'אחראית משמרת'     && ok "he: the supervisor screen is translated"     || bad "supervisor translation" "the Hebrew heading is missing - the screen is shipping in English"
 else
   bad "10a. staff sign-in" "sara could not sign in (/floor answered $SESSION, not 200). The exported MODRYN_DEMO_PASSWORD does not match the value these databases were seeded with — they predate the credential-hygiene change. Fix: export MODRYN_DEMO_PASSWORD as the seeded value, or re-seed with 'MODRYN_DEMO_PASSWORD=... .venv/bin/python scripts/seed_staff.py' (which rotates the developer's own manual login too). Every 10a assertion below is skipped, not passed."
 fi
@@ -1912,6 +1924,10 @@ done
 # Closing is for signed-in staff; changing a recorded outcome is for managers.
 FINB=$(curl -sg -H "Content-Type: application/json" -d '{"jsonrpc":"2.0","method":"call","params":{"event_id":1,"outcome":"sold"}}' "$BELLA/floor/finish/booking" | grep -c '"result"')
 [ "$FINB" = "0" ] && ok "/floor/finish/booking refuses anonymous" || bad "/floor/finish/booking anonymous" "returned a result"
+# The walk-in half of the same door, and the one that MOVES STOCK: a hole here
+# is a stranger taking dresses off a boutique's rail from the open internet.
+FINW=$(curl -sg -H "Content-Type: application/json" -d '{"jsonrpc":"2.0","method":"call","params":{"entry_id":1,"outcome":"sold","variant_id":1}}' "$BELLA/floor/walkin/outcome" | grep -c '"result"')
+[ "$FINW" = "0" ] && ok "/floor/walkin/outcome refuses anonymous" || bad "/floor/walkin/outcome anonymous" "returned a result"
 grep -q "if force or not me or event.modryn_employee_id != me" addons/modryn_ops/controllers/floor_ops.py \
   && ok "staff cannot force, nor close another stylist's booking" \
   || bad "staff close gate" "the stylist-or-manager guard is gone from floor_ops.py"

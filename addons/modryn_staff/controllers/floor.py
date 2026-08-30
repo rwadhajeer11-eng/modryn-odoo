@@ -40,6 +40,20 @@ class ModrynFloor(http.Controller):
         return request.env['hr.employee'].sudo().search(
             [('user_id', '=', request.env.user.id)], limit=1)
 
+    def _may_close(self, record):
+        """May the signed-in user end THIS visit?
+
+        A manager, or the woman on the card - primary or helper. Deliberately
+        the same test the board draws its buttons from, so a button that appears
+        always works and one that does not appear could not have been used.
+        """
+        if self._is_manager():
+            return True
+        me = self._my_employee()
+        if not me:
+            return False
+        return record.modryn_employee_id == me or me in record.modryn_helper_ids
+
     def _today_bounds_utc(self):
         """Today in Israel, expressed in the UTC the database stores."""
         today = datetime.now(TZ).date()
@@ -59,6 +73,7 @@ class ModrynFloor(http.Controller):
         } for e in pending_entries]
 
         entries = env['modryn.queue.entry'].sudo().search([('state', 'in', ('waiting', 'called'))])
+        has_outcome = 'modryn_outcome' in env['modryn.queue.entry']._fields
         queue = []
         for position, entry in enumerate(entries, start=1):
             queue.append({
@@ -73,6 +88,11 @@ class ModrynFloor(http.Controller):
                 'employee_name': entry.modryn_employee_id.name or '',
                 'helpers': [{'id': h.id, 'name': h.name} for h in entry.modryn_helper_ids],
                 'room_id': entry.modryn_room_id.id or False,
+                # Present only where modryn_ops is installed, which is what
+                # carries the outcome fields. Parenthesised: `a or '' if f else
+                # ''` binds as `a or ('' if f else '')`, so the guard read as
+                # true whatever the flag said.
+                'outcome': (entry.modryn_outcome or '') if has_outcome else '',
             })
 
         day_start, day_end = self._today_bounds_utc()
@@ -404,11 +424,18 @@ class ModrynFloor(http.Controller):
         response carries the customer + dress list so the manager can open an
         alteration task without a second round-trip.
         """
-        if not self._is_manager():
+        if not self._is_staff():
             return {'error': 'forbidden'}
         entry = request.env['modryn.queue.entry'].sudo().browse(int(entry_id)).exists()
         if not entry:
             return {'error': 'not_found'}
+        # A manager closes anybody; a saleswoman closes the customer she is
+        # actually holding. The old rule was manager-only, which meant the one
+        # person who KNOWS the visit ended had to go and find somebody to say so
+        # - and a booking has been closable by its own stylist since outcomes
+        # existed, so the walk-in was simply the half that never caught up.
+        if not self._may_close(entry):
+            return {'error': 'forbidden'}
         # action_done(), not a bare write: it makes the same state change AND
         # promotes whoever is now at the front. This route wrote the state
         # directly, so finishing a customer on the floor terminal never sent the
@@ -421,6 +448,9 @@ class ModrynFloor(http.Controller):
         ])
         board = self._board()
         board['finished'] = {
+            # The modal writes an outcome back against this one, so it has to
+            # know which visit it is closing - the customer's name is not an id.
+            'entry_id': entry.id,
             'customer': entry.name,
             'phone': entry.phone or '',
             # name, serial and kind travel with each row so the picker can
@@ -443,6 +473,58 @@ class ModrynFloor(http.Controller):
             } for v in variants],
         }
         return board
+
+    @http.route('/floor/walkin/outcome', type='jsonrpc', auth='user')
+    def walkin_outcome(self, entry_id, outcome, variant_id=None):
+        """How the visit ended, and what she carried out of the shop.
+
+        The booking half of this has existed for a while; the walk-in half did
+        not, and a walk-in is most brides. So a gown sold across the counter was
+        still on the count the next morning, and the catalogue's "how many" was
+        quietly wrong in the one direction that costs money.
+
+        Writing modryn_outcome is what moves the count - modryn_ops watches the
+        write rather than trusting every caller to remember, which is why there
+        is no decrement here to read. Setting it twice to the same dress moves
+        nothing, so a double tap on a slow tablet is safe.
+        """
+        if not self._is_staff():
+            return {'error': 'forbidden'}
+        Entry = request.env['modryn.queue.entry']
+        if 'modryn_outcome' not in Entry._fields:
+            # modryn_ops is what carries the outcome. Without it there is
+            # nothing to record and nothing to count.
+            return {'error': 'not_found'}
+        entry = Entry.sudo().browse(int(entry_id)).exists()
+        if not entry:
+            return {'error': 'not_found'}
+        if not self._may_close(entry):
+            return {'error': 'forbidden'}
+        if outcome not in ('sold', 'not_sold'):
+            return {'error': 'not_found'}
+
+        values = {'modryn_outcome': outcome}
+        if outcome == 'sold':
+            variant = request.env['product.product'].sudo().browse(
+                int(variant_id or 0)).exists()
+            if not variant:
+                # "Sold" with no dress named would record a sale nobody can
+                # count. The stylist is told, rather than left with a tick that
+                # did half of what it looked like it did.
+                return {'error': 'missing_dress'}
+            values['modryn_variant_id'] = variant.id
+        else:
+            # She bought nothing, so no dress is attached - and clearing it
+            # matters, because a correction from sold to not-sold has to give
+            # the earlier one back.
+            values['modryn_variant_id'] = False
+        # She is finished either way: the two buttons this serves are both an
+        # ending, and leaving her in the line after one of them would put her
+        # back on the board the stylist just cleared.
+        if entry.state in ('waiting', 'called'):
+            entry.action_done()
+        entry.write(values)
+        return self._board()
 
     # ------------------------------------------------------------- rooms
     @http.route('/floor/room', type='jsonrpc', auth='user')

@@ -1954,3 +1954,224 @@ msgid ""
 msgstr ""
 "החשבון הזה עדיין לא מקושר לאף אחת מהצוות, אז אין כאן מה להציג.\n"
 "                בקשי מבעלת הבוטיק להוסיף אותך בעמוד הצוות."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.shift_supervisor
+msgid "<span class=\"modryn_sub\">Actually</span>"
+msgstr "<span class=\"modryn_sub\">בפועל</span>"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.shift_supervisor
+msgid "<span class=\"modryn_sub\">Expected</span>"
+msgstr "<span class=\"modryn_sub\">לפי הסידור</span>"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.shift_supervisor
+msgid "<span class=\"modryn_sub\">With her now</span>"
+msgstr "<span class=\"modryn_sub\">אצלה עכשיו</span>"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.shift_supervisor
+msgid "Anything worth remembering?"
+msgstr "משהו ששווה לזכור?"
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+#: model_terms:ir.ui.view,arch_db:modryn_staff.shift_supervisor
+msgid "Booking"
+msgstr "תור מראש"
+
+#. module: modryn_staff
+#: model:ir.model.fields,field_description:modryn_staff.field_modryn_shift_attendance__started_at
+msgid "Came on the floor"
+msgstr "נכנסה למשמרת"
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "Change"
+msgstr "החלפה"
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "Finished"
+msgstr "סיום"
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "From two letters onwards."
+msgstr "משתי אותיות והלאה."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.shift_supervisor
+msgid "Has not come on today"
+msgstr "לא נכנסה היום"
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid ""
+"If the gown needs work, open a task for the workshop. Otherwise you're done."
+msgstr "אם השמלה צריכה עבודה, פתחי משימה לסדנה. אחרת סיימת."
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "Left without buying"
+msgstr "יצאה בלי לקנות"
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "Name, serial number, or kind"
+msgstr "שם, מספר סידורי או סוג"
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "No, go back"
+msgstr "לא, חזרה"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.shift_supervisor
+msgid "Nobody on the team yet."
+msgstr "עדיין אין צוות."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.shift_supervisor
+msgid "Nobody right now."
+msgstr "אף אחת כרגע."
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "None left"
+msgstr "נגמר"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.shift_supervisor
+msgid "Not on today's rota"
+msgstr "לא בסידור של היום"
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "Nothing came off the rail."
+msgstr "שום שמלה לא ירדה מהמתלה."
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "Nothing matches that."
+msgstr "אין התאמה."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.shift_supervisor
+msgid "Off"
+msgstr "מחוץ למשמרת"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.shift_supervisor
+msgid "On the floor"
+msgstr "במשמרת"
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.js:0
+msgid "Pick which dress she took first."
+msgstr "קודם בחרי איזו שמלה היא לקחה."
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.js:0
+msgid "Record that %s left without buying anything?"
+msgstr "לרשום ש-%s יצאה בלי לקנות כלום?"
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "She left without buying"
+msgstr "היא יצאה בלי לקנות"
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "She took this one"
+msgstr "היא לקחה את זו"
+
+#. module: modryn_staff
+#. odoo-python
+#: code:addons/modryn_staff/controllers/supervisor.py:0
+#: model_terms:ir.ui.view,arch_db:modryn_staff.shift_supervisor
+msgid "Shift supervisor"
+msgstr "אחראית משמרת"
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.js:0
+msgid "Take one %(dress)s off the rail? %(from)s left, then %(to)s."
+msgstr "להוריד %(dress)s אחת מהמתלה? יש %(from)s, יישארו %(to)s."
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "Taken off the rail."
+msgstr "ירדה מהמתלה."
+
+#. module: modryn_staff
+#: model:ir.model,name:modryn_staff.model_modryn_shift_attendance
+msgid "Time on the floor"
+msgstr "זמן במשמרת"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.shift_supervisor
+msgid "Waiting for somebody"
+msgstr "מחכות למישהי"
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+#: model_terms:ir.ui.view,arch_db:modryn_staff.shift_supervisor
+msgid "Walk-in"
+msgstr "ללא תור"
+
+#. module: modryn_staff
+#: model:ir.model.fields,field_description:modryn_staff.field_modryn_shift_attendance__ended_at
+msgid "Went off the floor"
+msgstr "יצאה מהמשמרת"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.shift_supervisor
+msgid "Who is on the floor, since when, and who they are with."
+msgstr "מי במשמרת, ממתי, ועם מי."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.shift_supervisor
+msgid "With her now"
+msgstr "אצלה עכשיו"
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "With the team right now"
+msgstr "עם הצוות עכשיו"
+
+#. module: modryn_staff
+#. odoo-javascript
+#: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+msgid "Yes"
+msgstr "כן"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.shift_supervisor
+msgid "— still on"
+msgstr "— עדיין במשמרת"
+
+#. module: modryn_staff
+#. odoo-python
+#: code:addons/modryn_staff/controllers/supervisor.py:0
+msgid "Showing the first %(shown)s of %(total)s."
+msgstr "מוצגות %(shown)s הראשונות מתוך %(total)s."

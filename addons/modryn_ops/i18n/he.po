@@ -1163,3 +1163,28 @@ msgstr ""
 "<span data-code=\"add\">להוסיף {count} למידה הזו?</span>\n"
 "                <span data-code=\"remove\">להוריד {count} מהמידה הזו?</span>\n"
 "                <span data-code=\"same\">זה כבר המספר שיש כאן.</span>"
+
+#. module: modryn_ops
+#: model:ir.model.fields,field_description:modryn_ops.field_calendar_event__modryn_visit_rating
+msgid "How the visit went"
+msgstr "איך עברה הפגישה"
+
+#. module: modryn_ops
+#: model:ir.model.fields.selection,name:modryn_ops.selection__modryn_queue_entry__modryn_outcome__not_sold
+msgid "Left without buying"
+msgstr "יצאה בלי לקנות"
+
+#. module: modryn_ops
+#: model:ir.model.fields,field_description:modryn_ops.field_calendar_event__modryn_visit_note
+msgid "Note about the visit"
+msgstr "הערה על הפגישה"
+
+#. module: modryn_ops
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_queue_entry__modryn_variant_id
+msgid "The dress she took"
+msgstr "השמלה שהיא לקחה"
+
+#. module: modryn_ops
+#: model:ir.model,name:modryn_ops.model_modryn_queue_entry
+msgid "Walk-in queue entry"
+msgstr "רישום בתור ללא תור"

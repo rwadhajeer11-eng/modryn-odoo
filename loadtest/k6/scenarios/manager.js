@@ -211,8 +211,21 @@ function workTheFloor(t) {
   // product.product search over every published variant. Clocked: it writes
   // state='done', which publishes.
   const done = clockedCall(t.baseUrl, '/floor/finish', { entry_id: card.id }, 'floor', card.id);
-  if (done.ok && Math.random() < 0.3) {
-    handoffToAtelier(t, done.result);
+  if (done.ok) {
+    // Half of a finish: the stylist then says how it ended. ALWAYS not_sold —
+    // 'sold' decrements a variant, and a few thousand of those would empty the
+    // seeded catalogue and leave the next run measuring an empty shop. The two
+    // branches are the same write, the same publish and the same board.
+    call(
+      t.baseUrl,
+      '/floor/walkin/outcome',
+      { entry_id: card.id, outcome: 'not_sold' },
+      'rpc_write',
+      'floor'
+    );
+    if (Math.random() < 0.3) {
+      handoffToAtelier(t, done.result);
+    }
   }
 
   if (Math.random() < 0.1) {
@@ -268,8 +281,13 @@ function checkInWalkIn(t) {
 }
 
 // /floor/finish returns the whole board with a `finished` key bolted on:
-// {customer, phone, variants:[{id,label}]} — the modal's data, so the manager
-// can open an alteration task without a second round trip.
+// {entry_id, customer, phone, variants:[{id, label, name, serial, kind, size,
+// stock}]} — the modal's data, so the manager can record how the visit ended
+// and open an alteration task without a second round trip. The variant rows
+// grew when the <select> became a search box: the browser matches a prefix
+// against name/serial/kind locally rather than asking the server per keystroke,
+// so the whole catalogue travels once. That makes this the most expensive
+// single response in the product and worth watching as the catalogue grows.
 function handoffToAtelier(t, boardWithFinished) {
   const finished = (boardWithFinished && boardWithFinished.finished) || {};
   const variants = finished.variants || [];

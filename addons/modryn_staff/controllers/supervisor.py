@@ -169,9 +169,23 @@ class ModrynSupervisor(http.Controller):
                 'count': len(customers),
             })
 
+        unassigned = by_employee.get(None, [])
         return request.render('modryn_staff.shift_supervisor', {
             'rows': rows,
-            'unassigned': by_employee.get(None, []),
+            # The first handful and a count, never the whole line. A tenant
+            # holding 99 unclaimed walk-ins turned this panel into the entire
+            # page and pushed every worker's card off the bottom - the one
+            # thing a supervisor opens this screen to read.
+            'unassigned': unassigned[:12],
+            'unassigned_total': len(unassigned),
+            # One sentence, so a translator can put the numbers where her
+            # language puts them. Split across QWeb text nodes it extracted as
+            # the fragment "Showing the first" and Hebrew rendered the count
+            # stranded behind the noun.
+            'unassigned_note': (
+                _("Showing the first %(shown)s of %(total)s.") % {
+                    'shown': 12, 'total': len(unassigned)}
+                if len(unassigned) > 12 else ''),
             'day_label': day.strftime('%d.%m.%Y'),
             'active_tab': 'supervisor',
         })

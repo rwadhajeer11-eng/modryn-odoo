@@ -22,7 +22,13 @@ the hooks this module defines.
     # went below zero before the constraint existed. A version bumped without
     # that directory records the number against every database and the
     # migration is then skipped FOREVER on exactly the tenants holding data.
-    'version': '19.0.1.4.0',
+    #
+    # 19.0.1.5.0 deliberately ships WITHOUT one: a walk-in gains the three
+    # outcome fields a booking already had, and three new nullable columns are
+    # something _auto_init creates by itself. There is nothing to convert -
+    # every existing walk-in is correctly "no outcome recorded" - so a
+    # migration script would have nothing to do but log that it ran.
+    'version': '19.0.1.5.0',
     'depends': ['modryn_staff', 'modryn_portal'],
     'data': [
         'security/ir.model.access.csv',

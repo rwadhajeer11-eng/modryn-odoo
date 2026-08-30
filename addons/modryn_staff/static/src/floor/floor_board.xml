@@ -206,6 +206,61 @@
                         </div>
                     </section>
 
+                    <!-- ============ with the team right now ============ -->
+                    <!-- Placed between the line and the day's appointments,
+                         because that is where it sits in time: she has come off
+                         the queue and has not yet become a finished visit. -->
+                    <section t-if="withTeam.length" class="modryn_panel modryn_with_team">
+                        <header class="modryn_panel_head">
+                            <h2>With the team right now</h2>
+                            <!-- People, not groups. The groups are on the
+                                 screen to be counted; how many customers are
+                                 being served is the number that is not. -->
+                            <span class="modryn_count"><t t-esc="withTeamCount"/></span>
+                        </header>
+
+                        <div class="modryn_cards">
+                            <div t-foreach="withTeam" t-as="g" t-key="g.id"
+                                 class="modryn_team_group">
+                                <div class="modryn_strong mb-2"><t t-esc="g.name"/></div>
+                                <div t-foreach="g.customers" t-as="c" t-key="c.key"
+                                     class="modryn_team_client">
+                                    <div class="modryn_card_top">
+                                        <div>
+                                            <div class="modryn_strong"><t t-esc="c.name"/></div>
+                                            <div t-if="c.detail" class="modryn_sub" dir="ltr">
+                                                <t t-esc="c.detail"/>
+                                            </div>
+                                        </div>
+                                        <span t-if="c.kind === 'queue'"
+                                              class="modryn_badge is_muted ms-auto">Walk-in</span>
+                                        <span t-else="" class="modryn_badge is_muted ms-auto">Booking</span>
+                                    </div>
+                                    <div t-if="c.helpers.length" class="modryn_sub">
+                                        <t t-foreach="c.helpers" t-as="h" t-key="h.id">
+                                            <t t-esc="h.name"/><t t-if="!h_last">, </t>
+                                        </t>
+                                    </div>
+                                    <div class="modryn_card_actions">
+                                        <!-- Back to the line is a walk-in's move
+                                             only: a booking has no line to go
+                                             back to, and the route refuses it. -->
+                                        <button t-if="c.kind === 'queue' and mayClose(c)"
+                                                class="btn btn-sm btn-outline-dark modryn_team_back"
+                                                t-on-click="() => this.release('queue', c.id)">
+                                            Back to the line
+                                        </button>
+                                        <button t-if="mayClose(c)"
+                                                class="btn btn-sm btn-primary modryn_team_finish"
+                                                t-on-click="() => this.endVisit(c)">
+                                            Finished
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
                     <!-- ============ today's appointments ============ -->
                     <section class="modryn_panel">
                         <header class="modryn_panel_head">
@@ -684,11 +739,24 @@
             <!-- ============ finish modal: fitting done -> alteration task ============ -->
             <div t-if="state.finish" class="modryn_modal_backdrop" t-on-click.self="closeFinish">
                 <div class="modryn_modal" role="dialog" aria-modal="true">
-                    <h2 class="mb-1">Alterations for <t t-esc="state.finish.customer"/>?</h2>
-                    <p class="modryn_sub mb-3">
-                        If the gown needs work, open a task for the workshop. Otherwise just skip.
-                    </p>
+                    <h2 class="mb-1">How did it end for <t t-esc="state.finish.customer"/>?</h2>
 
+                    <!-- Already answered. The question collapses into a line
+                         rather than staying open: a second tap on "she took
+                         this one" is a second dress off the rail. -->
+                    <div t-if="state.finish.outcome" class="modryn_outcome_done mb-4">
+                        <t t-if="state.finish.outcome === 'sold'">
+                            <span class="modryn_badge is_free">Sold</span>
+                            <span class="modryn_strong" t-esc="state.finish.dressLabel"/>
+                            <div class="modryn_sub">Taken off the rail.</div>
+                        </t>
+                        <t t-else="">
+                            <span class="modryn_badge is_muted">Left without buying</span>
+                            <div class="modryn_sub">Nothing came off the rail.</div>
+                        </t>
+                    </div>
+
+                    <t t-else="">
                     <div class="mb-3">
                         <label class="form-label">Dress</label>
                         <!-- Chosen already: her answer, and a way to change it.
@@ -706,6 +774,7 @@
                             <div t-if="dressMatches.length" class="modryn_dress_hits">
                                 <button t-foreach="dressMatches" t-as="v" t-key="v.id"
                                         type="button" class="modryn_dress_hit"
+                                        t-att-data-variant="v.id"
                                         t-on-click="() => this.pickDress(v)">
                                     <span t-esc="v.label"/>
                                     <span t-if="v.serial" class="modryn_sub" dir="ltr"
@@ -724,6 +793,31 @@
                                  class="modryn_sub">Nothing matches that.</div>
                         </t>
                     </div>
+
+                    <!-- Waiting on a yes. The sentence names the gown and the
+                         number, because "are you sure?" over a thousand
+                         dresses tells her nothing about which one. -->
+                    <div t-if="state.finish.confirm" class="modryn_finish_confirm mb-4" role="alert">
+                        <p class="mb-2"><t t-esc="confirmSentence"/></p>
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-sm btn-primary"
+                                    t-on-click="confirmOutcome">Yes</button>
+                            <button class="btn btn-sm btn-link"
+                                    t-on-click="cancelOutcome">No, go back</button>
+                        </div>
+                    </div>
+                    <div t-else="" class="d-flex flex-wrap gap-2 mb-4">
+                        <button class="btn btn-primary"
+                                t-on-click="() => this.askOutcome('sold')">She took this one</button>
+                        <button class="btn btn-outline-dark"
+                                t-on-click="() => this.askOutcome('not_sold')">She left without buying</button>
+                    </div>
+                    </t>
+
+                    <hr class="my-4"/>
+                    <p class="modryn_sub mb-3">
+                        If the gown needs work, open a task for the workshop. Otherwise you're done.
+                    </p>
 
                     <div class="mb-3">
                         <label class="form-label">Pieces to alter</label>
@@ -773,7 +867,10 @@
 
                     <div class="d-flex gap-2">
                         <button class="btn btn-primary" t-on-click="createTask">Create task</button>
-                        <button class="btn btn-link" t-on-click="closeFinish">Skip</button>
+                        <!-- Not "Skip" any more: by the time she reaches this
+                             row the ending is usually recorded, and calling
+                             that "skip" reads as throwing it away. -->
+                        <button class="btn btn-link" t-on-click="closeFinish">Close</button>
                     </div>
                 </div>
             </div>

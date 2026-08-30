@@ -438,3 +438,13 @@ msgstr "מצב"
 #: model_terms:ir.ui.view,arch_db:modryn_queue_poc.ticket
 msgid "Your place in the queue"
 msgstr "המקום שלך בתור"
+
+#. module: modryn_queue_poc
+#: model:ir.model.fields,field_description:modryn_queue_poc.field_modryn_queue_entry__modryn_visit_rating
+msgid "How the visit went"
+msgstr "איך עברה הפגישה"
+
+#. module: modryn_queue_poc
+#: model:ir.model.fields,field_description:modryn_queue_poc.field_modryn_queue_entry__modryn_visit_note
+msgid "Note about the visit"
+msgstr "הערה על הפגישה"
