@@ -318,8 +318,9 @@ grep -q 'dir="rtl"' "$PAGE" && ok "he: RTL" || bad "he RTL" "no dir=rtl"
 # review because the file looks complete either way.
 #
 # What this CANNOT see: an English string that was never added to the .po at
-# all. That needs Odoo's own extractor, which this suite deliberately cannot
-# start (see the note at "10c"). Run scripts/sync_translations.py for that.
+# all, or one added without naming the view it appears in. Both need Odoo's own
+# extractor. That used to be too expensive to run here; one combined export is
+# four seconds, so the check below this one now does it.
 # Three outcomes, not two. 0 clean, 1 blank entries found, 2 could not run -
 # because a check that could not run has NOT passed, and the first version of
 # this exited 0 when polib was missing, printing PASS over a check that never
@@ -343,6 +344,28 @@ case $? in
   0) ok "every shipped .po entry is translated" ;;
   2) skip "translation coverage" "polib is not installed in .venv — this check did not run" ;;
   *) bad "translation coverage" "blank msgstr found — that term renders English" ;;
+esac
+
+# The other half, and the half that has actually cost time. It asks Odoo what
+# strings EXIST and compares that with what the files carry, so it can see two
+# things the check above cannot:
+#
+#   a string that was never added to the .po at all — which is every string a
+#   brand-new screen introduces, and is how a whole screen shipped in English
+#   while this suite reported green;
+#
+#   and a string that is translated but not BOUND to the view it appears in. A
+#   model_terms translation binds to the view named in its reference lines, not
+#   to the word, so "Bride" was translated, read as translated, and rendered in
+#   English on the one screen that had just started using it.
+#
+# Four seconds, against the qa tenant. Same three outcomes as above: a check
+# that could not run has not passed.
+.venv/bin/python scripts/i18n_audit.py --db qa >/tmp/modryn_i18n.txt 2>&1
+case $? in
+  0) ok "every source string is translated, and bound to the view it is used in" ;;
+  2) skip "translation completeness" "$(head -1 /tmp/modryn_i18n.txt)" ;;
+  *) bad "translation completeness" "$(head -3 /tmp/modryn_i18n.txt | tr '\n' ' ')" ;;
 esac
 
 fetch "$BELLA/ar/shop"

@@ -312,15 +312,17 @@ export class FloorBoard extends Component {
         this.applyBoardOnly(board);
     }
 
-    // The board underneath, refreshed, without reopening the modal on top of
-    // itself: apply() reads `finished` and would build a second one.
+    // The board underneath, refreshed, with the dialog left standing.
+    //
+    // apply() rebuilds state.finish only when the payload carries a `finished`
+    // key, and /floor/walkin/outcome never sends one - so the open dialog
+    // survives this on its own. Said out loud because the first version saved
+    // and restored it, which implied a danger that is not there and would have
+    // quietly hidden a real one if apply() ever started clearing it.
     applyBoardOnly(board) {
-        if (!board || !board.queue) {
-            return;
+        if (board && board.queue) {
+            this.apply(board);
         }
-        const keep = this.state.finish;
-        this.apply(board);
-        this.state.finish = keep;
     }
 
     // ------------------------------------------------------------------- dnd
@@ -515,7 +517,10 @@ export class FloorBoard extends Component {
             }
         }
         for (const b of this.state.bookings) {
-            if (b.employee_id && !b.outcome) {
+            // Happening, not merely today. An appointment at five in the
+            // afternoon is not somebody a stylist is with at ten in the
+            // morning, and this panel is about the room as it stands.
+            if (b.employee_id && b.in_progress && !b.outcome) {
                 put(b.employee_id, b.employee_name, {
                     key: `b${b.id}`,
                     id: b.id,

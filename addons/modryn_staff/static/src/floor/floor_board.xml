@@ -223,7 +223,14 @@
                             <div t-foreach="withTeam" t-as="g" t-key="g.id"
                                  class="modryn_team_group">
                                 <div class="modryn_strong mb-2"><t t-esc="g.name"/></div>
+                                <!-- Which kind of visit this row is, said in the
+                                     markup rather than inferred from which
+                                     buttons happen to be on it. A walk-in and an
+                                     appointment end through different screens,
+                                     and anything driving this panel has to be
+                                     able to tell them apart before it presses. -->
                                 <div t-foreach="g.customers" t-as="c" t-key="c.key"
+                                     t-att-data-kind="c.kind"
                                      class="modryn_team_client">
                                     <div class="modryn_card_top">
                                         <div>

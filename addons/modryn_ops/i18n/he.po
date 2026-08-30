@@ -319,6 +319,7 @@ msgstr "Modryn הערות"
 
 #. module: modryn_ops
 #: model:ir.model.fields,field_description:modryn_ops.field_calendar_event__modryn_outcome
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_queue_entry__modryn_outcome
 msgid "Modryn Outcome"
 msgstr "Modryn תוצאה"
 
@@ -544,6 +545,7 @@ msgstr "הצגה"
 
 #. module: modryn_ops
 #: model:ir.model.fields.selection,name:modryn_ops.selection__calendar_event__modryn_outcome__sold
+#: model:ir.model.fields.selection,name:modryn_ops.selection__modryn_queue_entry__modryn_outcome__sold
 #: model_terms:ir.ui.view,arch_db:modryn_ops.manage_reports
 msgid "Sold"
 msgstr "נמכר"
@@ -736,6 +738,7 @@ msgstr "נוצר בתאריך"
 #: model:ir.model.fields,field_description:modryn_ops.field_calendar_event__display_name
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_audit_log__display_name
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_dress_type__display_name
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_queue_entry__display_name
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_task__display_name
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_task_template__display_name
 #: model:ir.model.fields,field_description:modryn_ops.field_product_product__display_name
@@ -753,6 +756,7 @@ msgstr "עובדת"
 #: model:ir.model.fields,field_description:modryn_ops.field_calendar_event__id
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_audit_log__id
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_dress_type__id
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_queue_entry__id
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_task__id
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_task_template__id
 #: model:ir.model.fields,field_description:modryn_ops.field_product_product__id
@@ -1090,6 +1094,7 @@ msgstr "לאיזו מהקטגוריות של הבוטיק זה שייך."
 
 #. module: modryn_ops
 #: model:ir.model.fields,field_description:modryn_ops.field_calendar_event__modryn_stock_taken
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_queue_entry__modryn_stock_taken
 msgid "Modryn Stock Taken"
 msgstr "נלקח מהמלאי"
 

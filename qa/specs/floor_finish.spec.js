@@ -150,17 +150,27 @@ test('@writes the dress is found by typing, confirmed, and comes off the rail', 
   const modal = page.locator('.modryn_modal');
   const hits = page.locator('.modryn_dress_hit');
 
-  async function finishNext() {
+  // Finish a WALK-IN, named by kind rather than by being first in the panel.
+  //
+  // The panel holds appointments too, and an appointment ends through a
+  // different dialog with no dress in it. Pressing whichever Finished button
+  // happened to be first opened that one and the spec then hunted for a search
+  // box that was never going to be there - a failure that appeared the day
+  // "in progress" started meaning in progress, and read as the picker being
+  // broken.
+  async function finishNextWalkIn() {
     await expect(take.first(), 'nobody is waiting - the queue is empty')
       .toBeVisible({ timeout: 20000 });
     await take.first().click();
     await expect(panel).toBeVisible({ timeout: 20000 });
-    await panel.locator('.modryn_team_group').first()
-      .locator(FINISHED).first().click();
+    const walkIn = panel.locator('.modryn_team_client[data-kind="queue"]').first();
+    await expect(walkIn, 'the customer just taken is not in the panel')
+      .toBeVisible({ timeout: 20000 });
+    await walkIn.locator(FINISHED).first().click();
     await expect(modal).toBeVisible({ timeout: 20000 });
   }
 
-  await finishNext();
+  await finishNextWalkIn();
 
   // ---- the floor at two characters ---------------------------------------
   const box = modal.locator('input[type="search"]');
@@ -214,7 +224,7 @@ test('@writes the dress is found by typing, confirmed, and comes off the rail', 
   // ---- and the count actually moved --------------------------------------
   // Read back through the picker itself rather than out of the database: this
   // is the number the next stylist sees, which is the one that matters.
-  await finishNext();
+  await finishNextWalkIn();
   await modal.locator('input[type="search"]').fill(term);
   const same = hits.filter({ has: page.locator(`[data-variant="${takenVariant}"]`) })
     .or(page.locator(`.modryn_dress_hit[data-variant="${takenVariant}"]`));
@@ -231,7 +241,7 @@ test('@writes the dress is found by typing, confirmed, and comes off the rail', 
   await modal.locator('button').filter({ hasText: CLOSE }).click();
   await expect(modal).toBeHidden({ timeout: 15000 });
 
-  await finishNext();
+  await finishNextWalkIn();
   await modal.locator('input[type="search"]').fill(term);
   const still = page.locator(`.modryn_dress_hit[data-variant="${takenVariant}"]`);
   await expect(still.first()).toBeVisible({ timeout: 15000 });

@@ -104,6 +104,7 @@ class ModrynFloor(http.Controller):
         if 'modryn_cancelled_at' in env['calendar.event']._fields:
             booking_domain.append(('modryn_cancelled_at', '=', False))
         events = env['calendar.event'].sudo().search(booking_domain, order='start asc')
+        now = fields.Datetime.now()
         bookings = []
         for event in events:
             variant = event.modryn_variant_id
@@ -119,6 +120,14 @@ class ModrynFloor(http.Controller):
                 'employee_name': event.modryn_employee_id.name or '',
                 'helpers': [{'id': h.id, 'name': h.name} for h in event.modryn_helper_ids],
                 'room_id': event.modryn_room_id.id or False,
+                # Whether this appointment is HAPPENING, as opposed to being
+                # somewhere else on today's list. Decided here because the
+                # client is given a wall clock and not a moment, and comparing
+                # two wall clocks across a timezone is how "with her now" came
+                # to include a bride still forty minutes from the door.
+                'in_progress': bool(
+                    event.start and event.stop
+                    and event.start <= now < event.stop),
             })
 
         employees = env['hr.employee'].sudo().search([
@@ -180,6 +189,16 @@ class ModrynFloor(http.Controller):
                 'me': me,
                 'is_manager': self._is_manager(),
             })
+        if me:
+            # She is on the floor, so a row saying when she came on must exist.
+            # It might not: anybody already mid-shift when attendance shipped
+            # got the flag without a row, and the door that would create one is
+            # not drawn while the flag is set - so the state could not repair
+            # itself from any screen. Idempotent, her own row only, and dated
+            # from the flag rather than from this page load, because that is
+            # when she actually came on.
+            request.env['modryn.shift.attendance'].sudo().modryn_open(
+                me, me.modryn_on_shift_since)
         return request.render('modryn_staff.floor_page', {
             'board': self._board(),
             'is_manager': self._is_manager(),
@@ -192,16 +211,27 @@ class ModrynFloor(http.Controller):
         if not access.can_view('floor'):
             return access.deny()
         me = self._my_employee()
-        if me and not me.modryn_on_shift_since:
-            # sudo(): a portal staff member has no write access to her own
-            # hr.employee row, the same reason every other write on this
-            # controller goes through it. The group check above is the gate.
-            me.sudo().modryn_on_shift_since = fields.Datetime.now()
-            # And a row that survives her leaving. The field answers "is she
+        if me:
+            since = me.modryn_on_shift_since
+            if not since:
+                # sudo(): a portal staff member has no write access to her own
+                # hr.employee row, the same reason every other write on this
+                # controller goes through it. The group check above is the gate.
+                since = fields.Datetime.now()
+                me.sudo().modryn_on_shift_since = since
+            # OUTSIDE the guard, and that is the fix. The field answers "is she
             # here"; the supervisor's screen asks when she came and when she
             # went, and the field is cleared at exactly the moment the second
-            # half of that becomes interesting.
-            request.env['modryn.shift.attendance'].sudo().modryn_open(me)
+            # half of that becomes interesting - so the pair of times lives in
+            # its own row.
+            #
+            # Guarded on the flag, this line never ran for anybody already on
+            # the floor when the feature shipped, and no later press could fix
+            # it: the guard saw the flag and skipped, so the screen said "on the
+            # floor" and "has not come on today" about the same woman for good.
+            # modryn_open is idempotent, so calling it every time is free, and
+            # a back-filled row is dated from the flag rather than from now.
+            request.env['modryn.shift.attendance'].sudo().modryn_open(me, since)
         return request.redirect('/floor')
 
     @http.route('/floor/shift/end', type='http', auth='user', website=True,

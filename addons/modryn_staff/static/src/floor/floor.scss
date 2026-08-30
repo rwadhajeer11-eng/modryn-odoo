@@ -1211,3 +1211,46 @@
         margin-block-start: 6px;
     }
 }
+
+// "Save the note" on the supervisor's rating form. It exists to be the FIRST
+// submit button in the form, so that Enter in the note box does not press a
+// star - a real thing that happened, and silently gave one star out of five.
+// It is a genuine action, so it stays reachable by keyboard rather than being
+// display:none; it just does not need to take up room next to the stars.
+.modryn_rate_save {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
+
+    // Visible again the moment somebody tabs to it, so a keyboard user is never
+    // pressing a control she cannot see.
+    &:focus-visible {
+        position: static;
+        inline-size: auto;
+        block-size: auto;
+        margin: 0;
+        padding: 4px 10px;
+        clip-path: none;
+        border: 1px solid $modryn-gold;
+        border-radius: 999px;
+        background: $modryn-gold-wash;
+    }
+}
+
+// What is coming, under what is happening. Separated by a rule rather than by
+// spacing alone: the difference between the two lists is the entire point.
+.modryn_super_later {
+    margin-block-start: 10px;
+    padding-block-start: 8px;
+    border-block-start: 1px dashed $modryn-border;
+
+    .modryn_card_marks {
+        gap: 6px;
+    }
+}

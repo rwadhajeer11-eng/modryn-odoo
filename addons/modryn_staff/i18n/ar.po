@@ -265,6 +265,7 @@ msgstr "وظيفة في البوتيك"
 #. odoo-javascript
 #: code:addons/modryn_staff/static/src/floor/floor_board.js:0
 #: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+#: model_terms:ir.ui.view,arch_db:modryn_staff.shift_supervisor
 msgid "Bride"
 msgstr "عروس"
 
@@ -1688,6 +1689,7 @@ msgstr "حدث في التقويم"
 #: model:ir.model.fields,field_description:modryn_staff.field_modryn_fitting_room__create_uid
 #: model:ir.model.fields,field_description:modryn_staff.field_modryn_floor_helper__create_uid
 #: model:ir.model.fields,field_description:modryn_staff.field_modryn_role_page__create_uid
+#: model:ir.model.fields,field_description:modryn_staff.field_modryn_shift_attendance__create_uid
 #: model:ir.model.fields,field_description:modryn_staff.field_modryn_sos_call__create_uid
 #: model:ir.model.fields,field_description:modryn_staff.field_modryn_staff_notification__create_uid
 #: model:ir.model.fields,field_description:modryn_staff.field_modryn_staff_role__create_uid
@@ -1698,6 +1700,7 @@ msgstr "أنشأه"
 #: model:ir.model.fields,field_description:modryn_staff.field_modryn_fitting_room__create_date
 #: model:ir.model.fields,field_description:modryn_staff.field_modryn_floor_helper__create_date
 #: model:ir.model.fields,field_description:modryn_staff.field_modryn_role_page__create_date
+#: model:ir.model.fields,field_description:modryn_staff.field_modryn_shift_attendance__create_date
 #: model:ir.model.fields,field_description:modryn_staff.field_modryn_sos_call__create_date
 #: model:ir.model.fields,field_description:modryn_staff.field_modryn_staff_notification__create_date
 #: model:ir.model.fields,field_description:modryn_staff.field_modryn_staff_role__create_date
@@ -1714,6 +1717,7 @@ msgstr "أُنشئ في"
 #: model:ir.model.fields,field_description:modryn_staff.field_modryn_queue_entry__display_name
 #: model:ir.model.fields,field_description:modryn_staff.field_modryn_role_page__display_name
 #: model:ir.model.fields,field_description:modryn_staff.field_modryn_room_occupant_mixin__display_name
+#: model:ir.model.fields,field_description:modryn_staff.field_modryn_shift_attendance__display_name
 #: model:ir.model.fields,field_description:modryn_staff.field_modryn_sos_call__display_name
 #: model:ir.model.fields,field_description:modryn_staff.field_modryn_staff_notification__display_name
 #: model:ir.model.fields,field_description:modryn_staff.field_modryn_staff_notify__display_name
@@ -1724,6 +1728,7 @@ msgstr "الاسم المعروض"
 #. module: modryn_staff
 #: model:ir.model,name:modryn_staff.model_hr_employee
 #: model:ir.model.fields,field_description:modryn_staff.field_modryn_floor_helper__employee_id
+#: model:ir.model.fields,field_description:modryn_staff.field_modryn_shift_attendance__employee_id
 msgid "Employee"
 msgstr "موظفة"
 
@@ -1742,6 +1747,7 @@ msgstr "توجيه HTTP"
 #: model:ir.model.fields,field_description:modryn_staff.field_modryn_queue_entry__id
 #: model:ir.model.fields,field_description:modryn_staff.field_modryn_role_page__id
 #: model:ir.model.fields,field_description:modryn_staff.field_modryn_room_occupant_mixin__id
+#: model:ir.model.fields,field_description:modryn_staff.field_modryn_shift_attendance__id
 #: model:ir.model.fields,field_description:modryn_staff.field_modryn_sos_call__id
 #: model:ir.model.fields,field_description:modryn_staff.field_modryn_staff_notification__id
 #: model:ir.model.fields,field_description:modryn_staff.field_modryn_staff_notify__id
@@ -1753,6 +1759,7 @@ msgstr "المعرّف"
 #: model:ir.model.fields,field_description:modryn_staff.field_modryn_fitting_room__write_uid
 #: model:ir.model.fields,field_description:modryn_staff.field_modryn_floor_helper__write_uid
 #: model:ir.model.fields,field_description:modryn_staff.field_modryn_role_page__write_uid
+#: model:ir.model.fields,field_description:modryn_staff.field_modryn_shift_attendance__write_uid
 #: model:ir.model.fields,field_description:modryn_staff.field_modryn_sos_call__write_uid
 #: model:ir.model.fields,field_description:modryn_staff.field_modryn_staff_notification__write_uid
 #: model:ir.model.fields,field_description:modryn_staff.field_modryn_staff_role__write_uid
@@ -1763,6 +1770,7 @@ msgstr "آخر تحديث بواسطة"
 #: model:ir.model.fields,field_description:modryn_staff.field_modryn_fitting_room__write_date
 #: model:ir.model.fields,field_description:modryn_staff.field_modryn_floor_helper__write_date
 #: model:ir.model.fields,field_description:modryn_staff.field_modryn_role_page__write_date
+#: model:ir.model.fields,field_description:modryn_staff.field_modryn_shift_attendance__write_date
 #: model:ir.model.fields,field_description:modryn_staff.field_modryn_sos_call__write_date
 #: model:ir.model.fields,field_description:modryn_staff.field_modryn_staff_notification__write_date
 #: model:ir.model.fields,field_description:modryn_staff.field_modryn_staff_role__write_date
@@ -1960,16 +1968,6 @@ msgid ""
 msgstr ""
 "هذا الحساب لسّه مش مربوط بحدا من الطاقم، فما في إشي نعرضه هون.\n"
 "                اطلبي من مالكة البوتيك تضيفك بصفحة الطاقم."
-
-#. module: modryn_staff
-#: model_terms:ir.ui.view,arch_db:modryn_staff.shift_supervisor
-msgid "<span class=\"modryn_sub\">Actually</span>"
-msgstr "<span class=\"modryn_sub\">فعليًا</span>"
-
-#. module: modryn_staff
-#: model_terms:ir.ui.view,arch_db:modryn_staff.shift_supervisor
-msgid "<span class=\"modryn_sub\">Expected</span>"
-msgstr "<span class=\"modryn_sub\">حسب الجدول</span>"
 
 #. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.shift_supervisor
@@ -2181,3 +2179,45 @@ msgstr "— لسّا بالوردية"
 #: code:addons/modryn_staff/controllers/supervisor.py:0
 msgid "Showing the first %(shown)s of %(total)s."
 msgstr "بتظهر أوّل %(shown)s من أصل %(total)s."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.shift_supervisor
+msgid "<span class=\"modryn_sub d-block\">Actually</span>"
+msgstr "<span class=\"modryn_sub d-block\">فعليًا</span>"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.shift_supervisor
+msgid "<span class=\"modryn_sub d-block\">Expected</span>"
+msgstr "<span class=\"modryn_sub d-block\">حسب الجدول</span>"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.shift_supervisor
+msgid "<span class=\"modryn_sub\">Later today</span>"
+msgstr "<span class=\"modryn_sub\">لاحقًا اليوم</span>"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.shift_supervisor
+msgid "Next"
+msgstr "التالية بالدور"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.shift_supervisor
+msgid "Save the note"
+msgstr "حفظ الملاحظة"
+
+#. module: modryn_staff
+#. odoo-python
+#: code:addons/modryn_staff/controllers/supervisor.py:0
+msgid "%(count)s earlier today."
+msgstr "%(count)s أخرى قبل هيك اليوم."
+
+#. module: modryn_staff
+#. odoo-python
+#: code:addons/modryn_staff/controllers/supervisor.py:0
+msgid "%(count)s more later today with nobody on them yet."
+msgstr "%(count)s كمان لاحقًا اليوم وما في حدا عليهم."
+
+#. module: modryn_staff
+#: model:ir.model.constraint,message:modryn_staff.constraint_modryn_shift_attendance_one_open_spell
+msgid "That employee is already on the floor."
+msgstr "الموظفة أصلًا داخل الوردية."

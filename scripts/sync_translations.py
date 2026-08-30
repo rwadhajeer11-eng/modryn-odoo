@@ -16,6 +16,7 @@ the exported msgids by comparing their tag-stripped text.
 Existing translations are preserved; only the keys change. Anything Odoo extracts
 that we have no translation for is reported so it can be filled in.
 """
+import glob
 import html
 import os
 import re
@@ -25,20 +26,29 @@ import sys
 import polib
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-# (addon, languages we ship). Staff screens are Hebrew + English only, by
-# product decision — no Arabic.
-ADDONS = [
-    ('modryn_theme', ['he', 'ar']),
-    ('modryn_booking', ['he', 'ar']),
-    ('modryn_queue_poc', ['he', 'ar']),
-    ('modryn_staff', ['he']),
-    ('modryn_portal', ['he', 'ar']),
-    ('modryn_atelier', ['he']),
-    ('modryn_roster', ['he']),
-    # Customer-facing SMS bodies ship he + ar; the staff pages are he-only like
-    # every other staff surface, and the ar file simply never gains UI terms.
-    ('modryn_ops', ['he', 'ar']),
-]
+def _addons():
+    """(addon, languages) read off the repo rather than restated here.
+
+    This was a hand-kept list, and it had gone stale in the way a hand-kept list
+    does: it named modryn_staff, modryn_atelier and modryn_roster as Hebrew-only
+    "by product decision", while all three ship a full ar.po - 364, 71 and 139
+    entries. Running the tool would have re-keyed their Hebrew and left their
+    Arabic behind, which is the silent drift it exists to prevent.
+
+    Which languages we ship is a fact about which files are in the repo. A list
+    that restates a fact is a list that can disagree with it.
+    """
+    found = []
+    for i18n in sorted(glob.glob(os.path.join(REPO, 'addons', '*', 'i18n'))):
+        addon = os.path.basename(os.path.dirname(i18n))
+        langs = sorted(os.path.basename(p)[:-3]
+                       for p in glob.glob(os.path.join(i18n, '*.po')))
+        if langs:
+            found.append((addon, langs))
+    return found
+
+
+ADDONS = _addons()
 
 TAG_RE = re.compile(r'<[^>]+>')
 WS_RE = re.compile(r'\s+')

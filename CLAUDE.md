@@ -169,19 +169,33 @@ it says in its own comment that it **cannot see a string that was never added at
 all**, which is exactly what a brand-new screen produces. A whole screen shipped
 in English once already and the gate stayed green.
 
-How to find them (the Odoo 19 CLI is **not** `--i18n-export`, which fails with
-"no such option" and writes nothing):
+**`verify.sh` now catches both halves of this** — `scripts/i18n_audit.py` asks
+Odoo what strings exist and compares that with the files, so a missing string and
+a mis-bound one both turn the gate red. Four seconds. Run it on its own while
+working:
+
+```bash
+python3 scripts/i18n_audit.py            # 0 clean · 1 a real gap · 2 could not run
+```
+
+To fix what it reports, upgrade the module first (the exporter reads the views as
+loaded, not as they sit on disk), export a `.pot`, and build each new entry
+**from the .pot entry, keeping its reference lines**:
 
 ```bash
 ./odoo/odoo-bin server -c odoo.conf -d qa -u <module> --stop-after-init   # first
 ./odoo/odoo-bin i18n export -c odoo.conf -d qa -l pot -o /tmp/m.pot <module>
 ```
 
-Then diff the `.pot`'s msgids against each `.po`'s translated ones (`polib`), and
-build any new entry **from the .pot entry**, keeping its reference lines — a
-`model_terms` translation binds to the **view it names**, not to the word, so an
-entry copied from elsewhere looks complete in the file and renders English on the
-page. Load with `-u <modules> --load-language=he_IL,ar_001 --i18n-overwrite`.
+The Odoo 19 CLI is **not** `--i18n-export`, which fails with "no such option" and
+writes nothing. Load the result with
+`-u <modules> --load-language=he_IL,ar_001 --i18n-overwrite`.
+
+**Why the reference lines matter**, and it has cost hours three times: a
+`model_terms` translation binds to the **view it names**, not to the word. A
+string already translated for one screen renders **English** on the next screen
+that uses it until its entry names that view too. "Bride" was translated, the
+file read as complete, and the supervisor's page printed "Bride".
 
 Two more things that mislead:
 

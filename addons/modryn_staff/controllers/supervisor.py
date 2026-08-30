@@ -62,41 +62,58 @@ class ModrynSupervisor(http.Controller):
         return start, end
 
     def _expected(self, employee, day):
-        """When the rota says she should arrive and leave today.
+        """When the rota says she should be here today, one line per shift.
 
         Read off PUBLISHED slots only: an unpublished rota is a draft, and
         holding a woman to a time nobody has told her about is not a thing this
         screen should help anybody do.
 
-        A day can carry two shifts for one woman, so this returns the earliest
-        start and the latest end - which is what "when should she be here" means
-        across a split day.
+        ONE LINE PER SLOT, not a span across them. Returning the earliest start
+        and the latest end made a woman rota'd 09:00-13:00 and 17:00-21:00 read
+        as a twelve-hour shift, and the four-hour hole in the Actually column
+        beside it then read as her having disappeared for the afternoon. It is
+        also the shape that column already uses, so the two can be read against
+        each other.
         """
         slots = request.env['modryn.shift.slot'].sudo().search([
             ('day', '=', day),
             ('published', '=', True),
             ('employee_ids', 'in', employee.id),
-        ])
+        ], order='start_hour')
         if not slots:
-            return None
-        fmt = lambda h: '%02d:%02d' % (int(h), int(round((h - int(h)) * 60)))
-        return {
-            'from': fmt(min(slots.mapped('start_hour'))),
-            'to': fmt(max(slots.mapped('end_hour'))),
-            'names': ', '.join(s.modryn_name() for s in slots),
-        }
+            return []
+
+        def hhmm(hour):
+            # Stored as a float of hours: 9.5 is half past nine. Rounded to the
+            # minute rather than truncated, or 17.999999 prints as 17:59.
+            minutes = int(round(hour * 60))
+            return '%02d:%02d' % (minutes // 60, minutes % 60)
+
+        return [{
+            'from': hhmm(slot.start_hour),
+            'to': hhmm(slot.end_hour),
+            'name': slot.modryn_name(),
+        } for slot in slots]
 
     def _customers_by_employee(self):
-        """Who each woman has with her right now, walk-ins and bookings alike.
+        """Who is with whom, split into what is happening and what is coming.
 
-        Keyed by employee id, with a None key for work nobody has taken - the
-        supervisor needs to see that queue too, and a screen that only lists
+        Two dicts keyed by employee id, each with a None key for work nobody has
+        taken - the supervisor needs that queue too, and a screen that lists only
         assigned customers hides the ones waiting for somebody.
+
+        NOW and LATER are separated because the screen was quietly lying about
+        both. A walk-in can be assigned to a stylist while still waiting - a
+        manager saying "you take this one next" - and she was counted as being
+        served. So was every one of today's bookings: measured at 12:23, a bride
+        due at 13:00 was listed under "With her now".
         """
-        out = {}
+        now, later = {}, {}
+        stamp = fields.Datetime.now()
+
         Queue = request.env['modryn.queue.entry'].sudo()
         for entry in Queue.search([('state', 'in', ('waiting', 'called'))]):
-            out.setdefault(entry.modryn_employee_id.id or None, []).append({
+            row = {
                 'kind': 'queue',
                 'id': entry.id,
                 'name': entry.name or '',
@@ -104,18 +121,31 @@ class ModrynSupervisor(http.Controller):
                 'client_type': entry.client_type or '',
                 'note': entry.staff_note or '',
                 'state': entry.state,
+                'time': '',
                 'rating': entry.modryn_visit_rating or 0,
                 'rating_note': entry.modryn_visit_note or '',
                 'helpers': entry.modryn_helper_ids.mapped('name'),
-            })
+            }
+            who = entry.modryn_employee_id.id or None
+            # Nobody on her: she is waiting for somebody, whatever her state.
+            # Assigned but still waiting: she is that stylist's NEXT, not her
+            # current - and calling that "with her now" is the fault this split
+            # exists to fix.
+            if who is None:
+                now.setdefault(None, []).append(row)
+            elif entry.state == 'called':
+                now.setdefault(who, []).append(row)
+            else:
+                later.setdefault(who, []).append(row)
+
         start, end = self._bounds(self._today())
         Event = request.env['calendar.event'].sudo()
         for event in Event.search([
                 ('modryn_is_booking', '=', True),
                 ('modryn_cancelled_at', '=', False),
                 ('start', '>=', fields.Datetime.to_string(start)),
-                ('start', '<=', fields.Datetime.to_string(end))]):
-            out.setdefault(event.modryn_employee_id.id or None, []).append({
+                ('start', '<=', fields.Datetime.to_string(end))], order='start'):
+            row = {
                 'kind': 'booking',
                 'id': event.id,
                 'name': event.name or '',
@@ -127,8 +157,19 @@ class ModrynSupervisor(http.Controller):
                 'rating': event.modryn_visit_rating or 0,
                 'rating_note': event.modryn_visit_note or '',
                 'helpers': event.modryn_helper_ids.mapped('name'),
-            })
-        return out
+            }
+            who = event.modryn_employee_id.id or None
+            running = bool(event.start and event.stop
+                           and event.start <= stamp < event.stop)
+            if running and not event.modryn_outcome:
+                now.setdefault(who, []).append(row)
+            elif event.start and event.start > stamp:
+                later.setdefault(who, []).append(row)
+            # An appointment that has finished - its hour gone by, or an outcome
+            # already recorded - belongs to neither. It is not happening and it
+            # is not coming, and a screen about the shift as it stands should not
+            # make a supervisor read past it.
+        return now, later
 
     @http.route('/shift-supervisor', type='http', auth='user', website=True,
                 sitemap=False)
@@ -138,7 +179,7 @@ class ModrynSupervisor(http.Controller):
         day = self._today()
         start, end = self._bounds(day)
         Attendance = request.env['modryn.shift.attendance'].sudo()
-        by_employee = self._customers_by_employee()
+        by_employee, coming = self._customers_by_employee()
 
         rows = []
         employees = request.env['hr.employee'].sudo().search(
@@ -163,13 +204,30 @@ class ModrynSupervisor(http.Controller):
                 'spells': [{
                     'in': _local(a.started_at).strftime('%H:%M'),
                     'out': _local(a.ended_at).strftime('%H:%M') if a.ended_at else '',
-                } for a in spells],
+                } for a in spells[-6:]],
+                # One sentence rather than a number with a loose word beside it.
+                # Split across QWeb nodes it extracts as the bare msgid
+                # "earlier", which tells a translator nothing about what is
+                # being counted and gives her nowhere to move the number to.
+                'earlier': (
+                    _("%(count)s earlier today.") % {'count': len(spells) - 6}
+                    if len(spells) > 6 else ''),
                 'expected': self._expected(employee, day),
                 'customers': customers,
                 'count': len(customers),
+                # Hers, but not yet: the walk-in a manager has put aside for her
+                # and the appointments still to come. Shown without the rating
+                # form - there is nothing to judge about a visit that has not
+                # happened.
+                'later': coming.get(employee.id, []),
             })
 
         unassigned = by_employee.get(None, [])
+        # Coming later with nobody on them. Counted rather than listed: the
+        # floor board's own appointments panel is where a manager assigns them,
+        # and a second copy of that list here would be a screen competing with
+        # itself. The number is the part she cannot get anywhere else.
+        later_loose = len(coming.get(None, []))
         return request.render('modryn_staff.shift_supervisor', {
             'rows': rows,
             # The first handful and a count, never the whole line. A tenant
@@ -186,6 +244,9 @@ class ModrynSupervisor(http.Controller):
                 _("Showing the first %(shown)s of %(total)s.") % {
                     'shown': 12, 'total': len(unassigned)}
                 if len(unassigned) > 12 else ''),
+            'later_note': (
+                _("%(count)s more later today with nobody on them yet.")
+                % {'count': later_loose} if later_loose else ''),
             'day_label': day.strftime('%d.%m.%Y'),
             'active_tab': 'supervisor',
         })

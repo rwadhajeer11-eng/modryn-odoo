@@ -36,6 +36,11 @@
                     </div>
                 </div>
                 <p t-if="unassigned_note" class="modryn_sub mb-0" t-out="unassigned_note"/>
+                <!-- Coming later with nobody on them. A number, not a list: the
+                     floor board's appointments panel is where they get
+                     assigned, and a second copy of it here would be a screen
+                     arguing with itself. -->
+                <p t-if="later_note" class="modryn_sub mb-0" t-out="later_note"/>
             </section>
 
             <div t-if="not rows" class="modryn_empty">Nobody on the team yet.</div>
@@ -56,25 +61,35 @@
                          started at 10:00. -->
                     <div class="modryn_super_times">
                         <div>
-                            <span class="modryn_sub">Expected</span>
+                            <span class="modryn_sub d-block">Expected</span>
                             <t t-if="r['expected']">
-                                <strong dir="ltr">
-                                    <t t-esc="r['expected']['from']"/>–<t t-esc="r['expected']['to']"/>
-                                </strong>
-                                <span class="modryn_sub" t-out="r['expected']['names']"/>
+                                <div t-foreach="r['expected']" t-as="sh">
+                                    <strong dir="ltr">
+                                        <t t-esc="sh['from']"/>–<t t-esc="sh['to']"/>
+                                    </strong>
+                                    <span class="modryn_sub" t-out="sh['name']"/>
+                                </div>
                             </t>
                             <span t-else="" class="modryn_sub">Not on today's rota</span>
                         </div>
                         <div>
-                            <span class="modryn_sub">Actually</span>
+                            <span class="modryn_sub d-block">Actually</span>
                             <t t-if="r['spells']">
+                                <!-- Already the LAST six, sliced on the server.
+                                     Kept from the front, a card hid the stretch
+                                     she is standing in - the "still on" line,
+                                     which is the one fact this column is for. -->
                                 <div t-foreach="r['spells']" t-as="sp">
                                     <strong dir="ltr" t-out="sp['in']"/>
                                     <t t-if="sp['out']">
                                         – <strong dir="ltr" t-out="sp['out']"/>
                                     </t>
-                                    <span t-else="" class="modryn_sub">— still on</span>
+                                    <span t-else="" class="modryn_sub"> — still on</span>
                                 </div>
+                                <!-- A day of coming and going runs to more lines
+                                     than anybody reads, and the card below it is
+                                     what she opened this screen for. -->
+                                <div t-if="r['earlier']" class="modryn_sub" t-out="r['earlier']"/>
                             </t>
                             <span t-else="" class="modryn_sub">Has not come on today</span>
                         </div>
@@ -95,7 +110,6 @@
                                 <span t-if="c.get('time')" class="modryn_badge is_muted"
                                       dir="ltr" t-out="c['time']"/>
                                 <span t-if="c['client_type'] == 'bride'" class="modryn_badge is_free">Bride</span>
-                                <span t-if="c['state'] == 'called'" class="modryn_badge is_busy">With her now</span>
                             </div>
                             <div t-if="c['phone']" class="modryn_sub" dir="ltr" t-out="c['phone']"/>
                             <div t-if="c['note']" class="modryn_sub" t-out="c['note']"/>
@@ -112,6 +126,27 @@
                                        t-att-value="request.csrf_token()"/>
                                 <input type="hidden" name="kind" t-att-value="c['kind']"/>
                                 <input type="hidden" name="record_id" t-att-value="c['id']"/>
+                                <!-- FIRST, and that is the whole point of it.
+                                     An <input> submits its form's first submit
+                                     button when Enter is pressed, and that used
+                                     to be the one-star button - so a supervisor
+                                     typing a note and pressing Enter recorded
+                                     the worst possible score without choosing
+                                     it. This one carries the score already
+                                     recorded, so Enter saves the words and
+                                     changes nothing else. -->
+                                <!-- str(), because t-att-value DROPS the
+                                     attribute when the value is falsy - and an
+                                     unrated visit is 0. It happens to survive
+                                     that (a valueless submit posts an empty
+                                     string, which parses back to 0), but this
+                                     codebase has already been bitten once by
+                                     the same line on the stock field, and a
+                                     second copy of the pattern is an invitation
+                                     to paste it somewhere it does matter. -->
+                                <button type="submit" name="rating"
+                                        t-att-value="str(c['rating'])"
+                                        class="modryn_rate_save">Save the note</button>
                                 <!-- The star's accessible name is "4 / 5", not
                                      "4 out of 5": the sentence form extracted as
                                      the msgid "{{0}} out of 5", which no
@@ -129,6 +164,19 @@
                                        t-att-value="c['rating_note']"
                                        placeholder="Anything worth remembering?"/>
                             </form>
+                        </div>
+                    </div>
+
+                    <!-- Hers, but not yet. Listed with the hour, and without a
+                         rating form: there is nothing to judge about a visit
+                         that has not happened. -->
+                    <div t-if="r['later']" class="modryn_super_later">
+                        <span class="modryn_sub">Later today</span>
+                        <div t-foreach="r['later']" t-as="c" class="modryn_card_marks">
+                            <span t-if="c['time']" class="modryn_badge is_muted"
+                                  dir="ltr" t-out="c['time']"/>
+                            <span t-else="" class="modryn_badge is_wait">Next</span>
+                            <span t-out="c['name']"/>
                         </div>
                     </div>
                 </section>
