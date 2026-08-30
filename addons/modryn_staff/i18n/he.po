@@ -145,6 +145,7 @@ msgstr "הוספה"
 #. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manage_staff_form
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manage_staff_list
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
 msgid "Add a team member"
 msgstr "הוספת עובדת"
 
@@ -209,6 +210,7 @@ msgstr "ארכיון"
 
 #. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manage_staff_list
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
 msgid "Archived"
 msgstr "בארכיון"
 
@@ -293,6 +295,7 @@ msgstr "תקציב (₪)"
 #. odoo-javascript
 #: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manage_staff_list
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
 msgid "Busy"
 msgstr "תפוסה"
 
@@ -982,6 +985,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:modryn_staff.field_hr_employee__modryn_level
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manage_staff_form
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manage_staff_list
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
 msgid "Permission level"
 msgstr "רמת הרשאה"
 
@@ -993,6 +997,7 @@ msgstr "פרטים אישיים"
 #. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manage_staff_form
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manage_staff_list
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
 #: model_terms:ir.ui.view,arch_db:modryn_staff.staff_profile
 msgid "Phone"
 msgstr "טלפון"
@@ -1495,6 +1500,7 @@ msgstr "המשימות של היום"
 #. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manage_staff_form
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manage_staff_list
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
 #: model_terms:ir.ui.view,arch_db:modryn_staff.staff_login
 msgid "Username"
 msgstr "שם משתמש"
@@ -2280,7 +2286,7 @@ msgstr "כולן"
 #: code:addons/modryn_staff/controllers/manager.py:0
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
 msgid "Manager screen"
-msgstr "מסך האחראי"
+msgstr "מסך מנהל"
 
 #. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
@@ -2660,3 +2666,38 @@ msgstr "בשביל מה"
 #: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
 msgid "Who"
 msgstr "את מי"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "Adding somebody, or changing what she may do, is the owner's."
+msgstr "הוספת עובדת, או שינוי מה שמותר לה, שייכים לבעלים."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "Address"
+msgstr "כתובת"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "Edit her account"
+msgstr "עריכת החשבון שלה"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid ""
+"Everything the boutique knows about her, and the papers it\n"
+"                    holds. She can read her own on My details; she cannot add to\n"
+"                    them or remove them."
+msgstr ""
+"כל מה שהבוטיק יודע עליה, והמסמכים שהוא שומר. היא רואה את\n"
+"                    שלה ב\"הפרטים שלי\"; היא לא יכולה להוסיף או למחוק."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "Second phone"
+msgstr "טלפון נוסף"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "With"
+msgstr "אצלה"

@@ -19,6 +19,7 @@ from odoo.tools.translate import LazyTranslate
 
 from .. import nav
 from . import access
+from .manage import ModrynManage
 
 _lt = LazyTranslate(__name__)
 
@@ -60,22 +61,30 @@ class ModrynManagerScreen(http.Controller):
         ], order='create_date desc')
 
     def _team_rows(self):
-        rows = []
-        for employee in self._team():
-            rows.append({
-                'id': employee.id,
-                'name': employee.name,
-                'roles': ' · '.join(employee.modryn_role_ids.mapped('name')),
-                'level': employee.modryn_level or '',
-                'phone': employee.work_phone or '',
-                'papers': [{
-                    'id': doc.id,
-                    'name': doc.name,
-                    'at': doc.create_date.strftime('%d.%m.%Y')
-                          if doc.create_date else '',
-                } for doc in self._papers(employee)],
-            })
-        return rows
+        """Everything the Team screen shows, plus the papers.
+
+        Built from that screen's OWN row builder rather than a second query
+        assembling the same fields: one function and two readers cannot start
+        disagreeing about what a woman's phone number is, and a copy would have
+        quietly missed the next field somebody adds.
+        """
+        rows = ModrynManage()._employee_rows()
+        by_id = {employee.id: employee for employee in self._team()}
+        out = []
+        for row in rows:
+            employee = by_id.get(row['id'])
+            if not employee:
+                # _employee_rows includes archived people; the team block is
+                # about who works here now. Her papers do not vanish - they stay
+                # against her record and come back if she is restored.
+                continue
+            out.append(dict(row, papers=[{
+                'id': doc.id,
+                'name': doc.name,
+                'at': doc.create_date.strftime('%d.%m.%Y')
+                      if doc.create_date else '',
+            } for doc in self._papers(employee)]))
+        return out
 
     def _recent(self):
         Announcement = request.env['modryn.announcement'].sudo()
@@ -111,6 +120,10 @@ class ModrynManagerScreen(http.Controller):
             'view': view if view in self.VIEWS else None,
             'team': [{'id': e.id, 'name': e.name} for e in self._team()],
             'team_rows': self._team_rows(),
+            # Adding a person, setting a password, changing a level: the owner's
+            # alone. The cards carry the links for her so she loses nothing by
+            # the move, and a manager simply does not see them.
+            'is_owner': access.is_owner(),
             'announcements': self._recent(),
             'error': error,
             # Which worker's upload went wrong, so the sentence appears against
@@ -127,14 +140,20 @@ class ModrynManagerScreen(http.Controller):
     @http.route('/manage/team-screen', type='http', auth='user', website=True,
                 sitemap=False)
     def manager_screen(self, **kw):
-        if not access.can_view('boss'):
+        # A MANAGER always, plus whoever the owner grants it to. The screen is
+        # named after her: moving it into the bottom row put it behind a grant
+        # like everything else down there, and a manager arriving at her own
+        # screen to find nothing on it is not a permission decision anybody
+        # made. A named exception rather than loosening the whole row - the rest
+        # of it is the boutique's administration and stays granted.
+        if not (access.is_manager() or access.can_view('boss')):
             return access.deny()
         return self._render(view=kw.get('view'))
 
     @http.route('/manage/team-screen/announce', type='http', auth='user',
                 website=True, methods=['POST'], csrf=True, sitemap=False)
     def announce(self, **post):
-        if not access.can_view('boss') or not access.is_manager():
+        if not access.is_manager():
             return access.deny()
         body = (post.get('body') or '').strip()
         # getlist, and replace-set semantics: the same idiom manage.py uses for
@@ -166,7 +185,7 @@ class ModrynManagerScreen(http.Controller):
                 website=True, methods=['POST'], csrf=True, sitemap=False)
     def paper_upload(self, **post):
         """File a signed page against one woman's record."""
-        if not access.can_view('boss') or not access.is_manager():
+        if not access.is_manager():
             return access.deny()
         employee = request.env['hr.employee'].sudo().browse(
             int(post.get('employee_id') or 0)).exists()
@@ -202,7 +221,7 @@ class ModrynManagerScreen(http.Controller):
         """Read one back. Through this route and never /web/content, which
         serves any attachment its ACL allows - and ir.attachment's rules are
         about models, not about which woman owns which payslip."""
-        if not access.can_view('boss') or not access.is_manager():
+        if not access.is_manager():
             return access.deny()
         attachment = request.env['ir.attachment'].sudo().browse(
             attachment_id).exists()
@@ -224,7 +243,7 @@ class ModrynManagerScreen(http.Controller):
                 type='http', auth='user', website=True, methods=['POST'],
                 csrf=True, sitemap=False)
     def paper_remove(self, attachment_id, **post):
-        if not access.can_view('boss') or not access.is_manager():
+        if not access.is_manager():
             return access.deny()
         attachment = request.env['ir.attachment'].sudo().browse(
             attachment_id).exists()
@@ -236,7 +255,7 @@ class ModrynManagerScreen(http.Controller):
                 website=True, methods=['POST'], csrf=True, sitemap=False)
     def unsend(self, **post):
         """Sent by mistake. Takes it off the bells as well as off this list."""
-        if not access.can_view('boss') or not access.is_manager():
+        if not access.is_manager():
             return access.deny()
         record = request.env['modryn.announcement'].sudo().browse(
             int(post.get('announcement_id') or 0)).exists()

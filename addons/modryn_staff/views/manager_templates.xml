@@ -86,19 +86,67 @@
                 <header class="modryn_panel_head">
                     <h2>The team</h2>
                     <span class="modryn_count" t-out="len(team_rows)"/>
+                    <a t-if="is_owner" href="/manage/staff/new"
+                       class="btn btn-sm btn-primary ms-auto">Add a team member</a>
                 </header>
                 <p class="modryn_sub mb-3">
-                    Her signed papers live here. She can read her own on My
-                    details; she cannot add to them or remove them.
+                    Everything the boutique knows about her, and the papers it
+                    holds. She can read her own on My details; she cannot add to
+                    them or remove them.
+                </p>
+                <p t-if="not is_owner" class="modryn_sub mb-3">
+                    Adding somebody, or changing what she may do, is the owner's.
                 </p>
 
                 <div class="modryn_cards">
                     <article t-foreach="team_rows" t-as="member" t-key="member['id']"
                              class="modryn_card modryn_team_card">
-                        <div class="modryn_strong" t-out="member['name']"/>
-                        <div t-if="member['roles']" class="modryn_sub" t-out="member['roles']"/>
-                        <div t-if="member['phone']" class="modryn_sub" dir="ltr"
-                             t-out="member['phone']"/>
+                        <div class="modryn_card_marks">
+                            <span class="modryn_strong" t-out="member['name']"/>
+                            <span t-if="not member['active']"
+                                  class="modryn_badge is_muted">Archived</span>
+                            <span t-elif="member['occupied']"
+                                  class="modryn_badge is_busy">Busy</span>
+                        </div>
+                        <div t-if="member['role']" class="modryn_sub" t-out="member['role']"/>
+
+                        <!-- What the Team screen showed, on the card that holds
+                             her papers - so "what is her second number, and did
+                             she sign the form" stops being two screens.
+                             The identity number is deliberately NOT here, for
+                             the reason that screen already gives: this is the
+                             page left open on the counter all day. -->
+                        <dl class="modryn_person">
+                            <t t-if="member['phone']">
+                                <dt>Phone</dt>
+                                <dd dir="ltr" t-out="member['phone']"/>
+                            </t>
+                            <t t-if="member['backup_phone']">
+                                <dt>Second phone</dt>
+                                <dd dir="ltr" t-out="member['backup_phone']"/>
+                            </t>
+                            <t t-if="member['city'] or member['street']">
+                                <dt>Address</dt>
+                                <dd><t t-out="' · '.join(x for x in (member['street'], member['city']) if x)"/></dd>
+                            </t>
+                            <t t-if="member['level']">
+                                <dt>Permission level</dt>
+                                <dd t-out="member['level']"/>
+                            </t>
+                            <t t-if="member['login']">
+                                <dt>Username</dt>
+                                <dd dir="ltr" t-out="member['login']"/>
+                            </t>
+                            <t t-if="member['occupied_with']">
+                                <dt>With</dt>
+                                <dd t-out="member['occupied_with']"/>
+                            </t>
+                        </dl>
+
+                        <div t-if="is_owner" class="modryn_card_actions">
+                            <a t-attf-href="/manage/staff/edit/#{member['id']}"
+                               class="btn btn-sm btn-outline-dark">Edit her account</a>
+                        </div>
 
                         <div t-if="file_error and file_for == member['id']"
                              class="modryn_field_error mt-2" role="alert">
