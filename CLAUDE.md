@@ -147,8 +147,10 @@ bella is `miri` and on qa it is `qaowner`; `admin` exists only on the separate
 `platform` database. Odoo's own `/web/login` labels its field "Email" and there
 are no email addresses on any of these accounts — it takes the USERNAME.
 
-**Green baseline** (2026-08-27): `verify.sh` reports **397 passed, 0 failed,
-6 skipped**, and the browser suite **33 passed**. Both are green —
+**Green baseline** (2026-08-30): `verify.sh` reports **400 passed, 0 failed,
+6 skipped**, and the browser suite **35 passed, 1 skipped** (the skip is
+`realsms.spec.js`, which needs Twilio credentials nobody should export here).
+Both are green —
 treat any failure as a regression you caused, and do not "fix" a check to make
 it pass without first proving the check is the thing that is wrong.
 
@@ -157,6 +159,40 @@ The six failures this file used to record are gone. Five were one root cause
 locally; **the identical bug still sits in the off-limits
 `deploy/scripts/build_template_prod.sh:134` and needs Mrwen.** The sixth was a
 self-declared dead check.
+
+## Translations — the hole the gate cannot see
+
+The product is **Hebrew-first with an Arabic toggle**, so a new screen is not
+finished until its strings are in `he.po` and `ar.po`. `verify.sh`'s ".po entry
+is translated" check reads what is IN the file and asks whether it is filled in —
+it says in its own comment that it **cannot see a string that was never added at
+all**, which is exactly what a brand-new screen produces. A whole screen shipped
+in English once already and the gate stayed green.
+
+How to find them (the Odoo 19 CLI is **not** `--i18n-export`, which fails with
+"no such option" and writes nothing):
+
+```bash
+./odoo/odoo-bin server -c odoo.conf -d qa -u <module> --stop-after-init   # first
+./odoo/odoo-bin i18n export -c odoo.conf -d qa -l pot -o /tmp/m.pot <module>
+```
+
+Then diff the `.pot`'s msgids against each `.po`'s translated ones (`polib`), and
+build any new entry **from the .pot entry**, keeping its reference lines — a
+`model_terms` translation binds to the **view it names**, not to the word, so an
+entry copied from elsewhere looks complete in the file and renders English on the
+page. Load with `-u <modules> --load-language=he_IL,ar_001 --i18n-overwrite`.
+
+Two more things that mislead:
+
+- **Field labels.** Without `string=`, the msgid is Odoo's guess from the
+  technical name ("Modryn Visit Rating") — name the field instead of translating
+  the machine's guess.
+- **The frontend's language is a cookie**, not the user's `lang`. `*.localtest.me`
+  pages render in whatever `frontend_lang` says, so the same signed-in manager
+  sees Hebrew in one browser profile and English in a fresh one. **Never write a
+  browser spec that matches a translated label** — match a class, as
+  `floor_take.spec.js` and `qa/lib/shift.js` already do.
 
 ## The workflow — every task, no exceptions
 
