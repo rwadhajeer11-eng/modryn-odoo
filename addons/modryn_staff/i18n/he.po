@@ -382,6 +382,7 @@ msgstr "תאריכים"
 
 #. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manage_hours
+#: model_terms:ir.ui.view,arch_db:modryn_staff.staff_profile
 msgid "Day"
 msgstr "יום"
 
@@ -547,6 +548,7 @@ msgstr "גבוהה"
 #. odoo-python
 #: code:addons/modryn_staff/nav.py:0
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manage_hours
+#: model_terms:ir.ui.view,arch_db:modryn_staff.staff_profile
 msgid "Hours"
 msgstr "שעות"
 
@@ -1829,7 +1831,7 @@ msgid "Read At"
 msgstr "נקרא בתאריך"
 
 #. module: modryn_staff
-#: model_terms:ir.ui.view,arch_db:modryn_staff.staff_profile
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
 msgid "Remove"
 msgstr "הסרה"
 
@@ -1907,7 +1909,7 @@ msgstr "נא לבחור קובץ."
 
 #. module: modryn_staff
 #. odoo-python
-#: code:addons/modryn_staff/controllers/auth.py:0
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
 msgid "That file is too large — the limit is 10 MB."
 msgstr "הקובץ הזה גדול מדי — המגבלה היא 10 MB."
 
@@ -2349,3 +2351,172 @@ msgstr "מי שלחה"
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
 msgid "Write the message first."
 msgstr "קודם כתבי את ההודעה."
+
+#. module: modryn_staff
+#. odoo-python
+#: code:addons/modryn_staff/controllers/auth.py:0
+msgid "January"
+msgstr "ינואר"
+
+#. module: modryn_staff
+#. odoo-python
+#: code:addons/modryn_staff/controllers/auth.py:0
+msgid "February"
+msgstr "פברואר"
+
+#. module: modryn_staff
+#. odoo-python
+#: code:addons/modryn_staff/controllers/auth.py:0
+msgid "March"
+msgstr "מרץ"
+
+#. module: modryn_staff
+#. odoo-python
+#: code:addons/modryn_staff/controllers/auth.py:0
+msgid "April"
+msgstr "אפריל"
+
+#. module: modryn_staff
+#. odoo-python
+#: code:addons/modryn_staff/controllers/auth.py:0
+msgid "May"
+msgstr "מאי"
+
+#. module: modryn_staff
+#. odoo-python
+#: code:addons/modryn_staff/controllers/auth.py:0
+msgid "June"
+msgstr "יוני"
+
+#. module: modryn_staff
+#. odoo-python
+#: code:addons/modryn_staff/controllers/auth.py:0
+msgid "July"
+msgstr "יולי"
+
+#. module: modryn_staff
+#. odoo-python
+#: code:addons/modryn_staff/controllers/auth.py:0
+msgid "August"
+msgstr "אוגוסט"
+
+#. module: modryn_staff
+#. odoo-python
+#: code:addons/modryn_staff/controllers/auth.py:0
+msgid "September"
+msgstr "ספטמבר"
+
+#. module: modryn_staff
+#. odoo-python
+#: code:addons/modryn_staff/controllers/auth.py:0
+msgid "October"
+msgstr "אוקטובר"
+
+#. module: modryn_staff
+#. odoo-python
+#: code:addons/modryn_staff/controllers/auth.py:0
+msgid "November"
+msgstr "נובמבר"
+
+#. module: modryn_staff
+#. odoo-python
+#: code:addons/modryn_staff/controllers/auth.py:0
+msgid "December"
+msgstr "דצמבר"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "The team"
+msgstr "הצוות"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid ""
+"Her signed papers live here. She can read her own on My\n"
+"                    details; she cannot add to them or remove them."
+msgstr ""
+"המסמכים החתומים שלה נמצאים כאן. היא רואה את שלה ב\"הפרטים\n"
+"                    שלי\"; היא לא יכולה להוסיף או למחוק."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "Nothing filed yet."
+msgstr "עדיין לא תויק כלום."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "File it"
+msgstr "תיוק"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "Choose a file first."
+msgstr "קודם בחרי קובץ."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.staff_profile
+msgid "Nothing on file yet."
+msgstr "עדיין אין מסמכים."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.staff_profile
+msgid ""
+"What the boutique has on file for you. Only you and the\n"
+"                    owner can open these; your manager adds them."
+msgstr ""
+"מה שהבוטיק שומר עלייך. רק את והבעלים יכולות לפתוח;\n"
+"                    האחראית היא שמוסיפה."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.staff_profile
+msgid "My hours on the floor"
+msgstr "השעות שלי במשמרת"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.staff_profile
+msgid "This week:"
+msgstr "השבוע:"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.staff_profile
+msgid "Month"
+msgstr "חודש"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.staff_profile
+msgid "Show"
+msgstr "הצג"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.staff_profile
+msgid "<span class=\"modryn_sub\">days on the floor</span>"
+msgstr "<span class=\"modryn_sub\">ימים במשמרת</span>"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.staff_profile
+msgid "<span class=\"modryn_sub\">hours</span>"
+msgstr "<span class=\"modryn_sub\">שעות</span>"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.staff_profile
+msgid "On and off"
+msgstr "כניסה ויציאה"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.staff_profile
+msgid "One of these is still running, and counts up to now."
+msgstr "אחת מהן עדיין פתוחה, ונספרת עד עכשיו."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.staff_profile
+msgid "You were not on the floor that month."
+msgstr "לא היית במשמרת בחודש הזה."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.staff_profile
+msgid ""
+"Nothing recorded yet — your hours start counting the first\n"
+"                    time you open the floor board."
+msgstr ""
+"עדיין לא נרשם כלום — השעות מתחילות להיספר בפעם הראשונה\n"
+"                    שתפתחי את מסך המשמרת."

@@ -59,6 +59,69 @@
                 </form>
             </section>
 
+            <!-- ========================= the team ========================= -->
+            <section class="modryn_panel mb-4">
+                <header class="modryn_panel_head">
+                    <h2>The team</h2>
+                    <span class="modryn_count" t-out="len(team_rows)"/>
+                </header>
+                <p class="modryn_sub mb-3">
+                    Her signed papers live here. She can read her own on My
+                    details; she cannot add to them or remove them.
+                </p>
+
+                <div class="modryn_cards">
+                    <article t-foreach="team_rows" t-as="member" t-key="member['id']"
+                             class="modryn_card modryn_team_card">
+                        <div class="modryn_strong" t-out="member['name']"/>
+                        <div t-if="member['roles']" class="modryn_sub" t-out="member['roles']"/>
+                        <div t-if="member['phone']" class="modryn_sub" dir="ltr"
+                             t-out="member['phone']"/>
+
+                        <div t-if="file_error and file_for == member['id']"
+                             class="modryn_field_error mt-2" role="alert">
+                            <t t-if="file_error == 'nofile'">Choose a file first.</t>
+                            <t t-else="">That file is too large — the limit is 10 MB.</t>
+                        </div>
+
+                        <p t-if="not member['papers']" class="modryn_sub mt-2 mb-0">
+                            Nothing filed yet.
+                        </p>
+                        <div t-else="" class="mt-2">
+                            <div t-foreach="member['papers']" t-as="doc" t-key="doc['id']"
+                                 class="modryn_doc_row">
+                                <a t-attf-href="/manage/team-screen/paper/#{doc['id']}">
+                                    <i class="fa fa-file-o" aria-hidden="true"/>
+                                    <t t-out="doc['name']"/>
+                                </a>
+                                <span class="modryn_sub" dir="ltr" t-out="doc['at']"/>
+                                <form t-attf-action="/manage/team-screen/paper/#{doc['id']}/remove"
+                                      method="post" class="d-inline">
+                                    <input type="hidden" name="csrf_token"
+                                           t-att-value="request.csrf_token()"/>
+                                    <button type="submit" class="btn btn-sm btn-outline-dark">
+                                        Remove
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+
+                        <form action="/manage/team-screen/paper" method="post"
+                              enctype="multipart/form-data"
+                              class="d-flex gap-2 flex-wrap mt-2">
+                            <input type="hidden" name="csrf_token"
+                                   t-att-value="request.csrf_token()"/>
+                            <input type="hidden" name="employee_id"
+                                   t-att-value="member['id']"/>
+                            <input type="file" name="paper" class="form-control form-control-sm"/>
+                            <button type="submit" class="btn btn-sm btn-outline-dark">
+                                File it
+                            </button>
+                        </form>
+                    </article>
+                </div>
+            </section>
+
             <!-- ===================== what has been said ===================== -->
             <section class="modryn_panel">
                 <header class="modryn_panel_head">

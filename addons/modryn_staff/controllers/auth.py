@@ -113,8 +113,6 @@ class ModrynStaffAuth(http.Controller):
     #  3. WHAT COMES BACK. Always as a DOWNLOAD, never inline. An uploaded .html
     #     or .svg served inline runs in the boutique's own origin, which is
     #     stored XSS with extra steps.
-    MAX_UPLOAD_BYTES = 10 * 1024 * 1024
-
     def _my_documents(self, employee):
         return request.env['ir.attachment'].sudo().search([
             ('res_model', '=', 'hr.employee'),
@@ -122,37 +120,18 @@ class ModrynStaffAuth(http.Controller):
             ('name', '!=', False),
         ], order='create_date desc')
 
-    @http.route('/staff/profile/upload', type='http', auth='user', website=True,
-                methods=['POST'], csrf=True, sitemap=False)
-    def profile_upload(self, **post):
-        if not self._is_staff():
-            return request.not_found()
-        me = self._my_employee()
-        if not me:
-            return request.not_found()
-
-        upload = request.httprequest.files.get('document')
-        if not upload or not upload.filename:
-            return request.redirect('/staff/profile?error=nofile')
-
-        data = upload.read(self.MAX_UPLOAD_BYTES + 1)
-        if len(data) > self.MAX_UPLOAD_BYTES:
-            # Read one byte past the limit rather than trusting a declared
-            # length: content-length is whatever the client says it is.
-            return request.redirect('/staff/profile?error=toobig')
-        if not data:
-            return request.redirect('/staff/profile?error=nofile')
-
-        request.env['ir.attachment'].sudo().create({
-            'name': upload.filename,
-            'raw': data,
-            'res_model': 'hr.employee',
-            'res_id': me.id,
-            # NEVER a website-visible attachment: public=True would put a
-            # woman's documents on a URL anybody can fetch.
-            'public': False,
-        })
-        return request.redirect('/staff/profile?saved=1')
+    # NO upload route here, and no delete route, deliberately.
+    #
+    # These are the signed papers of an employment - a contract, a form, a
+    # payslip - and they are the BOUTIQUE's record. A worker who can delete her
+    # own contract can delete the shop's copy of it, and one who can add files
+    # can put anything in the folder her manager will later read as official.
+    # The manager files them, on the team screen; this page is where she reads
+    # hers.
+    #
+    # Removed rather than hidden. A delete route with no button pointing at it
+    # is still a delete route, and the next person to look at this file would
+    # have found a page that offers nothing and an endpoint that does.
 
     @http.route('/staff/profile/file/<int:attachment_id>', type='http', auth='user',
                 website=True, sitemap=False)
@@ -177,21 +156,6 @@ class ModrynStaffAuth(http.Controller):
             ('Content-Disposition', content_disposition(attachment.name)),
             ('X-Content-Type-Options', 'nosniff'),
         ])
-
-    @http.route('/staff/profile/file/<int:attachment_id>/delete', type='http',
-                auth='user', website=True, methods=['POST'], csrf=True, sitemap=False)
-    def profile_file_delete(self, attachment_id, **post):
-        if not self._is_staff():
-            return request.not_found()
-        me = self._my_employee()
-        if not me:
-            return request.not_found()
-        attachment = request.env['ir.attachment'].sudo().browse(
-            attachment_id).exists()
-        if (attachment and attachment.res_model == 'hr.employee'
-                and attachment.res_id == me.id):
-            attachment.unlink()
-        return request.redirect('/staff/profile?saved=1')
 
     # ----------------------------------------------------------------- the bell
     @http.route('/staff/notifications', type='http', auth='user', website=True,
@@ -252,10 +216,53 @@ class ModrynStaffAuth(http.Controller):
         return request.env['hr.employee'].sudo().search(
             [('user_id', '=', request.env.user.id)], limit=1)
 
-    def _profile_context(self, employee, saved=False, error=None):
+    # Month names as words, because "2026-07" is a filename and not a month. The
+    # list is indexed from one so the number a date carries is the index that
+    # names it, rather than needing a minus-one nobody remembers.
+    MONTHS = [
+        None,
+        _lt("January"), _lt("February"), _lt("March"), _lt("April"),
+        _lt("May"), _lt("June"), _lt("July"), _lt("August"),
+        _lt("September"), _lt("October"), _lt("November"), _lt("December"),
+    ]
+
+    def _hours_context(self, employee, wanted=None):
+        """Her time on the floor: this week, and one month she chooses.
+
+        ONE month at a time and not all of them at once. A woman who has been
+        here three years has a thousand rows, and a page that renders every one
+        of them answers "how long did I do in July" by making her scroll past
+        the other thirty-five months.
+        """
+        Attendance = request.env['modryn.shift.attendance']
+        months = Attendance.modryn_months(employee)
+        chosen = None
+        if wanted:
+            try:
+                year, month = (int(part) for part in wanted.split('-', 1))
+                if (year, month) in months:
+                    chosen = (year, month)
+            except (TypeError, ValueError):
+                chosen = None
+        # Her most recent month by default, which is the one she is asking about
+        # nine times in ten.
+        if chosen is None and months:
+            chosen = months[0]
+        return {
+            'week_hours': Attendance.modryn_week_hours(employee),
+            'months': [{
+                'key': '%04d-%02d' % (year, month),
+                'label': '%s %s' % (self.MONTHS[month], year),
+                'chosen': (year, month) == chosen,
+            } for year, month in months],
+            'month': (Attendance.modryn_month(employee, *chosen)
+                      if chosen else None),
+        }
+
+    def _profile_context(self, employee, saved=False, error=None, month=None):
         genders = request.env['hr.employee']._fields['modryn_gender'].get_description(
             request.env)['selection']
-        return {
+        context = {
             'employee': employee,
             'documents': self._my_documents(employee),
             'genders': genders,
@@ -264,34 +271,21 @@ class ModrynStaffAuth(http.Controller):
             'error': error,
             'active_tab': 'profile',
         }
-
-    # Messages for the redirect-carried upload errors. A redirect cannot carry a
-    # rendered page, so the failure travels as a CODE and is turned back into a
-    # sentence here.
-    #
-    # _lt and NOT a plain string later passed through _(). The old shape was
-    # `_(self.UPLOAD_ERRORS[error])` - calling _() on a VARIABLE - and Odoo's
-    # extractor only ever sees literals, so neither sentence entered the .pot at
-    # all. Both were untranslatable no matter what anybody wrote in he.po, while
-    # the code around them looked like it had been handled. _lt puts the literal
-    # where the extractor can find it and resolves in her language at render.
-    UPLOAD_ERRORS = {
-        'nofile': _lt("Please choose a file."),
-        'toobig': _lt("That file is too large — the limit is 10 MB."),
-    }
+        context.update(self._hours_context(employee, month))
+        return context
 
     @http.route('/staff/profile', type='http', auth='user', website=True,
                 methods=['GET'], sitemap=False)
-    def profile_form(self, saved=None, error=None, **kw):
+    def profile_form(self, saved=None, month=None, **kw):
         if not self._is_staff():
             return request.not_found()
         me = self._my_employee()
         if not me:
             return request.not_found()
         request.session.touch()
-        return request.render('modryn_staff.staff_profile', self._profile_context(
-            me, saved=bool(saved),
-            error=str(self.UPLOAD_ERRORS[error]) if error in self.UPLOAD_ERRORS else None))
+        return request.render('modryn_staff.staff_profile',
+                              self._profile_context(me, saved=bool(saved),
+                                                    month=month))
 
     @http.route('/staff/profile', type='http', auth='user', website=True,
                 methods=['POST'], csrf=True, sitemap=False)

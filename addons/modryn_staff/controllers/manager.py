@@ -14,7 +14,7 @@ that is not a thing a page grant should be able to hand out.
 import pytz
 
 from odoo import http
-from odoo.http import request
+from odoo.http import content_disposition, request
 from odoo.tools.translate import LazyTranslate
 
 from .. import nav
@@ -29,6 +29,11 @@ TZ = pytz.timezone('Asia/Jerusalem')
 # whole history of a boutique is asking a different question than this screen.
 RECENT = 20
 
+# Ten megabytes, the figure the profile's own upload used before this screen
+# took the job over. Read one byte PAST it rather than trusting a declared
+# length: content-length is whatever the client says it is.
+MAX_UPLOAD_BYTES = 10 * 1024 * 1024
+
 
 class ModrynManagerScreen(http.Controller):
 
@@ -40,6 +45,37 @@ class ModrynManagerScreen(http.Controller):
         """Everyone who could be told something, in a stable order."""
         return request.env['hr.employee'].sudo().search(
             [('modryn_level', 'in', ('owner', 'manager', 'staff'))], order='name')
+
+    def _papers(self, employee):
+        """What the boutique holds for one woman.
+
+        The same query her own profile runs, against the same attachments: this
+        screen and that one are two doors onto one folder, not two folders that
+        have to be kept in step.
+        """
+        return request.env['ir.attachment'].sudo().search([
+            ('res_model', '=', 'hr.employee'),
+            ('res_id', '=', employee.id),
+            ('name', '!=', False),
+        ], order='create_date desc')
+
+    def _team_rows(self):
+        rows = []
+        for employee in self._team():
+            rows.append({
+                'id': employee.id,
+                'name': employee.name,
+                'roles': ' · '.join(employee.modryn_role_ids.mapped('name')),
+                'level': employee.modryn_level or '',
+                'phone': employee.work_phone or '',
+                'papers': [{
+                    'id': doc.id,
+                    'name': doc.name,
+                    'at': doc.create_date.strftime('%d.%m.%Y')
+                          if doc.create_date else '',
+                } for doc in self._papers(employee)],
+            })
+        return rows
 
     def _recent(self):
         Announcement = request.env['modryn.announcement'].sudo()
@@ -60,11 +96,17 @@ class ModrynManagerScreen(http.Controller):
             })
         return rows
 
-    def _render(self, error=None, draft=None, picked=None):
+    def _render(self, error=None, draft=None, picked=None, file_error=None,
+                file_for=None):
         return request.render('modryn_staff.manager_screen', {
             'team': [{'id': e.id, 'name': e.name} for e in self._team()],
+            'team_rows': self._team_rows(),
             'announcements': self._recent(),
             'error': error,
+            # Which worker's upload went wrong, so the sentence appears against
+            # HER card rather than at the top of a screen listing eight people.
+            'file_error': file_error,
+            'file_for': file_for,
             # What she typed, handed back so a refusal never costs her the
             # message she had written.
             'draft': draft or '',
@@ -107,6 +149,74 @@ class ModrynManagerScreen(http.Controller):
             # that would show nothing new and leave her wondering.
             return self._render(
                 error='nobody', draft=body, picked=employees.ids)
+        return request.redirect('/manage/team-screen')
+
+    # ------------------------------------------------------ her papers
+    @http.route('/manage/team-screen/paper', type='http', auth='user',
+                website=True, methods=['POST'], csrf=True, sitemap=False)
+    def paper_upload(self, **post):
+        """File a signed page against one woman's record."""
+        if not access.can_view('boss') or not access.is_manager():
+            return access.deny()
+        employee = request.env['hr.employee'].sudo().browse(
+            int(post.get('employee_id') or 0)).exists()
+        if not employee:
+            return request.redirect('/manage/team-screen')
+
+        upload = request.httprequest.files.get('paper')
+        if not upload or not upload.filename:
+            return self._render(file_error='nofile', file_for=employee.id)
+        data = upload.read(MAX_UPLOAD_BYTES + 1)
+        if len(data) > MAX_UPLOAD_BYTES:
+            return self._render(file_error='toobig', file_for=employee.id)
+        if not data:
+            return self._render(file_error='nofile', file_for=employee.id)
+
+        request.env['ir.attachment'].sudo().create({
+            'name': upload.filename,
+            'raw': data,
+            'res_model': 'hr.employee',
+            'res_id': employee.id,
+            # NEVER website-visible. public=True would put a woman's contract on
+            # a URL anybody can fetch.
+            'public': False,
+        })
+        return request.redirect('/manage/team-screen')
+
+    @http.route('/manage/team-screen/paper/<int:attachment_id>', type='http',
+                auth='user', website=True, sitemap=False)
+    def paper_file(self, attachment_id, **kw):
+        """Read one back. Through this route and never /web/content, which
+        serves any attachment its ACL allows - and ir.attachment's rules are
+        about models, not about which woman owns which payslip."""
+        if not access.can_view('boss') or not access.is_manager():
+            return access.deny()
+        attachment = request.env['ir.attachment'].sudo().browse(
+            attachment_id).exists()
+        # It must be a STAFF paper. A manager may read her whole team's folder,
+        # but that is not permission to read every attachment in the database
+        # by guessing an id.
+        if not attachment or attachment.res_model != 'hr.employee':
+            return request.not_found()
+        return request.make_response(attachment.raw, headers=[
+            # Downloaded, never rendered: an uploaded .html or .svg served
+            # inline runs in the boutique's own origin, which is stored XSS
+            # with extra steps.
+            ('Content-Type', 'application/octet-stream'),
+            ('Content-Disposition', content_disposition(attachment.name)),
+            ('X-Content-Type-Options', 'nosniff'),
+        ])
+
+    @http.route('/manage/team-screen/paper/<int:attachment_id>/remove',
+                type='http', auth='user', website=True, methods=['POST'],
+                csrf=True, sitemap=False)
+    def paper_remove(self, attachment_id, **post):
+        if not access.can_view('boss') or not access.is_manager():
+            return access.deny()
+        attachment = request.env['ir.attachment'].sudo().browse(
+            attachment_id).exists()
+        if attachment and attachment.res_model == 'hr.employee':
+            attachment.unlink()
         return request.redirect('/manage/team-screen')
 
     @http.route('/manage/team-screen/unsend', type='http', auth='user',

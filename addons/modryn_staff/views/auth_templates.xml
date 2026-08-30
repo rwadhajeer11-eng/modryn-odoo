@@ -142,12 +142,18 @@
                  with no file chosen would look like a failed upload. -->
             <section class="modryn_panel mt-4">
                 <h2 class="h5">My documents</h2>
+                <!-- Read, not written. These are the boutique's record of an
+                     employment - a contract, a form, a payslip - and the
+                     manager files them on the team screen. There is no Upload
+                     and no Remove here because there are no routes behind
+                     them any more, not because the buttons were taken away. -->
                 <p class="modryn_sub">
-                    Only you and the boutique owner can open these.
+                    What the boutique has on file for you. Only you and the
+                    owner can open these; your manager adds them.
                 </p>
 
-                <div t-if="not documents" class="modryn_empty mb-3">Nothing uploaded yet.</div>
-                <div t-else="" class="mb-3">
+                <div t-if="not documents" class="modryn_empty">Nothing on file yet.</div>
+                <div t-else="">
                     <div t-foreach="documents" t-as="doc" class="modryn_doc_row">
                         <a t-attf-href="/staff/profile/file/#{doc.id}">
                             <i class="fa fa-file-o" aria-hidden="true"/>
@@ -155,23 +161,87 @@
                         </a>
                         <span class="modryn_sub" dir="ltr"
                               t-esc="doc.create_date.strftime('%d.%m.%Y')"/>
-                        <form t-attf-action="/staff/profile/file/#{doc.id}/delete"
-                              method="post" class="d-inline">
-                            <input type="hidden" name="csrf_token"
-                                   t-att-value="request.csrf_token()"/>
-                            <button type="submit" class="btn btn-sm btn-outline-dark">Remove</button>
-                        </form>
                     </div>
                 </div>
+            </section>
 
-                <form action="/staff/profile/upload" method="post"
-                      enctype="multipart/form-data" class="d-flex gap-2 flex-wrap">
-                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
-                    <input type="file" name="document" class="form-control"
-                           style="max-width: 320px;"/>
-                    <button type="submit" class="btn btn-outline-dark">Upload</button>
-                </form>
-                <div class="form-text">Up to 10 MB per file.</div>
+            <!-- ==================== her hours ==================== -->
+            <!-- TIME ON THE FLOOR, and the panel says so. It is counted from
+                 the moment she presses the door to the moment she presses it
+                 again, which is the only record this product keeps - calling it
+                 "hours worked" would be a claim about payroll that nothing here
+                 can stand behind. -->
+            <section class="modryn_panel mt-4">
+                <div class="d-flex align-items-baseline justify-content-between flex-wrap gap-2">
+                    <h2 class="h5 mb-0">My hours on the floor</h2>
+                    <span class="modryn_sub">
+                        This week: <strong class="modryn_strong" dir="ltr"
+                                           t-out="week_hours"/>
+                    </span>
+                </div>
+
+                <p t-if="not months" class="modryn_empty mt-3">
+                    Nothing recorded yet — your hours start counting the first
+                    time you open the floor board.
+                </p>
+
+                <t t-else="">
+                    <!-- Only the months she HAS something in. A dropdown of the
+                         year's twelve would open on empty tables for the ones
+                         before she was hired, which reads as lost data. -->
+                    <form action="/staff/profile" method="get"
+                          class="d-flex gap-2 align-items-center flex-wrap my-3">
+                        <label class="form-label mb-0" for="month">Month</label>
+                        <select id="month" name="month" class="form-select w-auto">
+                            <option t-foreach="months" t-as="m" t-key="m['key']"
+                                    t-att-value="m['key']"
+                                    t-att-selected="m['chosen']"
+                                    t-out="m['label']"/>
+                        </select>
+                        <button type="submit" class="btn btn-sm btn-outline-dark">Show</button>
+                    </form>
+
+                    <div class="modryn_card_marks mb-2">
+                        <span class="modryn_badge is_muted">
+                            <t t-out="month['day_count']"/>
+                        </span>
+                        <span class="modryn_sub">days on the floor</span>
+                        <span class="modryn_badge is_free" dir="ltr">
+                            <t t-out="month['hours']"/>
+                        </span>
+                        <!-- Just "hours". It read "hours in August 2026", which
+                             extracts as the fragment "hours in" with the month
+                             stranded after it - a msgid no translator can put in
+                             her own word order. The month is named on the picker
+                             directly above, where she chose it. -->
+                        <span class="modryn_sub">hours</span>
+                    </div>
+
+                    <p t-if="month['open']" class="modryn_sub">
+                        One of these is still running, and counts up to now.
+                    </p>
+
+                    <p t-if="not month['days']" class="modryn_empty">
+                        You were not on the floor that month.
+                    </p>
+                    <table t-else="" class="table modryn_table align-middle">
+                        <thead>
+                            <tr><th>Day</th><th>On and off</th><th>Hours</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="month['days']" t-as="d" t-key="d['label']">
+                                <td class="modryn_strong" dir="ltr" t-out="d['label']"/>
+                                <td class="modryn_sub">
+                                    <span t-foreach="d['spells']" t-as="sp" t-key="sp_index"
+                                          dir="ltr" class="me-2">
+                                        <t t-out="sp['in']"/><t t-if="sp['out']">–<t t-out="sp['out']"/></t>
+                                    </span>
+                                </td>
+                                <td dir="ltr" t-out="d['hours']"/>
+                            </tr>
+                        </tbody>
+                    </table>
+                </t>
             </section>
         </t>
     </template>

@@ -1,6 +1,14 @@
+from datetime import datetime, time, timedelta
+
 import psycopg2
+import pytz
 
 from odoo import api, fields, models
+
+# The boutique's own clock. Every figure on the hours panel is worked out in it:
+# a shift that runs to eleven at night is stored as 20:00 UTC, and grouping by
+# the UTC date would move half the summer's evenings onto the following day.
+TZ = pytz.timezone('Asia/Jerusalem')
 
 
 # Under a minute on the floor is a mis-press, not a shift. One minute rather
@@ -52,6 +60,118 @@ class ModrynShiftAttendance(models.Model):
         "(employee_id) WHERE ended_at IS NULL",
         "That employee is already on the floor.",
     )
+
+    # ------------------------------------------------------------- her hours
+    @api.model
+    def _modryn_local(self, value):
+        """A stored naive-UTC datetime as the boutique's wall clock.
+
+        Every figure below is worked out in LOCAL time. A shift that runs from
+        half past nine at night to eleven is stored as 18:30-20:00 UTC, and
+        grouping those by their UTC date puts half the summer's evenings on the
+        following day.
+        """
+        return pytz.utc.localize(value).astimezone(TZ) if value else None
+
+    @api.model
+    def modryn_months(self, employee):
+        """Every month she has any record in, newest first.
+
+        Read off the rows rather than offered as a fixed range: a woman hired in
+        March should not be given a dropdown of the year's other eleven months,
+        each of which would open on an empty table and read as lost data.
+        """
+        if not employee:
+            return []
+        rows = self.sudo().search(
+            [('employee_id', '=', employee.id)], order='started_at desc')
+        seen = []
+        for row in rows:
+            local = self._modryn_local(row.started_at)
+            key = (local.year, local.month)
+            if key not in seen:
+                seen.append(key)
+        return seen
+
+    @api.model
+    def modryn_month(self, employee, year, month):
+        """One month: a line per day she was here, and what it adds up to.
+
+        A spell still open counts up to NOW and says so. The alternative is to
+        skip it, which would show a woman standing on the floor a total that
+        does not include the hours she is putting in as she reads it.
+        """
+        empty = {'days': [], 'day_count': 0, 'hours': 0.0, 'open': False}
+        if not employee:
+            return empty
+        start = TZ.localize(datetime(year, month, 1))
+        end = TZ.localize(datetime(year + (month // 12), (month % 12) + 1, 1))
+        rows = self.sudo().search([
+            ('employee_id', '=', employee.id),
+            ('started_at', '>=', start.astimezone(pytz.utc).replace(tzinfo=None)),
+            ('started_at', '<', end.astimezone(pytz.utc).replace(tzinfo=None)),
+        ], order='started_at')
+
+        now = fields.Datetime.now()
+        by_day, order = {}, []
+        still_open = False
+        for row in rows:
+            finish = row.ended_at
+            if not finish:
+                finish = now
+                still_open = True
+            seconds = max(0.0, (finish - row.started_at).total_seconds())
+            local = self._modryn_local(row.started_at)
+            key = local.date()
+            if key not in by_day:
+                by_day[key] = {'date': key, 'hours': 0.0, 'spells': [],
+                               'open': False}
+                order.append(key)
+            bucket = by_day[key]
+            bucket['hours'] += seconds / 3600.0
+            bucket['open'] = bucket['open'] or not row.ended_at
+            bucket['spells'].append({
+                'in': local.strftime('%H:%M'),
+                'out': (self._modryn_local(row.ended_at).strftime('%H:%M')
+                        if row.ended_at else ''),
+            })
+
+        days = []
+        for key in order:
+            bucket = by_day[key]
+            bucket['hours'] = round(bucket['hours'], 2)
+            bucket['label'] = key.strftime('%d.%m.%Y')
+            days.append(bucket)
+        return {
+            'days': days,
+            'day_count': len(days),
+            'hours': round(sum(d['hours'] for d in days), 2),
+            'open': still_open,
+        }
+
+    @api.model
+    def modryn_week_hours(self, employee):
+        """This week so far, counted from SUNDAY.
+
+        Sunday because that is the week this product already works in - the
+        rota's grid, its submission windows and its publish all start there, and
+        a second definition of "this week" on the profile page would disagree
+        with the schedule she is looking at on the next tab.
+        """
+        if not employee:
+            return 0.0
+        today = datetime.now(TZ).date()
+        sunday = today - timedelta(days=(today.weekday() + 1) % 7)
+        start = TZ.localize(datetime.combine(sunday, time.min))
+        rows = self.sudo().search([
+            ('employee_id', '=', employee.id),
+            ('started_at', '>=', start.astimezone(pytz.utc).replace(tzinfo=None)),
+        ])
+        now = fields.Datetime.now()
+        total = sum(
+            max(0.0, ((row.ended_at or now) - row.started_at).total_seconds())
+            for row in rows)
+        return round(total / 3600.0, 2)
 
     @api.model
     def modryn_open(self, employee, started_at=None):

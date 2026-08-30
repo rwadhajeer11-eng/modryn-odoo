@@ -1319,3 +1319,16 @@
     display: grid;
     gap: 10px;
 }
+
+// One worker on the manager's team block: her name, and the papers the boutique
+// holds for her. Wider than a plain card because a filename is long and a row
+// of them wraps badly in a 240px column.
+.modryn_team_card {
+    .modryn_doc_row {
+        margin-block-start: 4px;
+    }
+
+    input[type="file"] {
+        max-inline-size: 200px;
+    }
+}
