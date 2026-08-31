@@ -8,6 +8,10 @@
 .modryn_roster_nav {
     display: flex;
     gap: 8px;
+    // The week's dates sit BETWEEN the two arrows now, so the row has to read
+    // as one control rather than three loose things stacked on a phone.
+    align-items: center;
+    flex-wrap: wrap;
 }
 
 // The JS mount point, and nothing else. roster.js binds its two delegated
@@ -350,4 +354,18 @@
     flex-wrap: wrap;
     gap: 4px;
     margin-block-start: 4px;
+}
+
+
+// An arrow that means "earlier" has to point the way the page reads: left in
+// English, right in Hebrew and Arabic. Both glyphs are in the markup and one is
+// shown, rather than flipping a single one with transform - this file is run
+// through rtlcss to build the RTL bundle, and rtlcss rewrites transforms, so a
+// flip written here can be flipped back with nothing to show for it. `display`
+// is not a property it touches.
+.modryn_when_rtl { display: none; }
+
+[dir="rtl"] {
+    .modryn_when_ltr { display: none; }
+    .modryn_when_rtl { display: inline; }
 }

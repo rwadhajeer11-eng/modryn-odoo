@@ -957,3 +957,40 @@ msgid ""
 msgstr ""
 "השבוע הזה כבר נעבד, ולכן אין על מה לענות עבורו. עברי לשבוע שמתוכנן כדי לקבוע"
 " מתי ההגשה נפתחת."
+
+#. module: modryn_roster
+#: model_terms:ir.ui.view,arch_db:modryn_roster.roster_page
+msgid ""
+"<i class=\"fa fa-angle-left modryn_when_ltr\" aria-hidden=\"true\"/>\n"
+"                    <i class=\"fa fa-angle-right modryn_when_rtl\" aria-hidden=\"true\"/>\n"
+"                    <span class=\"visually-hidden\">Earlier weeks</span>"
+msgstr ""
+"<i class=\"fa fa-angle-left modryn_when_ltr\" aria-hidden=\"true\"/>\n"
+"                    <i class=\"fa fa-angle-right modryn_when_rtl\" aria-hidden=\"true\"/>\n"
+"                    <span class=\"visually-hidden\">שבועות קודמים</span>"
+
+#. module: modryn_roster
+#: model_terms:ir.ui.view,arch_db:modryn_roster.roster_page
+msgid ""
+"<i class=\"fa fa-angle-right modryn_when_ltr\" aria-hidden=\"true\"/>\n"
+"                    <i class=\"fa fa-angle-left modryn_when_rtl\" aria-hidden=\"true\"/>\n"
+"                    <span class=\"visually-hidden\">Later weeks</span>"
+msgstr ""
+"<i class=\"fa fa-angle-right modryn_when_ltr\" aria-hidden=\"true\"/>\n"
+"                    <i class=\"fa fa-angle-left modryn_when_rtl\" aria-hidden=\"true\"/>\n"
+"                    <span class=\"visually-hidden\">שבועות הבאים</span>"
+
+#. module: modryn_roster
+#: model_terms:ir.ui.view,arch_db:modryn_roster.roster_page
+msgid "Earlier weeks"
+msgstr "שבועות קודמים"
+
+#. module: modryn_roster
+#: model_terms:ir.ui.view,arch_db:modryn_roster.roster_page
+msgid "Later weeks"
+msgstr "שבועות הבאים"
+
+#. module: modryn_roster
+#: model_terms:ir.ui.view,arch_db:modryn_roster.roster_page
+msgid "The week being filled"
+msgstr "השבוע שממלאים"

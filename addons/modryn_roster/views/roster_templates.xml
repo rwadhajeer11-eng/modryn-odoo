@@ -45,11 +45,39 @@
                 <span t-out="warning"/>
             </div>
 
+            <!-- A year each way. RIGHT is the past and LEFT is the future,
+                 which is the opposite of an English page and correct here: this
+                 product is Hebrew and Arabic, the page is dir="rtl", and time
+                 runs the way the text does. The icons are named explicitly
+                 rather than flipped in CSS, so the LTR bundle - the same file,
+                 serving English - does not quietly reverse them.
+                 The week's own dates are in the heading above; these say which
+                 way, and the ends of the range say when to stop.
+                 BOTH glyphs are rendered and CSS shows one - see
+                 .modryn_when_ltr / .modryn_when_rtl. A scaleX flip would be
+                 shorter and wrong: this stylesheet goes through rtlcss for the
+                 RTL bundle, which rewrites transforms, so the flip could be
+                 flipped back and nobody would see it. -->
             <div class="modryn_roster_nav mb-3">
                 <a t-attf-href="/roster?week=#{week_offset - 1}"
-                   t-if="week_offset &gt; -1" class="btn btn-sm btn-outline-dark">Previous week</a>
+                   t-if="week_offset &gt; -52" class="btn btn-sm btn-outline-dark"
+                   title="Earlier weeks">
+                    <i class="fa fa-angle-left modryn_when_ltr" aria-hidden="true"/>
+                    <i class="fa fa-angle-right modryn_when_rtl" aria-hidden="true"/>
+                    <span class="visually-hidden">Earlier weeks</span>
+                </a>
+                <span class="modryn_sub" dir="ltr">
+                    <t t-esc="week_start.strftime('%d.%m')"/>–<t t-esc="week_end.strftime('%d.%m.%Y')"/>
+                </span>
                 <a t-attf-href="/roster?week=#{week_offset + 1}"
-                   t-if="week_offset &lt; 1" class="btn btn-sm btn-outline-dark">Following week</a>
+                   t-if="week_offset &lt; 52" class="btn btn-sm btn-outline-dark"
+                   title="Later weeks">
+                    <i class="fa fa-angle-right modryn_when_ltr" aria-hidden="true"/>
+                    <i class="fa fa-angle-left modryn_when_rtl" aria-hidden="true"/>
+                    <span class="visually-hidden">Later weeks</span>
+                </a>
+                <a t-if="week_offset != 0" href="/roster?week=0"
+                   class="btn btn-sm btn-link">The week being filled</a>
             </div>
 
             <!-- The deadline, stated. A window that only greys a button out is
@@ -184,7 +212,13 @@
                      anything else, then send. Separate from the cells on
                      purpose: those are a draft she can change her mind about,
                      this is the moment she tells the manager to build on them. -->
-                <div t-if="me and not is_manager" class="modryn_avail_send">
+                <!-- ANYBODY with an employee record, manager included. This
+                     read `not is_manager`, so a saleswoman had the box and the
+                     owner testing the screen did not - which is why it read as
+                     missing rather than as hidden. A manager works shifts too:
+                     she answers for her own week like anybody else, and the
+                     rota she stands has to know when she cannot be there. -->
+                <div t-if="me" class="modryn_avail_send">
                     <div>
                         <label class="form-label" for="modryn_week_note">
                             Anything we should know?

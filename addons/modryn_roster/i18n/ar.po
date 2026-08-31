@@ -976,3 +976,40 @@ msgid ""
 msgstr ""
 "هالأسبوع صار قيد الشغل، فما ضل إشي يتجاوب عنه. روحي للأسبوع الي عم بينتخطط "
 "عشان تحددي إمتى بتفتح الإجابة."
+
+#. module: modryn_roster
+#: model_terms:ir.ui.view,arch_db:modryn_roster.roster_page
+msgid ""
+"<i class=\"fa fa-angle-left modryn_when_ltr\" aria-hidden=\"true\"/>\n"
+"                    <i class=\"fa fa-angle-right modryn_when_rtl\" aria-hidden=\"true\"/>\n"
+"                    <span class=\"visually-hidden\">Earlier weeks</span>"
+msgstr ""
+"<i class=\"fa fa-angle-left modryn_when_ltr\" aria-hidden=\"true\"/>\n"
+"                    <i class=\"fa fa-angle-right modryn_when_rtl\" aria-hidden=\"true\"/>\n"
+"                    <span class=\"visually-hidden\">الأسابيع السابقة</span>"
+
+#. module: modryn_roster
+#: model_terms:ir.ui.view,arch_db:modryn_roster.roster_page
+msgid ""
+"<i class=\"fa fa-angle-right modryn_when_ltr\" aria-hidden=\"true\"/>\n"
+"                    <i class=\"fa fa-angle-left modryn_when_rtl\" aria-hidden=\"true\"/>\n"
+"                    <span class=\"visually-hidden\">Later weeks</span>"
+msgstr ""
+"<i class=\"fa fa-angle-right modryn_when_ltr\" aria-hidden=\"true\"/>\n"
+"                    <i class=\"fa fa-angle-left modryn_when_rtl\" aria-hidden=\"true\"/>\n"
+"                    <span class=\"visually-hidden\">الأسابيع القادمة</span>"
+
+#. module: modryn_roster
+#: model_terms:ir.ui.view,arch_db:modryn_roster.roster_page
+msgid "Earlier weeks"
+msgstr "الأسابيع السابقة"
+
+#. module: modryn_roster
+#: model_terms:ir.ui.view,arch_db:modryn_roster.roster_page
+msgid "Later weeks"
+msgstr "الأسابيع القادمة"
+
+#. module: modryn_roster
+#: model_terms:ir.ui.view,arch_db:modryn_roster.roster_page
+msgid "The week being filled"
+msgstr "الأسبوع الي بينعبّى"

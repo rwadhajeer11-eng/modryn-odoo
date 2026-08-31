@@ -27,6 +27,15 @@ GROUP_OWNER = 'modryn_staff.group_boutique_owner'
 GROUP_MANAGER = 'modryn_staff.group_shift_manager'
 GROUP_STAFF = 'modryn_staff.group_boutique_staff'
 
+# How far the schedule may be READ in either direction. A year: far enough to
+# look back over what the boutique has actually worked and forward over what is
+# coming, and short enough that the arrows have an end rather than walking into
+# 2043 one press at a time.
+#
+# Reading only. Nothing here decides what may be FILLED - can_edit does that,
+# and it refuses every week except the one whose submission window is open.
+WEEKS_EITHER_WAY = 52
+
 nav.register('shifts', '/manage/shifts', _lt("Shifts"), 60, 'manage', 'fa-calendar-o')
 
 
@@ -155,9 +164,20 @@ class ModrynRoster(http.Controller):
             offset = int(week or 0)
         except ValueError:
             offset = 0
-        # Only the week being planned and the one after it. A grid that can walk
-        # backwards invites editing history nobody meant to change.
-        offset = max(-1, min(offset, 1))
+        # A YEAR EACH WAY. It used to be clamped to [-1, 1] on the reasoning
+        # that "a grid that can walk backwards invites editing history nobody
+        # meant to change" - but the walking was never what protected the
+        # history. can_edit is: it refuses any week already being worked
+        # (offset < 0), refuses a frozen one, and refuses one whose submission
+        # window is not open, and a future week's window opens the week before
+        # it. So week +40 renders locked because it is not open yet, and week
+        # -40 renders locked because it is gone. Measured, both.
+        #
+        # What the clamp actually cost was READING: the boutique could not look
+        # back at the rotas it has worked or forward at what is coming, which is
+        # most of what anybody wants this page for outside the one week they are
+        # answering for.
+        offset = max(-WEEKS_EITHER_WAY, min(offset, WEEKS_EITHER_WAY))
         start = self._week(offset)
         me = self._my_employee()
         # Not called "week": that is this route's own parameter, and shadowing
