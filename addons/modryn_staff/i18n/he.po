@@ -2987,3 +2987,8 @@ msgid ""
 msgstr ""
 "היא לא יכולה לצאת לפני שנכנסה. אם המשמרת נמשכה אחרי חצות, הזיני אותה כשני "
 "ימים."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "A shift cannot be longer than 23 hours and 59 minutes."
+msgstr "משמרת לא יכולה להיות ארוכה מ־23 שעות ו־59 דקות."

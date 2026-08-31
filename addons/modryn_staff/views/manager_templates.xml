@@ -424,7 +424,11 @@
                     <t t-elif="worked_error == 'overlap'">That crosses another shift of hers the same day.</t>
                     <t t-elif="worked_error == 'alreadyopen'">She already has a shift left open. Close that one first.</t>
                     <t t-elif="worked_error == 'openbefore'">An earlier shift of hers was never closed, so it covers this time too. Fill in when she left that one first.</t>
-                    <t t-elif="worked_error == 'toolong'">That comes to more than 16 hours &#8212; check the times.</t>
+                    <!-- Cannot be reached while both times come from one day
+                         and a finish must follow its start: 00:00 to 23:59 is
+                         the widest pair there is. Kept true anyway - a message
+                         that names the wrong figure is worse than none. -->
+                    <t t-elif="worked_error == 'toolong'">A shift cannot be longer than 23 hours and 59 minutes.</t>
                     <t t-else="">That could not be saved.</t>
                 </div>
 

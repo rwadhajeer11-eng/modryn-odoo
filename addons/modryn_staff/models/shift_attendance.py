@@ -16,13 +16,19 @@ TZ = pytz.timezone('Asia/Jerusalem')
 # read something, leave - and nobody works a fifty-second shift.
 MIN_SPELL_SECONDS = 60
 
-# Sixteen hours. Only ever applied to a spell somebody TYPED - the floor's own
-# open/close is not measured against it, because a woman who genuinely forgot to
-# press the button overnight still needs the row that says so before it can be
-# corrected. This is the guard on the correction itself: a manager fixing
-# Tuesday who fills in the wrong date turns one shift into a fortnight, and that
-# figure would then be in her month, her totals and her pay.
-MAX_SPELL_SECONDS = 16 * 3600
+# 23:59, which the boutique set and which is exactly the longest shift this form
+# can express: a finish before its start is refused, and both times are built
+# from the same day, so 00:00 to 23:59 is the widest pair there is.
+#
+# So this CANNOT FIRE today. It is kept because the two rules that make it
+# unreachable are each one edit away from changing - let the times fall on
+# different days, or let a finish roll past midnight again, and this is what
+# stops one mistyped date from becoming a fortnight in somebody's pay.
+#
+# Only ever applied to a spell somebody TYPED. The floor's own open/close is not
+# measured against it: a woman who genuinely forgot to press the button
+# overnight still needs the row that says so before it can be corrected.
+MAX_SPELL_MINUTES = 23 * 60 + 59
 
 
 class ModrynShiftAttendance(models.Model):
@@ -195,6 +201,24 @@ class ModrynShiftAttendance(models.Model):
 
     # ------------------------------------------------- correcting the record
     @api.model
+    def _modryn_clock(self, clock):
+        """An "HH:MM" the boutique typed, as minutes past midnight. Or None.
+
+        One parser, because the span check and the stored stamp must agree about
+        what she wrote. Two of them drift on the first change to either.
+        """
+        parts = (clock or '').split(':')
+        if len(parts) != 2:
+            return None
+        try:
+            hour, minute = int(parts[0]), int(parts[1])
+        except (TypeError, ValueError):
+            return None
+        if not (0 <= hour <= 23 and 0 <= minute <= 59):
+            return None
+        return hour * 60 + minute
+
+    @api.model
     def _modryn_utc(self, day, clock):
         """A date and an "HH:MM" the boutique typed, as the naive UTC we store.
 
@@ -203,14 +227,11 @@ class ModrynShiftAttendance(models.Model):
         is half past nine on the boutique's own clock in summer - the shift would
         move three hours by being corrected.
         """
-        parts = (clock or '').split(':')
-        if len(parts) != 2:
+        minutes = self._modryn_clock(clock)
+        if minutes is None:
             return None
-        try:
-            hour, minute = int(parts[0]), int(parts[1])
-            stamp = datetime.combine(day, time(hour=hour, minute=minute))
-        except (TypeError, ValueError):
-            return None
+        stamp = datetime.combine(
+            day, time(hour=minutes // 60, minute=minutes % 60))
         return TZ.localize(stamp).astimezone(pytz.utc).replace(tzinfo=None)
 
     def modryn_amend(self, day, came, went):
@@ -235,6 +256,12 @@ class ModrynShiftAttendance(models.Model):
             ended = self._modryn_utc(day, went)
             if not ended:
                 return 'badtime'
+            # Both read the LOCAL clock she typed, not the difference between
+            # the stored UTC stamps. Twice a year those disagree by an hour: on
+            # the day the clocks go back, 08:00 to 23:00 is fifteen hours on her
+            # clock and sixteen in UTC, and she should be judged against the
+            # figure she wrote.
+            #
             # REFUSED, not rolled to the next day. This used to add a day and
             # call it a shift running past midnight, which made the commonest
             # typo on this form - the two times the wrong way round - succeed,
@@ -246,9 +273,10 @@ class ModrynShiftAttendance(models.Model):
             # 23:59 and one from 00:00 the next day - which is also the honest
             # shape, because those hours fell on two different days and every
             # total on this screen is grouped by day.
-            if ended <= started:
+            span = self._modryn_clock(went) - self._modryn_clock(came)
+            if span <= 0:
                 return 'backwards'
-            if (ended - started).total_seconds() > MAX_SPELL_SECONDS:
+            if span > MAX_SPELL_MINUTES:
                 return 'toolong'
         if not ended and self.sudo().search_count([
                 ('employee_id', '=', self.employee_id.id),

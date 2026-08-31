@@ -2991,3 +2991,8 @@ msgid ""
 " enter it as two days."
 msgstr ""
 "ما بتقدر تطلع قبل ما تفوت. إذا الوردية كمّلت بعد نص الليل، أدخليها كيومين."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "A shift cannot be longer than 23 hours and 59 minutes."
+msgstr "الوردية ما بتقدر تكون أطول من 23 ساعة و59 دقيقة."
