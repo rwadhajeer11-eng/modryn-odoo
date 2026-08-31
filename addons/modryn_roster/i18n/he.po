@@ -52,6 +52,7 @@ msgid ""
 msgstr "ראשון שני שלישי רביעי חמישי שישי שבת"
 
 #. module: modryn_roster
+#: model_terms:ir.ui.view,arch_db:modryn_roster.manage_shifts
 #: model_terms:ir.ui.view,arch_db:modryn_roster.roster_page
 msgid "<span class=\"modryn_badge is_busy\">Saved</span>"
 msgstr "<span class=\"modryn_badge is_busy\">נשמר</span>"
@@ -177,7 +178,7 @@ msgid "Back to the usual"
 msgstr "חזרה לרגיל"
 
 #. module: modryn_roster
-#: model_terms:ir.ui.view,arch_db:modryn_roster.roster_page
+#: model_terms:ir.ui.view,arch_db:modryn_roster.manage_week_planner
 msgid "Closes"
 msgstr "סגירה"
 
@@ -317,7 +318,7 @@ msgid "Opening time"
 msgstr "שעת פתיחה"
 
 #. module: modryn_roster
-#: model_terms:ir.ui.view,arch_db:modryn_roster.roster_page
+#: model_terms:ir.ui.view,arch_db:modryn_roster.manage_week_planner
 msgid "Opens"
 msgstr "פתיחה"
 
@@ -410,7 +411,7 @@ msgid "Save"
 msgstr "שמירה"
 
 #. module: modryn_roster
-#: model_terms:ir.ui.view,arch_db:modryn_roster.roster_page
+#: model_terms:ir.ui.view,arch_db:modryn_roster.manage_week_planner
 msgid "Save for every week"
 msgstr "שמירה לכל שבוע"
 
@@ -665,7 +666,7 @@ msgid "Name"
 msgstr "שם"
 
 #. module: modryn_roster
-#: model_terms:ir.ui.view,arch_db:modryn_roster.roster_page
+#: model_terms:ir.ui.view,arch_db:modryn_roster.manage_week_planner
 msgid "at"
 msgstr "בשעה"
 
@@ -932,3 +933,27 @@ msgstr "פרסום השבוע"
 #: model_terms:ir.ui.view,arch_db:modryn_roster.manage_week_planner
 msgid "and close"
 msgstr "ונסגרות"
+
+#. module: modryn_roster
+#: model_terms:ir.ui.view,arch_db:modryn_roster.manage_week_planner
+msgid "When the team may answer"
+msgstr "מתי הצוות יכול לענות"
+
+#. module: modryn_roster
+#: model_terms:ir.ui.view,arch_db:modryn_roster.manage_week_planner
+msgid ""
+"The rule holds every week. The dates under it change this\n"
+"                    week only — for a holiday, or a day the team is away."
+msgstr ""
+"הכלל תקף בכל שבוע. התאריכים שמתחתיו משנים את השבוע הזה בלבד — לחג, או ליום "
+"שהצוות לא כאן."
+
+#. module: modryn_roster
+#: model_terms:ir.ui.view,arch_db:modryn_roster.manage_week_planner
+msgid ""
+"This week is already being worked, so there is nothing left to\n"
+"                answer for it. Move to the week being planned to set when\n"
+"                submissions open."
+msgstr ""
+"השבוע הזה כבר נעבד, ולכן אין על מה לענות עבורו. עברי לשבוע שמתוכנן כדי לקבוע"
+" מתי ההגשה נפתחת."

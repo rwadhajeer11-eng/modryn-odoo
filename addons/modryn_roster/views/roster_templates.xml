@@ -116,112 +116,14 @@
                 <div t-else="" class="modryn_sub">Nothing this week.</div>
             </div>
 
-            <!-- Manager: when the team may answer. Plain forms, no JS — which is
-                 also what keeps them safe outside .modryn_roster_grid, where the
-                 delegated listener never reaches. -->
-            <div t-if="is_manager and not window_settable" class="modryn_panel mb-3">
-                <span class="modryn_sub">
-                    This week is already being worked, so there is nothing left to
-                    answer for it. Move to the week being planned to set when
-                    submissions open.
-                </span>
-            </div>
+            <!-- The manager's window controls used to sit here, behind a
+                 fold: a standing rule, and an override for one week. They are on
+                 משמרות now, beside the rota they actually govern - this screen
+                 is the one every woman on the floor opens, and two audiences on
+                 one page made the manager's half the half nobody could find.
+                 The deadline BANNER above stays: that is not a control, it is
+                 the thing she has to meet. -->
 
-            <details t-if="is_manager and window_settable" class="modryn_panel mb-3">
-                <summary style="cursor:pointer;">
-                    <span class="modryn_strong">When can the team answer?</span>
-                </summary>
-
-                <!-- Which week these hours serve, said outright. The times
-                     themselves fall in the week BEFORE the one being planned —
-                     she answers this week for next week — and leaving that to be
-                     deduced from a weekday name and an anchor rule is how a
-                     manager sets a deadline she did not mean. -->
-                <p class="modryn_sub mt-2 mb-2">
-                    These are the hours the team answers <strong>for the schedule of
-                    <span dir="ltr"><t t-esc="week_start.strftime('%d.%m')"/>–<t t-esc="week_end.strftime('%d.%m')"/></span></strong>.
-                    Counting from the Monday before it — so the last choice,
-                    Sunday, is <span dir="ltr"><t t-esc="week_start.strftime('%d.%m')"/></span>
-                    itself, the first day of that schedule.
-                </p>
-                <p class="modryn_sub mb-2">
-                    <!-- What the CURRENT rule actually produces for this week,
-                         computed by the server. It removes the arithmetic from
-                         the manager's head entirely, which is the only way the
-                         Sunday exception above can never bite her. -->
-                    Right now that means
-                    <strong dir="ltr" t-esc="window_opens.strftime('%d.%m %H:%M')"/>
-                    until
-                    <strong dir="ltr" t-esc="window_closes.strftime('%d.%m %H:%M')"/>.
-                </p>
-
-                <form action="/roster/window/rule" method="post"
-                      class="d-flex gap-2 flex-wrap align-items-end mb-3">
-                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
-                    <input type="hidden" name="week" t-att-value="week_offset"/>
-                    <div>
-                        <label class="form-label mb-0" for="open_weekday">Opens</label>
-                        <select id="open_weekday" name="open_weekday" class="form-select form-select-sm">
-                            <t t-foreach="window_days" t-as="wd">
-                                <option t-att-value="wd[0]"
-                                        t-att-selected="'selected' if wd[0] == window_rule['open_weekday'] else None"
-                                        t-out="wd[1]"/>
-                            </t>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="form-label mb-0" for="open_time">at</label>
-                        <input id="open_time" type="time" name="open_time" dir="ltr"
-                               class="form-control form-control-sm"
-                               t-att-value="window_rule['open_time']"/>
-                    </div>
-                    <div>
-                        <label class="form-label mb-0" for="close_weekday">Closes</label>
-                        <select id="close_weekday" name="close_weekday" class="form-select form-select-sm">
-                            <t t-foreach="window_days" t-as="wd">
-                                <option t-att-value="wd[0]"
-                                        t-att-selected="'selected' if wd[0] == window_rule['close_weekday'] else None"
-                                        t-out="wd[1]"/>
-                            </t>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="form-label mb-0" for="close_time">at</label>
-                        <input id="close_time" type="time" name="close_time" dir="ltr"
-                               class="form-control form-control-sm"
-                               t-att-value="window_rule['close_time']"/>
-                    </div>
-                    <button type="submit" class="btn btn-sm btn-primary">Save for every week</button>
-                </form>
-
-                <!-- The escape hatch. A holiday, a team away day. -->
-                <form action="/roster/window/week" method="post"
-                      class="d-flex gap-2 flex-wrap align-items-end">
-                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
-                    <input type="hidden" name="week" t-att-value="week_offset"/>
-                    <div>
-                        <label class="form-label mb-0" for="opens_date">Just this week, from</label>
-                        <input id="opens_date" type="date" name="opens_date" dir="ltr"
-                               class="form-control form-control-sm"/>
-                    </div>
-                    <div>
-                        <input type="time" name="opens_time" dir="ltr"
-                               class="form-control form-control-sm" aria-label="Opening time"/>
-                    </div>
-                    <div>
-                        <label class="form-label mb-0" for="closes_date">until</label>
-                        <input id="closes_date" type="date" name="closes_date" dir="ltr"
-                               class="form-control form-control-sm"/>
-                    </div>
-                    <div>
-                        <input type="time" name="closes_time" dir="ltr"
-                               class="form-control form-control-sm" aria-label="Closing time"/>
-                    </div>
-                    <button type="submit" class="btn btn-sm btn-outline-dark">Use these times</button>
-                    <button t-if="window_overridden" type="submit" name="clear" value="1"
-                            class="btn btn-sm btn-link">Back to the usual</button>
-                </form>
-            </details>
 
             <!-- ============ the week, as one table ============
                  INSIDE .modryn_roster_grid on purpose: roster.js binds ONE
@@ -427,8 +329,64 @@
                  already says what week this is. -->
             <p class="modryn_sub" dir="ltr" t-out="week_start.strftime('%d.%m.%Y')"/>
 
-            <!-- WHEN the team may answer. The same form the roster page posts,
-                 so there is one window and not two that disagree. -->
+            <!-- WHEN the team may answer, both halves of it. These moved off
+                 סידור עבודה, which is the screen every woman on the floor opens
+                 to answer - the controls governing WHETHER she may answer
+                 belong beside the rota, not behind a fold on her page.
+                 Labelled apart on purpose. From two screens away these were the
+                 easiest pair in the product to confuse: one sets every week
+                 from now on, the other sets this week and nothing else. -->
+            <t t-if="window_settable">
+                <h3 class="h6 mb-1">When the team may answer</h3>
+                <p class="modryn_sub mb-2">
+                    The rule holds every week. The dates under it change this
+                    week only — for a holiday, or a day the team is away.
+                </p>
+                <form action="/roster/window/rule" method="post"
+                      class="d-flex gap-2 flex-wrap align-items-end mb-3">
+                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                    <input type="hidden" name="week" t-att-value="str(week_offset)"/>
+                    <div>
+                        <label class="form-label mb-0" for="open_weekday">Opens</label>
+                        <select id="open_weekday" name="open_weekday" class="form-select form-select-sm">
+                            <t t-foreach="window_days" t-as="wd">
+                                <option t-att-value="wd[0]"
+                                        t-att-selected="'selected' if wd[0] == window_rule['open_weekday'] else None"
+                                        t-out="wd[1]"/>
+                            </t>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="form-label mb-0" for="open_time">at</label>
+                        <input id="open_time" type="time" name="open_time" dir="ltr"
+                               class="form-control form-control-sm"
+                               t-att-value="window_rule['open_time']"/>
+                    </div>
+                    <div>
+                        <label class="form-label mb-0" for="close_weekday">Closes</label>
+                        <select id="close_weekday" name="close_weekday" class="form-select form-select-sm">
+                            <t t-foreach="window_days" t-as="wd">
+                                <option t-att-value="wd[0]"
+                                        t-att-selected="'selected' if wd[0] == window_rule['close_weekday'] else None"
+                                        t-out="wd[1]"/>
+                            </t>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="form-label mb-0" for="close_time">at</label>
+                        <input id="close_time" type="time" name="close_time" dir="ltr"
+                               class="form-control form-control-sm"
+                               t-att-value="window_rule['close_time']"/>
+                    </div>
+                    <button type="submit" class="btn btn-sm btn-primary">Save for every week</button>
+                </form>
+            </t>
+            <p t-else="" class="modryn_sub mb-3">
+                This week is already being worked, so there is nothing left to
+                answer for it. Move to the week being planned to set when
+                submissions open.
+            </p>
+
             <form action="/roster/window/week" method="post"
                   class="modryn_planner_window">
                 <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
@@ -529,6 +487,18 @@
     <template id="manage_shifts" name="Shifts">
         <t t-call="modryn_staff.manage_layout">
             <h1 class="mb-2">Shifts</h1>
+            <!-- ABOVE the owner-only block, which is where this used to live.
+                 The window routes redirect here now and a MANAGER may set the
+                 window, so an error buried inside `t-if="is_owner"` is an error
+                 the one person who caused it cannot see - she would read a
+                 refused save as a save. -->
+            <div t-if="error" class="modryn_field_error mb-3" role="alert" t-out="error"/>
+            <!-- Same shape as the roster page's, because it is the same message
+                 arriving from the same routes - which redirect here now. -->
+            <div t-if="warning" class="modryn_panel mb-3" role="status">
+                <span class="modryn_badge is_busy">Saved</span>
+                <span t-out="warning"/>
+            </div>
             <t t-call="modryn_roster.manage_week_planner"/>
 
             <!-- Everything below defines what shifts EXIST, which stays the
@@ -540,8 +510,6 @@
             <p class="text-muted mb-4">
                 The shifts this boutique actually runs, and how many of each role each one needs.
             </p>
-
-            <div t-if="error" class="modryn_field_error mb-3" role="alert" t-out="error"/>
 
             <form action="/manage/shifts/new" method="post" class="d-flex gap-2 mb-4 flex-wrap"
                   style="max-width: 720px;">

@@ -33,30 +33,30 @@ async function signIn(page, login) {
   await submitFormWith(page, 'username');
 }
 
-// The window controls live inside a <details>, collapsed by default — it is a
-// setting a manager changes rarely, not something that should take up the top
-// of the page every day. Playwright will not fill an input it cannot see, and
-// the failure ("element is not visible") points at the input rather than at the
-// closed fold above it.
+// The window controls are on משמרות now — the manager's own screen, beside the
+// rota they govern. They used to sit on סידור עבודה behind a collapsed
+// <details>, because a manager's setting on everybody's page had to keep out of
+// the way; on her own screen there is nothing to keep out of the way of, and
+// nothing to open.
+//
+// GOES THERE ITSELF rather than expecting the caller to. Every one of these acts
+// wants the same thing — "put me where I can set the window for the week under
+// test" — and a helper that half-does it is a helper each caller has to remember
+// the other half of.
 async function openWindowPanel(page) {
-  const panel = page.locator('details:has(#open_weekday)');
-  // count() FIRST. getAttribute on a locator that matches nothing does not
-  // return null - it waits the full actionability timeout and then throws
-  // "locator.getAttribute: Timeout 15000ms exceeded", which points at this line
-  // and says nothing about the real problem: the manager's window panel was not
-  // on the page at all. Fifteen wasted seconds and a message that sends you to
-  // the wrong file.
-  if ((await panel.count()) === 0) {
+  await page.goto(WEEK.replace('/roster?', '/manage/shifts?'));
+  // count() FIRST. Waiting on a locator that matches nothing burns the full
+  // actionability timeout and then throws about the INPUT, which says nothing
+  // about the real problem: the window controls were not on the page at all.
+  const opens = page.locator('#open_weekday');
+  if ((await opens.count()) === 0) {
     throw new Error(
-      'the submission-window panel is not on this page — either the sign-in ' +
-      'did not land as a manager, or the week on screen is one whose window ' +
-      'cannot be set'
+      'the submission-window controls are not on /manage/shifts — either the ' +
+      'sign-in did not land as a manager, or the week on screen is one whose ' +
+      'window cannot be set'
     );
   }
-  if (!(await panel.getAttribute('open'))) {
-    await panel.locator('summary').click();
-  }
-  await expect(page.locator('#open_weekday')).toBeVisible();
+  await expect(opens).toBeVisible();
 }
 
 // The submission window is a GLOBAL setting for the tenant, and the specs below
@@ -80,7 +80,7 @@ test.afterAll(async ({ browser }) => {
     await page.fill('#open_time', SHIPPED_RULE.open_time);
     await page.selectOption('#close_weekday', SHIPPED_RULE.close_weekday);
     await page.fill('#close_time', SHIPPED_RULE.close_time);
-    await Promise.all([page.waitForURL(/\/roster/), submitFormWith(page, 'open_weekday')]);
+    await Promise.all([page.waitForURL(/\/manage\/shifts/), submitFormWith(page, 'open_weekday')]);
   } finally {
     await page.close();
   }
@@ -164,6 +164,9 @@ test('@writes a cell remembers being pressed, and un-pressed', async ({ page }) 
   await page.fill('input[name="closes_date"]', soon);
   await page.fill('input[name="closes_time"]', '23:00');
   await submitFormWith(page, 'opens_date');
+  // The window forms post from משמרות and land back on it; the badge this act
+  // reads is on the worker's page.
+  await page.goto(WEEK);
   await expect(page.locator('.modryn_panel').first()).toContainText(/Open|פתוח|مفتوح/);
 
   await signIn(page, PEOPLE.staff);
@@ -223,7 +226,7 @@ test('@writes a cell remembers being pressed, and un-pressed', async ({ page }) 
   await page.goto(WEEK);
   await openWindowPanel(page);
   await Promise.all([
-    page.waitForURL(/\/roster/),
+    page.waitForURL(/\/manage\/shifts/),
     page.locator('button[name="clear"]').click(),
   ]);
 });
@@ -256,7 +259,7 @@ test('@writes the manager can say when the team may answer', async ({ page }) =>
   await page.selectOption('#open_weekday', '3');
   await page.fill('#open_time', '09:00');
   await Promise.all([
-    page.waitForURL(/\/roster/),
+    page.waitForURL(/\/manage\/shifts/),
     submitFormWith(page, 'open_weekday'),
   ]);
   await page.goto(WEEK);
@@ -280,7 +283,13 @@ test('@writes the deadline passing locks the grid, and she can still read her ow
     await page.fill('input[name="opens_time"]', fromTime);
     await page.fill('input[name="closes_date"]', toDay);
     await page.fill('input[name="closes_time"]', toTime);
-    await Promise.all([page.waitForURL(/\/roster/), submitFormWith(page, 'opens_date')]);
+    await Promise.all([
+      page.waitForURL(/\/manage\/shifts/), submitFormWith(page, 'opens_date'),
+    ]);
+    // Back to the worker's page, which is what the act reads next. The window
+    // routes land on the manager's screen now, and this used to be the same
+    // page by accident.
+    await page.goto(WEEK);
   };
 
   await signIn(page, PEOPLE.manager);

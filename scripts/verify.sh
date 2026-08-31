@@ -746,6 +746,30 @@ if [ "$SESSION" = "200" ]; then
     ok "every page a manager is offered actually opens ($NAV_SEEN links)"
   fi
 
+  # ---- the worker's screen stays the worker's ---------------------------
+  # סידור עבודה is where every woman on the floor answers for next week. The
+  # manager's window controls used to sit on it behind a fold and now live on
+  # משמרות, beside the rota they govern.
+  #
+  # A PRINCIPLE, not a placement: what is worth protecting is that a screen
+  # built for one audience does not quietly grow another's controls. Checked
+  # with sara's MANAGER session, because for a saleswoman these forms were never
+  # drawn either way - a staff session would pass wherever they sat.
+  curl -sg -b "$JAR" "$BELLA/roster" > "$PAGE"
+  if grep -q '/roster/window/' "$PAGE"; then
+    bad "the worker's schedule grew a manager's control" \
+      "a /roster/window/ form is drawn on /roster - those belong on /manage/shifts"
+  else
+    ok "no window controls on the workers' schedule"
+  fi
+  grep -q 'modryn_avail_cell' "$PAGE" \
+    && ok "the availability grid is still on the workers' schedule" \
+    || bad "roster grid" "the grid a woman taps is gone from /roster"
+  curl -sg -b "$JAR" "$BELLA/manage/shifts" > "$PAGE"
+  grep -q '/roster/window/rule' "$PAGE" && grep -q '/roster/window/week' "$PAGE" \
+    && ok "both window controls are on the shifts screen" \
+    || bad "window controls" "the rule and the week override are not both on /manage/shifts"
+
   # ---- garbage in a form field is refused, not a 500 --------------------
   # Every route that reads an id out of a POST calls int() on it somewhere. An
   # uncaught ValueError there is a 500 page rather than a refusal, and the only

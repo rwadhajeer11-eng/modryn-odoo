@@ -356,7 +356,13 @@ class ModrynRoster(http.Controller):
         return None
 
     def _window_redirect(self, offset, error=None, warning=None):
-        url = '/roster?week=%d' % offset
+        """Back to the screen these forms are actually on.
+
+        /roster until the window controls moved off it - which made a saved rule
+        bounce the manager onto the workers' availability page, with her own
+        screen and any error message left behind on it.
+        """
+        url = '/manage/shifts?week=%d' % offset
         if error:
             url += '&error=%s' % werkzeug.urls.url_quote(error)
         if warning:
@@ -597,7 +603,7 @@ class ModrynRoster(http.Controller):
         return value if value in dict(shift_type_selection()) else fallback
 
     @http.route('/manage/shifts', type='http', auth='user', website=True, sitemap=False)
-    def shifts(self, error=None, **kw):
+    def shifts(self, error=None, warning=None, **kw):
         # A MANAGER always, plus whoever the owner grants it to.
         #
         # This screen now carries the week's rota, and standing one is a shift
@@ -620,7 +626,28 @@ class ModrynRoster(http.Controller):
         start = self._week(offset)
         week_row = request.env['modryn.roster.week'].sudo().modryn_for(start)
         opens, closes = week_row._window()
+        # The standing rule, which moved here from the roster page. Built the
+        # same way it was built there, off the same _default_window - a second
+        # derivation would be a second answer to "what is the rule".
+        rule = week_row._default_window()
         return request.render('modryn_roster.manage_shifts', {
+            # ---- when the team may answer ------------------------------
+            # The warning the window routes can send. Accepted and DRAWN here
+            # because they redirect here now: without it, "that time has already
+            # gone, nobody can answer" would be saved, redirected, and shown
+            # nowhere - the manager reads a blank save and never learns the week
+            # is shut.
+            'warning': warning,
+            'window_days': window_days(),
+            # Whether it may be set for the week on screen at all: a week
+            # already being worked has nothing left to answer for.
+            'window_settable': offset >= self.PLANNABLE_FROM,
+            # Pre-formatted for <input type="time">, so nobody has to think of
+            # half past ten as 10.5.
+            'window_rule': {
+                'open_weekday': str(rule[0][0]), 'open_time': _fmt_hour(rule[0][1]),
+                'close_weekday': str(rule[1][0]), 'close_time': _fmt_hour(rule[1][1]),
+            },
             # ---- standing the week -------------------------------------
             'is_manager': self._is_manager(),
             # Defining what shifts EXIST stays the owner's. A manager stands
