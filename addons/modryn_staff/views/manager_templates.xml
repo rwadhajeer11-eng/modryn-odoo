@@ -32,7 +32,13 @@
                      owner tiles below: she is the one standing there when
                      somebody goes home without pressing the button. -->
                 <a class="modryn_tile" href="/manage/team-screen?view=worked">
-                    <i class="fa fa-clock-o" aria-hidden="true"/>
+                    <!-- An HOURGLASS, not the clock the opening-hours tile
+                         wears. Two tiles on one screen with the same icon stop
+                         telling each other apart, and these two are opposite
+                         questions: when the shop is open, and who stood in it.
+                         Checked against the served bundle - an FA5 name renders
+                         an invisible box and says nothing in the log. -->
+                    <i class="fa fa-hourglass-half" aria-hidden="true"/>
                     <span class="modryn_strong">Hours worked</span>
                     <span class="modryn_sub">Who was on the floor, month by month — and fix it when the button was missed.</span>
                 </a>
@@ -187,10 +193,17 @@
 
                 <div class="mb-3">
                     <label class="form-label" for="level">Permission level</label>
+                    <!-- STAFF when nothing has been chosen. The list reads
+                         owner / manager / staff, which is the right order to
+                         read and the worst possible default: an empty form
+                         selects the FIRST option, so filling in a name and
+                         pressing Save made a second OWNER with the run of the
+                         boutique. The route's own `or 'staff'` never fired,
+                         because a select always posts something. -->
                     <select id="level" name="level" class="form-select">
                         <t t-foreach="levels" t-as="lvl">
                             <option t-att-value="lvl[0]"
-                                    t-att-selected="'selected' if values.get('level') == lvl[0] else None"
+                                    t-att-selected="'selected' if (values.get('level') or 'staff') == lvl[0] else None"
                                     t-out="lvl[1]"/>
                         </t>
                     </select>
@@ -423,6 +436,15 @@
                         <option t-foreach="worked_team" t-as="w" t-key="w['id']"
                                 t-att-value="w['id']" t-att-selected="w['chosen']"
                                 t-out="w['name']"/>
+                        <!-- The women who have LEFT, in their own group. Their
+                             hours are what a last pay packet is worked out
+                             from, so leaving them out makes the one month
+                             somebody actually needs the unreachable one. -->
+                        <optgroup t-if="worked_gone" label="Who has left">
+                            <option t-foreach="worked_gone" t-as="w" t-key="w['id']"
+                                    t-att-value="w['id']" t-att-selected="w['chosen']"
+                                    t-out="w['name']"/>
+                        </optgroup>
                     </select>
                     <button type="submit" class="btn btn-sm btn-outline-dark">Show</button>
                 </form>

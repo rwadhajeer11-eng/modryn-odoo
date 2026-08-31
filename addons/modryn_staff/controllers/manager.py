@@ -172,12 +172,19 @@ class ModrynManagerScreen(http.Controller):
         March", and the two would drift on the first change to either.
         """
         from .auth import ModrynStaffAuth
-        team = self._team()
+
+        def row(e):
+            return {'id': e.id, 'name': e.name,
+                    'chosen': bool(whose) and e.id == whose.id}
+
         context = {
-            'worked_team': [{
-                'id': e.id, 'name': e.name,
-                'chosen': whose and e.id == whose.id,
-            } for e in team],
+            'worked_team': [row(e) for e in self._team()],
+            # The women who have LEFT, offered separately. Their hours are what
+            # a last pay packet is worked out from, so leaving them out of this
+            # picker makes the one month somebody actually needs the only one
+            # they cannot reach. Grouped rather than mixed in, because "who is
+            # on this month" is the question asked nine times in ten.
+            'worked_gone': [row(e) for e in self._team(archived=True)],
             'worked_who': whose,
             'worked_error': error,
         }
@@ -313,6 +320,26 @@ class ModrynManagerScreen(http.Controller):
         return request.redirect('/manage/team-screen?view=announce')
 
     # ------------------------------------------------------ her papers
+    def _team_member(self, raw_id):
+        """One of the boutique's own people, by id from a form. Or nothing.
+
+        Two guards in one place because both are about the same lie: a form
+        field is whatever arrives, not what the template put there. int() on a
+        non-number is a 500 rather than a refusal, and browsing an id that is
+        not staff files a shift against somebody no screen here can show.
+        """
+        try:
+            employee_id = int(raw_id or 0)
+        except (TypeError, ValueError):
+            return request.env['hr.employee']
+        if employee_id <= 0:
+            return request.env['hr.employee']
+        return request.env['hr.employee'].sudo().with_context(
+            active_test=False).search([
+                ('id', '=', employee_id),
+                ('modryn_level', 'in', ('owner', 'manager', 'staff')),
+            ], limit=1)
+
     # ------------------------------------------------- who was on the floor
     def _worked_back(self, employee_id, month=None, error=None):
         """Back to the month she was just looking at."""
@@ -364,8 +391,7 @@ class ModrynManagerScreen(http.Controller):
         """A shift nobody pressed the button for at either end."""
         if not access.is_manager():
             return access.deny()
-        employee = request.env['hr.employee'].sudo().browse(
-            int(post.get('employee_id') or 0)).exists()
+        employee = self._team_member(post.get('employee_id'))
         if not employee:
             return request.redirect('/manage/team-screen?view=worked')
         month = post.get('month')
@@ -392,8 +418,7 @@ class ModrynManagerScreen(http.Controller):
         """
         if not access.is_owner():
             return access.deny()
-        employee = request.env['hr.employee'].sudo().browse(
-            int(post.get('employee_id') or 0)).exists()
+        employee = self._team_member(post.get('employee_id'))
         if not employee:
             return request.redirect('/manage/team-screen?view=team')
 

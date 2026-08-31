@@ -2922,3 +2922,14 @@ msgstr "اكتبي الوقت بصيغة HH:MM، مثل 09:30."
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manage_roles
 msgid "Yours only"
 msgstr "لكِ وحدك"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid ""
+"<i class=\"fa fa-hourglass-half\" aria-hidden=\"true\"/>\n"
+"                    <span class=\"modryn_strong\">Hours worked</span>\n"
+"                    <span class=\"modryn_sub\">Who was on the floor, month by month — and fix it when the button was missed.</span>"
+msgstr ""
+"<i class=\"fa fa-hourglass-half\" aria-hidden=\"true\"/>\n"
+"                    <span class=\"modryn_strong\">ساعات العمل</span>\n"
+"                    <span class=\"modryn_sub\">مَن كانت على الأرض، شهرًا بشهر — وتصحيحها إذا لم يُضغط الزر.</span>"

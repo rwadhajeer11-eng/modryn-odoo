@@ -2916,3 +2916,14 @@ msgstr "כתבי את השעה בפורמט HH:MM, למשל 09:30."
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manage_roles
 msgid "Yours only"
 msgstr "שלך בלבד"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid ""
+"<i class=\"fa fa-hourglass-half\" aria-hidden=\"true\"/>\n"
+"                    <span class=\"modryn_strong\">Hours worked</span>\n"
+"                    <span class=\"modryn_sub\">Who was on the floor, month by month — and fix it when the button was missed.</span>"
+msgstr ""
+"<i class=\"fa fa-hourglass-half\" aria-hidden=\"true\"/>\n"
+"                    <span class=\"modryn_strong\">שעות עבודה</span>\n"
+"                    <span class=\"modryn_sub\">מי הייתה על הרצפה, חודש אחר חודש — ותיקון כשלא נלחץ הכפתור.</span>"

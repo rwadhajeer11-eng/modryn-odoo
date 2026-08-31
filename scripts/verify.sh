@@ -728,6 +728,38 @@ if [ "$SESSION" = "200" ]; then
     ok "every page a manager is offered actually opens ($NAV_SEEN links)"
   fi
 
+  # ---- garbage in a form field is refused, not a 500 --------------------
+  # Every route that reads an id out of a POST calls int() on it somewhere. An
+  # uncaught ValueError there is a 500 page rather than a refusal, and the only
+  # thing standing between the two is a guard somebody remembered to write.
+  # Measured: worked/add with employee_id=banana answered 500 before its guard.
+  #
+  # A sweep, not one assertion per route, so the route somebody adds next month
+  # is covered by a check that already exists. Any refusal will do - 303, 403,
+  # 404 are all the route saying no. Only 500 is the bug.
+  GARBAGE_BAD=""
+  CT2=$(curl -sg -b "$JAR" "$BELLA/manage/team-screen" \
+    | grep -oE '<input[^>]*csrf_token[^>]*>' | head -1 \
+    | grep -oE 'value="[^"]*"' | sed 's/value="//;s/"//')
+  for route in /manage/team-screen/worked/add /manage/team-screen/paper; do
+    for junk in banana -5 '' 99999999; do
+      GC=$(curl -sg -b "$JAR" -o /dev/null -w "%{http_code}" -X POST "$BELLA$route" \
+        --data-urlencode "csrf_token=$CT2" --data-urlencode "employee_id=$junk" \
+        --data-urlencode "day=2026-07-01" --data-urlencode "came=09:00")
+      [ "$GC" = "500" ] && GARBAGE_BAD="$GARBAGE_BAD $route(employee_id=$junk)"
+    done
+  done
+  # spell_id travels the same way on the amend route.
+  for junk in banana -5 99999999; do
+    GC=$(curl -sg -b "$JAR" -o /dev/null -w "%{http_code}" -X POST \
+      "$BELLA/manage/team-screen/worked/amend" \
+      --data-urlencode "csrf_token=$CT2" --data-urlencode "spell_id=$junk" \
+      --data-urlencode "day=2026-07-01" --data-urlencode "came=09:00")
+    [ "$GC" = "500" ] && GARBAGE_BAD="$GARBAGE_BAD worked/amend(spell_id=$junk)"
+  done
+  [ -z "$GARBAGE_BAD" ] && ok "a bad id in a form is refused, never a 500" \
+    || bad "a form field 500s the server" "$GARBAGE_BAD"
+
   # The window belongs to the manager. Asserted with a real signed-in session,
   # because the anonymous check above can only ever reach Odoo's login redirect
   # — it never touches _is_manager() at all.
