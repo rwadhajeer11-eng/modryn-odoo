@@ -148,7 +148,7 @@ msgid "and closes"
 msgstr "ונסגר"
 
 #. module: modryn_roster
-#: model_terms:ir.ui.view,arch_db:modryn_roster.roster_page
+#: model_terms:ir.ui.view,arch_db:modryn_roster.manage_shifts
 msgid "Answers for this week"
 msgstr "התשובות לשבוע הזה"
 
@@ -282,7 +282,7 @@ msgid "Nobody has offered yet"
 msgstr "עדיין אף אחת לא הציעה"
 
 #. module: modryn_roster
-#: model_terms:ir.ui.view,arch_db:modryn_roster.roster_page
+#: model_terms:ir.ui.view,arch_db:modryn_roster.manage_shifts
 msgid "Nobody has sent their week yet."
 msgstr "עדיין אף אחת לא שלחה את השבוע שלה."
 
@@ -375,7 +375,6 @@ msgstr "פרסום השבוע"
 #. module: modryn_roster
 #: model:ir.model.fields,field_description:modryn_roster.field_modryn_shift_slot__published
 #: model_terms:ir.ui.view,arch_db:modryn_roster.manage_week_planner
-#: model_terms:ir.ui.view,arch_db:modryn_roster.roster_page
 msgid "Published"
 msgstr "פורסם"
 
@@ -431,6 +430,7 @@ msgid "Send my week"
 msgstr "שליחת השבוע שלי"
 
 #. module: modryn_roster
+#: model_terms:ir.ui.view,arch_db:modryn_roster.manage_shifts
 #: model_terms:ir.ui.view,arch_db:modryn_roster.roster_page
 msgid "Sent"
 msgstr "נשלח"
@@ -482,7 +482,7 @@ msgid "Start Hour"
 msgstr "שעת התחלה"
 
 #. module: modryn_roster
-#: model_terms:ir.ui.view,arch_db:modryn_roster.roster_page
+#: model_terms:ir.ui.view,arch_db:modryn_roster.manage_shifts
 msgid "Started, not sent"
 msgstr "התחילה, לא נשלחה"
 

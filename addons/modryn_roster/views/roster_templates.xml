@@ -205,107 +205,26 @@
                     </div>
                 </div>
 
-                <!-- The manager's side: the real shifts, and who offered them.
-                     Still one card per SHIFT and not per cell, because this is
-                     where she fills a rota — a card carries hours, coverage
-                     targets and the people, none of which fit in a 44px box. -->
-                <div t-if="is_manager" class="modryn_shift_cards mt-4">
-                    <t t-foreach="slots" t-as="slot">
-                        <div t-attf-class="modryn_shift_card #{'is_short' if slot['short_total'] else ''} #{'is_published' if slot['published'] else ''}"
-                             t-att-data-slot="slot['id']">
-                            <div class="modryn_shift_head">
-                                <span class="modryn_strong"><t t-esc="slot['name']"/></span>
-                                <span class="modryn_sub" dir="ltr">
-                                    <t t-esc="slot['day_label']"/> · <t t-esc="slot['hours']"/>
-                                </span>
-                            </div>
-
-                            <div class="modryn_shift_cover">
-                                <t t-if="slot['shortages']">
-                                    <t t-foreach="slot['shortages']" t-as="s">
-                                        <span t-attf-class="modryn_badge #{'is_busy' if s['short'] else 'is_free'}">
-                                            <t t-esc="s['role']"/>
-                                            <t t-esc="s['have']"/>/<t t-esc="s['required']"/>
-                                        </span>
-                                    </t>
-                                </t>
-                                <span t-else="" class="modryn_sub">No targets set</span>
-                            </div>
-
-                            <div t-if="slot['working']" class="modryn_shift_people">
-                                <t t-foreach="slot['working']" t-as="w">
-                                    <span class="modryn_chip is_primary"><t t-esc="w['name']"/></span>
-                                </t>
-                            </div>
-                            <p t-else="" class="modryn_sub mb-0">Nobody rostered yet</p>
-
-                            <div t-if="not slot['published']" class="modryn_shift_assign">
-                                <p class="modryn_sub mb-1">
-                                    <t t-if="slot['available']">Offered this shift:</t>
-                                    <t t-else="">Nobody has offered yet</t>
-                                </p>
-                                <t t-foreach="slot['available']" t-as="a">
-                                    <label class="modryn_piece_check">
-                                        <input type="checkbox" class="modryn_assign_box"
-                                               t-att-data-slot="slot['id']"
-                                               t-att-data-employee="a['id']"
-                                               t-att-checked="'checked' if any(w['id'] == a['id'] for w in slot['working']) else None"/>
-                                        <span>
-                                            <t t-esc="a['name']"/>
-                                            <t t-if="a['role']"> · <t t-esc="a['role']"/></t>
-                                        </span>
-                                    </label>
-                                </t>
-                            </div>
-                            <p t-else="" class="modryn_sub mb-0">Published</p>
-                        </div>
-                    </t>
-                </div>
+                <!-- The manager's shift cards used to sit here: the week's
+                     real shifts, their coverage targets, and a tick per person
+                     to roster her. משמרות draws all of it - the same week, the
+                     same targets, the same people, and clicking a name there
+                     rosters her exactly as ticking her here did.
+                     Deleted rather than moved, because two screens doing one
+                     job is how they start disagreeing, and this pair could:
+                     a manager could roster a woman from either one. -->
             </div>
 
-            <!-- Who has answered, and what she said. One box each, because the
-                 note belongs to the WEEK and not to any shift — reading it off
-                 a card would mean repeating it on every cell she pressed.
-                 A person with no row here has not looked yet, which is a
-                 different thing from a person who can work nothing, and the
-                 manager has to be able to tell them apart before she chases
-                 anyone. -->
-            <section t-if="is_manager" class="modryn_panel mt-4">
-                <h2 class="h5 mb-3">Answers for this week</h2>
-                <p t-if="not submissions" class="modryn_empty mb-0">
-                    Nobody has sent their week yet.
-                </p>
-                <div t-foreach="submissions" t-as="sub" class="mb-3">
-                    <span class="modryn_strong" t-out="sub['name']"/>
-                    <span t-if="sub['submitted_at']" class="modryn_badge is_free ms-2">
-                        Sent <span dir="ltr" t-esc="sub['submitted_at'].strftime('%d.%m %H:%M')"/>
-                    </span>
-                    <span t-else="" class="modryn_badge is_muted ms-2">Started, not sent</span>
-                    <div t-if="sub['note']" class="modryn_sub" t-out="sub['note']"/>
-                </div>
-            </section>
+            <!-- The answers panel moved to משמרות, which is where the rota is
+                 actually stood: "who has sent their week" is the question a
+                 manager asks in the same breath as filling it in, and it was
+                 the one thing here she could not get on that screen. -->
 
-            <!-- Once the week is out, the button is not an action any more -
-                 it re-publishes what is already published, tells nobody
-                 anything, and sits there looking like the week still needs
-                 doing. The page already knows the week is frozen; it says so
-                 here instead. -->
-            <div t-if="is_manager and week_frozen" class="mt-4 modryn_panel">
-                <span class="modryn_badge is_free">Published</span>
-                <span class="modryn_sub ms-2">
-                    The team can see this week, and availability is closed. Ask
-                    for a change on the shift itself.
-                </span>
-            </div>
+            <!-- Publishing lives on משמרות, which has the same button and the
+                 same sentence beside it. Two publish buttons for one week is one
+                 too many even while they agree. The "already published" notice
+                 went with it - that is the same block in its other state. -->
 
-            <div t-if="is_manager and not week_frozen" class="mt-4">
-                <button type="button" class="btn btn-primary" id="modryn_publish_week">
-                    Publish this week
-                </button>
-                <span class="modryn_sub ms-2">
-                    Once published, the team can see it and availability stops changing.
-                </span>
-            </div>
         </t>
     </template>
 
@@ -500,6 +419,28 @@
                 <span t-out="warning"/>
             </div>
             <t t-call="modryn_roster.manage_week_planner"/>
+
+            <!-- Who has answered, and what she said. One box each, because the
+                 note belongs to the WEEK and not to any shift — reading it off
+                 a card would mean repeating it on every cell she pressed.
+                 A person with no row here has not looked yet, which is a
+                 different thing from a person who can work nothing, and the
+                 manager has to be able to tell them apart before she chases
+                 anyone. -->
+            <section t-if="is_manager" class="modryn_panel mt-4">
+                <h2 class="h5 mb-3">Answers for this week</h2>
+                <p t-if="not submissions" class="modryn_empty mb-0">
+                    Nobody has sent their week yet.
+                </p>
+                <div t-foreach="submissions" t-as="sub" class="mb-3">
+                    <span class="modryn_strong" t-out="sub['name']"/>
+                    <span t-if="sub['submitted_at']" class="modryn_badge is_free ms-2">
+                        Sent <span dir="ltr" t-esc="sub['submitted_at'].strftime('%d.%m %H:%M')"/>
+                    </span>
+                    <span t-else="" class="modryn_badge is_muted ms-2">Started, not sent</span>
+                    <div t-if="sub['note']" class="modryn_sub" t-out="sub['note']"/>
+                </div>
+            </section>
 
             <!-- Everything below defines what shifts EXIST, which stays the
                  owner's. A manager stands next week out of the shifts the

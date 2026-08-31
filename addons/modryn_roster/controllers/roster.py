@@ -631,6 +631,19 @@ class ModrynRoster(http.Controller):
         # derivation would be a second answer to "what is the rule".
         rule = week_row._default_window()
         return request.render('modryn_roster.manage_shifts', {
+            # Who has sent their week, which moved here from the roster page.
+            # The question a manager asks in the same breath as filling the rota
+            # in - and the one thing on that page she could not get on this one.
+            # Same builder as before: only the week on screen, and an archived
+            # woman is not chased.
+            'submissions': [{
+                'employee_id': sub.employee_id.id,
+                'name': sub.employee_id.name,
+                'note': sub.note or '',
+                'submitted_at': (_from_utc(sub.submitted_at)
+                                 if sub.submitted_at else None),
+            } for sub in request.env['modryn.roster.submission'].sudo().search(
+                [('week_start', '=', start)]) if sub.employee_id.active],
             # ---- when the team may answer ------------------------------
             # The warning the window routes can send. Accepted and DRAWN here
             # because they redirect here now: without it, "that time has already
