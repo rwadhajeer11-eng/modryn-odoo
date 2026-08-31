@@ -37,14 +37,44 @@
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label" for="task_variant">Dress</label>
-                                <select id="task_variant" name="variant_id" class="form-select">
-                                    <option value="">—</option>
-                                    <t t-foreach="variants" t-as="v">
-                                        <option t-att-value="v.id">
-                                            <t t-out="v.product_tmpl_id.name"/><t t-if="v.product_template_attribute_value_ids"> · <t t-out="v.product_template_attribute_value_ids[:1].name"/></t>
-                                        </option>
-                                    </t>
-                                </select>
+                                <!-- A SEARCH, not a list. This was a <select> of
+                                     every published variant: fine on a boutique
+                                     with three gowns, and on a real rail a list
+                                     nobody can find anything in - at the one
+                                     counter where somebody is standing with a
+                                     bride's dress in her hands.
+                                     The rows below are rendered by the server
+                                     and hidden; atelier.js reads them and shows
+                                     the ones that match. Rendered rather than
+                                     fetched so the search costs no round trip
+                                     and works the moment the page is up. -->
+                                <div class="modryn_dress_pick">
+                                    <input type="hidden" name="variant_id" value=""/>
+                                    <input type="search" id="task_variant"
+                                           class="form-control modryn_dress_query"
+                                           placeholder="A name, a serial number, or a kind"
+                                           autocomplete="off"/>
+                                    <div class="modryn_sub">
+                                        From two characters onwards.
+                                    </div>
+                                    <div class="modryn_dress_hits modryn_dress_results"/>
+                                    <div class="d-flex gap-2 align-items-center mt-1">
+                                        <span class="modryn_strong modryn_dress_chosen"/>
+                                        <button type="button"
+                                                class="btn btn-sm btn-link modryn_dress_clear">
+                                            Clear
+                                        </button>
+                                    </div>
+                                    <div class="d-none">
+                                        <span t-foreach="variants" t-as="v" t-key="v['id']"
+                                              class="modryn_dress_row"
+                                              t-att-data-variant="v['id']"
+                                              t-att-data-label="v['label']"
+                                              t-att-data-name="v['name']"
+                                              t-att-data-serial="v['serial']"
+                                              t-att-data-kind="v['kind']"/>
+                                    </div>
+                                </div>
                             </div>
                             <!-- Managers only. Handing work to somebody else is a
                                  manager's act; a seamstress adding a garment gets
@@ -310,6 +340,23 @@
                                      what makes a mis-tap repairable by pressing
                                      the one she meant. -->
                                 <div t-if="st[0] != 'delivered'" class="modryn_task_moves">
+                                    <!-- Back to the pile nobody has picked up.
+                                         Only when somebody is holding it -
+                                         a job that is already unheld is in the
+                                         queue, and a button that says "put it
+                                         back" for something already back is a
+                                         button that appears to do nothing. -->
+                                    <form t-if="task['seamstress_id']"
+                                          action="/atelier/task/move" method="post"
+                                          class="d-inline">
+                                        <input type="hidden" name="csrf_token"
+                                               t-att-value="request.csrf_token()"/>
+                                        <input type="hidden" name="task_id" t-att-value="task['id']"/>
+                                        <input type="hidden" name="target" value="queue"/>
+                                        <button type="submit" class="btn btn-sm btn-link">
+                                            Put it back
+                                        </button>
+                                    </form>
                                     <form t-foreach="board['states']" t-as="to"
                                           t-if="to[0] != st[0]"
                                           action="/atelier/task/move" method="post"

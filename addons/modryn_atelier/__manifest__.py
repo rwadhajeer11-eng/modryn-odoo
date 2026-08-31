@@ -23,5 +23,14 @@ reason floor occupancy is derived rather than typed.
         'views/atelier_templates.xml',
     ],
     'author': 'MODRYN',
+    'assets': {
+        # The workshop's own search box. web.assets_frontend, because this is a
+        # website page and not the back office - and a bundle here is DEFERRED,
+        # which is why atelier.js is an Interaction and not a DOMContentLoaded
+        # listener: that event has already fired by the time the bundle runs.
+        'web.assets_frontend': [
+            'modryn_atelier/static/src/atelier.js',
+        ],
+    },
     'license': 'LGPL-3',
 }

@@ -163,6 +163,32 @@ class ModrynAtelier(http.Controller):
         return {'by_state': by_state, 'states': STATES, 'load': load,
                 'queue': queue, 'only': only}
 
+    def _variant_rows(self):
+        """The rail, flattened for the search box.
+
+        Serial and kind come from MODRYN_OPS, which this module does not depend
+        on - the workshop is meant to work in a boutique that has not installed
+        the catalogue. Guarded with `in _fields` rather than assumed, the same
+        way booking guards modryn_cancelled_at: a shop without the catalogue
+        searches by name alone and nothing raises.
+        """
+        Template = request.env['product.template']
+        has_serial = 'modryn_serial' in Template._fields
+        has_kind = 'modryn_type_id' in Template._fields
+        rows = []
+        for variant in request.env['product.product'].sudo().search(
+                [('product_tmpl_id.is_published', '=', True)]):
+            tmpl = variant.product_tmpl_id
+            size = variant.product_template_attribute_value_ids[:1].name
+            rows.append({
+                'id': variant.id,
+                'name': tmpl.name or '',
+                'label': '%s%s' % (tmpl.name or '', ' · %s' % size if size else ''),
+                'serial': (tmpl.modryn_serial or '') if has_serial else '',
+                'kind': (tmpl.modryn_type_id.name or '') if has_kind else '',
+            })
+        return rows
+
     # ------------------------------------------------------------- dashboard
     @http.route('/atelier', type='http', auth='user', website=True, sitemap=False)
     def dashboard(self, error=None, **kw):
@@ -188,8 +214,7 @@ class ModrynAtelier(http.Controller):
             'seamstresses': request.env['hr.employee'].sudo().search(
                 [('modryn_level', 'in', ['manager', 'staff'])]),
             'pieces': request.env['modryn.garment.piece'].sudo().search([]),
-            'variants': request.env['product.product'].sudo().search(
-                [('product_tmpl_id.is_published', '=', True)]),
+            'variants': self._variant_rows(),
         })
 
     @http.route('/atelier/advance', type='jsonrpc', auth='user')
@@ -258,6 +283,25 @@ class ModrynAtelier(http.Controller):
         if not self._may_touch(task):
             return self._back_to(task, _("That job belongs to somebody else."))
         target = post.get('target')
+
+        # BACK TO THE QUEUE, which is not a state - it is a state and an owner.
+        # תור העבודות is the work nobody holds, so letting go of a dress means
+        # clearing the name as well as the column. Undoing "I'm on it" used to
+        # take only the first half: the row moved back and her name stayed on
+        # it, so it never reappeared in the queue and nobody else could pick it
+        # up.
+        #
+        # Not a fifth STATE, deliberately: the queue is a view of the other four
+        # (open, unheld), and making it a state would put every task in two
+        # places at once for every reader that groups by state.
+        if target == 'queue':
+            if task.state == 'delivered':
+                return self._back_to(task, _("That job cannot move there."))
+            task.seamstress_id = False
+            if task.state != 'intake' and not task.action_advance('intake'):
+                return self._back_to(task, _("That job cannot move there."))
+            return self._back_to(task)
+
         # Taking a job that is nobody's makes it HERS. Without this a seamstress
         # presses "I'm on it", the row moves to In progress with Unassigned
         # beside it, and the workload column she is judged by never counts it.

@@ -434,3 +434,23 @@ msgstr "ما بتقدر تنقل الشغلة لهناك."
 #: model_terms:ir.ui.view,arch_db:modryn_atelier.dashboard
 msgid "What needs doing"
 msgstr "شو بدها شغل"
+
+#. module: modryn_atelier
+#: model_terms:ir.ui.view,arch_db:modryn_atelier.dashboard
+msgid "A name, a serial number, or a kind"
+msgstr "اسم، رقم تسلسلي، أو نوع"
+
+#. module: modryn_atelier
+#: model_terms:ir.ui.view,arch_db:modryn_atelier.dashboard
+msgid "From two characters onwards."
+msgstr "من حرفين وطالع."
+
+#. module: modryn_atelier
+#: model_terms:ir.ui.view,arch_db:modryn_atelier.dashboard
+msgid "Clear"
+msgstr "مسح"
+
+#. module: modryn_atelier
+#: model_terms:ir.ui.view,arch_db:modryn_atelier.dashboard
+msgid "Put it back"
+msgstr "رجّعيها للدور"

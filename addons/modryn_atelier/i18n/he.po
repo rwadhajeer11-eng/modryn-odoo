@@ -431,3 +431,23 @@ msgstr "אי אפשר להעביר את העבודה לשם."
 #: model_terms:ir.ui.view,arch_db:modryn_atelier.dashboard
 msgid "What needs doing"
 msgstr "מה צריך לעשות"
+
+#. module: modryn_atelier
+#: model_terms:ir.ui.view,arch_db:modryn_atelier.dashboard
+msgid "A name, a serial number, or a kind"
+msgstr "שם, מספר סידורי או סוג"
+
+#. module: modryn_atelier
+#: model_terms:ir.ui.view,arch_db:modryn_atelier.dashboard
+msgid "From two characters onwards."
+msgstr "משתי אותיות ומעלה."
+
+#. module: modryn_atelier
+#: model_terms:ir.ui.view,arch_db:modryn_atelier.dashboard
+msgid "Clear"
+msgstr "ניקוי"
+
+#. module: modryn_atelier
+#: model_terms:ir.ui.view,arch_db:modryn_atelier.dashboard
+msgid "Put it back"
+msgstr "החזרה לתור"
