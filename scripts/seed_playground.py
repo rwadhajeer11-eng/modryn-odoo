@@ -244,6 +244,95 @@ if ahead < 20:
             })
             note('appointments to come', 1)
 
+# ------------------------------------------------------------- the floor
+# The board the shop stares at all day, and the seeder never put a single row on
+# it. It looked alive only because the browser suite leaves its brides behind -
+# so the most-used screen in the product was reading "QA Walkin 1446" thirty
+# times over, and tidying the litter away would have emptied it completely.
+#
+# TWO ARE BEING HELD, and that is the point of seeding this at all. The shift
+# supervisor's screen answers "who has whom", and with nobody held it is a
+# heading over white space: the panel cannot be judged, and neither can the
+# controls that take a customer off a worker or hand her to another.
+#
+# The rest is the shape of a real morning: some waiting, some finished, and the
+# finished ones carrying what came of the visit - a gown and a price, or a
+# polite no. Those are what the sales history reads on the walk-in side; without
+# them that screen only ever finds appointments and half of it is untested by
+# eye.
+FLOOR_WAITING = [
+    ("חן ליבנה", 'bride', "האמא מגיעה ב-16:00"),
+    ("אפרת סבן", 'bride', ""),
+    ("מור יעקובי", 'evening', "מחפשת שמלת ערב, לא כלה"),
+    ("ספיר אוחיון", 'bride', ""),
+    ("לינוי טל", 'bride', "רגישה לסיכות של ההינומה"),
+    ("גל אשכנזי", 'evening', ""),
+]
+FLOOR_HELD = [("ריקי דוד", 'bride'), ("אלין חזן", 'bride')]
+FLOOR_DONE = [
+    ("שקד ניסים", 'sold', 5),
+    ("יובל קדוש", 'sold', 4),
+    ("אודליה בר", 'not_sold', 3),
+    ("נופר גבאי", 'sold', 5),
+    ("רעות שלו", 'not_sold', 0),
+    ("ליטל עמר", 'sold', 4),
+]
+Queue = env['modryn.queue.entry'].sudo()
+phone_seq = 7300000
+
+
+def _walkin(name, kind, state, hint=''):
+    """One walk-in, or nothing if she is already on the board.
+
+    Found by NAME rather than topped up by count: the board is churned by every
+    browser run, so a count guard would re-add these on some runs and not on
+    others, and the same bride would appear twice.
+    """
+    global phone_seq
+    phone_seq += 1
+    if Queue.with_context(active_test=False).search_count([('name', '=', name)]):
+        return None
+    return Queue.create({
+        'name': name,
+        'phone': '+97259%06d' % phone_seq,
+        'client_type': kind,
+        'state': state,
+        'staff_note': hint or False,
+    })
+
+
+# `hint`, not `note`: the file's own note() counter is a module-level function,
+# and a loop variable called note shadows it for the rest of the run.
+for name, kind, hint in FLOOR_WAITING:
+    if _walkin(name, kind, 'waiting', hint) is not None:
+        note('walk-ins waiting', 1)
+
+# Held BY somebody: a stint with no stylist on it is not what the supervisor's
+# screen is about, and an empty "assigned to" would read as the panel being
+# broken rather than as the floor being quiet.
+for i, (name, kind) in enumerate(FLOOR_HELD):
+    entry = _walkin(name, kind, 'called')
+    if entry is not None:
+        entry.write({'modryn_employee_id': sellers[i % len(sellers)].id})
+        note('walk-ins being helped', 1)
+
+for name, outcome, rating in FLOOR_DONE:
+    entry = _walkin(name, 'bride', 'done')
+    if entry is None:
+        continue
+    values = {'modryn_outcome': outcome, 'modryn_visit_rating': rating}
+    # WHICH gown, when one was sold. The sales history reads this: a walk-in
+    # sale with no dress on it answers "how much" and not "what", which is the
+    # half a bride asks about three years later.
+    if outcome == 'sold' and 'modryn_variant_id' in Queue._fields:
+        variant = env['product.product'].sudo().search(
+            [('product_tmpl_id.is_published', '=', True)], limit=1,
+            offset=random.randint(0, 4))
+        if variant:
+            values['modryn_variant_id'] = variant.id
+    entry.write(values)
+    note('walk-ins finished', 1)
+
 # ------------------------------------------------------------- the workshop
 # One task in every state, so the columns are not three empty headings.
 seamstress = staff.filtered(

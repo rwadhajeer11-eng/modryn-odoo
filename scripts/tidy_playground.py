@@ -46,13 +46,33 @@ sweep('alteration tasks', Task.search([
          ('customer_name', 'like', 'QA Bride%')]))
 
 Queue = env['modryn.queue.entry'].sudo()
-# CLOSED tickets only. A waiting one is somebody the next run needs to find.
-sweep('closed queue tickets', Queue.search(
-    [('state', 'in', ('done', 'expired', 'redirected'))]))
+# The suite's own brides, in any state it left them.
+#
+# NAMED, and that is the change that matters: this used to delete every closed
+# ticket on the tenant. The playground now seeds finished visits deliberately -
+# they are what the reports count and what the sales history reads on the
+# walk-in side - so an unnamed sweep deleted the boutique's own past every time
+# somebody tidied, which is a strange thing for a script about litter to do.
+#
+# WAITING ones go as well, and the comment here used to say the opposite: "a
+# waiting one is somebody the next run needs to find". That is not true of
+# these. Every spec mints its own bride with a timestamp in her name -
+# `QA Walkin ${Date.now() % 100000}` - so a leftover waiting row is nobody's,
+# and thirty of them are what the floor board leads with. The old caution still
+# holds for rows this script cannot identify, which is why it identifies them.
+SUITE = ('QA Walkin%', 'QA Bride%', 'QA Finish%')
+_named = ['|'] * (len(SUITE) - 1) + [('name', 'like', p) for p in SUITE]
+sweep('queue tickets the suite left', Queue.search(
+    [('state', 'in', ('waiting', 'done', 'expired', 'redirected'))] + _named))
 
 # Held by nobody who is coming back. Set to done rather than deleted: the board's
 # own counters read these rows, and a hole is worse than a closed ticket.
-held = Queue.search([('state', '=', 'called')])
+#
+# Named too, and for a sharper reason than the sweep above: the seeded floor puts
+# two brides in somebody's hands ON PURPOSE, because the shift supervisor's
+# "who has whom" panel is a heading over white space without them. A blanket
+# release empties that panel every time this runs.
+held = Queue.search([('state', '=', 'called')] + _named)
 if held:
     removed['customers let go of'] = len(held)
     held.write({'state': 'done'})
