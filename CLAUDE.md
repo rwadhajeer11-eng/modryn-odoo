@@ -147,12 +147,28 @@ bella is `miri` and on qa it is `qaowner`; `admin` exists only on the separate
 `platform` database. Odoo's own `/web/login` labels its field "Email" and there
 are no email addresses on any of these accounts — it takes the USERNAME.
 
-**Green baseline** (2026-08-30): `verify.sh` reports **403 passed, 0 failed,
+**Green baseline** (2026-08-31): `verify.sh` reports **404 passed, 0 failed,
 6 skipped**, and the browser suite **35 passed, 1 skipped** (the skip is
 `realsms.spec.js`, which needs Twilio credentials nobody should export here).
 Both are green —
 treat any failure as a regression you caused, and do not "fix" a check to make
 it pass without first proving the check is the thing that is wrong.
+
+**Two ways the browser suite goes red that are not the code**, both learned the
+hard way and both leaving `qa` in a state the next run measures:
+
+- **Customers left `called`.** A spec that ends badly leaves a bride held on the
+  floor board, and they pile up. The panel then holds strangers, and any spec
+  reaching for `.first()` acts on one.
+  `env['modryn.queue.entry'].search([('state','=','called')]).write({'state':'done'})`.
+- **The OTP per-IP cap.** Thirty codes an hour from one address, and check-in
+  then stops redirecting to `/queue/verify`. Run the suite three or four times
+  in an hour and it trips — the failure looks like a broken check-in flow and is
+  the rate limit doing its job. `env['modryn.otp.code'].search([]).unlink()` on
+  qa, or wait the hour.
+
+Before believing a red is yours: `git stash` and run the same spec against the
+previous commit. That has settled it every time this session.
 
 The six failures this file used to record are gone. Five were one root cause
 (English was never installed, `scripts/build_template.sh:49`) and are fixed
