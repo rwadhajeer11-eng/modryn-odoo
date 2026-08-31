@@ -3,6 +3,7 @@ from odoo.http import request
 from odoo.tools.translate import LazyTranslate
 
 from odoo.addons.modryn_staff import nav
+from odoo.addons.modryn_staff.controllers import access
 
 _lt = LazyTranslate(__name__)
 
@@ -23,7 +24,7 @@ class ModrynOpsAudit(http.Controller):
     @http.route('/manage/audit', type='http', auth='user', website=True, sitemap=False)
     def audit(self, page='1', **kw):
         user = request.env.user
-        if not user or user._is_public() or not user.has_group(GROUP_OWNER):
+        if not access.can_view('audit'):
             return request.not_found()
         try:
             page = max(1, int(page))

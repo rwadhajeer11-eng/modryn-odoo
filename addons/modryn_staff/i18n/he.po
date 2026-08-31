@@ -2927,3 +2927,12 @@ msgstr ""
 "<i class=\"fa fa-hourglass-half\" aria-hidden=\"true\"/>\n"
 "                    <span class=\"modryn_strong\">שעות עבודה</span>\n"
 "                    <span class=\"modryn_sub\">מי הייתה על הרצפה, חודש אחר חודש — ותיקון כשלא נלחץ הכפתור.</span>"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manage_roles
+msgid ""
+"A padlock means the page is yours alone — it is shown so you can\n"
+"                see the whole shop, not because it can be handed over."
+msgstr ""
+"מנעול פירושו שהעמוד שלך בלבד — הוא מוצג כדי שתראי את כל החנות, לא כי אפשר "
+"להעביר אותו."

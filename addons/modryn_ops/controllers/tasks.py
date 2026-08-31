@@ -3,6 +3,7 @@ from odoo.http import request
 from odoo.tools.translate import LazyTranslate
 
 from odoo.addons.modryn_staff import nav
+from odoo.addons.modryn_staff.controllers import access
 
 _lt = LazyTranslate(__name__)
 
@@ -73,7 +74,7 @@ class ModrynOpsTasks(http.Controller):
     # ---------------------------------------------------- owner: checklists
     @http.route('/manage/checklists', type='http', auth='user', website=True, sitemap=False)
     def checklists(self, error=None, **kw):
-        if not self._user() or not request.env.user.has_group(GROUP_OWNER):
+        if not access.can_view('checklists'):
             return request.not_found()
         templates = request.env['modryn.task.template'].sudo().with_context(
             active_test=False).search([])
@@ -86,7 +87,7 @@ class ModrynOpsTasks(http.Controller):
     @http.route('/manage/checklists/new', type='http', auth='user', website=True,
                 methods=['POST'], csrf=True, sitemap=False)
     def checklists_new(self, **post):
-        if not self._user() or not request.env.user.has_group(GROUP_OWNER):
+        if not access.can_view('checklists'):
             return request.not_found()
         name = (post.get('name') or '').strip()
         if not name:
@@ -111,7 +112,7 @@ class ModrynOpsTasks(http.Controller):
     @http.route('/manage/checklists/archive/<int:template_id>', type='http',
                 auth='user', website=True, methods=['POST'], csrf=True, sitemap=False)
     def checklists_archive(self, template_id, **post):
-        if not self._user() or not request.env.user.has_group(GROUP_OWNER):
+        if not access.can_view('checklists'):
             return request.not_found()
         template = request.env['modryn.task.template'].sudo().with_context(
             active_test=False).browse(template_id).exists()

@@ -11,6 +11,7 @@ from odoo.http import request
 from odoo.tools.translate import LazyTranslate
 
 from odoo.addons.modryn_staff import nav
+from odoo.addons.modryn_staff.controllers import access
 from odoo.addons.modryn_staff.controllers.manage import ModrynManage
 
 _lt = LazyTranslate(__name__)
@@ -33,20 +34,28 @@ SIZE_ATTRIBUTE = "מידה"
 # Hebrew page and an Arabic one while its .po entry sat there translated. _lt is
 # the lazy form that resolves when the label is finally rendered, which is what
 # every other nav.register in the product already uses.
-# The TOP row: the rail is daily work, not back-office administration. The row
-# is layout only - the route below still calls _require_owner, and nav.OWNER_ONLY
-# stops the top row's "every manager, no tick needed" rule from offering her a
-# tab that would 404. Moving this without that list was the whole trap.
+# The TOP row: the rail is daily work, not back-office administration. Which
+# means every shift MANAGER opens it without anybody granting anything - that is
+# what the top row is - and any role the owner ticks Dresses for opens it too.
+# The route below asks the matrix, so the row, the tick and the gate all say the
+# same thing. They did not always: this page sat in the matrix as an ordinary
+# column while its route refused everybody but the owner, and a tick handed the
+# woman a tab that answered 404.
 nav.register('dresses', '/manage/dresses', _lt("Dresses"), 30, 'staff', 'fa-diamond')
 
 
 class ModrynDresses(ModrynManage):
-    """The rail, as the owner keeps it.
+    """The rail, as the boutique keeps it.
 
     Extends the owner's manage controller by inheritance - the same seam the
-    roster and atelier use - so this page inherits _require_owner and the
-    /manage section rules without restating them. /manage/* is owner-only by
-    deliberate decision and never enters the role matrix.
+    roster and atelier use - for its helpers, NOT for its gate. Every route here
+    asks access.can_view('dresses'): the owner always, every shift manager
+    because this page sits in the top row, and any role the owner has ticked.
+
+    The whole page moves together, writes included. A catalogue somebody may
+    read with an Add button that answers 404 is the same lie as a tab that does
+    - and everywhere else in this matrix a tick means "this role may use this
+    page", not "may look at it".
     """
 
     def _dress_rows(self):
@@ -98,7 +107,7 @@ class ModrynDresses(ModrynManage):
     @http.route('/manage/dresses', type='http', auth='user', website=True,
                 sitemap=False)
     def dresses(self, error=None, **kw):
-        if not self._require_owner():
+        if not access.can_view('dresses'):
             return request.not_found()
         return request.render('modryn_ops.manage_dresses', {
             'dresses': self._dress_rows(),
@@ -268,14 +277,14 @@ class ModrynDresses(ModrynManage):
     @http.route('/manage/dresses/new', type='http', auth='user', website=True,
                 methods=['GET'], sitemap=False)
     def dress_new_form(self, **kw):
-        if not self._require_owner():
+        if not access.can_view('dresses'):
             return request.not_found()
         return self._dress_form(values={'published': True})
 
     @http.route('/manage/dresses/new', type='http', auth='user', website=True,
                 methods=['POST'], csrf=True, sitemap=False)
     def dress_new_submit(self, **post):
-        if not self._require_owner():
+        if not access.can_view('dresses'):
             return request.not_found()
         errors = {}
         vals = self._dress_values(post, errors)
@@ -304,7 +313,7 @@ class ModrynDresses(ModrynManage):
     @http.route('/manage/dresses/edit/<int:dress_id>', type='http', auth='user',
                 website=True, methods=['GET'], sitemap=False)
     def dress_edit_form(self, dress_id, **kw):
-        if not self._require_owner():
+        if not access.can_view('dresses'):
             return request.not_found()
         dress = request.env['product.template'].sudo().with_context(
             active_test=False).browse(dress_id).exists()
@@ -326,7 +335,7 @@ class ModrynDresses(ModrynManage):
     @http.route('/manage/dresses/edit/<int:dress_id>', type='http', auth='user',
                 website=True, methods=['POST'], csrf=True, sitemap=False)
     def dress_edit_submit(self, dress_id, **post):
-        if not self._require_owner():
+        if not access.can_view('dresses'):
             return request.not_found()
         dress = request.env['product.template'].sudo().with_context(
             active_test=False).browse(dress_id).exists()
@@ -356,7 +365,7 @@ class ModrynDresses(ModrynManage):
                 auth='user', website=True, methods=['POST'], csrf=True,
                 sitemap=False)
     def dress_photo_delete(self, image_id, **post):
-        if not self._require_owner():
+        if not access.can_view('dresses'):
             return request.not_found()
         image = request.env['product.image'].sudo().browse(image_id).exists()
         if image:
@@ -374,7 +383,7 @@ class ModrynDresses(ModrynManage):
         rows nobody can explain a year later. Unpublishing on the way out too,
         so an archived dress cannot sit on the shop with nothing listing it.
         """
-        if not self._require_owner():
+        if not access.can_view('dresses'):
             return request.not_found()
         dress = request.env['product.template'].sudo().with_context(
             active_test=False).browse(dress_id).exists()
@@ -407,7 +416,7 @@ class ModrynDresses(ModrynManage):
     @http.route('/manage/dress-kinds', type='http', auth='user', website=True,
                 methods=['GET'], sitemap=False)
     def dress_kinds(self, error=None, **kw):
-        if not self._require_owner():
+        if not access.can_view('dresses'):
             return request.not_found()
         return request.render('modryn_ops.manage_dress_kinds', {
             'kinds': self._kind_rows(),
@@ -418,7 +427,7 @@ class ModrynDresses(ModrynManage):
     @http.route('/manage/dress-kinds', type='http', auth='user', website=True,
                 methods=['POST'], csrf=True, sitemap=False)
     def dress_kind_add(self, **post):
-        if not self._require_owner():
+        if not access.can_view('dresses'):
             return request.not_found()
         name = (post.get('name') or '').strip()
         if not name:
@@ -446,7 +455,7 @@ class ModrynDresses(ModrynManage):
         Archived, never deleted: items keep their kind and their history stays
         readable. An archived kind simply stops being offered on the form.
         """
-        if not self._require_owner():
+        if not access.can_view('dresses'):
             return request.not_found()
         kind = request.env['modryn.dress.type'].sudo().with_context(
             active_test=False).browse(kind_id).exists()
@@ -463,7 +472,7 @@ class ModrynDresses(ModrynManage):
         the rail and types what she sees. Two people incrementing from two
         phones would each be counting from a different reading.
         """
-        if not self._require_owner():
+        if not access.can_view('dresses'):
             return request.not_found()
         variant = request.env['product.product'].sudo().browse(
             int(post.get('variant_id') or 0)).exists()
@@ -483,7 +492,7 @@ class ModrynDresses(ModrynManage):
     @http.route('/manage/dresses/serial', type='http', auth='user', website=True,
                 methods=['POST'], csrf=True, sitemap=False)
     def dresses_serial(self, **post):
-        if not self._require_owner():
+        if not access.can_view('dresses'):
             return request.not_found()
         dress = request.env['product.template'].sudo().browse(
             int(post.get('dress_id') or 0)).exists()

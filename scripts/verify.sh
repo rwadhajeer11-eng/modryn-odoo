@@ -368,6 +368,24 @@ case $? in
   *) bad "translation completeness" "$(head -3 /tmp/modryn_i18n.txt | tr '\n' ' ')" ;;
 esac
 
+# --- a tick in the access matrix must be able to deliver ------------------
+# The navbar sweep further down asks "does every tab this manager is SHOWN
+# open?", which can only ever cover pages she can already see. A page waiting
+# behind a grant nobody has made is invisible to it - and that is exactly how
+# /manage/pieces sat in the matrix as an ordinary column, with its own route
+# refusing anybody but the owner, without a single check noticing.
+#
+# So this one reads the source: for every page the matrix offers, find the route
+# that serves it and check the gate is one that consults the matrix. Under a
+# second, no database. Same three outcomes as the audit above - a check that
+# could not run has not passed.
+.venv/bin/python scripts/grant_audit.py >/tmp/modryn_grants.txt 2>&1
+case $? in
+  0) ok "every page the access matrix offers is one a tick can open" ;;
+  2) skip "access matrix honesty" "$(head -1 /tmp/modryn_grants.txt)" ;;
+  *) bad "access matrix honesty" "$(head -2 /tmp/modryn_grants.txt | tr '\n' ' ')" ;;
+esac
+
 fetch "$BELLA/ar/shop"
 grep -q 'lang="ar-001"' "$PAGE" && ok "ar: storefront serves ar-001" || bad "Arabic storefront" "no lang=ar-001"
 # Markers from CORE Odoo's Arabic, not ours: "الصفحة الرئيسية" is the website

@@ -312,7 +312,7 @@ class ModrynAtelier(http.Controller):
     # ------------------------------------------------------- garment pieces
     @http.route('/manage/pieces', type='http', auth='user', website=True, sitemap=False)
     def pieces(self, error=None, **kw):
-        if not self._user() or not request.env.user.has_group(GROUP_OWNER):
+        if not access.can_view('pieces'):
             return request.not_found()
         return request.render('modryn_atelier.manage_pieces', {
             'pieces': request.env['modryn.garment.piece'].sudo().with_context(
@@ -324,7 +324,7 @@ class ModrynAtelier(http.Controller):
     @http.route('/manage/pieces/new', type='http', auth='user', website=True,
                 methods=['POST'], csrf=True, sitemap=False)
     def pieces_new(self, **post):
-        if not self._user() or not request.env.user.has_group(GROUP_OWNER):
+        if not access.can_view('pieces'):
             return request.not_found()
         name = (post.get('name') or '').strip()
         if not name:
@@ -339,7 +339,7 @@ class ModrynAtelier(http.Controller):
     @http.route('/manage/pieces/archive/<int:piece_id>', type='http', auth='user',
                 website=True, methods=['POST'], csrf=True, sitemap=False)
     def pieces_archive(self, piece_id, **post):
-        if not self._user() or not request.env.user.has_group(GROUP_OWNER):
+        if not access.can_view('pieces'):
             return request.not_found()
         piece = request.env['modryn.garment.piece'].sudo().with_context(
             active_test=False).browse(piece_id).exists()

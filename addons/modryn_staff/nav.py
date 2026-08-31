@@ -43,16 +43,22 @@ PAGES = []
 # later, and it is the sentence that records WHY that power was never grantable.
 NEVER_GRANTABLE = ('staff', 'roles')
 
-# Pages whose ROUTE requires the owner herself. The navbar and the access matrix
-# both read this, because all three have to agree: a page a tick cannot really
-# open is a tick that lies, and the woman it was ticked for gets a tab that 404s.
-# That was not hypothetical - it was true of every one of these until measured.
+# Pages whose ROUTE requires the owner herself, and which therefore must not be
+# drawn as ordinary ticks. EMPTY, and deliberately kept: the boutique decided to
+# delegate the four that used to be here (the dresses, the audit trail, the
+# checklists and the garment pieces), so every one of them asks the matrix now
+# and every column in it is real.
 #
-# Different from NEVER_GRANTABLE, which is about power a tick must never HAND
-# OUT. This is about power a tick cannot hand out however much anybody wants it
-# to, because the route on the far side refuses. Both end up owner-only; only
-# one of them is a decision.
-OWNER_ONLY = ('dresses', 'audit', 'checklists')
+# The list stays because the RULE stays. The navbar, the matrix and the route
+# all have to agree - a page a tick cannot really open is a tick that lies, and
+# the woman it was ticked for gets a tab that 404s. That was measured, twice.
+# The next page whose route refuses non-owners belongs here on the same day it
+# is written, and scripts/grant_audit.py fails the gate if it is not.
+#
+# Different from NEVER_GRANTABLE, which is power a tick must never HAND OUT
+# however anybody feels about it. This is bookkeeping about what the routes
+# actually do.
+OWNER_ONLY = ()
 
 
 def grantable():
