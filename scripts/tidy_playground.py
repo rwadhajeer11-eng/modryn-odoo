@@ -40,10 +40,21 @@ def sweep(label, records):
         removed[label] = count
 
 
+# EVERY name the suite writes, in one place. It was two lists in two sweeps and
+# they drifted: the workshop sweep looked for "QA Alteration" and "QA Bride"
+# while the spec that files alteration work does it against a walk-in, so the
+# task carries HER name - "QA Walkin 62098" - and sat on the board through every
+# tidy. A second list is a second thing to forget.
+SUITE = ('QA Walkin%', 'QA Bride%', 'QA Alteration%', 'QA Finish%')
+
+
+def named(field='name'):
+    """A domain matching anything the browser suite made."""
+    return (['|'] * (len(SUITE) - 1)) + [(field, 'like', p) for p in SUITE]
+
+
 Task = env['modryn.alteration.task'].sudo().with_context(active_test=False)
-sweep('alteration tasks', Task.search([
-    '|', ('customer_name', 'like', 'QA Alteration%'),
-         ('customer_name', 'like', 'QA Bride%')]))
+sweep('alteration tasks', Task.search(named('customer_name')))
 
 Queue = env['modryn.queue.entry'].sudo()
 # The suite's own brides, in any state it left them.
@@ -60,10 +71,8 @@ Queue = env['modryn.queue.entry'].sudo()
 # `QA Walkin ${Date.now() % 100000}` - so a leftover waiting row is nobody's,
 # and thirty of them are what the floor board leads with. The old caution still
 # holds for rows this script cannot identify, which is why it identifies them.
-SUITE = ('QA Walkin%', 'QA Bride%', 'QA Finish%')
-_named = ['|'] * (len(SUITE) - 1) + [('name', 'like', p) for p in SUITE]
 sweep('queue tickets the suite left', Queue.search(
-    [('state', 'in', ('waiting', 'done', 'expired', 'redirected'))] + _named))
+    [('state', 'in', ('waiting', 'done', 'expired', 'redirected'))] + named()))
 
 # Held by nobody who is coming back. Set to done rather than deleted: the board's
 # own counters read these rows, and a hole is worse than a closed ticket.
@@ -72,14 +81,14 @@ sweep('queue tickets the suite left', Queue.search(
 # two brides in somebody's hands ON PURPOSE, because the shift supervisor's
 # "who has whom" panel is a heading over white space without them. A blanket
 # release empties that panel every time this runs.
-held = Queue.search([('state', '=', 'called')] + _named)
+held = Queue.search([('state', '=', 'called')] + named())
 if held:
     removed['customers let go of'] = len(held)
     held.write({'state': 'done'})
 
 Event = env['calendar.event'].sudo()
-sweep('test bookings', Event.search([
-    ('modryn_is_booking', '=', True), ('name', 'like', 'QA Bride%')]))
+sweep('test bookings', Event.search(
+    [('modryn_is_booking', '=', True)] + named()))
 
 # The per-IP cap is thirty an hour and a full suite spends most of it. Clearing
 # these is what stops the NEXT run reporting a broken check-in.
