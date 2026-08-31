@@ -180,6 +180,70 @@ if existing_past < 25:
             })
             note('past appointments', 1)
 
+# -------------------------------------------------- a diary that points forward
+# The block above is everything that already HAPPENED, because that is what the
+# reports read. It leaves every screen about what happens NEXT empty: today's
+# list, "coming later" on the floor, and the shift supervisor's arrival panel,
+# which cannot say anything without a bride due inside the quarter hour.
+#
+# Nothing here carries an outcome. These have not happened yet, and writing one
+# on a future appointment would put takings in the month's figures for a visit
+# nobody has had - the reports would count a sale that has not been made.
+BOOKED = [
+    "אורית שרון", "ליאור דהן", "מיכל ברק", "עדי נחום", "שני גולן",
+    "רוני אלמוג", "טל ביטון", "אביגיל רון", "נטע חדד", "סיון מור",
+]
+# The SHOP's date, not the machine's. The boutique runs three hours ahead of
+# UTC, so for those three hours either side of midnight date.today() is still
+# yesterday in the shop - and the dense day, the one that makes the arrival
+# panel say anything, would be seeded entirely into the past.
+local_today = (datetime.now() + timedelta(hours=3)).date()
+ahead = Event.search_count([
+    ('modryn_is_booking', '=', True),
+    ('start', '>', datetime.now()),
+    ('modryn_cancelled_at', '=', False),
+])
+if ahead < 20:
+    for days_ahead in range(0, 14):
+        day = local_today + timedelta(days=days_ahead)
+        if day.weekday() == 4:          # Friday: the shop is shut
+            continue
+        # TODAY is seeded every half hour across the working day, and the rest
+        # of the fortnight is seeded the way a boutique actually books - four or
+        # five fittings, spread. The dense day is not decoration: the arrival
+        # panel only says anything about the next fifteen minutes, so a diary
+        # that jumps from eleven to two shows an empty panel for most of the
+        # afternoon and reads as a feature that does not work.
+        if days_ahead == 0:
+            slots = [(h, m) for h in range(10, 19) for m in (0, 30)]
+        else:
+            slots = [(11, 0), (12, 30), (14, 0), (16, 0), (17, 30)]
+            slots = random.sample(slots, random.randint(3, 5))
+        for hour, minute in sorted(slots):
+            start = datetime.combine(day, time(hour=hour - 3, minute=minute))
+            # An hour that has already gone is not a booking to come. Seeding
+            # one would leave a visit nobody can ever close, and the reports
+            # count exactly those - "still to close" would climb by ten every
+            # time this ran in the afternoon.
+            if start <= datetime.now():
+                continue
+            if Event.search_count([
+                    ('modryn_is_booking', '=', True), ('start', '=', start)]):
+                continue
+            Event.create({
+                'name': random.choice(BOOKED),
+                'start': start,
+                'stop': start + timedelta(hours=1),
+                'modryn_is_booking': True,
+                'modryn_customer_phone': '+9725%08d' % random.randint(0, 99999999),
+                # Some are spoken for and some are not, which is the state a
+                # supervisor's screen is actually for: an unclaimed fitting is
+                # the one she has to hand to somebody.
+                'modryn_employee_id': random.choice(sellers).id
+                if random.random() < 0.6 else False,
+            })
+            note('appointments to come', 1)
+
 # ------------------------------------------------------------- the workshop
 # One task in every state, so the columns are not three empty headings.
 seamstress = staff.filtered(
