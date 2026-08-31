@@ -1073,6 +1073,45 @@
     border-radius: 9px;
 }
 
+// ABOUT TO ARRIVE. Warmer than the panels below it on purpose: everything else
+// on this screen is a record of what is already happening, and this is the one
+// block with a clock running on it.
+.modryn_due_soon {
+    border-inline-start: 3px solid $modryn-gold;
+}
+
+// What the supervisor may do to one customer. Separated from the facts above it
+// by a rule, because a press here changes the room and reading must not shade
+// into doing.
+.modryn_super_actions {
+    margin-block-start: 8px;
+    padding-block-start: 8px;
+    border-block-start: 1px solid $modryn-border;
+    display: grid;
+    gap: 6px;
+}
+
+// The picker and its button travel together - they are one decision.
+.modryn_super_hand {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+
+    select {
+        flex: 1 1 auto;
+        // A name is longer than a fitting room's. Without this the select
+        // grows the card and the row below it wraps to three lines.
+        min-width: 0;
+    }
+}
+
+.modryn_super_action_row {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
 // The rating. Buttons, not a select: a supervisor marks this standing up,
 // between two other things, and a dropdown is three taps where this is one.
 .modryn_rate {

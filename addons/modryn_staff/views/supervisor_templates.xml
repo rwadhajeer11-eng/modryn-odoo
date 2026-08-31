@@ -55,6 +55,35 @@
                 </div>
             </section>
 
+            <!-- ABOUT TO ARRIVE. Above everything, because it is the only
+                 thing on this screen with a clock running on it - the panels
+                 below are about the room as it already stands.
+                 An appointment is invisible here until its hour arrives, by
+                 which time the customer is at the door and nobody was told to
+                 expect her. -->
+            <section t-if="due_soon" class="modryn_panel mb-4 modryn_due_soon">
+                <header class="modryn_panel_head">
+                    <h2>Arriving in the next few minutes</h2>
+                    <span class="modryn_count" t-out="len(due_soon)"/>
+                </header>
+                <div class="modryn_cards">
+                    <div t-foreach="due_soon" t-as="d" t-key="d['id']" class="modryn_card">
+                        <div class="modryn_card_marks">
+                            <span class="modryn_strong" t-out="d['name']"/>
+                            <span class="modryn_badge is_busy" dir="ltr" t-out="d['time']"/>
+                        </div>
+                        <!-- Built whole in the controller: split across nodes
+                             it extracts as the bare fragment "minutes from
+                             now", which gives a translator nowhere to put the
+                             number. -->
+                        <div class="modryn_sub" t-out="d['due_in']"/>
+                        <div t-if="d['phone']" class="modryn_sub" dir="ltr" t-out="d['phone']"/>
+                        <div t-if="d['who']" class="modryn_sub" t-out="d['who']"/>
+                        <div t-else="" class="modryn_sub">Nobody on her yet.</div>
+                    </div>
+                </div>
+            </section>
+
             <!-- Work nobody has taken. First, because it is the only thing on
                  this screen that needs somebody to do something about it -
                  everything below is a record of what is already happening. -->
@@ -73,6 +102,10 @@
                             <span t-if="c.get('time')" class="modryn_badge is_muted"
                                   dir="ltr" t-out="c['time']"/>
                         </div>
+                        <t t-call="modryn_staff.supervisor_actions">
+                            <t t-set="target" t-value="c"/>
+                            <t t-set="held" t-value="False"/>
+                        </t>
                     </div>
                 </div>
                 <p t-if="unassigned_note" class="modryn_sub mb-0" t-out="unassigned_note"/>
@@ -157,6 +190,11 @@
                                 <t t-esc="', '.join(c['helpers'])"/>
                             </div>
 
+                            <t t-call="modryn_staff.supervisor_actions">
+                                <t t-set="target" t-value="c"/>
+                                <t t-set="held" t-value="True"/>
+                            </t>
+
                             <!-- How the visit went. Five plain buttons and a
                                  line of text: a supervisor marks this while
                                  standing up, between two other things. -->
@@ -222,6 +260,60 @@
                 </section>
             </div>
         </t>
+    </template>
+
+    <!-- What a supervisor may do to one customer, wherever she is drawn.
+         `held` says whether somebody is currently on her: only then is "back to
+         the line" a thing that can happen, and only then does the picker read
+         as moving her rather than giving her out. -->
+    <template id="supervisor_actions" name="MODRYN supervisor actions">
+        <div class="modryn_super_actions">
+            <!-- Hand her to somebody. Its own form, because a select and a
+                 button that post together are one decision; the two below are
+                 different decisions and must not share a submit. -->
+            <form t-if="on_floor" action="/shift-supervisor/hand" method="post"
+                  class="modryn_super_hand">
+                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                <input type="hidden" name="kind" t-att-value="target['kind']"/>
+                <input type="hidden" name="record_id" t-att-value="target['id']"/>
+                <select name="employee_id" class="form-select form-select-sm"
+                        t-att-aria-label="'Hand her to' if held else 'Give her to'">
+                    <option value="">
+                        <t t-if="held">Move her to…</t>
+                        <t t-else="">Give her to…</t>
+                    </option>
+                    <option t-foreach="on_floor" t-as="w" t-key="w['id']"
+                            t-att-value="w['id']" t-out="w['name']"/>
+                </select>
+                <button type="submit" class="btn btn-sm btn-outline-dark">Go</button>
+            </form>
+            <p t-else="" class="modryn_sub mb-1">
+                Nobody is on the floor to hand her to.
+            </p>
+
+            <div class="modryn_super_action_row">
+                <form t-if="held" action="/shift-supervisor/queue" method="post"
+                      class="d-inline">
+                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                    <input type="hidden" name="kind" t-att-value="target['kind']"/>
+                    <input type="hidden" name="record_id" t-att-value="target['id']"/>
+                    <button type="submit" class="btn btn-sm btn-outline-dark">
+                        Back to the line
+                    </button>
+                </form>
+
+                <!-- Last, and on its own. It is the one press here that cannot
+                     be undone from this screen. -->
+                <form action="/shift-supervisor/remove" method="post" class="d-inline">
+                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                    <input type="hidden" name="kind" t-att-value="target['kind']"/>
+                    <input type="hidden" name="record_id" t-att-value="target['id']"/>
+                    <button type="submit" class="btn btn-sm btn-link">
+                        Take her off
+                    </button>
+                </form>
+            </div>
+        </div>
     </template>
 
 </odoo>

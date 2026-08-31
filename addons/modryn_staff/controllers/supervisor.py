@@ -5,13 +5,16 @@ and which no existing screen answered together: who is on the floor, since when,
 until when they are meant to be, what job each of them does, who each of them is
 with, and how many that is.
 
-Read-only about people and their hours - the times come from the attendance rows
-the floor's own door writes and from the published rota, never typed here. The
+Read-only about people and their HOURS - the times come from the attendance rows
+the floor's own door writes and from the published rota, never typed here. What
+is not read-only is the room: the supervisor can move a customer between women,
+put her back in the line and take her off the board, because the one person
+watching the whole floor was the one person who could not change anything on it. The
 one thing it WRITES is a note about how a visit went, because that is a judgement
 only the person watching the room can make and there was nowhere to put it.
 """
 
-from datetime import datetime, time
+from datetime import datetime, time, timedelta
 
 import pytz
 
@@ -171,6 +174,66 @@ class ModrynSupervisor(http.Controller):
             # make a supervisor read past it.
         return now, later
 
+    # How long before her hour a booking starts being a warning. Fifteen
+    # minutes: long enough to finish what you are doing, short enough that the
+    # panel is about the next quarter of an hour and not the afternoon.
+    DUE_SOON_MINUTES = 15
+
+    def _due_soon(self):
+        """Appointments about to arrive, soonest first.
+
+        Read off calendar.event rather than off the panels below, because the
+        whole point is the ones those panels do NOT show: an appointment before
+        its hour is in "coming later", where a supervisor is not looking, and by
+        the time it reaches "with her now" the customer is at the door.
+        """
+        now = fields.Datetime.now()
+        horizon = now + timedelta(minutes=self.DUE_SOON_MINUTES)
+        rows = []
+        for event in request.env['calendar.event'].sudo().search([
+                ('modryn_is_booking', '=', True),
+                ('modryn_cancelled_at', '=', False),
+                ('start', '>', fields.Datetime.to_string(now)),
+                ('start', '<=', fields.Datetime.to_string(horizon)),
+        ], order='start'):
+            if event.modryn_outcome:
+                continue
+            minutes = int((event.start - now).total_seconds() // 60)
+            rows.append({
+                'id': event.id,
+                'name': event.name or '',
+                'phone': event.modryn_customer_phone or '',
+                'time': _local(event.start).strftime('%H:%M'),
+                # Rounded UP, so a booking 30 seconds away reads "in 1 minute"
+                # rather than "in 0" - which looks like a bug and reads like one.
+                # ONE sentence with the number inside it, built here rather
+                # than split across QWeb nodes - split, it extracts as the bare
+                # fragment "minutes from now", which gives a translator nowhere
+                # to put the number and no idea what is being counted. The same
+                # fault the unassigned_note below was already written around.
+                #
+                # Rounded UP, so a booking thirty seconds away reads "in 1
+                # minute" rather than "in 0", which looks like a bug.
+                'due_in': _("In %(minutes)s minutes") % {
+                    'minutes': max(1, minutes + (
+                        1 if (event.start - now).seconds % 60 else 0))},
+                'who': event.modryn_employee_id.name or '',
+            })
+        return rows
+
+    def _on_floor(self):
+        """The women a customer can actually be handed to, right now.
+
+        On the floor ONLY. Handing a bride to somebody who went home at two is
+        a way of losing her: off the waiting panel because she is assigned, and
+        off nobody's screen because that woman is not here to look.
+        """
+        return [{'id': e.id, 'name': e.name}
+                for e in request.env['hr.employee'].sudo().search([
+                    ('modryn_level', 'in', ('owner', 'manager', 'staff')),
+                    ('modryn_on_shift_since', '!=', False),
+                ], order='name')]
+
     def _open_calls(self):
         """Every call for help still standing, newest first.
 
@@ -268,6 +331,8 @@ class ModrynSupervisor(http.Controller):
         later_loose = len(coming.get(None, []))
         return request.render('modryn_staff.shift_supervisor', {
             'calls': self._open_calls(),
+            'due_soon': self._due_soon(),
+            'on_floor': self._on_floor(),
             'rows': rows,
             # The first handful and a count, never the whole line. A tenant
             # holding 99 unclaimed walk-ins turned this panel into the entire
@@ -289,6 +354,91 @@ class ModrynSupervisor(http.Controller):
             'day_label': day.strftime('%d.%m.%Y'),
             'active_tab': 'supervisor',
         })
+
+    # ------------------------------------------------- moving people about
+    MODELS = {'queue': 'modryn.queue.entry', 'booking': 'calendar.event'}
+
+    def _target(self, post):
+        """The record a form names, or nothing.
+
+        int() on a form field is the shape that turns a hand-made POST into a
+        500 page rather than a refusal; the rate route below carried exactly
+        that hole. One helper, so the next route added here inherits the guard
+        instead of the bug.
+        """
+        model = self.MODELS.get(post.get('kind'))
+        if not model:
+            return None
+        try:
+            record_id = int(post.get('record_id') or 0)
+        except (TypeError, ValueError):
+            return None
+        if record_id <= 0:
+            return None
+        return request.env[model].sudo().browse(record_id).exists() or None
+
+    @http.route('/shift-supervisor/queue', type='http', auth='user',
+                website=True, methods=['POST'], csrf=True, sitemap=False)
+    def back_to_queue(self, **post):
+        """Off whoever is holding her, and back into the line."""
+        if not access.can_view('supervisor'):
+            return access.deny()
+        record = self._target(post)
+        if record and post.get('kind') == 'queue':
+            # modryn_release only acts on a 'called' row, which is the right
+            # rule: a woman already waiting has nowhere to be returned to.
+            record.modryn_release()
+        elif record:
+            # A booking keeps its hour. Only the staffing goes - it is an
+            # appointment nobody is on, not a cancelled one.
+            record.write({'modryn_employee_id': False,
+                          'modryn_helper_ids': [(5,)]})
+        return request.redirect('/shift-supervisor')
+
+    @http.route('/shift-supervisor/remove', type='http', auth='user',
+                website=True, methods=['POST'], csrf=True, sitemap=False)
+    def remove(self, **post):
+        """She has gone. Off the board entirely."""
+        if not access.can_view('supervisor'):
+            return access.deny()
+        record = self._target(post)
+        if record and post.get('kind') == 'queue':
+            # action_done, not a bare write: it promotes whoever is now at the
+            # front, which is how the next bride learns it is her turn.
+            record.action_done()
+        elif record:
+            # The portal's own cancel, so the freed hour reaches the waitlist.
+            # A bare write to modryn_cancelled_at would leave that hour dark.
+            record.modryn_cancel(by='boutique')
+        return request.redirect('/shift-supervisor')
+
+    @http.route('/shift-supervisor/hand', type='http', auth='user',
+                website=True, methods=['POST'], csrf=True, sitemap=False)
+    def hand_to(self, **post):
+        """Put a woman on this customer."""
+        if not access.can_view('supervisor'):
+            return access.deny()
+        record = self._target(post)
+        if not record:
+            return request.redirect('/shift-supervisor')
+        try:
+            employee_id = int(post.get('employee_id') or 0)
+        except (TypeError, ValueError):
+            employee_id = 0
+        employee = request.env['hr.employee'].sudo().search([
+            ('id', '=', employee_id),
+            ('modryn_level', 'in', ('owner', 'manager', 'staff')),
+        ], limit=1)
+        if not employee:
+            return request.redirect('/shift-supervisor')
+        if post.get('kind') == 'queue':
+            # modryn_call, not a write: it is the path that texts her somebody
+            # is ready and promotes the next in line. Setting the field alone
+            # moves her on the board and tells nobody.
+            record.modryn_call(employee)
+        else:
+            record.write({'modryn_employee_id': employee.id})
+        return request.redirect('/shift-supervisor')
 
     @http.route('/shift-supervisor/rate', type='http', auth='user', website=True,
                 methods=['POST'], csrf=True, sitemap=False)
@@ -312,11 +462,9 @@ class ModrynSupervisor(http.Controller):
         rating = max(0, min(5, rating))
         note = (post.get('note') or '').strip()
 
-        model = {'queue': 'modryn.queue.entry', 'booking': 'calendar.event'}.get(kind)
-        if not model:
+        if kind not in self.MODELS:
             return request.redirect('/shift-supervisor')
-        record = request.env[model].sudo().browse(
-            int(post.get('record_id') or 0)).exists()
+        record = self._target(post)
         if record:
             record.write({
                 'modryn_visit_rating': rating,

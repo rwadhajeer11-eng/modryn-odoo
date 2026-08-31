@@ -759,12 +759,19 @@ if [ "$SESSION" = "200" ]; then
   CT2=$(curl -sg -b "$JAR" "$BELLA/manage/team-screen" \
     | grep -oE '<input[^>]*csrf_token[^>]*>' | head -1 \
     | grep -oE 'value="[^"]*"' | sed 's/value="//;s/"//')
-  for route in /manage/team-screen/worked/add /manage/team-screen/paper; do
+  # BOTH id names on every request: a route that reads neither ignores them,
+  # which costs one harmless POST and removes the chance of adding a route here
+  # and forgetting which field it reads.
+  for route in /manage/team-screen/worked/add /manage/team-screen/paper \
+               /shift-supervisor/hand /shift-supervisor/queue \
+               /shift-supervisor/remove /shift-supervisor/rate; do
     for junk in banana -5 '' 99999999; do
       GC=$(curl -sg -b "$JAR" -o /dev/null -w "%{http_code}" -X POST "$BELLA$route" \
         --data-urlencode "csrf_token=$CT2" --data-urlencode "employee_id=$junk" \
+        --data-urlencode "record_id=$junk" --data-urlencode "kind=queue" \
+        --data-urlencode "rating=$junk" \
         --data-urlencode "day=2026-07-01" --data-urlencode "came=09:00")
-      [ "$GC" = "500" ] && GARBAGE_BAD="$GARBAGE_BAD $route(employee_id=$junk)"
+      [ "$GC" = "500" ] && GARBAGE_BAD="$GARBAGE_BAD $route(id=$junk)"
     done
   done
   # spell_id travels the same way on the amend route.

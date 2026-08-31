@@ -240,6 +240,7 @@ msgstr "פנויות"
 #. module: modryn_staff
 #. odoo-javascript
 #: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+#: model_terms:ir.ui.view,arch_db:modryn_staff.supervisor_actions
 msgid "Back to the line"
 msgstr "חזרה לתור"
 
@@ -2936,3 +2937,44 @@ msgid ""
 msgstr ""
 "מנעול פירושו שהעמוד שלך בלבד — הוא מוצג כדי שתראי את כל החנות, לא כי אפשר "
 "להעביר אותו."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.shift_supervisor
+msgid "Arriving in the next few minutes"
+msgstr "מגיעות בדקות הקרובות"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.supervisor_actions
+msgid "Give her to…"
+msgstr "מסירה ל…"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.supervisor_actions
+msgid "Move her to…"
+msgstr "העברה ל…"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.supervisor_actions
+msgid "Go"
+msgstr "בצעי"
+
+#. module: modryn_staff
+#. odoo-python
+#: code:addons/modryn_staff/controllers/supervisor.py:0
+msgid "In %(minutes)s minutes"
+msgstr "בעוד %(minutes)s דקות"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.supervisor_actions
+msgid "Nobody is on the floor to hand her to."
+msgstr "אין אף אחת על הרצפה כדי למסור לה."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.shift_supervisor
+msgid "Nobody on her yet."
+msgstr "אף אחת לא עליה עדיין."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.supervisor_actions
+msgid "Take her off"
+msgstr "הסרה מהתור"

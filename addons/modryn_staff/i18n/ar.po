@@ -231,6 +231,7 @@ msgstr "متاحات"
 #. module: modryn_staff
 #. odoo-javascript
 #: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+#: model_terms:ir.ui.view,arch_db:modryn_staff.supervisor_actions
 msgid "Back to the line"
 msgstr "إرجاع للطابور"
 
@@ -2941,3 +2942,44 @@ msgid ""
 "                see the whole shop, not because it can be handed over."
 msgstr ""
 "القفل يعني أن الصفحة لكِ وحدك — تُعرض لتري المحل كله، لا لأنه يمكن تسليمها."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.shift_supervisor
+msgid "Arriving in the next few minutes"
+msgstr "واصلات خلال الدقائق القادمة"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.supervisor_actions
+msgid "Give her to…"
+msgstr "تسليمها لـ…"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.supervisor_actions
+msgid "Move her to…"
+msgstr "نقلها لـ…"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.supervisor_actions
+msgid "Go"
+msgstr "نفّذي"
+
+#. module: modryn_staff
+#. odoo-python
+#: code:addons/modryn_staff/controllers/supervisor.py:0
+msgid "In %(minutes)s minutes"
+msgstr "بعد %(minutes)s دقائق"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.supervisor_actions
+msgid "Nobody is on the floor to hand her to."
+msgstr "ما في ولا وحدة على الأرض لتسليمها لها."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.shift_supervisor
+msgid "Nobody on her yet."
+msgstr "ما في حدا عليها بعد."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.supervisor_actions
+msgid "Take her off"
+msgstr "شيلها من الدور"
