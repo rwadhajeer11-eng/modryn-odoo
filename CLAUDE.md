@@ -147,7 +147,7 @@ bella is `miri` and on qa it is `qaowner`; `admin` exists only on the separate
 `platform` database. Odoo's own `/web/login` labels its field "Email" and there
 are no email addresses on any of these accounts — it takes the USERNAME.
 
-**Green baseline** (2026-08-31): `verify.sh` reports **404 passed, 0 failed,
+**Green baseline** (2026-08-31): `verify.sh` reports **405 passed, 0 failed,
 6 skipped**, and the browser suite **35 passed, 1 skipped** (the skip is
 `realsms.spec.js`, which needs Twilio credentials nobody should export here).
 Both are green —
@@ -169,6 +169,14 @@ hard way and both leaving `qa` in a state the next run measures:
 
 Before believing a red is yours: `git stash` and run the same spec against the
 previous commit. That has settled it every time this session.
+
+**The gate does not look at anything.** It reads status codes and greps markup,
+so a screen can be green and still be wrong to a human eye — two tiles wearing
+the same icon, a permission dropdown defaulting to Owner because that option
+happens to be first, a table that slides off a phone. All three were live and
+all three were invisible to `verify.sh`. **After any screen change, open it in a
+real browser and LOOK at it** — a screenshot pass over the pages you touched
+costs two minutes and is the only thing that catches this class.
 
 The six failures this file used to record are gone. Five were one root cause
 (English was never installed, `scripts/build_template.sh:49`) and are fixed
