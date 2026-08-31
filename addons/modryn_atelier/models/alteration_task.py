@@ -267,5 +267,10 @@ class ModrynAlterationTask(models.Model):
             'state': self.state,
             'priority': self.priority,
             'due': self.due_date.strftime('%d.%m.%Y') if self.due_date else '',
+            # The same date in the one format <input type="date"> accepts. The
+            # display form above is the boutique's; this is the machine's, and
+            # keeping them apart means neither has to be parsed back out of the
+            # other.
+            'due_iso': self.due_date.strftime('%Y-%m-%d') if self.due_date else '',
             'overdue': self.is_overdue,
         }

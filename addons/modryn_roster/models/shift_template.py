@@ -26,6 +26,42 @@ def shift_type_selection():
     ]
 
 
+# Which parts of the day the boutique runs, as a config parameter: one value
+# for the whole tenant, and this product is one database per boutique.
+PARTS_PARAM = 'modryn.roster.parts'
+
+
+def active_shift_types(env):
+    """The parts this boutique runs, in the usual order.
+
+    Falls back to ALL THREE when nothing has been set, which is what every
+    existing boutique has - the setting arrives after they were already
+    answering for three parts, and a default of "none" would empty their grid on
+    upgrade.
+
+    Unknown codes in the stored value are dropped rather than trusted: the
+    parameter is writable from the back office, and a typo there should cost a
+    part rather than a traceback on the page every woman opens.
+    """
+    raw = env['ir.config_parameter'].sudo().get_param(PARTS_PARAM, '')
+    chosen = [c.strip() for c in raw.split(',') if c.strip()]
+    kept = [c for c in SHIFT_TYPE_ORDER if c in chosen]
+    return kept or list(SHIFT_TYPE_ORDER)
+
+
+def set_active_shift_types(env, codes):
+    """Store the parts. Returns the list actually kept.
+
+    Refuses to store nothing: zero parts is a grid with no rows, which reads as
+    the page being broken rather than as the boutique being configured.
+    """
+    kept = [c for c in SHIFT_TYPE_ORDER if c in set(codes or [])]
+    if not kept:
+        return active_shift_types(env)
+    env['ir.config_parameter'].sudo().set_param(PARTS_PARAM, ','.join(kept))
+    return kept
+
+
 def type_for_hour(start_hour):
     """Which part of the day a shift starting at `start_hour` belongs to."""
     for boundary, code in TYPE_BY_START_HOUR:

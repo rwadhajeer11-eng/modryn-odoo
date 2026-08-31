@@ -425,6 +425,7 @@ msgstr "לא רכשה"
 
 #. module: modryn_ops
 #: model:ir.model.fields.selection,name:modryn_ops.selection__calendar_event__modryn_outcome__not_sold
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_reports
 msgid "Not sold"
 msgstr "לא נמכר"
 
@@ -1227,3 +1228,31 @@ msgstr "המחיר של השמלות בקטלוג, לא מה שנכנס לקופ
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_queue_entry__modryn_outcome_at
 msgid "When it was recorded"
 msgstr "מתי זה נרשם"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_reports
+msgid "Month by month"
+msgstr "חודש אחר חודש"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_reports
+msgid ""
+"Every month the boutique has traded. The figures at the top\n"
+"                    of this page are the month you are in now."
+msgstr ""
+"כל חודש שהבוטיק עבד בו. המספרים בראש העמוד הם החודש שאת נמצאת בו עכשיו."
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_reports
+msgid "Open this month in full"
+msgstr "פתיחת החודש במלואו"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_reports
+msgid "Average sale (₪)"
+msgstr "מכירה ממוצעת (₪)"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_reports
+msgid "sold"
+msgstr "נמכרו"

@@ -289,6 +289,25 @@
                  Labelled apart on purpose. From two screens away these were the
                  easiest pair in the product to confuse: one sets every week
                  from now on, the other sets this week and nothing else. -->
+            <!-- WHICH PARTS the boutique runs. Above the window, because it
+                 decides what the team is being asked about at all - the window
+                 only decides when they may answer it.
+                 Unticking hides a row; it does not delete the answers already
+                 given for it, so a shop that drops evenings for the winter gets
+                 them back in March rather than a season of holes. -->
+            <h3 class="h6 mb-1">Which parts of the day you run</h3>
+            <form action="/manage/shifts/parts" method="post"
+                  class="d-flex gap-3 align-items-center flex-wrap mb-4">
+                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                <label t-foreach="all_parts" t-as="part" t-key="part[0]"
+                       class="modryn_piece_check">
+                    <input type="checkbox" name="parts" t-att-value="part[0]"
+                           t-att-checked="'checked' if part[0] in active_parts else None"/>
+                    <span t-out="part[1]"/>
+                </label>
+                <button type="submit" class="btn btn-sm btn-outline-dark">Save</button>
+            </form>
+
             <t t-if="window_settable">
                 <h3 class="h6 mb-1">When the team may answer</h3>
                 <p class="modryn_sub mb-2">

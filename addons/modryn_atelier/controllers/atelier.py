@@ -1,3 +1,7 @@
+from datetime import datetime
+
+import werkzeug.urls
+
 from odoo import _, http
 from odoo.http import request
 from odoo.tools.translate import LazyTranslate
@@ -43,6 +47,11 @@ class ModrynFloorAtelier(ModrynFloor):
     when this module is installed. modryn_staff itself stays atelier-ignorant,
     so it keeps working in a database without alterations."""
 
+    # NO `only` here, and that is the whole point of the mistake this line is
+    # correcting. This _board is the FLOOR's - a different board with a
+    # different superclass, which takes no filter. Threading the workshop's
+    # filter through it made /floor/data raise TypeError, and the gate said so:
+    # "no result - server error?" plus "board pending panel - key missing".
     def _board(self):
         board = super()._board()
 
@@ -111,16 +120,27 @@ class ModrynAtelier(http.Controller):
         return request.env['hr.employee'].sudo().search(
             [('user_id', '=', user.id)], limit=1)
 
-    def _board(self):
+    def _board(self, only=None):
+        """The whole workshop, or one seamstress's part of it.
+
+        `only` narrows the four panels and the queue and leaves the workload
+        column alone: that column is how you got here and how you get back out,
+        and a filter that hides the control which applied it is a trap.
+        """
         Task = request.env['modryn.alteration.task'].sudo()
+        mine = [('seamstress_id', '=', only.id)] if only else []
         by_state = {}
         for key, label in STATES:
-            by_state[key] = [t._row() for t in Task.search([('state', '=', key)])]
+            by_state[key] = [t._row()
+                             for t in Task.search([('state', '=', key)] + mine)]
 
         # The queue: open work nobody holds yet, in the exact order the
         # auto-assigner will hand it out (priority, then the clock) — so what
         # the manager sees IS what the next free seamstress gets.
-        queue = [t._row() for t in Task.search([
+        # Held by nobody - so when the board is filtered to one woman, the
+        # queue is empty by definition rather than showing work that is not
+        # hers.
+        queue = [] if only else [t._row() for t in Task.search([
             ('seamstress_id', '=', False), ('state', 'in', OPEN_STATES)])]
 
         # Load per seamstress counts only OPEN work — delivered gowns are not a
@@ -140,7 +160,8 @@ class ModrynAtelier(http.Controller):
                 'overdue': len([t for t in open_tasks if t.is_overdue]),
             })
         load.sort(key=lambda r: (-r['open'], r['name']))
-        return {'by_state': by_state, 'states': STATES, 'load': load, 'queue': queue}
+        return {'by_state': by_state, 'states': STATES, 'load': load,
+                'queue': queue, 'only': only}
 
     # ------------------------------------------------------------- dashboard
     @http.route('/atelier', type='http', auth='user', website=True, sitemap=False)
@@ -150,7 +171,16 @@ class ModrynAtelier(http.Controller):
         # a seamstress gets her dashboard without becoming a manager.
         if not access.can_view('atelier'):
             return access.deny()
-        board = self._board()
+        # Whose board. A name that is not a number, or one that is nobody, falls
+        # back to the whole workshop rather than to an empty page - a stale link
+        # should land somewhere real.
+        only = None
+        if str(kw.get('who', '')).isdigit():
+            only = request.env['hr.employee'].sudo().search([
+                ('id', '=', int(kw['who'])),
+                ('modryn_level', 'in', ('owner', 'manager', 'staff')),
+            ], limit=1) or None
+        board = self._board(only=only)
         return request.render('modryn_atelier.dashboard', {
             'board': board,
             'is_manager': self._is_manager(),
@@ -182,6 +212,97 @@ class ModrynAtelier(http.Controller):
         if not task.action_advance(target):
             return {'error': 'invalid_transition'}
         return {'ok': True, 'task': task._row()}
+
+    def _may_touch(self, task):
+        """A manager touches anything; a seamstress touches her own.
+
+        The same rule /atelier/advance applies, in one place both can call.
+        Applied on the ROUTE and not in the markup: hiding a button is not a
+        permission, and a task id in a form is not authorisation.
+        """
+        if self._is_manager():
+            return True
+        mine = self._my_employee()
+        return bool(mine) and task.seamstress_id == mine
+
+    @staticmethod
+    def _back_to(task, error=None):
+        """Back to the ROW she pressed on, not the top of the page.
+
+        Every control here is a plain form, so the browser reloads - and a
+        reload lands at the top of a board that runs several screens long, with
+        the row she acted on nowhere in sight. That is what a press that
+        "did nothing" actually was.
+        """
+        url = '/atelier'
+        if error:
+            url += '?error=%s' % werkzeug.urls.url_quote(error)
+        return request.redirect('%s#task-%s' % (url, task.id))
+
+    @http.route('/atelier/task/move', type='http', auth='user', website=True,
+                methods=['POST'], csrf=True, sitemap=False)
+    def task_move(self, **post):
+        """Take it, put it back, mark it ready, hand it over.
+
+        One route for every move rather than a Take button and a separate undo:
+        moving between the open states is free in both directions in the model
+        already, and a mis-tap is repaired by pressing the state she meant.
+        """
+        if not self._is_staff():
+            return access.deny()
+        task = request.env['modryn.alteration.task'].sudo().browse(
+            int(post['task_id']) if str(post.get('task_id', '')).isdigit() else 0
+        ).exists()
+        if not task:
+            return request.redirect('/atelier')
+        if not self._may_touch(task):
+            return self._back_to(task, _("That job belongs to somebody else."))
+        target = post.get('target')
+        # Taking a job that is nobody's makes it HERS. Without this a seamstress
+        # presses "I'm on it", the row moves to In progress with Unassigned
+        # beside it, and the workload column she is judged by never counts it.
+        if (target == 'in_progress' and not task.seamstress_id
+                and not self._is_manager()):
+            mine = self._my_employee()
+            if mine:
+                task.seamstress_id = mine.id
+        if not task.action_advance(target):
+            return self._back_to(task, _("That job cannot move there."))
+        return self._back_to(task)
+
+    @http.route('/atelier/task/edit', type='http', auth='user', website=True,
+                methods=['POST'], csrf=True, sitemap=False)
+    def task_edit(self, **post):
+        """The due date and the instructions, from the board.
+
+        Both were write-once: set when the task was created and unreachable
+        afterwards without the Odoo back office. A date the workshop cannot move
+        is a date that stops being true the first time a bride changes her
+        fitting.
+        """
+        if not self._is_staff():
+            return access.deny()
+        task = request.env['modryn.alteration.task'].sudo().browse(
+            int(post['task_id']) if str(post.get('task_id', '')).isdigit() else 0
+        ).exists()
+        if not task:
+            return request.redirect('/atelier')
+        if not self._may_touch(task):
+            return self._back_to(task, _("That job belongs to somebody else."))
+
+        values = {'note': (post.get('note') or '').strip()}
+        raw = (post.get('due_date') or '').strip()
+        if raw:
+            try:
+                values['due_date'] = datetime.strptime(raw, '%Y-%m-%d').date()
+            except (TypeError, ValueError):
+                return self._back_to(task, _("That date could not be read."))
+        else:
+            # Cleared on purpose is a real answer: work with no deadline sorts
+            # last inside its priority band rather than pretending to be urgent.
+            values['due_date'] = False
+        task.write(values)
+        return self._back_to(task)
 
     @http.route('/atelier/assign', type='http', auth='user', website=True,
                 methods=['POST'], csrf=True, sitemap=False)

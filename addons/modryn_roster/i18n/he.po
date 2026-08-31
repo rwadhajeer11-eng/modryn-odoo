@@ -406,6 +406,7 @@ msgstr "שבת"
 
 #. module: modryn_roster
 #: model_terms:ir.ui.view,arch_db:modryn_roster.manage_shifts
+#: model_terms:ir.ui.view,arch_db:modryn_roster.manage_week_planner
 msgid "Save"
 msgstr "שמירה"
 
@@ -994,3 +995,14 @@ msgstr "שבועות הבאים"
 #: model_terms:ir.ui.view,arch_db:modryn_roster.roster_page
 msgid "The week being filled"
 msgstr "השבוע שממלאים"
+
+#. module: modryn_roster
+#: model_terms:ir.ui.view,arch_db:modryn_roster.manage_week_planner
+msgid "Which parts of the day you run"
+msgstr "אילו חלקי יום את מפעילה"
+
+#. module: modryn_roster
+#. odoo-python
+#: code:addons/modryn_roster/controllers/roster.py:0
+msgid "A schedule needs at least one part of the day."
+msgstr "סידור צריך לפחות חלק יום אחד."

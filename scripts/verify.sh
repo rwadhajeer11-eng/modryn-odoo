@@ -2188,9 +2188,17 @@ head_ "23. reports read what outcomes wrote (modryn_ops)"
 # The KPI page is only ever as honest as the rows beneath it. Plant a sold
 # outcome inside a rolled-back transaction and require the conversion
 # numerator — the exact SQL /manage/reports runs — to count it.
+#
+# greatest(...) and not a bare "3 hours ago": the query counts from the START OF
+# THE MONTH, so for the first three hours of every month a row planted three
+# hours back lands in the month before and the monitor counts zero. This check
+# then failed with "planting the condition produced '0'" — its own words for a
+# check that proves nothing — and the failure was the calendar, not the code.
+# Caught on 01.09.2026 at 00:45, where the planted row sat at 31.08 21:45 and
+# the window opened at 01.09 00:00.
 for db in $TENANTS; do
   detects "$db" "sold outcome" \
-    "INSERT INTO calendar_event (name, show_as, start, stop, active, modryn_is_booking, allday, modryn_outcome, modryn_outcome_at, modryn_sale_amount, modryn_customer_phone, create_uid, write_uid, create_date, write_date) VALUES ('planted-sold','busy', now() - interval '3 hours', now() - interval '2 hours', true, true, false, 'sold', now(), 5000, '052-0000001', 1, 1, now(), now());" \
+    "INSERT INTO calendar_event (name, show_as, start, stop, active, modryn_is_booking, allday, modryn_outcome, modryn_outcome_at, modryn_sale_amount, modryn_customer_phone, create_uid, write_uid, create_date, write_date) VALUES ('planted-sold','busy', greatest(now() - interval '3 hours', date_trunc('month', now())), greatest(now() - interval '2 hours', date_trunc('month', now()) + interval '1 minute'), true, true, false, 'sold', now(), 5000, '052-0000001', 1, 1, now(), now());" \
     "SELECT count(*) FILTER (WHERE modryn_outcome = 'sold') FROM calendar_event WHERE modryn_is_booking IS TRUE AND modryn_cancelled_at IS NULL AND modryn_outcome IS NOT NULL AND start >= date_trunc('month', now()) AND start < now() + interval '1 day';"
 done
 # Walls: numbers for managers and up; a stylist gets exactly her own.

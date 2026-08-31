@@ -425,6 +425,7 @@ msgstr "لم تشترِ"
 
 #. module: modryn_ops
 #: model:ir.model.fields.selection,name:modryn_ops.selection__calendar_event__modryn_outcome__not_sold
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_reports
 msgid "Not sold"
 msgstr "غير مُباع"
 
@@ -1229,3 +1230,31 @@ msgstr "سعر الفساتين بالكتالوج، مش الي دخل عالص
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_queue_entry__modryn_outcome_at
 msgid "When it was recorded"
 msgstr "إمتى انسجّلت"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_reports
+msgid "Month by month"
+msgstr "شهر بشهر"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_reports
+msgid ""
+"Every month the boutique has traded. The figures at the top\n"
+"                    of this page are the month you are in now."
+msgstr ""
+"كل شهر اشتغل فيه البوتيك. الأرقام الي فوق بالصفحة هي الشهر الي انتِ فيه هلق."
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_reports
+msgid "Open this month in full"
+msgstr "فتح الشهر كامل"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_reports
+msgid "Average sale (₪)"
+msgstr "معدل البيعة (₪)"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_reports
+msgid "sold"
+msgstr "انباعت"

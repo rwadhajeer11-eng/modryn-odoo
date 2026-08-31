@@ -19,7 +19,8 @@ from odoo.addons.modryn_staff.controllers.manage import (
 from ..models.roster_week import _from_utc, _to_utc, window_days
 from ..models.shift_slot import next_week_start, week_start
 from ..models.shift_template import (
-    SHIFT_TYPE_ORDER, shift_type_selection, weekday_name, weekday_selection)
+    SHIFT_TYPE_ORDER, active_shift_types, set_active_shift_types,
+    shift_type_selection, weekday_name, weekday_selection)
 
 _lt = LazyTranslate(__name__)
 
@@ -110,15 +111,20 @@ class ModrynRoster(http.Controller):
     def _days(self, start, employee=None):
         """The week as seven days of three cells - the thing she actually taps.
 
-        Built from WEEKDAY_ORDER x SHIFT_TYPE_ORDER and NOT from the shift
-        templates, which is the whole point of the change: a cell exists because
-        Friday evening exists, not because the boutique has already decided to
-        open then. Five templates used to mean five things to press.
+        Built from WEEKDAY_ORDER x the parts this boutique RUNS, and not from
+        the shift templates: a cell exists because Friday evening is a thing,
+        not because the boutique has already written a template for it. Five
+        templates used to mean five things to press.
+
+        The parts are the manager's setting now. A shop that never opens an
+        evening was asking its team to leave a row of seven boxes empty every
+        week; untick it on משמרות and the row goes.
 
         Nested day -> cells rather than a flat list of twenty-one, so the phone
         breakpoint (one day per row, three cells across) is pure CSS with no
         second markup path.
         """
+        parts = active_shift_types(request.env)
         Availability = request.env['modryn.availability'].sudo()
         week_map = Availability.modryn_week_map(start)
         slots = request.env['modryn.shift.slot'].sudo().modryn_ensure_week(start)
@@ -132,7 +138,7 @@ class ModrynRoster(http.Controller):
         for offset in range(7):
             day = start + timedelta(days=offset)
             cells = []
-            for code in SHIFT_TYPE_ORDER:
+            for code in parts:
                 ids = week_map.get((day, code), [])
                 here = by_cell.get((day, code), [])
                 cells.append({
@@ -239,8 +245,11 @@ class ModrynRoster(http.Controller):
             # than replacing it: `slots` is the manager's assign side, and it is
             # also the response key the load test classifies refusals by.
             'days': my_days,
+            # The row headings down the side of the grid. Only the parts the
+            # boutique runs, so the table has as many rows as it has answers to
+            # ask for.
             'shift_rows': [(code, dict(shift_type_selection())[code])
-                           for code in SHIFT_TYPE_ORDER],
+                           for code in active_shift_types(request.env)],
             'window_days': window_days(),
             # Whether the window may be set at all for the week on screen, and
             # the week it would serve — stated in the panel rather than left to
@@ -388,6 +397,29 @@ class ModrynRoster(http.Controller):
         if warning:
             url += '&warning=%s' % werkzeug.urls.url_quote(warning)
         return request.redirect(url)
+
+    @http.route('/manage/shifts/parts', type='http', auth='user', website=True,
+                methods=['POST'], csrf=True, sitemap=False)
+    def shifts_parts(self, **post):
+        """Which parts of the day this boutique runs.
+
+        The MANAGER's, like standing the rota - she is the one who knows the
+        shop never opens on a Tuesday evening. Defining what a shift IS stays
+        the owner's, further down that page; this only says which of the three
+        parts the team is asked about at all.
+        """
+        if not self._is_manager():
+            return request.not_found()
+        kept = set_active_shift_types(
+            request.env, request.httprequest.form.getlist('parts'))
+        # Nothing to say when it took: the grid below is the answer. The refusal
+        # is the case worth a word, because a form that silently keeps what it
+        # had reads as a form that did not save.
+        target = '/manage/shifts'
+        if not kept or set(kept) != set(request.httprequest.form.getlist('parts')):
+            target += '?error=%s' % werkzeug.urls.url_quote(
+                _("A schedule needs at least one part of the day."))
+        return request.redirect(target)
 
     @http.route('/roster/window/rule', type='http', auth='user', website=True,
                 methods=['POST'], csrf=True, sitemap=False)
@@ -664,6 +696,12 @@ class ModrynRoster(http.Controller):
                                  if sub.submitted_at else None),
             } for sub in request.env['modryn.roster.submission'].sudo().search(
                 [('week_start', '=', start)]) if sub.employee_id.active],
+            # Which parts of the day the boutique runs, and which it has
+            # ticked. Both, because the form draws every part there is and marks
+            # the ones in use - a list of only the active ones cannot offer the
+            # one she wants to add back.
+            'all_parts': shift_type_selection(),
+            'active_parts': active_shift_types(request.env),
             # ---- when the team may answer ------------------------------
             # The warning the window routes can send. Accepted and DRAWN here
             # because they redirect here now: without it, "that time has already

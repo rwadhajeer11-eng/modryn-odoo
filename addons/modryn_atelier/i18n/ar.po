@@ -401,3 +401,36 @@ msgstr "الترتيب"
 #: model:ir.model.fields,field_description:modryn_atelier.field_modryn_alteration_task__state
 msgid "State"
 msgstr "الحالة"
+
+#. module: modryn_atelier
+#: model_terms:ir.ui.view,arch_db:modryn_atelier.dashboard
+msgid "I'm on it"
+msgstr "أنا عليها"
+
+#. module: modryn_atelier
+#: model_terms:ir.ui.view,arch_db:modryn_atelier.dashboard
+msgid "Show the whole workshop"
+msgstr "عرض كل الورشة"
+
+#. module: modryn_atelier
+#. odoo-python
+#: code:addons/modryn_atelier/controllers/atelier.py:0
+msgid "That date could not be read."
+msgstr "ما قدرنا نقرأ التاريخ."
+
+#. module: modryn_atelier
+#. odoo-python
+#: code:addons/modryn_atelier/controllers/atelier.py:0
+msgid "That job belongs to somebody else."
+msgstr "هالشغلة تبع وحدة تانية."
+
+#. module: modryn_atelier
+#. odoo-python
+#: code:addons/modryn_atelier/controllers/atelier.py:0
+msgid "That job cannot move there."
+msgstr "ما بتقدر تنقل الشغلة لهناك."
+
+#. module: modryn_atelier
+#: model_terms:ir.ui.view,arch_db:modryn_atelier.dashboard
+msgid "What needs doing"
+msgstr "شو بدها شغل"

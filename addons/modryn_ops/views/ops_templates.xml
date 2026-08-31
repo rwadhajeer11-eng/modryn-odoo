@@ -129,14 +129,20 @@
                 <div class="col-6 col-md-3">
                     <div class="modryn_panel p-3">
                         <div class="modryn_sub">Checklist items done</div>
-                        <div class="modryn_strong fs-4"><t t-esc="stats['checklist_done']"/>/<t t-esc="stats['checklist_total']"/></div>
+                        <!-- A COUNT, not a fraction. "0/6" invited the boutique
+                             to read six as a target it had missed, when six is
+                             only how many items happen to be on the list today
+                             - add a seventh and yesterday's figure changes. -->
+                        <div class="modryn_strong fs-4" t-esc="stats['checklist_done']"/>
                     </div>
                 </div>
                 <div class="col-6 col-md-3">
                     <div class="modryn_panel p-3">
                         <div class="modryn_sub">Feedback texts sent</div>
-                        <div class="modryn_strong fs-4"><t t-esc="stats['feedback_sent']"/>/<t t-esc="stats['not_sold']"/></div>
-                        <div class="modryn_sub">of not-sold fittings</div>
+                        <!-- Same: how many went out, full stop. It read
+                             "0/16 of not-sold fittings", which is a ratio
+                             against a number that moves for its own reasons. -->
+                        <div class="modryn_strong fs-4" t-esc="stats['feedback_sent']"/>
                     </div>
                 </div>
                 <div class="col-6 col-md-3">
@@ -203,6 +209,92 @@
                     </tr>
                 </tbody>
             </table>
+
+            <!-- THE MONTHS ALREADY GONE. The tiles above are this month and
+                 turn over with it, which is what the boutique wanted - and it
+                 left nowhere for last month to be. Nothing on the page said the
+                 shop had a September at all; the only way to reach it was to
+                 know the two date fields existed and type into them.
+                 <details> and not a script: the back button works, one month
+                 can be sent to somebody as a link, and there is no state to
+                 lose. -->
+            <section t-if="months" class="mt-4">
+                <h2 class="mb-2">Month by month</h2>
+                <p class="text-muted mb-3">
+                    Every month the boutique has traded. The figures at the top
+                    of this page are the month you are in now.
+                </p>
+                <details t-foreach="months" t-as="m" t-key="m['key']"
+                         class="modryn_panel mb-2">
+                    <summary style="cursor:pointer;" class="d-flex gap-3 flex-wrap align-items-baseline">
+                        <span class="modryn_strong" dir="ltr" t-out="m['label']"/>
+                        <span class="modryn_sub">
+                            <t t-out="m['stats']['sold']"/> sold
+                        </span>
+                        <span class="modryn_sub" dir="ltr">
+                            <t t-out="m['stats']['conversion']"/>%
+                        </span>
+                        <span class="modryn_sub" dir="ltr">
+                            <!-- Same formatting as the tile above: revenue is a
+                                 float, and printing it raw gave "163400.0" on a
+                                 line that sits under "163,400". -->
+                            ₪<t t-esc="'{:,}'.format(int(m['stats']['revenue']))"/>
+                        </span>
+                    </summary>
+
+                    <div class="row g-2 mt-2">
+                        <div class="col-6 col-md-3">
+                            <div class="modryn_sub">Conversion</div>
+                            <div class="modryn_strong fs-5" dir="ltr">
+                                <t t-out="m['stats']['conversion']"/>%
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="modryn_sub">Contact conversion</div>
+                            <div class="modryn_strong fs-5" dir="ltr">
+                                <t t-out="m['stats']['contact_conversion']"/>%
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="modryn_sub">Revenue (₪)</div>
+                            <div class="modryn_strong fs-5" dir="ltr"
+                                 t-esc="'{:,}'.format(int(m['stats']['revenue']))"/>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="modryn_sub">No-shows</div>
+                            <div class="modryn_strong fs-5" dir="ltr">
+                                <t t-out="m['stats']['no_show_rate']"/>%
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="modryn_sub">Sold</div>
+                            <div class="modryn_strong fs-5" t-out="m['stats']['sold']"/>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="modryn_sub">Not sold</div>
+                            <div class="modryn_strong fs-5" t-out="m['stats']['not_sold']"/>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="modryn_sub">Average sale (₪)</div>
+                            <div class="modryn_strong fs-5" dir="ltr"
+                                 t-out="m['stats']['atv']"/>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="modryn_sub">Feedback texts sent</div>
+                            <div class="modryn_strong fs-5"
+                                 t-out="m['stats']['feedback_sent']"/>
+                        </div>
+                    </div>
+
+                    <!-- Into the date fields at the top, so the whole page -
+                         the gowns table and the by-stylist breakdown - can be
+                         read for that month too. -->
+                    <a class="btn btn-sm btn-outline-dark mt-3"
+                       t-attf-href="/manage/reports?from=#{m['first']}&amp;to=#{m['last']}">
+                        Open this month in full
+                    </a>
+                </details>
+            </section>
 
             <h2 class="mb-2 mt-4">By stylist</h2>
             <p t-if="not stylists" class="modryn_empty">

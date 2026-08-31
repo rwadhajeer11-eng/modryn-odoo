@@ -1,4 +1,4 @@
-from datetime import datetime, time, timedelta
+from datetime import date, datetime, time, timedelta
 
 import pytz
 
@@ -251,6 +251,62 @@ class ModrynOpsReports(http.Controller):
         dto = TZ.localize(datetime.combine(end + timedelta(days=1), time.min)).astimezone(pytz.utc).replace(tzinfo=None)
         return start, end, dfrom, dto
 
+    @staticmethod
+    def _month_window(year, month):
+        """One local month, as the UTC half-open window the stats read."""
+        first = date(year, month, 1)
+        nxt = date(year + (month // 12), (month % 12) + 1, 1)
+        dfrom = TZ.localize(datetime.combine(first, time.min)).astimezone(
+            pytz.utc).replace(tzinfo=None)
+        dto = TZ.localize(datetime.combine(nxt, time.min)).astimezone(
+            pytz.utc).replace(tzinfo=None)
+        return first, dfrom, dto
+
+    def _months(self, cr):
+        """Every month with a recorded outcome, newest first, with its figures.
+
+        Read off the OUTCOMES rather than off a shop-opened date nobody stores:
+        a month the boutique did not trade has nothing to show and does not
+        appear, which is more honest than a run of zero rows back to whenever
+        the database was created.
+
+        The current month is skipped - it is the one on the tiles above, and
+        printing it twice invites the reader to check whether the two agree.
+        """
+        cr.execute("""
+            SELECT DISTINCT
+                   date_part('year',  (start AT TIME ZONE 'UTC'
+                                             AT TIME ZONE %s))::int AS y,
+                   date_part('month', (start AT TIME ZONE 'UTC'
+                                             AT TIME ZONE %s))::int AS m
+              FROM calendar_event
+             WHERE modryn_is_booking IS TRUE
+               AND modryn_outcome IS NOT NULL
+               AND modryn_cancelled_at IS NULL
+             ORDER BY y DESC, m DESC
+        """, (TZ.zone, TZ.zone))
+        today = datetime.now(TZ).date()
+        out = []
+        for row in cr.dictfetchall():
+            if (row['y'], row['m']) == (today.year, today.month):
+                continue
+            first, dfrom, dto = self._month_window(row['y'], row['m'])
+            stats = _range_stats(cr, dfrom, dto)
+            # A month whose only bookings were cancelled has nothing to show.
+            # 'closed' is the count this page is built on - sold, not sold and
+            # no-shows together - so zero of it means zero of everything else.
+            if not stats['closed']:
+                continue
+            out.append({
+                'key': '%04d-%02d' % (row['y'], row['m']),
+                'label': first.strftime('%m.%Y'),
+                'first': first.strftime('%Y-%m-%d'),
+                'last': (date(row['y'] + (row['m'] // 12), (row['m'] % 12) + 1, 1)
+                         - timedelta(days=1)).strftime('%Y-%m-%d'),
+                'stats': stats,
+            })
+        return out
+
     @http.route('/manage/reports', type='http', auth='user', website=True, sitemap=False)
     def reports(self, **kw):
         # Staff-section page despite the URL: managers always pass, and the
@@ -300,6 +356,12 @@ class ModrynOpsReports(http.Controller):
             'stylists': stylists,
             'gown_days': gown_days,
             'gown_total': gown_total,
+            # The months already gone, each with the same figures the tiles
+            # above carry for this one. Only when the range on screen IS the
+            # current month: once she has typed her own dates the tiles are not
+            # "this month" any more, and an archive under them would be
+            # answering a question she did not ask.
+            'months': self._months(cr) if not (kw.get('from') or kw.get('to')) else [],
             'date_from': start.strftime('%Y-%m-%d'),
             'date_to': end.strftime('%Y-%m-%d'),
             'active_tab': 'reports',

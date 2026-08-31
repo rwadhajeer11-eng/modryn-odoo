@@ -105,8 +105,13 @@
                 </header>
                 <p t-if="not board['load']" class="modryn_empty">No staff to show.</p>
                 <div t-else="" class="modryn_staff_cards">
-                    <div t-foreach="board['load']" t-as="row"
-                         t-attf-class="modryn_staff_card #{'is_busy' if row['overdue'] else 'is_free'}">
+                    <!-- Each card is a way IN. The column said somebody had
+                         nine open jobs and stopped; nine WHICH jobs is the next
+                         question anybody asks, and the only way to answer it
+                         was to read all four panels looking for her name. -->
+                    <a t-foreach="board['load']" t-as="row" t-key="row['id']"
+                       t-attf-href="/atelier?who=#{row['id']}"
+                       t-attf-class="modryn_staff_card #{'is_busy' if row['overdue'] else 'is_free'} #{'is_on' if board.get('only') and board['only'].id == row['id'] else ''}">
                         <div class="modryn_strong" t-out="row['name']"/>
                         <div class="modryn_sub" t-out="row['role']"/>
                         <div class="modryn_status">
@@ -115,8 +120,13 @@
                         <div t-if="row['overdue']" class="modryn_sub" style="color:#A03232;">
                             <t t-out="row['overdue']"/> overdue
                         </div>
-                    </div>
+                    </a>
                 </div>
+                <!-- The way back out. Drawn only while a filter is on, and
+                     inside the workload block, which is never filtered - a
+                     filter that hides the control that applied it is a trap. -->
+                <a t-if="board.get('only')" href="/atelier"
+                   class="btn btn-sm btn-link mt-2">Show the whole workshop</a>
             </section>
 
             <!-- The queue: open work nobody holds yet, in the exact order the
@@ -158,6 +168,19 @@
                                       t-attf-class="modryn_badge #{'is_busy' if task['overdue'] else 'is_muted'}">
                                     <t t-out="task['due']"/>
                                 </span>
+
+                                <!-- Nothing in the queue is being worked yet, so
+                                     the only move that means anything here is
+                                     somebody picking it up. The four state
+                                     panels below carry the full set. -->
+                                <form action="/atelier/task/move" method="post"
+                                      class="d-inline">
+                                    <input type="hidden" name="csrf_token"
+                                           t-att-value="request.csrf_token()"/>
+                                    <input type="hidden" name="task_id" t-att-value="task['id']"/>
+                                    <input type="hidden" name="target" value="in_progress"/>
+                                    <button type="submit" class="btn btn-sm btn-primary">I'm on it</button>
+                                </form>
                             </td>
                             <td t-if="is_manager" class="text-end">
                                 <form action="/atelier/assign" method="post"
@@ -191,7 +214,14 @@
 
                 <table t-else="" class="table modryn_table align-middle">
                     <tbody>
-                        <tr t-foreach="board['by_state'][st[0]]" t-as="task">
+                        <!-- The id is what the routes redirect back to. Every
+                             control here is a plain form, so the browser
+                             reloads, and a reload lands at the top of a board
+                             several screens long - the row she pressed on gone
+                             from view, and the press reading as having done
+                             nothing at all. -->
+                        <tr t-foreach="board['by_state'][st[0]]" t-as="task"
+                            t-attf-id="task-#{task['id']}">
                             <td style="width: 1%;">
                                 <span t-if="task['priority'] == '2'" class="modryn_badge is_busy">High</span>
                                 <span t-elif="task['priority'] == '0'" class="modryn_badge is_muted">Low</span>
@@ -212,7 +242,30 @@
                                 </div>
                             </td>
                             <td>
-                                <div t-if="task['note']" class="modryn_sub" t-out="task['note']"/>
+                                <!-- The instructions and the deadline, both
+                                     EDITABLE. They used to be write-once: set
+                                     when the task was made and unreachable
+                                     afterwards without the Odoo back office. A
+                                     date the workshop cannot move stops being
+                                     true the first time a bride changes her
+                                     fitting. -->
+                                <form t-if="st[0] != 'delivered'"
+                                      action="/atelier/task/edit" method="post"
+                                      class="modryn_task_edit">
+                                    <input type="hidden" name="csrf_token"
+                                           t-att-value="request.csrf_token()"/>
+                                    <input type="hidden" name="task_id" t-att-value="task['id']"/>
+                                    <textarea name="note" rows="2" class="form-control form-control-sm"
+                                              placeholder="What needs doing"
+                                              t-out="task['note']"/>
+                                    <div class="d-flex gap-1 align-items-center mt-1">
+                                        <input type="date" name="due_date" dir="ltr"
+                                               class="form-control form-control-sm"
+                                               t-att-value="task['due_iso']"/>
+                                        <button type="submit" class="btn btn-sm btn-outline-dark">Save</button>
+                                    </div>
+                                </form>
+                                <div t-else="" class="modryn_sub" t-out="task['note']"/>
                             </td>
                             <td>
                                 <!-- Managers reassign inline; delivered work is settled
@@ -244,6 +297,34 @@
                                       t-attf-class="modryn_badge #{'is_busy' if task['overdue'] else 'is_muted'}">
                                     <t t-out="task['due']"/>
                                 </span>
+
+                                <!-- WHERE THE WORK GOES NEXT. /atelier/advance
+                                     has existed for a long time and nothing on
+                                     this page ever called it: four state panels
+                                     and no way to move a task between them. A
+                                     seamstress who picked a dress off the rail
+                                     had to go and find a manager.
+                                     Every open state is offered, not just the
+                                     next one, because moving among them is free
+                                     in both directions in the model - which is
+                                     what makes a mis-tap repairable by pressing
+                                     the one she meant. -->
+                                <div t-if="st[0] != 'delivered'" class="modryn_task_moves">
+                                    <form t-foreach="board['states']" t-as="to"
+                                          t-if="to[0] != st[0]"
+                                          action="/atelier/task/move" method="post"
+                                          class="d-inline">
+                                        <input type="hidden" name="csrf_token"
+                                               t-att-value="request.csrf_token()"/>
+                                        <input type="hidden" name="task_id" t-att-value="task['id']"/>
+                                        <input type="hidden" name="target" t-att-value="to[0]"/>
+                                        <button type="submit"
+                                                t-attf-class="btn btn-sm #{'btn-primary' if to[0] == 'in_progress' and st[0] == 'intake' else 'btn-link'}">
+                                            <t t-if="to[0] == 'in_progress' and st[0] == 'intake'">I'm on it</t>
+                                            <t t-else="" t-out="to[1]"/>
+                                        </button>
+                                    </form>
+                                </div>
                             </td>
                         </tr>
                     </tbody>
