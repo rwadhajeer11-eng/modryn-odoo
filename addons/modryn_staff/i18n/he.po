@@ -2978,3 +2978,12 @@ msgstr "אף אחת לא עליה עדיין."
 #: model_terms:ir.ui.view,arch_db:modryn_staff.supervisor_actions
 msgid "Take her off"
 msgstr "הסרה מהתור"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid ""
+"She cannot have gone off before she came on. If the shift ran past midnight,"
+" enter it as two days."
+msgstr ""
+"היא לא יכולה לצאת לפני שנכנסה. אם המשמרת נמשכה אחרי חצות, הזיני אותה כשני "
+"ימים."

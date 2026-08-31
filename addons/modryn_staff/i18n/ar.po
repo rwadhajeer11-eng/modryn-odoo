@@ -2983,3 +2983,11 @@ msgstr "ما في حدا عليها بعد."
 #: model_terms:ir.ui.view,arch_db:modryn_staff.supervisor_actions
 msgid "Take her off"
 msgstr "شيلها من الدور"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid ""
+"She cannot have gone off before she came on. If the shift ran past midnight,"
+" enter it as two days."
+msgstr ""
+"ما بتقدر تطلع قبل ما تفوت. إذا الوردية كمّلت بعد نص الليل، أدخليها كيومين."

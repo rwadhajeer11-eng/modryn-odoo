@@ -417,6 +417,10 @@
 
                 <div t-if="worked_error" class="modryn_field_error mb-3" role="alert">
                     <t t-if="worked_error == 'badtime'">Write the time as HH:MM, like 09:30.</t>
+                    <!-- Names both times and says which way round they go. "That
+                         is not valid" would leave her looking for the fault in
+                         the wrong one of the two. -->
+                    <t t-elif="worked_error == 'backwards'">She cannot have gone off before she came on. If the shift ran past midnight, enter it as two days.</t>
                     <t t-elif="worked_error == 'overlap'">That crosses another shift of hers the same day.</t>
                     <t t-elif="worked_error == 'alreadyopen'">She already has a shift left open. Close that one first.</t>
                     <t t-elif="worked_error == 'openbefore'">An earlier shift of hers was never closed, so it covers this time too. Fill in when she left that one first.</t>

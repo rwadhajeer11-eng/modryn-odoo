@@ -221,9 +221,10 @@ class ModrynShiftAttendance(models.Model):
         while the woman is standing in the room.
 
         Every refusal here is a figure that would go on to be WRONG rather than
-        merely odd. An end before its start makes negative hours; an overlap
-        double-counts the same minutes into her month; a second open row breaks
-        what the database is already promising with an index.
+        merely odd. An end before its start is the two times entered the wrong
+        way round; an overlap double-counts the same minutes into her month; a
+        second open row breaks what the database is already promising with an
+        index.
         """
         self.ensure_one()
         started = self._modryn_utc(day, came)
@@ -234,11 +235,19 @@ class ModrynShiftAttendance(models.Model):
             ended = self._modryn_utc(day, went)
             if not ended:
                 return 'badtime'
-            # Past midnight is a real shift - the alterations room runs late -
-            # so a finish that reads earlier than the start is read as the NEXT
-            # day rather than refused. Only a same-clock pair is nothing.
+            # REFUSED, not rolled to the next day. This used to add a day and
+            # call it a shift running past midnight, which made the commonest
+            # typo on this form - the two times the wrong way round - succeed,
+            # and succeed as a row nobody would question later. Measured:
+            # 20:00 -> 10:00 became a fourteen-hour overnight shift and passed
+            # every guard here, being under the ceiling and overlapping nothing.
+            #
+            # A shift that really does run past midnight is two rows, one to
+            # 23:59 and one from 00:00 the next day - which is also the honest
+            # shape, because those hours fell on two different days and every
+            # total on this screen is grouped by day.
             if ended <= started:
-                ended += timedelta(days=1)
+                return 'backwards'
             if (ended - started).total_seconds() > MAX_SPELL_SECONDS:
                 return 'toolong'
         if not ended and self.sudo().search_count([
