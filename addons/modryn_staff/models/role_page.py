@@ -111,6 +111,13 @@ class ModrynRolePage(models.Model):
         # either.
         if page_key in nav.NEVER_GRANTABLE:
             return False
+        # The pages whose own route calls _require_owner. Checked BEFORE the
+        # top-row rule below, because that rule hands a manager everything up
+        # there without a tick - and one of these lives up there now. Without
+        # this line she gets the tab and the 404 behind it, which is how this
+        # was found in the first place.
+        if page_key in nav.OWNER_ONLY:
+            return False
         # A manager gets the whole top row without anybody granting anything.
         # The bottom row she needs granting for, the same as a saleswoman: it is
         # the boutique's own administration, and "she manages a shift" is not

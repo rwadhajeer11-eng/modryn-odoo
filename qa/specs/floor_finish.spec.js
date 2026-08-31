@@ -213,13 +213,33 @@ test('@writes the dress is found by typing, confirmed, and comes off the rail', 
   // box that was never going to be there - a failure that appeared the day
   // "in progress" started meaning in progress, and read as the picker being
   // broken.
+  //
+  // And named by WHO, not by position. The panel holds whoever anybody is
+  // holding, so `.first()` acts on a STRANGER - on a tenant that has been run
+  // against for a while, a leftover from an act that ended badly, in a state
+  // this one has no reason to expect.
+  //
+  // Honest about what this is: a coupling removed, not a diagnosis confirmed.
+  // The act did go red here once with five such customers piled up, on the
+  // modal never appearing - but that red has not been reproduced since, with
+  // the leftovers recreated deliberately or without, on this version or the
+  // one before it. So the coupling is real and worth cutting; whether it was
+  // the cause that day is unproven, and saying otherwise would leave the next
+  // reader trusting a fix that was never measured.
   async function finishNextWalkIn() {
     await expect(take.first(), 'nobody is waiting - the queue is empty')
       .toBeVisible({ timeout: 20000 });
+    // Whose card appears is decided by the board, so read the name off the
+    // queue card being taken and follow THAT woman into the panel.
+    const nextCard = take.first().locator('xpath=ancestor::*[contains(@class,"modryn_customer_card")][1]');
+    const mine = (await nextCard.locator('.modryn_strong').first().innerText()).trim();
     await take.first().click();
     await expect(panel).toBeVisible({ timeout: 20000 });
-    const walkIn = panel.locator('.modryn_team_client[data-kind="queue"]').first();
-    await expect(walkIn, 'the customer just taken is not in the panel')
+    const walkIn = panel
+      .locator('.modryn_team_client[data-kind="queue"]')
+      .filter({ hasText: mine })
+      .first();
+    await expect(walkIn, `the customer just taken (${mine}) is not in the panel`)
       .toBeVisible({ timeout: 20000 });
     await walkIn.locator(FINISHED).first().click();
     await expect(modal).toBeVisible({ timeout: 20000 });

@@ -117,7 +117,9 @@
             <p class="text-muted mb-3">
                 Tick the pages each role may open. Shift managers always see
                 every page here; every staff member always has her own
-                <em>My day</em> page.
+                <em>My day</em> page. A padlock means the page is yours alone —
+                it is shown so you can see the whole shop, not because it can be
+                handed over.
             </p>
             <form action="/manage/roles/pages" method="post">
                 <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
@@ -133,7 +135,16 @@
                             t-attf-class="#{'modryn_archived' if not role.active else ''}">
                             <td t-out="role.name"/>
                             <td t-foreach="pages" t-as="pg" class="text-center">
-                                <input type="checkbox" name="pages"
+                                <!-- Drawn, never tickable. These three pages
+                                     refuse anybody but you, so a checkbox here
+                                     would set a grant the page then ignores -
+                                     the woman gets the tab and a 404. -->
+                                <i t-if="pg['owner_only']" class="fa fa-lock text-muted"
+                                   aria-hidden="true" title="Yours only"/>
+                                <span t-if="pg['owner_only']" class="visually-hidden">
+                                    Yours only
+                                </span>
+                                <input t-else="" type="checkbox" name="pages"
                                        t-att-value="'%s:%s' % (role.id, pg['key'])"
                                        t-att-checked="'checked' if pg['key'] in (granted.get(role.id) or []) else None"/>
                             </td>

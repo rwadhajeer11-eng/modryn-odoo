@@ -1896,7 +1896,7 @@ msgstr "נא לבחור קובץ."
 
 #. module: modryn_staff
 #. odoo-python
-#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+#: code:addons/modryn_staff/controllers/manager.py:0
 msgid "That file is too large — the limit is 10 MB."
 msgstr "הקובץ הזה גדול מדי — המגבלה היא 10 MB."
 
@@ -2436,7 +2436,8 @@ msgid "File it"
 msgstr "תיוק"
 
 #. module: modryn_staff
-#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+#. odoo-python
+#: code:addons/modryn_staff/controllers/manager.py:0
 msgid "Choose a file first."
 msgstr "קודם בחרי קובץ."
 
@@ -2465,11 +2466,13 @@ msgid "This week:"
 msgstr "השבוע:"
 
 #. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
 #: model_terms:ir.ui.view,arch_db:modryn_staff.staff_profile
 msgid "Month"
 msgstr "חודש"
 
 #. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
 #: model_terms:ir.ui.view,arch_db:modryn_staff.staff_profile
 msgid "Show"
 msgstr "הצג"
@@ -2480,6 +2483,7 @@ msgid "<span class=\"modryn_sub\">days on the floor</span>"
 msgstr "<span class=\"modryn_sub\">ימים במשמרת</span>"
 
 #. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
 #: model_terms:ir.ui.view,arch_db:modryn_staff.staff_profile
 msgid "<span class=\"modryn_sub\">hours</span>"
 msgstr "<span class=\"modryn_sub\">שעות</span>"
@@ -2646,6 +2650,7 @@ msgstr "בשביל מה"
 #. module: modryn_staff
 #. odoo-javascript
 #: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
 msgid "Who"
 msgstr "את מי"
 
@@ -2715,3 +2720,199 @@ msgstr "חזרה לצוות"
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
 msgid "Bring her back"
 msgstr "החזרה לצוות"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid ""
+"<i class=\"fa fa-archive\" aria-hidden=\"true\"/>\n"
+"                        Who has left"
+msgstr ""
+"<i class=\"fa fa-archive\" aria-hidden=\"true\"/>\n"
+"                        מי עזבה"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid ""
+"<i class=\"fa fa-arrow-left\" aria-hidden=\"true\"/>\n"
+"                        Back to the team"
+msgstr ""
+"<i class=\"fa fa-arrow-left\" aria-hidden=\"true\"/>\n"
+"                        חזרה לצוות"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid ""
+"<i class=\"fa fa-clock-o\" aria-hidden=\"true\"/>\n"
+"                    <span class=\"modryn_strong\">Hours worked</span>\n"
+"                    <span class=\"modryn_sub\">Who was on the floor, month by month — and fix it when the button was missed.</span>"
+msgstr ""
+"<i class=\"fa fa-clock-o\" aria-hidden=\"true\"/>\n"
+"                    <span class=\"modryn_strong\">שעות עבודה</span>\n"
+"                    <span class=\"modryn_sub\">מי הייתה על הרצפה, חודש אחר חודש — ותיקון כשלא נלחץ הכפתור.</span>"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "<option value=\"\">Choose someone</option>"
+msgstr "<option value=\"\">בחרי עובדת</option>"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "<span class=\"modryn_sub\">shifts that month</span>"
+msgstr "<span class=\"modryn_sub\">משמרות באותו חודש</span>"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "Add a day she worked"
+msgstr "הוספת יום שעבדה"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "Add papers"
+msgstr "הוספת מסמכים"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid ""
+"An earlier shift of hers was never closed, so it covers this time too. Fill "
+"in when she left that one first."
+msgstr ""
+"משמרת קודמת שלה מעולם לא נסגרה, ולכן היא מכסה גם את הזמן הזה. מלאי קודם מתי "
+"סיימה אותה."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "Came on"
+msgstr "כניסה"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "Choose someone to see the months she has worked."
+msgstr "בחרי עובדת כדי לראות את החודשים שעבדה."
+
+#. module: modryn_staff
+#. odoo-python
+#: code:addons/modryn_staff/controllers/manage.py:0
+msgid ""
+"Her details were saved, but that file is too large — the limit is 10 MB."
+msgstr "הפרטים שלה נשמרו, אבל הקובץ גדול מדי — המגבלה היא 10 מ״ב."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "Hours worked"
+msgstr "שעות עבודה"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "Leave <em>went off</em> empty if she is still on the floor."
+msgstr "השאירי את <em>יציאה</em> ריק אם היא עדיין על הרצפה."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid ""
+"Nobody has left. Everyone the boutique has taken on is still\n"
+"                    on the team."
+msgstr "אף אחת לא עזבה. כל מי שהבוטיק קלט עדיין בצוות."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid ""
+"Nothing recorded for her yet — hours start counting\n"
+"                        the first time she opens the floor board."
+msgstr ""
+"עדיין לא נרשם לה כלום — השעות מתחילות להיספר בפעם הראשונה שהיא פותחת את לוח "
+"הרצפה."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "On file"
+msgstr "מה שמתויק"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid ""
+"One of these is still running and counts up to now. If\n"
+"                            she has gone home, fill in when she left."
+msgstr "אחת מהן עדיין רצה וסופרת עד עכשיו. אם היא הלכה הביתה, מלאי מתי יצאה."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "She already has a shift left open. Close that one first."
+msgstr "יש לה כבר משמרת שנשארה פתוחה. סגרי אותה קודם."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "She came and went more than once on some of those days."
+msgstr "היא נכנסה ויצאה יותר מפעם אחת בחלק מהימים האלה."
+
+#. module: modryn_staff
+#. odoo-python
+#: code:addons/modryn_staff/controllers/manage.py:0
+msgid ""
+"She was added, but that file is too large — the limit is 10 MB. Open her "
+"account to try again."
+msgstr ""
+"היא נוספה, אבל הקובץ גדול מדי — המגבלה היא 10 מ״ב. פתחי את החשבון שלה כדי "
+"לנסות שוב."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "She was not on the floor that month."
+msgstr "היא לא הייתה על הרצפה באותו חודש."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "Still on"
+msgstr "עדיין בפנים"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "That comes to more than 16 hours — check the times."
+msgstr "זה יוצא יותר מ־16 שעות — בדקי את השעות."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "That could not be saved."
+msgstr "לא ניתן היה לשמור."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "That crosses another shift of hers the same day."
+msgstr "זה מתנגש עם משמרת אחרת שלה באותו יום."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manage_roles
+msgid ""
+"Tick the pages each role may open. Shift managers always see\n"
+"                every page here; every staff member always has her own\n"
+"                <em>My day</em> page. A padlock means the page is yours alone —\n"
+"                it is shown so you can see the whole shop, not because it can be\n"
+"                handed over."
+msgstr ""
+"סמני את העמודים שכל תפקיד רשאי לפתוח. אחראיות משמרת רואות תמיד כל עמוד כאן; "
+"לכל עובדת יש תמיד את עמוד <em>היום שלי</em> שלה. מנעול פירושו שהעמוד שלך "
+"בלבד — הוא מוצג כדי שתראי את כל החנות, לא כי אפשר להעביר אותו."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "Up to 10 MB each."
+msgstr "עד 10 מ״ב לכל קובץ."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "Went off"
+msgstr "יציאה"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "Who has left"
+msgstr "מי עזבה"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "Write the time as HH:MM, like 09:30."
+msgstr "כתבי את השעה בפורמט HH:MM, למשל 09:30."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manage_roles
+msgid "Yours only"
+msgstr "שלך בלבד"

@@ -56,8 +56,15 @@ export default function owner() {
   // login page cannot contain that, which is the whole point: a logged-out
   // request lands on /web/login and answers 200, so a status check passes
   // while the owner journey is not happening. Verified against all five.
-  const staffPage = http.get(t.baseUrl + '/manage/staff', { tags: pageTags('manage') });
-  check(staffPage, { '/manage/staff rendered': (r) => authedPage(r, 'action="/manage/staff/') }, {
+  // The team is a BOX on the manager's screen now, and /manage/staff is a
+  // redirect to it. Asked for directly: k6 follows redirects, so the old line
+  // would have kept passing while timing two requests against a threshold set
+  // for one. The archive form on each card is still action="/manage/staff/...",
+  // which is what makes this marker prove a signed-in render rather than the
+  // login page.
+  const staffPage = http.get(t.baseUrl + '/manage/team-screen?view=team',
+    { tags: pageTags('manage') });
+  check(staffPage, { 'the team box rendered': (r) => authedPage(r, 'action="/manage/staff/') }, {
     class: 'page',
     surface: 'manage',
   });
@@ -69,10 +76,19 @@ export default function owner() {
     surface: 'manage',
   });
 
-  for (const path of ['/manage/rooms', '/manage/pieces', '/manage/shifts']) {
+  // The fitting rooms went the same way as the team: a tile on the manager's
+  // screen, reached with ?view=rooms, still posting to action="/manage/rooms/".
+  // So the URL asked for and the marker looked for are no longer the same
+  // string, and the pair is spelled out rather than derived from the path.
+  const managePages = [
+    ['/manage/team-screen?view=rooms', '/manage/rooms'],
+    ['/manage/pieces', '/manage/pieces'],
+    ['/manage/shifts', '/manage/shifts'],
+  ];
+  for (const [path, marker] of managePages) {
     think();
     const res = http.get(t.baseUrl + path, { tags: pageTags('manage') });
-    check(res, { [`${path} rendered`]: (r) => authedPage(r, `action="${path}/`) }, {
+    check(res, { [`${marker} rendered`]: (r) => authedPage(r, `action="${marker}/`) }, {
       class: 'page',
       surface: 'manage',
     });

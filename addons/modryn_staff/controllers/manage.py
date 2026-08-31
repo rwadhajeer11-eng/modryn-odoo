@@ -105,6 +105,39 @@ def _personal_from(employee):
     return {f: getattr(employee, 'modryn_%s' % f) or '' for f in PERSONAL_FIELDS}
 
 
+# 10 MB. A contract scanned on a phone is two or three; anything far past that
+# is somebody uploading a video by accident, and the filestore is the boutique's
+# disk.
+MAX_UPLOAD_BYTES = 10 * 1024 * 1024
+
+
+def _file_papers(employee, uploads):
+    """File uploads against one woman. Returns an error key, or None.
+
+    Every caller reads the size the same way - read(LIMIT + 1) and compare -
+    because reading the whole thing first to measure it is how a 2 GB upload
+    becomes 2 GB of RAM.
+    """
+    for upload in uploads or []:
+        if not upload or not upload.filename:
+            continue
+        data = upload.read(MAX_UPLOAD_BYTES + 1)
+        if len(data) > MAX_UPLOAD_BYTES:
+            return 'toobig'
+        if not data:
+            continue
+        employee.env['ir.attachment'].sudo().create({
+            'name': upload.filename,
+            'raw': data,
+            'res_model': 'hr.employee',
+            'res_id': employee.id,
+            # NEVER website-visible. public=True would put a woman's contract
+            # on a URL anybody can fetch.
+            'public': False,
+        })
+    return None
+
+
 class ModrynManage(http.Controller):
     """Owner-only administration, themed to match the storefront.
 
@@ -258,6 +291,22 @@ class ModrynManage(http.Controller):
                 if phone:
                     employee.work_phone = phone
 
+                # Her papers, filed by the same press of Save. Too large is
+                # reported like any other field error rather than thrown away
+                # silently - she is hired either way, and the message tells the
+                # owner which half still needs doing.
+                if _file_papers(employee, request.httprequest.files.getlist('paper')):
+                    errors['paper'] = _(
+                        "She was added, but that file is too large — "
+                        "the limit is 10 MB. Open her account to try again.")
+
+        if errors.keys() == {'paper'}:
+            # She WAS hired - only the file was refused. Landing back on an
+            # empty add form would read as the whole save having failed, and
+            # the owner would type her in a second time.
+            return ModrynManagerScreen()._render(
+                view='team', editing=employee.id,
+                form_errors=errors, form_values=None)
         if errors:
             # Back into the box with the form open, which is where she pressed
             # Save from. role_ids OVER the raw post, deliberately: a form field
@@ -341,6 +390,18 @@ class ModrynManage(http.Controller):
                 'group_ids': [(3, g.id) for g in all_levels] + [(4, new_group.id)],
             })
 
+        # Anything chosen in the file field goes on her record with the rest of
+        # the save. Refused here means the write above already happened, so she
+        # stays on her own form with the reason rather than being bounced to the
+        # cards wondering which half landed.
+        if _file_papers(employee, request.httprequest.files.getlist('paper')):
+            from .manager import ModrynManagerScreen
+            return ModrynManagerScreen()._render(
+                view='team', editing=employee.id,
+                form_errors={'paper': _(
+                    "Her details were saved, but that file is too large — "
+                    "the limit is 10 MB.")},
+                form_values=None)
         return request.redirect('/manage/team-screen?view=team')
 
     @http.route('/manage/staff/archive/<int:employee_id>', type='http', auth='user',
@@ -370,7 +431,12 @@ class ModrynManage(http.Controller):
         # nowhere to say so. 'home' and 'profile' are never columns - they
         # cannot be configured away - and nav.NEVER_GRANTABLE holds the two that
         # would let a tick grant the power to tick.
-        pages = [p for p in nav.grantable() if p['key'] not in ALWAYS_OPEN]
+        # matrix_pages, not grantable: the owner asked to see all her screens
+        # here, and three of them (the dresses, the audit trail, the checklists)
+        # have routes that refuse anybody but her. They are drawn with a lock
+        # instead of a checkbox - dropping them answers "where did the dresses
+        # go" with nothing, and drawing them tickable is a tick that lies.
+        pages = [p for p in nav.matrix_pages() if p['key'] not in ALWAYS_OPEN]
         granted = {}
         for grant in request.env['modryn.role.page'].sudo().search(
                 [('role_id', 'in', roles.ids)]):

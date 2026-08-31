@@ -28,6 +28,14 @@
                     <span class="modryn_strong">The team</span>
                     <span class="modryn_sub">Who works here, and the papers on file.</span>
                 </a>
+                <!-- The MANAGER's, like the team box and unlike the three
+                     owner tiles below: she is the one standing there when
+                     somebody goes home without pressing the button. -->
+                <a class="modryn_tile" href="/manage/team-screen?view=worked">
+                    <i class="fa fa-clock-o" aria-hidden="true"/>
+                    <span class="modryn_strong">Hours worked</span>
+                    <span class="modryn_sub">Who was on the floor, month by month — and fix it when the button was missed.</span>
+                </a>
                 <a t-if="is_owner" class="modryn_tile" href="/manage/team-screen?view=rooms">
                     <i class="fa fa-building" aria-hidden="true"/>
                     <span class="modryn_strong">Fitting rooms</span>
@@ -107,7 +115,8 @@
             </h1>
 
             <form method="post" class="modryn_form"
-                  t-attf-action="/manage/staff/#{'edit/%s' % employee.id if employee else 'new'}">
+                  t-attf-action="/manage/staff/#{'edit/%s' % employee.id if employee else 'new'}"
+                  enctype="multipart/form-data">
                 <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
 
                 <div class="mb-3">
@@ -208,17 +217,60 @@
                     </div>
                 </t>
 
+                <!-- ===================== her papers ===================== -->
+                <!-- The contract, the identity page, whatever the boutique has
+                     to keep. On the ADD form too: they are on the desk at the
+                     moment she is being entered, not ten minutes later, and
+                     they travel on the same Save. -->
+                <div class="mb-3">
+                    <label class="form-label" for="paper">Add papers</label>
+                    <!-- multiple: a new hire arrives with a contract AND an
+                         identity page, and making her owner press Save twice
+                         for that is a form arguing with the desk. -->
+                    <input type="file" id="paper" name="paper" multiple="multiple"
+                           class="form-control"/>
+                    <div t-if="errors.get('paper')" class="modryn_field_error"
+                         t-out="errors['paper']"/>
+                    <div class="modryn_sub">Up to 10 MB each.</div>
+                </div>
+
                 <button type="submit" class="btn btn-primary btn-lg">Save</button>
                 <a href="/manage/team-screen?view=team" class="btn btn-link">Cancel</a>
             </form>
+
+            <!-- What the boutique already holds for her. OUTSIDE the form
+                 above, because each Remove is its own POST and a form inside a
+                 form is not a thing HTML has - the browser drops the inner one
+                 and Remove would quietly become Save. -->
+            <div t-if="form_papers" class="mt-4">
+                <h2 class="h5 mb-2">On file</h2>
+                <div t-foreach="form_papers" t-as="doc" t-key="doc['id']"
+                     class="modryn_doc_row">
+                    <a t-attf-href="/manage/team-screen/paper/#{doc['id']}">
+                        <i class="fa fa-file-o" aria-hidden="true"/>
+                        <t t-out="doc['name']"/>
+                    </a>
+                    <span class="modryn_sub" dir="ltr" t-out="doc['at']"/>
+                    <form t-attf-action="/manage/team-screen/paper/#{doc['id']}/remove"
+                          method="post" class="d-inline">
+                        <input type="hidden" name="csrf_token"
+                               t-att-value="request.csrf_token()"/>
+                        <button type="submit" class="btn btn-sm btn-outline-dark">
+                            Remove
+                        </button>
+                    </form>
+                </div>
+            </div>
             </section>
 
             <!-- ========================= the team ========================= -->
             <section t-if="view == 'team' and not (form_open and is_owner)" class="modryn_panel mb-4">
                 <header class="modryn_panel_head">
-                    <h2>The team</h2>
+                    <h2 t-if="not showing_archived">The team</h2>
+                    <h2 t-else="">Who has left</h2>
                     <span class="modryn_count" t-out="len(team_rows)"/>
-                    <a t-if="is_owner" href="/manage/team-screen?view=team&amp;new=1"
+                    <a t-if="is_owner and not showing_archived"
+                       href="/manage/team-screen?view=team&amp;new=1"
                        class="btn btn-sm btn-primary ms-auto">Add a team member</a>
                 </header>
                 <p class="modryn_sub mb-3">
@@ -228,6 +280,11 @@
                 </p>
                 <p t-if="not is_owner" class="modryn_sub mb-3">
                     Adding somebody, or changing what she may do, is the owner's.
+                </p>
+
+                <p t-if="showing_archived and not team_rows" class="modryn_empty">
+                    Nobody has left. Everyone the boutique has taken on is still
+                    on the team.
                 </p>
 
                 <div class="modryn_cards">
@@ -292,12 +349,12 @@
                             </form>
                         </div>
 
-                        <div t-if="file_error and file_for == member['id']"
-                             class="modryn_field_error mt-2" role="alert">
-                            <t t-if="file_error == 'nofile'">Choose a file first.</t>
-                            <t t-else="">That file is too large — the limit is 10 MB.</t>
-                        </div>
-
+                        <!-- The FOLDER, read-only. Filing and removing moved
+                             into her account form, where the identity number
+                             she is being asked for and the scan of it are now
+                             one press of Save. The list stays here so "has she
+                             signed it" is answerable without opening a screen
+                             that can change her. -->
                         <p t-if="not member['papers']" class="modryn_sub mt-2 mb-0">
                             Nothing filed yet.
                         </p>
@@ -309,31 +366,194 @@
                                     <t t-out="doc['name']"/>
                                 </a>
                                 <span class="modryn_sub" dir="ltr" t-out="doc['at']"/>
-                                <form t-attf-action="/manage/team-screen/paper/#{doc['id']}/remove"
-                                      method="post" class="d-inline">
-                                    <input type="hidden" name="csrf_token"
-                                           t-att-value="request.csrf_token()"/>
-                                    <button type="submit" class="btn btn-sm btn-outline-dark">
-                                        Remove
-                                    </button>
-                                </form>
                             </div>
                         </div>
-
-                        <form action="/manage/team-screen/paper" method="post"
-                              enctype="multipart/form-data"
-                              class="d-flex gap-2 flex-wrap mt-2">
-                            <input type="hidden" name="csrf_token"
-                                   t-att-value="request.csrf_token()"/>
-                            <input type="hidden" name="employee_id"
-                                   t-att-value="member['id']"/>
-                            <input type="file" name="paper" class="form-control form-control-sm"/>
-                            <button type="submit" class="btn btn-sm btn-outline-dark">
-                                File it
-                            </button>
-                        </form>
                     </article>
                 </div>
+
+                <!-- The way in and the way back. At the BOTTOM: on a boutique
+                     five years old the women who have left outnumber the women
+                     who are here, and a list that opened on both would answer
+                     "who is on today" by making the owner read past everyone
+                     who is not. -->
+                <div class="mt-4">
+                    <a t-if="not showing_archived"
+                       href="/manage/team-screen?view=team&amp;archived=1"
+                       class="btn btn-outline-dark btn-sm">
+                        <i class="fa fa-archive" aria-hidden="true"/>
+                        Who has left
+                    </a>
+                    <a t-else="" href="/manage/team-screen?view=team"
+                       class="btn btn-outline-dark btn-sm">
+                        <i class="fa fa-arrow-left" aria-hidden="true"/>
+                        Back to the team
+                    </a>
+                </div>
+            </section>
+
+            <!-- =================== who was on the floor =================== -->
+            <!-- Read from the same month builder her own profile uses, so the
+                 woman and the manager can never be shown different totals.
+                 What is new here is the correcting: the floor's button is
+                 pressed by a person at the end of a long day and sometimes is
+                 not pressed at all, and the row then counts up all night. -->
+            <section t-if="view == 'worked'" class="modryn_panel mb-4">
+                <header class="modryn_panel_head">
+                    <h2>Hours worked</h2>
+                </header>
+
+                <div t-if="worked_error" class="modryn_field_error mb-3" role="alert">
+                    <t t-if="worked_error == 'badtime'">Write the time as HH:MM, like 09:30.</t>
+                    <t t-elif="worked_error == 'overlap'">That crosses another shift of hers the same day.</t>
+                    <t t-elif="worked_error == 'alreadyopen'">She already has a shift left open. Close that one first.</t>
+                    <t t-elif="worked_error == 'openbefore'">An earlier shift of hers was never closed, so it covers this time too. Fill in when she left that one first.</t>
+                    <t t-elif="worked_error == 'toolong'">That comes to more than 16 hours &#8212; check the times.</t>
+                    <t t-else="">That could not be saved.</t>
+                </div>
+
+                <!-- Whose. A GET form, because choosing a woman is a question,
+                     not a change - and it keeps the month in the address so a
+                     refresh shows the same page. -->
+                <form action="/manage/team-screen" method="get"
+                      class="d-flex gap-2 align-items-center flex-wrap mb-3">
+                    <input type="hidden" name="view" value="worked"/>
+                    <label class="form-label mb-0" for="whose">Who</label>
+                    <select id="whose" name="whose" class="form-select w-auto">
+                        <option value="">Choose someone</option>
+                        <option t-foreach="worked_team" t-as="w" t-key="w['id']"
+                                t-att-value="w['id']" t-att-selected="w['chosen']"
+                                t-out="w['name']"/>
+                    </select>
+                    <button type="submit" class="btn btn-sm btn-outline-dark">Show</button>
+                </form>
+
+                <p t-if="not worked_who" class="modryn_empty">
+                    Choose someone to see the months she has worked.
+                </p>
+
+                <t t-else="">
+                    <p t-if="not months" class="modryn_empty">
+                        Nothing recorded for her yet &#8212; hours start counting
+                        the first time she opens the floor board.
+                    </p>
+
+                    <t t-else="">
+                        <form action="/manage/team-screen" method="get"
+                              class="d-flex gap-2 align-items-center flex-wrap mb-3">
+                            <input type="hidden" name="view" value="worked"/>
+                            <input type="hidden" name="whose" t-att-value="worked_who.id"/>
+                            <label class="form-label mb-0" for="month">Month</label>
+                            <select id="month" name="month" class="form-select w-auto">
+                                <option t-foreach="months" t-as="m" t-key="m['key']"
+                                        t-att-value="m['key']" t-att-selected="m['chosen']"
+                                        t-out="m['label']"/>
+                            </select>
+                            <button type="submit" class="btn btn-sm btn-outline-dark">Show</button>
+                        </form>
+
+                        <div class="modryn_card_marks mb-2">
+                            <span class="modryn_badge is_muted" t-out="month['day_count']"/>
+                            <span class="modryn_sub">shifts that month</span>
+                            <span class="modryn_badge is_free" dir="ltr" t-out="month['hours']"/>
+                            <span class="modryn_sub">hours</span>
+                        </div>
+                        <!-- Only when they DISAGREE. On most months every shift
+                             is one spell, and printing both numbers side by side
+                             invites the reader to wonder which one is wrong. -->
+                        <p t-if="month['spell_count'] != month['day_count']" class="modryn_sub">
+                            She came and went more than once on some of those days.
+                        </p>
+                        <p t-if="month['open']" class="modryn_sub">
+                            One of these is still running and counts up to now. If
+                            she has gone home, fill in when she left.
+                        </p>
+
+                        <p t-if="not month['days']" class="modryn_empty">
+                            She was not on the floor that month.
+                        </p>
+                        <div t-else="" class="modryn_table_scroll">
+                        <table class="table modryn_table align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Day</th><th>Came on</th><th>Went off</th>
+                                    <th>Hours</th><th/>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="month['days']" t-as="d" t-key="d['label']">
+                                    <tr t-foreach="d['spells']" t-as="sp" t-key="sp['id']">
+                                        <!-- Every row is its own little form.
+                                             One big one would make Save mean
+                                             "write all thirty of these", and a
+                                             single bad time would then refuse
+                                             the twenty-nine that were fine. The
+                                             inputs sit in other cells, so they
+                                             point at it with form=. -->
+                                        <td class="modryn_strong" dir="ltr" t-out="d['label']"/>
+                                        <td>
+                                            <input type="time" dir="ltr" name="came"
+                                                   t-attf-form="spell_#{sp['id']}"
+                                                   t-att-value="sp['in']"
+                                                   class="form-control form-control-sm"/>
+                                        </td>
+                                        <td>
+                                            <input type="time" dir="ltr" name="went"
+                                                   t-attf-form="spell_#{sp['id']}"
+                                                   t-att-value="sp['out']"
+                                                   class="form-control form-control-sm"/>
+                                            <span t-if="sp['open']" class="modryn_badge is_busy">Still on</span>
+                                        </td>
+                                        <td dir="ltr" t-out="sp['hours']"/>
+                                        <td class="text-end">
+                                            <form t-attf-id="spell_#{sp['id']}"
+                                                  action="/manage/team-screen/worked/amend"
+                                                  method="post" class="d-inline">
+                                                <input type="hidden" name="csrf_token"
+                                                       t-att-value="request.csrf_token()"/>
+                                                <input type="hidden" name="spell_id" t-att-value="sp['id']"/>
+                                                <input type="hidden" name="day" t-att-value="sp['date']"/>
+                                                <input type="hidden" name="month" t-att-value="chosen_month"/>
+                                                <button type="submit" class="btn btn-sm btn-outline-dark">Save</button>
+                                                <button type="submit" name="drop" value="1"
+                                                        class="btn btn-sm btn-link">Remove</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+                        </div>
+                    </t>
+
+                    <!-- A shift nobody pressed the button for at either end.
+                         It carries its own date, so last Tuesday can be entered
+                         without first navigating to last Tuesday's month. -->
+                    <form action="/manage/team-screen/worked/add" method="post"
+                          class="d-flex gap-2 align-items-end flex-wrap mt-4">
+                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                        <input type="hidden" name="employee_id" t-att-value="worked_who.id"/>
+                        <input type="hidden" name="month" t-att-value="chosen_month"/>
+                        <div>
+                            <label class="form-label mb-0" for="add_day">Add a day she worked</label>
+                            <input type="date" id="add_day" name="day" dir="ltr"
+                                   class="form-control form-control-sm"/>
+                        </div>
+                        <div>
+                            <label class="form-label mb-0" for="add_came">Came on</label>
+                            <input type="time" id="add_came" name="came" dir="ltr"
+                                   class="form-control form-control-sm"/>
+                        </div>
+                        <div>
+                            <label class="form-label mb-0" for="add_went">Went off</label>
+                            <input type="time" id="add_went" name="went" dir="ltr"
+                                   class="form-control form-control-sm"/>
+                        </div>
+                        <button type="submit" class="btn btn-sm btn-primary">Add</button>
+                    </form>
+                    <p class="modryn_sub mt-2">
+                        Leave <em>went off</em> empty if she is still on the floor.
+                    </p>
+                </t>
             </section>
 
             <!-- ==================== opening hours ==================== -->

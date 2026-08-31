@@ -694,6 +694,40 @@ if [ "$SESSION" = "200" ]; then
   grep -q '/manage/shifts/new' "$PAGE" \
     && bad "/manage/shifts owner gate" "a shift manager can reach the shift-template form" \
     || ok "defining a shift stays the owner's (a manager gets no editor)"
+  # ---- every tab she is shown must open ----------------------------------
+  # The navbar must never offer a door that is locked. This is not a rule about
+  # any one page: it is the invariant that was BROKEN when /manage/dresses sat
+  # in the owner's access matrix while its own route called _require_owner - an
+  # owner could tick Dresses for her saleswomen, the tab appeared, and pressing
+  # it gave 404. Measured, not theorised.
+  #
+  # Behavioural on purpose. A grep for the current gate of the current pages
+  # would pass again the moment somebody moves a page to another row, which is
+  # exactly the change that caused this. Sara is a shift manager, so she sees
+  # the whole top row without anybody granting her anything - the widest navbar
+  # in the product that is not the owner's.
+  #
+  # /staff/logout is skipped for the obvious reason: fetching it would end the
+  # session and every assertion after this one would fail for the wrong reason.
+  NAV_BAD=""
+  NAV_SEEN=0
+  for href in $(curl -sg -b "$JAR" "$BELLA/staff/home" \
+      | grep -oE 'href="/[a-z0-9/_-]+"' | sed 's/href="//;s/"//' | sort -u); do
+    case "$href" in
+      /staff/logout|/web/session/logout) continue ;;
+    esac
+    NAV_SEEN=$((NAV_SEEN + 1))
+    NAV_CODE=$(curl -sg -b "$JAR" -o /dev/null -w "%{http_code}" "$BELLA$href")
+    [ "$NAV_CODE" = "404" ] && NAV_BAD="$NAV_BAD $href"
+  done
+  if [ "$NAV_SEEN" -lt 5 ]; then
+    bad "navbar sweep" "only $NAV_SEEN links found on a manager's home — the sweep is not looking at a real navbar"
+  elif [ -n "$NAV_BAD" ]; then
+    bad "a navbar tab 404s for the person shown it" "$NAV_BAD"
+  else
+    ok "every page a manager is offered actually opens ($NAV_SEEN links)"
+  fi
+
   # The window belongs to the manager. Asserted with a real signed-in session,
   # because the anonymous check above can only ever reach Odoo's login redirect
   # — it never touches _is_manager() at all.

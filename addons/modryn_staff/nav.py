@@ -43,10 +43,34 @@ PAGES = []
 # later, and it is the sentence that records WHY that power was never grantable.
 NEVER_GRANTABLE = ('staff', 'roles')
 
+# Pages whose ROUTE requires the owner herself. The navbar and the access matrix
+# both read this, because all three have to agree: a page a tick cannot really
+# open is a tick that lies, and the woman it was ticked for gets a tab that 404s.
+# That was not hypothetical - it was true of every one of these until measured.
+#
+# Different from NEVER_GRANTABLE, which is about power a tick must never HAND
+# OUT. This is about power a tick cannot hand out however much anybody wants it
+# to, because the route on the far side refuses. Both end up owner-only; only
+# one of them is a decision.
+OWNER_ONLY = ('dresses', 'audit', 'checklists')
+
 
 def grantable():
     """Every page an owner may hand to a role, both rows."""
-    return [p for p in PAGES if p['key'] not in NEVER_GRANTABLE]
+    return [p for p in PAGES
+            if p['key'] not in NEVER_GRANTABLE and p['key'] not in OWNER_ONLY]
+
+
+def matrix_pages():
+    """Every page the access matrix DRAWS, each saying whether it can be ticked.
+
+    Wider than grantable() on purpose. The owner asked for a matrix showing all
+    her screens, and one that silently drops the three she may not delegate
+    answers "where did the dresses go" with nothing. They are drawn, and drawn
+    as hers.
+    """
+    return [dict(p, owner_only=p['key'] in OWNER_ONLY)
+            for p in PAGES if p['key'] not in NEVER_GRANTABLE]
 
 
 def register(key, url, label, sequence, section='staff', icon='fa-circle-o'):

@@ -11,15 +11,18 @@ controller here follows; an announcement reaches every phone in the shop, and
 that is not a thing a page grant should be able to hand out.
 """
 
-import pytz
+from datetime import datetime
 
-from odoo import http
+import pytz
+import werkzeug.urls
+
+from odoo import _, http
 from odoo.http import content_disposition, request
 from odoo.tools.translate import LazyTranslate
 
 from .. import nav
 from . import access
-from .manage import ModrynManage, _levels, _personal_from
+from .manage import ModrynManage, _file_papers, _levels, _personal_from
 
 _lt = LazyTranslate(__name__)
 
@@ -30,11 +33,6 @@ TZ = pytz.timezone('Asia/Jerusalem')
 # whole history of a boutique is asking a different question than this screen.
 RECENT = 20
 
-# Ten megabytes, the figure the profile's own upload used before this screen
-# took the job over. Read one byte PAST it rather than trusting a declared
-# length: content-length is whatever the client says it is.
-MAX_UPLOAD_BYTES = 10 * 1024 * 1024
-
 
 class ModrynManagerScreen(http.Controller):
 
@@ -42,10 +40,19 @@ class ModrynManagerScreen(http.Controller):
         return request.env['hr.employee'].sudo().search(
             [('user_id', '=', request.env.user.id)], limit=1)
 
-    def _team(self):
-        """Everyone who could be told something, in a stable order."""
-        return request.env['hr.employee'].sudo().search(
-            [('modryn_level', 'in', ('owner', 'manager', 'staff'))], order='name')
+    def _team(self, archived=False):
+        """Everyone who could be told something, in a stable order.
+
+        active_test=False and an explicit `active` term, rather than letting the
+        default do it: the announcement picker and the team box read this, and
+        a silent default is how the archived list came to be unreachable in the
+        first place.
+        """
+        return request.env['hr.employee'].sudo().with_context(
+            active_test=False).search([
+                ('modryn_level', 'in', ('owner', 'manager', 'staff')),
+                ('active', '=', not archived),
+            ], order='name')
 
     def _papers(self, employee):
         """What the boutique holds for one woman.
@@ -60,7 +67,7 @@ class ModrynManagerScreen(http.Controller):
             ('name', '!=', False),
         ], order='create_date desc')
 
-    def _team_rows(self):
+    def _team_rows(self, archived=False):
         """Everything the Team screen shows, plus the papers.
 
         Built from that screen's OWN row builder rather than a second query
@@ -69,14 +76,14 @@ class ModrynManagerScreen(http.Controller):
         quietly missed the next field somebody adds.
         """
         rows = ModrynManage()._employee_rows()
-        by_id = {employee.id: employee for employee in self._team()}
+        by_id = {employee.id: employee for employee in self._team(archived)}
         out = []
         for row in rows:
             employee = by_id.get(row['id'])
             if not employee:
-                # _employee_rows includes archived people; the team block is
-                # about who works here now. Her papers do not vanish - they stay
-                # against her record and come back if she is restored.
+                # Not in the half being asked for. Her papers do not vanish
+                # either way - they stay against her record and come back with
+                # her if she is restored.
                 continue
             out.append(dict(row, papers=[{
                 'id': doc.id,
@@ -109,7 +116,10 @@ class ModrynManagerScreen(http.Controller):
     # rather than a template full of hard-coded tiles: adding the next one is a
     # line here, and the tiles and the routing cannot disagree about what
     # exists.
-    VIEWS = ('announce', 'team', 'hours', 'rooms')
+    # 'hours' is the boutique's OPENING hours; 'worked' is who stood in it.
+    # Two different questions that both want the word - named apart here so a
+    # link can never quietly open the other one.
+    VIEWS = ('announce', 'team', 'hours', 'rooms', 'worked')
 
     def _account_form(self, editing=None, adding=False, errors=None, values=None):
         """The add/edit form's context, or nothing at all.
@@ -143,18 +153,61 @@ class ModrynManagerScreen(http.Controller):
             'employee': employee,
             'errors': errors or {},
             'values': values,
+            # Only when she EXISTS. A woman being added has no folder yet and
+            # nowhere to hang one: the file field on the add form travels with
+            # the same Save that creates her.
+            'form_papers': [{
+                'id': doc.id,
+                'name': doc.name,
+                'at': doc.create_date.strftime('%d.%m.%Y'),
+            } for doc in self._papers(employee)] if employee else [],
         }
+
+    def _worked_context(self, whose=None, month=None, error=None):
+        """The team to choose from, and one woman's month if one is chosen.
+
+        The month itself comes from ModrynStaffAuth._hours_context - the same
+        function her own profile calls, against the same model method. A second
+        implementation here would be a second answer to "how many hours in
+        March", and the two would drift on the first change to either.
+        """
+        from .auth import ModrynStaffAuth
+        team = self._team()
+        context = {
+            'worked_team': [{
+                'id': e.id, 'name': e.name,
+                'chosen': whose and e.id == whose.id,
+            } for e in team],
+            'worked_who': whose,
+            'worked_error': error,
+        }
+        if whose:
+            hours = ModrynStaffAuth()._hours_context(whose, month)
+            context.update(hours)
+            # The month actually being shown, which is not always the month
+            # asked for: _hours_context falls back to her most recent one when
+            # the request names a month she has nothing in. Computed here, once,
+            # rather than by a list comprehension inside three t-att-values -
+            # a form that posts back a DIFFERENT month than the page is showing
+            # sends the manager somewhere she did not come from.
+            context['chosen_month'] = next(
+                (m['key'] for m in hours['months'] if m['chosen']), '')
+        return context
 
     def _render(self, error=None, draft=None, picked=None, file_error=None,
                 file_for=None, view=None, editing=None, adding=False,
-                form_errors=None, form_values=None):
+                form_errors=None, form_values=None, archived=False, whose=None):
         context = {
             # None means the tiles themselves. Anything unrecognised falls back
             # to them rather than 404ing: a stale link should land somewhere
             # useful, not on an error.
             'view': view if view in self.VIEWS else None,
             'team': [{'id': e.id, 'name': e.name} for e in self._team()],
-            'team_rows': self._team_rows(),
+            # One half or the other. The announcement picker above stays on
+            # the ACTIVE list whatever this says: telling a woman who left in
+            # March about Thursday's delivery is not a thing to offer.
+            'team_rows': self._team_rows(archived),
+            'showing_archived': archived,
             # Adding a person, setting a password, changing a level: the owner's
             # alone. The cards carry the links for her so she loses nothing by
             # the move, and a manager simply does not see them.
@@ -174,6 +227,14 @@ class ModrynManagerScreen(http.Controller):
         # The owner's panels, and only when she is going to see them: building a
         # closures list, or a roles list, for a manager who will never be shown
         # either is work for nobody.
+        if view == 'worked':
+            # The MANAGER's, deliberately, unlike the four panels below. She is
+            # the one standing there when somebody goes home without pressing
+            # the button; making her find the owner to correct it is how the
+            # figure stays wrong.
+            context.update(self._worked_context(
+                whose=whose, month=request.params.get('month'),
+                error=request.params.get('error')))
         if access.is_owner():
             if view == 'hours':
                 context.update(ModrynManage().hours_context(
@@ -206,8 +267,20 @@ class ModrynManagerScreen(http.Controller):
             editing = int(kw['edit']) if kw.get('edit') else None
         except (TypeError, ValueError):
             editing = None
+        # Whose hours. Read here rather than in the context builder so an id
+        # for somebody who has since left falls back to the picker instead of a
+        # traceback - the same fallback the team form's stale ?edit= gets.
+        whose = None
+        if kw.get('whose'):
+            try:
+                whose = request.env['hr.employee'].sudo().browse(
+                    int(kw['whose'])).exists()
+            except (TypeError, ValueError):
+                whose = None
         return self._render(view=kw.get('view'), editing=editing,
-                            adding=bool(kw.get('new')))
+                            adding=bool(kw.get('new')),
+                            archived=bool(kw.get('archived')),
+                            whose=whose or None)
 
     @http.route('/manage/team-screen/announce', type='http', auth='user',
                 website=True, methods=['POST'], csrf=True, sitemap=False)
@@ -240,39 +313,102 @@ class ModrynManagerScreen(http.Controller):
         return request.redirect('/manage/team-screen?view=announce')
 
     # ------------------------------------------------------ her papers
+    # ------------------------------------------------- who was on the floor
+    def _worked_back(self, employee_id, month=None, error=None):
+        """Back to the month she was just looking at."""
+        target = '/manage/team-screen?view=worked&whose=%d' % employee_id
+        if month:
+            target += '&month=%s' % werkzeug.urls.url_quote(month)
+        if error:
+            target += '&error=%s' % error
+        return request.redirect(target)
+
+    @http.route('/manage/team-screen/worked/amend', type='http', auth='user',
+                website=True, methods=['POST'], csrf=True, sitemap=False)
+    def worked_amend(self, **post):
+        """Set what a spell really was, or clear it away.
+
+        One route for both because they are one decision on the page - the row
+        has a Save and a Remove, and splitting them into two addresses is two
+        places to get the permission check right.
+        """
+        if not access.is_manager():
+            return access.deny()
+        Attendance = request.env['modryn.shift.attendance']
+        try:
+            spell = Attendance.sudo().browse(int(post.get('spell_id') or 0)).exists()
+        except (TypeError, ValueError):
+            spell = None
+        if not spell:
+            return request.redirect('/manage/team-screen?view=worked')
+        employee_id = spell.employee_id.id
+        month = post.get('month')
+
+        if post.get('drop'):
+            # A mis-tap, deleted rather than zeroed. A spell corrected to no
+            # length would still be a line on her month claiming she came in.
+            spell.unlink()
+            return self._worked_back(employee_id, month)
+
+        day = (post.get('day') or '').strip()
+        try:
+            day = datetime.strptime(day, '%Y-%m-%d').date()
+        except (TypeError, ValueError):
+            return self._worked_back(employee_id, month, 'badtime')
+        error = spell.modryn_amend(day, post.get('came'), post.get('went'))
+        return self._worked_back(employee_id, month, error)
+
+    @http.route('/manage/team-screen/worked/add', type='http', auth='user',
+                website=True, methods=['POST'], csrf=True, sitemap=False)
+    def worked_add(self, **post):
+        """A shift nobody pressed the button for at either end."""
+        if not access.is_manager():
+            return access.deny()
+        employee = request.env['hr.employee'].sudo().browse(
+            int(post.get('employee_id') or 0)).exists()
+        if not employee:
+            return request.redirect('/manage/team-screen?view=worked')
+        month = post.get('month')
+        try:
+            day = datetime.strptime(
+                (post.get('day') or '').strip(), '%Y-%m-%d').date()
+        except (TypeError, ValueError):
+            return self._worked_back(employee.id, month, 'badtime')
+        error = request.env['modryn.shift.attendance'].modryn_add_spell(
+            employee, day, post.get('came'), post.get('went'))
+        # Land on the month she just wrote INTO, not the one she was reading.
+        # Adding a February shift while looking at March and being shown March
+        # unchanged reads exactly like the save having failed.
+        return self._worked_back(
+            employee.id, month if error else day.strftime('%Y-%m'), error)
+
     @http.route('/manage/team-screen/paper', type='http', auth='user',
                 website=True, methods=['POST'], csrf=True, sitemap=False)
     def paper_upload(self, **post):
-        """File a signed page against one woman's record."""
-        if not access.is_manager():
+        """File a signed page against one woman's record.
+
+        Still here for the form's own file field to post to. Owner-only, the
+        same as the form that draws it.
+        """
+        if not access.is_owner():
             return access.deny()
         employee = request.env['hr.employee'].sudo().browse(
             int(post.get('employee_id') or 0)).exists()
         if not employee:
             return request.redirect('/manage/team-screen?view=team')
 
-        upload = request.httprequest.files.get('paper')
-        if not upload or not upload.filename:
-            return self._render(file_error='nofile', file_for=employee.id,
-                                view='team')
-        data = upload.read(MAX_UPLOAD_BYTES + 1)
-        if len(data) > MAX_UPLOAD_BYTES:
-            return self._render(file_error='toobig', file_for=employee.id,
-                                view='team')
-        if not data:
-            return self._render(file_error='nofile', file_for=employee.id,
-                                view='team')
-
-        request.env['ir.attachment'].sudo().create({
-            'name': upload.filename,
-            'raw': data,
-            'res_model': 'hr.employee',
-            'res_id': employee.id,
-            # NEVER website-visible. public=True would put a woman's contract on
-            # a URL anybody can fetch.
-            'public': False,
-        })
-        return request.redirect('/manage/team-screen?view=team')
+        uploads = [u for u in request.httprequest.files.getlist('paper')
+                   if u and u.filename]
+        if not uploads:
+            return self._render(view='team', editing=employee.id,
+                                form_errors={'paper': _("Choose a file first.")})
+        if _file_papers(employee, uploads):
+            return self._render(
+                view='team', editing=employee.id,
+                form_errors={'paper': _("That file is too large — "
+                                        "the limit is 10 MB.")})
+        return request.redirect(
+            '/manage/team-screen?view=team&edit=%d' % employee.id)
 
     @http.route('/manage/team-screen/paper/<int:attachment_id>', type='http',
                 auth='user', website=True, sitemap=False)
@@ -302,13 +438,22 @@ class ModrynManagerScreen(http.Controller):
                 type='http', auth='user', website=True, methods=['POST'],
                 csrf=True, sitemap=False)
     def paper_remove(self, attachment_id, **post):
-        if not access.is_manager():
+        # The OWNER's. This used to read is_manager, from when the button sat
+        # on the card; it is on the account form now, which no manager can open
+        # - and a route left one rank wider than the only screen that reaches
+        # it is a door with no handle on this side and a handle on that one.
+        if not access.is_owner():
             return access.deny()
         attachment = request.env['ir.attachment'].sudo().browse(
             attachment_id).exists()
-        if attachment and attachment.res_model == 'hr.employee':
-            attachment.unlink()
-        return request.redirect('/manage/team-screen?view=team')
+        if not attachment or attachment.res_model != 'hr.employee':
+            return request.redirect('/manage/team-screen?view=team')
+        # Read her id BEFORE unlinking: res_id is gone with the row afterwards,
+        # and the redirect would land on the cards instead of her form.
+        employee_id = attachment.res_id
+        attachment.unlink()
+        return request.redirect(
+            '/manage/team-screen?view=team&edit=%d' % employee_id)
 
     @http.route('/manage/team-screen/unsend', type='http', auth='user',
                 website=True, methods=['POST'], csrf=True, sitemap=False)

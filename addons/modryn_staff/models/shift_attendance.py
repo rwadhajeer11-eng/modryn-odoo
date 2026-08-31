@@ -16,6 +16,14 @@ TZ = pytz.timezone('Asia/Jerusalem')
 # read something, leave - and nobody works a fifty-second shift.
 MIN_SPELL_SECONDS = 60
 
+# Sixteen hours. Only ever applied to a spell somebody TYPED - the floor's own
+# open/close is not measured against it, because a woman who genuinely forgot to
+# press the button overnight still needs the row that says so before it can be
+# corrected. This is the guard on the correction itself: a manager fixing
+# Tuesday who fills in the wrong date turns one shift into a fortnight, and that
+# figure would then be in her month, her totals and her pay.
+MAX_SPELL_SECONDS = 16 * 3600
+
 
 class ModrynShiftAttendance(models.Model):
     """One woman's day on the floor: when she came on, and when she went off.
@@ -131,9 +139,15 @@ class ModrynShiftAttendance(models.Model):
             bucket['hours'] += seconds / 3600.0
             bucket['open'] = bucket['open'] or not row.ended_at
             bucket['spells'].append({
+                # The id, so the manager's copy of this month can name the row
+                # she is correcting. Her own profile ignores it.
+                'id': row.id,
                 'in': local.strftime('%H:%M'),
                 'out': (self._modryn_local(row.ended_at).strftime('%H:%M')
                         if row.ended_at else ''),
+                'open': not row.ended_at,
+                'date': local.strftime('%Y-%m-%d'),
+                'hours': round(seconds / 3600.0, 2),
             })
 
         days = []
@@ -145,6 +159,12 @@ class ModrynShiftAttendance(models.Model):
         return {
             'days': days,
             'day_count': len(days),
+            # Days and spells are different numbers and the difference matters:
+            # a woman who goes home for lunch and comes back worked ONE day and
+            # left two rows. "How many shifts in March" is the day count; the
+            # spell count is only shown where they disagree, so the page never
+            # argues with itself.
+            'spell_count': sum(len(d['spells']) for d in days),
             'hours': round(sum(d['hours'] for d in days), 2),
             'open': still_open,
         }
@@ -172,6 +192,97 @@ class ModrynShiftAttendance(models.Model):
             max(0.0, ((row.ended_at or now) - row.started_at).total_seconds())
             for row in rows)
         return round(total / 3600.0, 2)
+
+    # ------------------------------------------------- correcting the record
+    @api.model
+    def _modryn_utc(self, day, clock):
+        """A date and an "HH:MM" the boutique typed, as the naive UTC we store.
+
+        Localised through the SAME TZ every reader here uses. A correction typed
+        as 18:30 and written straight into the column would be 18:30 UTC, which
+        is half past nine on the boutique's own clock in summer - the shift would
+        move three hours by being corrected.
+        """
+        parts = (clock or '').split(':')
+        if len(parts) != 2:
+            return None
+        try:
+            hour, minute = int(parts[0]), int(parts[1])
+            stamp = datetime.combine(day, time(hour=hour, minute=minute))
+        except (TypeError, ValueError):
+            return None
+        return TZ.localize(stamp).astimezone(pytz.utc).replace(tzinfo=None)
+
+    def modryn_amend(self, day, came, went):
+        """Set one spell's hours. Returns an error key, or None on success.
+
+        `went` empty means she is still on the floor - which is a real answer,
+        not a missing one: the manager may be fixing this morning's start time
+        while the woman is standing in the room.
+
+        Every refusal here is a figure that would go on to be WRONG rather than
+        merely odd. An end before its start makes negative hours; an overlap
+        double-counts the same minutes into her month; a second open row breaks
+        what the database is already promising with an index.
+        """
+        self.ensure_one()
+        started = self._modryn_utc(day, came)
+        if not started:
+            return 'badtime'
+        ended = None
+        if went:
+            ended = self._modryn_utc(day, went)
+            if not ended:
+                return 'badtime'
+            # Past midnight is a real shift - the alterations room runs late -
+            # so a finish that reads earlier than the start is read as the NEXT
+            # day rather than refused. Only a same-clock pair is nothing.
+            if ended <= started:
+                ended += timedelta(days=1)
+            if (ended - started).total_seconds() > MAX_SPELL_SECONDS:
+                return 'toolong'
+        if not ended and self.sudo().search_count([
+                ('employee_id', '=', self.employee_id.id),
+                ('ended_at', '=', False), ('id', '!=', self.id)]):
+            return 'alreadyopen'
+        # Overlap, against every OTHER row of hers. An open row counts to now,
+        # because a spell that ends inside one still open is the same minutes
+        # twice however the open one eventually closes.
+        horizon = ended or fields.Datetime.now()
+        clash = self.sudo().search([
+            ('employee_id', '=', self.employee_id.id),
+            ('id', '!=', self.id),
+            ('started_at', '<', horizon),
+            '|', ('ended_at', '=', False), ('ended_at', '>', started),
+        ], limit=1)
+        if clash:
+            # Told apart, because the two need different things done. A closed
+            # shift crossing this one is a typo in one of the two times. An OPEN
+            # one from days earlier is a woman who never pressed the button
+            # going home: it covers every hour since, so it collides with any
+            # correction anywhere after it, and "that crosses another shift the
+            # same day" sends the manager looking at the wrong day entirely.
+            return 'openbefore' if not clash.ended_at else 'overlap'
+        self.sudo().write({'started_at': started, 'ended_at': ended})
+        return None
+
+    @api.model
+    def modryn_add_spell(self, employee, day, came, went):
+        """A shift nobody pressed the button for. Same rules as amending."""
+        if not employee:
+            return 'nobody'
+        row = self.sudo().create({
+            'employee_id': employee.id,
+            # A placeholder the amend below immediately replaces. Created first
+            # so the overlap check has a real id to exclude - checking before
+            # the row exists means writing the same guard twice.
+            'started_at': fields.Datetime.now(),
+            'ended_at': fields.Datetime.now(),
+        })
+        error = row.modryn_amend(day, came, went)
+        if error:
+            row.unlink()
+        return error
 
     @api.model
     def modryn_open(self, employee, started_at=None):

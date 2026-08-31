@@ -33,7 +33,11 @@ SIZE_ATTRIBUTE = "מידה"
 # Hebrew page and an Arabic one while its .po entry sat there translated. _lt is
 # the lazy form that resolves when the label is finally rendered, which is what
 # every other nav.register in the product already uses.
-nav.register('dresses', '/manage/dresses', _lt("Dresses"), 15, 'manage', 'fa-diamond')
+# The TOP row: the rail is daily work, not back-office administration. The row
+# is layout only - the route below still calls _require_owner, and nav.OWNER_ONLY
+# stops the top row's "every manager, no tick needed" rule from offering her a
+# tab that would 404. Moving this without that list was the whole trap.
+nav.register('dresses', '/manage/dresses', _lt("Dresses"), 30, 'staff', 'fa-diamond')
 
 
 class ModrynDresses(ModrynManage):
