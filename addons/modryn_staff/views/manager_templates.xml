@@ -42,6 +42,13 @@
                     <span class="modryn_strong">Hours worked</span>
                     <span class="modryn_sub">Who was on the floor, month by month — and fix it when the button was missed.</span>
                 </a>
+                <!-- The OWNER's. What the shop has taken is hers, and so is
+                     the history of who bought what. -->
+                <a t-if="is_owner" class="modryn_tile" href="/manage/team-screen?view=sales">
+                    <i class="fa fa-diamond" aria-hidden="true"/>
+                    <span class="modryn_strong">Dresses sold</span>
+                    <span class="modryn_sub">Look a bride up by name or number — what she bought, and what the workshop did to it.</span>
+                </a>
                 <a t-if="is_owner" class="modryn_tile" href="/manage/team-screen?view=rooms">
                     <i class="fa fa-building" aria-hidden="true"/>
                     <span class="modryn_strong">Fitting rooms</span>
@@ -401,6 +408,114 @@
                         <i class="fa fa-arrow-left" aria-hidden="true"/>
                         Back to the team
                     </a>
+                </div>
+            </section>
+
+            <!-- ===================== dresses sold ===================== -->
+            <!-- A bride comes back three years later with a sister, or a seam,
+                 or a question about what she paid, and there was nowhere to
+                 look her up: the figures existed as totals on the reports page
+                 and no screen could answer "what did she buy, and what did we
+                 do to it".
+                 Nothing is drawn until two characters are typed. A page that
+                 opens on every sale the boutique has ever made is a page nobody
+                 can read, and the question here is always about one bride. -->
+            <section t-if="view == 'sales' and is_owner" class="modryn_panel mb-4">
+                <header class="modryn_panel_head">
+                    <h2>Dresses sold</h2>
+                </header>
+
+                <!-- A GET form: a search is a question, not a change, so the
+                     back button works and one bride's history can be sent to
+                     somebody as a link. -->
+                <form action="/manage/team-screen" method="get"
+                      class="d-flex gap-2 align-items-center flex-wrap mb-3">
+                    <input type="hidden" name="view" value="sales"/>
+                    <input type="search" name="q" class="form-control"
+                           style="max-width: 380px;" autocomplete="off"
+                           placeholder="A name or a phone number"
+                           t-att-value="sales_query"/>
+                    <button type="submit" class="btn btn-sm btn-outline-dark">Find her</button>
+                </form>
+
+                <p t-if="not sales_query" class="modryn_empty">
+                    Type a name or a number. Everything this boutique has ever
+                    sold is here, however long ago.
+                </p>
+                <p t-elif="len(sales_query.strip()) &lt; sales_min" class="modryn_sub">
+                    Two characters or more.
+                </p>
+                <p t-elif="not sales" class="modryn_empty">
+                    Nothing sold to anybody by that name or number.
+                </p>
+
+                <div t-else="" class="modryn_cards">
+                    <article t-foreach="sales" t-as="sale"
+                             t-key="'%s-%s' % (sale['kind'], sale['id'])"
+                             class="modryn_card">
+                        <div class="modryn_card_marks">
+                            <span class="modryn_strong" t-out="sale['name']"/>
+                            <span t-if="sale['kind'] == 'walkin'"
+                                  class="modryn_badge is_muted">Walk-in</span>
+                            <span t-else="" class="modryn_badge is_muted">Booking</span>
+                        </div>
+                        <div t-if="sale['phone']" class="modryn_sub" dir="ltr"
+                             t-out="sale['phone']"/>
+
+                        <dl class="modryn_person">
+                            <t t-if="sale['dress']">
+                                <dt>The dress</dt>
+                                <dd t-out="sale['dress']"/>
+                            </t>
+                            <dt>What it came to</dt>
+                            <dd dir="ltr">
+                                ₪<t t-esc="'{:,}'.format(sale['amount'])"/>
+                                <!-- Said, not implied. A walk-in carries no
+                                     typed price - the floor records which dress
+                                     left - so this is the catalogue's figure and
+                                     must not be read as what she handed over. -->
+                                <span t-if="sale['amount_is_catalogue']" class="modryn_sub">
+                                    the catalogue price
+                                </span>
+                            </dd>
+                            <t t-if="sale['when']">
+                                <dt>Sold on</dt>
+                                <dd dir="ltr" t-esc="sale['when'].strftime('%d.%m.%Y %H:%M')"/>
+                            </t>
+                            <t t-if="sale['by']">
+                                <dt>Sold by</dt>
+                                <dd t-out="sale['by']"/>
+                            </t>
+                        </dl>
+
+                        <!-- What the workshop did to it, matched on her number.
+                             A bride who bought and then had it taken in is one
+                             story, and it was two screens. -->
+                        <div t-if="sale['alterations']" class="mt-2">
+                            <div class="modryn_strong">Altered</div>
+                            <div t-foreach="sale['alterations']" t-as="alt"
+                                 t-key="alt_index" class="modryn_doc_row">
+                                <div>
+                                    <div t-if="alt['what']" t-out="alt['what']"/>
+                                    <div t-if="alt['pieces']" class="modryn_sub"
+                                         t-out="alt['pieces']"/>
+                                    <div class="modryn_sub">
+                                        <t t-if="alt['taken_in']">
+                                            Taken in
+                                            <span dir="ltr" t-esc="alt['taken_in'].strftime('%d.%m.%Y')"/>
+                                        </t>
+                                        <t t-if="alt['finished']">
+                                            · Finished
+                                            <span dir="ltr" t-esc="alt['finished'].strftime('%d.%m.%Y')"/>
+                                        </t>
+                                    </div>
+                                </div>
+                                <span t-attf-class="modryn_badge #{'is_free' if alt['done'] else 'is_busy'}"
+                                      t-out="alt['state']"/>
+                            </div>
+                        </div>
+                        <p t-else="" class="modryn_sub mb-0">Nothing was altered.</p>
+                    </article>
                 </div>
             </section>
 

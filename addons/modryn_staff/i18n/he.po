@@ -1976,6 +1976,7 @@ msgstr "משהו ששווה לזכור?"
 #. module: modryn_staff
 #. odoo-javascript
 #: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
 #: model_terms:ir.ui.view,arch_db:modryn_staff.shift_supervisor
 msgid "Booking"
 msgstr "תור מראש"
@@ -2132,6 +2133,7 @@ msgstr "מחכות למישהי"
 #. module: modryn_staff
 #. odoo-javascript
 #: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
 #: model_terms:ir.ui.view,arch_db:modryn_staff.shift_supervisor
 msgid "Walk-in"
 msgstr "ללא תור"
@@ -2992,3 +2994,92 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
 msgid "A shift cannot be longer than 23 hours and 59 minutes."
 msgstr "משמרת לא יכולה להיות ארוכה מ־23 שעות ו־59 דקות."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid ""
+"<i class=\"fa fa-diamond\" aria-hidden=\"true\"/>\n"
+"                    <span class=\"modryn_strong\">Dresses sold</span>\n"
+"                    <span class=\"modryn_sub\">Look a bride up by name or number — what she bought, and what the workshop did to it.</span>"
+msgstr ""
+"<i class=\"fa fa-diamond\" aria-hidden=\"true\"/>\n"
+"                    <span class=\"modryn_strong\">שמלות שנמכרו</span>\n"
+"                    <span class=\"modryn_sub\">חיפוש כלה לפי שם או מספר — מה קנתה, ומה הסדנה עשתה לזה.</span>"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "Dresses sold"
+msgstr "שמלות שנמכרו"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "A name or a phone number"
+msgstr "שם או מספר טלפון"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "Find her"
+msgstr "מציאת הכלה"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "Two characters or more."
+msgstr "שתי אותיות ומעלה."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid ""
+"Type a name or a number. Everything this boutique has ever\n"
+"                    sold is here, however long ago."
+msgstr ""
+"הקלידי שם או מספר. כל מה שהבוטיק הזה מכר נמצא כאן, לא משנה לפני כמה זמן."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "Nothing sold to anybody by that name or number."
+msgstr "לא נמכר דבר לאף אחת בשם או במספר הזה."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "The dress"
+msgstr "השמלה"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "What it came to"
+msgstr "כמה זה יצא"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "the catalogue price"
+msgstr "המחיר בקטלוג"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "Sold on"
+msgstr "נמכרה בתאריך"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "Sold by"
+msgstr "מכרה"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "Altered"
+msgstr "שונתה"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "Taken in"
+msgstr "נמסרה בתאריך"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "· Finished"
+msgstr "· הסתיימה"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "Nothing was altered."
+msgstr "לא בוצע שום שינוי."

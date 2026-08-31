@@ -165,7 +165,12 @@ if existing_past < 25:
                 'modryn_customer_phone': '+9725%08d' % random.randint(0, 99999999),
                 'modryn_employee_id': who.id,
             })
+            # WHICH gown, when one was sold. The sales history reads this - a
+            # sale with a price and no dress answers "how much" and not "what",
+            # which is half the question a bride asks three years later.
+            gown = random.choice(GOWNS)[0] if outcome == 'sold' else ''
             event.write({
+                'modryn_sale_items': gown,
                 'modryn_outcome': outcome,
                 'modryn_outcome_at': start + timedelta(hours=1),
                 'modryn_outcome_by_id': who.id,

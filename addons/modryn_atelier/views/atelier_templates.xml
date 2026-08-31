@@ -279,8 +279,7 @@
                                      date the workshop cannot move stops being
                                      true the first time a bride changes her
                                      fitting. -->
-                                <form t-if="st[0] != 'delivered'"
-                                      action="/atelier/task/edit" method="post"
+                                <form action="/atelier/task/edit" method="post"
                                       class="modryn_task_edit">
                                     <input type="hidden" name="csrf_token"
                                            t-att-value="request.csrf_token()"/>
@@ -295,7 +294,7 @@
                                         <button type="submit" class="btn btn-sm btn-outline-dark">Save</button>
                                     </div>
                                 </form>
-                                <div t-else="" class="modryn_sub" t-out="task['note']"/>
+
                             </td>
                             <td>
                                 <!-- Managers reassign inline; delivered work is settled
@@ -339,7 +338,7 @@
                                      in both directions in the model - which is
                                      what makes a mis-tap repairable by pressing
                                      the one she meant. -->
-                                <div t-if="st[0] != 'delivered'" class="modryn_task_moves">
+                                <div class="modryn_task_moves">
                                     <!-- Back to the pile nobody has picked up.
                                          Only when somebody is holding it -
                                          a job that is already unheld is in the

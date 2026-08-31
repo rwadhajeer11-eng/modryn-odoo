@@ -232,8 +232,6 @@ msgid "Phone"
 msgstr "الهاتف"
 
 #. module: modryn_atelier
-#. odoo-python
-#: code:addons/modryn_atelier/controllers/atelier.py:0
 #: model:ir.model.fields,field_description:modryn_atelier.field_modryn_alteration_task__piece_ids
 msgid "Pieces"
 msgstr "الأجزاء"

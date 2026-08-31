@@ -101,22 +101,36 @@ class ModrynAlterationTask(models.Model):
         way back, and the only repair was an owner editing the record in the
         back office. A mis-tap is not history.
 
-        `delivered` is still a one-way door, and deliberately so. It is not a
-        label: it stamps delivered_at, releases her to the next job in the
-        queue, and is what the shop reads as "the bride has her dress". Undoing
-        that is a different act with different consequences, and it is not what
-        was asked for.
+        `delivered` used to be a one-way door. It is not any more, because the
+        boutique pressed it by mistake and the only way back was an owner in the
+        Odoo back office. Coming back CLEARS delivered_at - the date is the
+        moment the dress left, and a job being worked on cannot also have been
+        handed over.
         """
         self.ensure_one()
         order = [s[0] for s in STATES]
         if target not in order or target == self.state:
             return False
-        # Leaving delivered is not a correction, it is a resurrection.
-        if self.state == 'delivered':
-            return False
         values = {'state': target}
         if target == 'delivered':
             values['delivered_at'] = fields.Datetime.now()
+        elif self.state == 'delivered':
+            # COMING BACK from delivered, which this refused outright until the
+            # boutique pressed it by mistake and had nowhere to go. The old
+            # reasoning - "not a correction, a resurrection" - protected
+            # something real: delivered stamps a date, frees the seamstress, and
+            # is what the shop reads as "the bride has her dress". But a mis-tap
+            # on the row above the one she meant is not a resurrection, and the
+            # only repair was an owner in the Odoo back office - the same dead
+            # end the open states were freed from for exactly this reason.
+            #
+            # delivered_at is CLEARED, and that is the part that matters. It is
+            # the moment the dress left; a task sitting in "in progress" with a
+            # delivery date on it is a row contradicting itself, and the shop's
+            # own history would carry a handover that did not happen.
+            #
+            # Her name stays: this is undoing a press, not reassigning work.
+            values['delivered_at'] = False
         seamstress = self.seamstress_id
         self.write(values)
         if target == 'delivered' and seamstress:

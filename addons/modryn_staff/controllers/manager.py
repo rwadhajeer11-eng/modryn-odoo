@@ -119,7 +119,7 @@ class ModrynManagerScreen(http.Controller):
     # 'hours' is the boutique's OPENING hours; 'worked' is who stood in it.
     # Two different questions that both want the word - named apart here so a
     # link can never quietly open the other one.
-    VIEWS = ('announce', 'team', 'hours', 'rooms', 'worked')
+    VIEWS = ('announce', 'team', 'hours', 'rooms', 'worked', 'sales')
 
     def _account_form(self, editing=None, adding=False, errors=None, values=None):
         """The add/edit form's context, or nothing at all.
@@ -201,6 +201,122 @@ class ModrynManagerScreen(http.Controller):
                 (m['key'] for m in hours['months'] if m['chosen']), '')
         return context
 
+    # Two characters, the same floor the dress picker and the customer lookup
+    # use. One letter matches most of the shop and answers nothing.
+    SALES_MIN_QUERY = 2
+
+    def _sales(self, query):
+        """Everything sold to whoever matches `query`, newest first.
+
+        Read live rather than kept in a summary table: a sale is written once
+        and never changes, so there is nothing to keep in step, and a stored
+        rollup would be a staleness bug waiting for a backfill. The same
+        reasoning the reports page already applies to its own figures.
+        """
+        query = (query or '').strip()
+        if len(query) < self.SALES_MIN_QUERY:
+            return []
+        like = '%%%s%%' % query
+        rows = []
+
+        # The appointments. modryn_outcome lives in modryn_ops, so a boutique
+        # without the catalogue module has no sales history rather than a
+        # traceback - the same `in _fields` guard booking uses for cancellations.
+        Event = request.env['calendar.event']
+        if 'modryn_outcome' in Event._fields:
+            for event in Event.sudo().search([
+                    ('modryn_is_booking', '=', True),
+                    ('modryn_outcome', '=', 'sold'),
+                    '|', ('name', 'ilike', like),
+                         ('modryn_customer_phone', 'ilike', like),
+            ], order='modryn_outcome_at desc', limit=60):
+                rows.append({
+                    'kind': 'booking',
+                    'id': event.id,
+                    'name': event.name or '',
+                    'phone': event.modryn_customer_phone or '',
+                    'dress': event.modryn_sale_items or '',
+                    'amount': round(event.modryn_sale_amount or 0.0),
+                    # What she actually paid, typed by the stylist who closed it.
+                    'amount_is_catalogue': False,
+                    'when': event.modryn_outcome_at,
+                    'by': event.modryn_outcome_by_id.name or '',
+                })
+
+        # The walk-ins. No typed price on this side - the floor records WHICH
+        # dress left, so the catalogue price is the best available answer and is
+        # labelled as such rather than passed off as the till.
+        Entry = request.env['modryn.queue.entry']
+        if 'modryn_outcome' in Entry._fields:
+            for entry in Entry.sudo().search([
+                    ('modryn_outcome', '=', 'sold'),
+                    '|', ('name', 'ilike', like), ('phone', 'ilike', like),
+            ], order='modryn_outcome_at desc', limit=60):
+                variant = entry.modryn_variant_id
+                size = variant.product_template_attribute_value_ids[:1].name
+                rows.append({
+                    'kind': 'walkin',
+                    'id': entry.id,
+                    'name': entry.name or '',
+                    'phone': entry.phone or '',
+                    'dress': '%s%s' % (
+                        variant.product_tmpl_id.name or '',
+                        ' · %s' % size if size else '') if variant else '',
+                    'amount': round(variant.list_price or 0.0) if variant else 0,
+                    'amount_is_catalogue': True,
+                    'when': entry.modryn_outcome_at,
+                    'by': entry.modryn_employee_id.name or '',
+                })
+
+        # Newest first across BOTH kinds, which a single query could not do.
+        # A sale with no recorded moment sorts last rather than crashing the
+        # comparison: those are old rows from before the timestamp existed.
+        rows.sort(key=lambda r: (r['when'] is not None, r['when']), reverse=True)
+
+        # And what the workshop did to it. Matched on PHONE - a name is spelled
+        # three ways by three people and a number is a number - so a bride who
+        # bought and then had it taken in reads as one story on one row.
+        Task = request.env['modryn.alteration.task'].sudo()
+        for row in rows:
+            row['alterations'] = [{
+                'what': task.note or '',
+                'pieces': ', '.join(task.piece_ids.mapped('name')),
+                'taken_in': task.create_date,
+                'finished': task.delivered_at,
+                'state': dict(task._fields['state'].selection).get(
+                    task.state, task.state),
+                'done': task.state == 'delivered',
+            } for task in Task.search(
+                self._same_person(row), order='create_date desc')]
+        return rows
+
+    @staticmethod
+    def _same_person(row):
+        """Her alteration work, by number OR by name.
+
+        Phone first, because it is this product's contact identity - but not
+        phone ONLY. The workshop takes a garment in at the counter and the
+        number typed there is whoever answered: a mother's, a second phone, or
+        nothing at all. Matching on phone alone lost every one of those, and the
+        bride reads as somebody who bought a dress and never had it touched.
+
+        The cost of the wider match is two brides who share a name being shown
+        each other's alterations. Against losing the connection entirely, on a
+        screen the owner reads rather than one that acts on the answer, that is
+        the better way to be wrong - and the number is on the card, so she can
+        see which is which.
+        """
+        terms = []
+        if row.get('phone'):
+            terms.append(('customer_phone', '=', row['phone']))
+        if row.get('name'):
+            terms.append(('customer_name', '=', row['name']))
+        if not terms:
+            # Never an empty domain: that would hand back every alteration the
+            # boutique has ever done and hang it on one bride.
+            return [('id', '=', 0)]
+        return (['|'] * (len(terms) - 1)) + terms
+
     def _render(self, error=None, draft=None, picked=None, file_error=None,
                 file_for=None, view=None, editing=None, adding=False,
                 form_errors=None, form_values=None, archived=False, whose=None):
@@ -234,6 +350,15 @@ class ModrynManagerScreen(http.Controller):
         # The owner's panels, and only when she is going to see them: building a
         # closures list, or a roles list, for a manager who will never be shown
         # either is work for nobody.
+        if view == 'sales':
+            # The whole history, searched. Nothing is drawn until she has typed
+            # two characters: a page that opens on every sale the boutique has
+            # ever made is a page nobody can read, and the question here is
+            # always about one bride.
+            q = request.params.get('q') or ''
+            context['sales_query'] = q
+            context['sales'] = self._sales(q)
+            context['sales_min'] = self.SALES_MIN_QUERY
         if view == 'worked':
             # The MANAGER's, deliberately, unlike the four panels below. She is
             # the one standing there when somebody goes home without pressing

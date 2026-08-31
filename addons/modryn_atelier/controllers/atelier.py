@@ -20,7 +20,15 @@ GROUP_MANAGER = 'modryn_staff.group_shift_manager'
 GROUP_OWNER = 'modryn_staff.group_boutique_owner'
 
 nav.register('atelier', '/atelier', _lt("Workshop"), 30, icon='fa-scissors')
-nav.register('pieces', '/manage/pieces', _lt("Pieces"), 30, 'manage', 'fa-puzzle-piece')
+# NOT in the navbar. The garment pieces are a sub-page of the workshop and the
+# workshop links to them ("Garment pieces", top of /atelier) - a row of their own
+# was a second door to a screen most people open once a year, in a bottom row
+# that had grown into a rank of them.
+#
+# Which is why the routes below ask can_view('ATELIER') and not can_view('pieces'):
+# with nothing registered, 'pieces' is a key the matrix has never heard of and
+# can_view would refuse everybody but the owner. Whoever may open the workshop
+# may maintain the pieces it works on.
 
 
 def my_open_task_rows():
@@ -295,7 +303,11 @@ class ModrynAtelier(http.Controller):
         # (open, unheld), and making it a state would put every task in two
         # places at once for every reader that groups by state.
         if target == 'queue':
-            if task.state == 'delivered':
+            # Delivered can come back now, so putting one back means undoing the
+            # handover as well as letting go of it - action_advance clears
+            # delivered_at, which is the half that would otherwise leave a job
+            # in the queue carrying a date it was handed over on.
+            if task.state == 'delivered' and not task.action_advance('intake'):
                 return self._back_to(task, _("That job cannot move there."))
             task.seamstress_id = False
             if task.state != 'intake' and not task.action_advance('intake'):
@@ -477,7 +489,7 @@ class ModrynAtelier(http.Controller):
     # ------------------------------------------------------- garment pieces
     @http.route('/manage/pieces', type='http', auth='user', website=True, sitemap=False)
     def pieces(self, error=None, **kw):
-        if not access.can_view('pieces'):
+        if not access.can_view('atelier'):
             return request.not_found()
         return request.render('modryn_atelier.manage_pieces', {
             'pieces': request.env['modryn.garment.piece'].sudo().with_context(
@@ -489,7 +501,7 @@ class ModrynAtelier(http.Controller):
     @http.route('/manage/pieces/new', type='http', auth='user', website=True,
                 methods=['POST'], csrf=True, sitemap=False)
     def pieces_new(self, **post):
-        if not access.can_view('pieces'):
+        if not access.can_view('atelier'):
             return request.not_found()
         name = (post.get('name') or '').strip()
         if not name:
@@ -504,7 +516,7 @@ class ModrynAtelier(http.Controller):
     @http.route('/manage/pieces/archive/<int:piece_id>', type='http', auth='user',
                 website=True, methods=['POST'], csrf=True, sitemap=False)
     def pieces_archive(self, piece_id, **post):
-        if not access.can_view('pieces'):
+        if not access.can_view('atelier'):
             return request.not_found()
         piece = request.env['modryn.garment.piece'].sudo().with_context(
             active_test=False).browse(piece_id).exists()
