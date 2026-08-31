@@ -147,7 +147,7 @@ bella is `miri` and on qa it is `qaowner`; `admin` exists only on the separate
 `platform` database. Odoo's own `/web/login` labels its field "Email" and there
 are no email addresses on any of these accounts — it takes the USERNAME.
 
-**Green baseline** (2026-08-31): `verify.sh` reports **405 passed, 0 failed,
+**Green baseline** (2026-08-31): `verify.sh` reports **406 passed, 0 failed,
 6 skipped**, and the browser suite **35 passed, 1 skipped** (the skip is
 `realsms.spec.js`, which needs Twilio credentials nobody should export here).
 Both are green —
@@ -177,6 +177,12 @@ happens to be first, a table that slides off a phone. All three were live and
 all three were invisible to `verify.sh`. **After any screen change, open it in a
 real browser and LOOK at it** — a screenshot pass over the pages you touched
 costs two minutes and is the only thing that catches this class.
+
+**Exit codes do not survive `wsl.exe -- bash -c '...'` from Git Bash.**
+`python3 -c "import sys; sys.exit(7)"` reports **0** that way, which made a
+checker that was correctly printing a failure look like it had passed. Put the
+commands in a **script file** and run `wsl.exe -- bash /path/script.sh` — that
+reports 7. Every `$?` reading in this file's workflow depends on it.
 
 The six failures this file used to record are gone. Five were one root cause
 (English was never installed, `scripts/build_template.sh:49`) and are fixed
