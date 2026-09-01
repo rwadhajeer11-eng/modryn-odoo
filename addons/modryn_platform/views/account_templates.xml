@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- The platform owner's own record, and the four answers she signs in
+         with. Both on one screen because they are one question — "who am I on
+         this platform" — and because the alternative was a shell script.
+
+         THREE SEPARATE FORMS, not one. They are three different decisions with
+         three different risks: correcting a phone number should not require
+         retyping a password, and a refused password must not throw away a
+         company address typed a minute earlier. Each posts on its own and
+         comes back with its own message. -->
+    <template id="platform_account" name="MODRYN platform account">
+        <t t-call="modryn_platform.platform_shell">
+            <t t-set="here" t-value="'account'"/>
+
+            <h1>My company</h1>
+            <p class="modryn_plat_lead">
+                Who you are on this platform, and how you get in.
+            </p>
+
+            <p t-if="saved" class="modryn_plat_badge mb-3">
+                <i class="fa fa-check" aria-hidden="true"/> Saved
+            </p>
+            <p t-if="error" class="modryn_plat_error mb-3" t-out="error"/>
+
+            <!-- ===================== the company ===================== -->
+            <section class="modryn_plat_panel">
+                <header class="modryn_plat_head">
+                    <h2>The company</h2>
+                    <span class="modryn_plat_sub">
+                        Yours, not a boutique's.
+                    </span>
+                </header>
+                <form action="/platform/account/company" method="post" class="row g-3">
+                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                    <div class="col-12 col-md-6">
+                        <label class="form-label" for="company_name">Company name</label>
+                        <input type="text" id="company_name" name="company_name"
+                               class="form-control" required="required"
+                               t-att-value="company['name']"/>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <label class="form-label" for="company_email">Email</label>
+                        <input type="email" id="company_email" name="company_email"
+                               class="form-control" dir="ltr"
+                               t-att-value="company['email']"/>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <label class="form-label" for="company_phone">Phone</label>
+                        <input type="tel" id="company_phone" name="company_phone"
+                               class="form-control" dir="ltr"
+                               t-att-value="company['phone']"/>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <label class="form-label" for="company_vat">Company number</label>
+                        <input type="text" id="company_vat" name="company_vat"
+                               class="form-control" dir="ltr"
+                               t-att-value="company['vat']"/>
+                    </div>
+                    <div class="col-12 col-md-8">
+                        <label class="form-label" for="company_street">Street</label>
+                        <input type="text" id="company_street" name="company_street"
+                               class="form-control" t-att-value="company['street']"/>
+                    </div>
+                    <div class="col-12 col-md-4">
+                        <label class="form-label" for="company_city">City</label>
+                        <input type="text" id="company_city" name="company_city"
+                               class="form-control" t-att-value="company['city']"/>
+                    </div>
+                    <div class="col-12">
+                        <button type="submit" class="btn_gold">Save the company</button>
+                    </div>
+                </form>
+            </section>
+
+            <!-- ==================== signing in ==================== -->
+            <section class="modryn_plat_panel">
+                <header class="modryn_plat_head">
+                    <h2>How you sign in</h2>
+                    <span class="modryn_plat_sub">
+                        Four answers are asked for at the door.
+                    </span>
+                </header>
+
+                <p class="modryn_plat_sub">
+                    Your username, and the phone number and identity number
+                    kept against this account. The last two are stored the way
+                    a password is — nothing here can show them back to you, so
+                    changing one means typing the new value, not correcting the
+                    old.
+                </p>
+
+                <form action="/platform/account/login" method="post" class="row g-3 mt-1">
+                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                    <div class="col-12 col-md-4">
+                        <label class="form-label" for="username">Username</label>
+                        <input type="text" id="username" name="username"
+                               class="form-control" required="required"
+                               autocomplete="username" t-att-value="account['login']"/>
+                    </div>
+                    <div class="col-12 col-md-4">
+                        <label class="form-label" for="factor_phone">Phone number</label>
+                        <input type="text" id="factor_phone" name="factor_phone"
+                               class="form-control" dir="ltr" autocomplete="off"
+                               t-att-placeholder="account['phone_hint']"/>
+                    </div>
+                    <div class="col-12 col-md-4">
+                        <label class="form-label" for="factor_id">ID number</label>
+                        <input type="password" id="factor_id" name="factor_id"
+                               class="form-control" dir="ltr" autocomplete="off"
+                               t-att-placeholder="account['id_hint']"/>
+                    </div>
+                    <div class="col-12">
+                        <!-- Her CURRENT password, to change any of the three
+                             above. Without it, anybody who reaches a session
+                             she left open on a shop floor could rewrite the
+                             answers that keep them out. -->
+                        <label class="form-label" for="current_password">
+                            Your password, to confirm
+                        </label>
+                        <input type="password" id="current_password" name="current_password"
+                               class="form-control" style="max-width: 22rem;"
+                               required="required" autocomplete="current-password"/>
+                    </div>
+                    <div class="col-12">
+                        <button type="submit" class="btn_gold">Save how I sign in</button>
+                    </div>
+                </form>
+            </section>
+
+            <!-- ==================== the password ==================== -->
+            <section class="modryn_plat_panel">
+                <header class="modryn_plat_head">
+                    <h2>Change the password</h2>
+                </header>
+                <form action="/platform/account/password" method="post" class="row g-3">
+                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                    <div class="col-12 col-md-4">
+                        <label class="form-label" for="old_password">Current password</label>
+                        <input type="password" id="old_password" name="old_password"
+                               class="form-control" required="required"
+                               autocomplete="current-password"/>
+                    </div>
+                    <div class="col-12 col-md-4">
+                        <label class="form-label" for="new_password">New password</label>
+                        <input type="password" id="new_password" name="new_password"
+                               class="form-control" required="required"
+                               autocomplete="new-password"/>
+                    </div>
+                    <div class="col-12 col-md-4">
+                        <label class="form-label" for="new_password2">New password again</label>
+                        <input type="password" id="new_password2" name="new_password2"
+                               class="form-control" required="required"
+                               autocomplete="new-password"/>
+                    </div>
+                    <div class="col-12">
+                        <button type="submit" class="btn_gold">Change it</button>
+                    </div>
+                </form>
+            </section>
+        </t>
+    </template>
+
+</odoo>

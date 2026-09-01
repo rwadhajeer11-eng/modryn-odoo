@@ -27,6 +27,9 @@
         <t t-call="web.frontend_layout">
             <t t-set="no_header" t-value="true"/>
             <t t-set="no_footer" t-value="true"/>
+            <!-- Named here rather than left to the template's `name`, which is
+                 an ir.ui.view varchar and cannot be translated. -->
+            <t t-set="additional_title">MODRYN Platform</t>
             <div id="wrap" class="modryn_platform_login">
                 <style>
                     .modryn_platform_login {

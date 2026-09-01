@@ -56,6 +56,22 @@ LANGUAGES = {
     'ar_001': ('arabic', '/ar'),
 }
 
+# Which half of the product to read. A boutique by default, because that is
+# where twenty-five of the twenty-nine screens are.
+#
+#   MODRYN_SWEEP_SITE=platform BASE_URL=http://platform.localtest.me:8069 #   MODRYN_PLATFORM_PHONE=… MODRYN_PLATFORM_ID=… python3 scripts/lang_sweep.py
+SITE = os.environ.get('MODRYN_SWEEP_SITE', 'boutique')
+
+# The platform owner's screens. Her door is on the list: it is the first thing
+# she meets, and a sign-in in the wrong language is the worst place to have one.
+PLATFORM_PAGES = [
+    '/platform/login',
+    '/platform/home',
+    '/platform/boutiques',
+    '/platform/plans',
+    '/platform/account',
+]
+
 # Every screen a signed-in owner can reach. Public pages first, then the ones
 # behind the login - the order the sweep reports in.
 PAGES = [
@@ -217,21 +233,34 @@ def fetch(build, path):
 
 
 def sign_in(build):
-    html = fetch(build, '/staff/login')
-    match = re.search(r'name="csrf_token"[^>]*value="([^"]+)"', html) or \
-        re.search(r'value="([^"]+)"[^>]*name="csrf_token"', html)
+    """Sign in, and prove it worked.
+
+    The platform's door asks four questions and a boutique's asks two. One
+    function, because the difference is which fields go into the POST and not
+    what signing in means.
+    """
+    path = '/platform/login' if SITE == 'platform' else '/staff/login'
+    html = fetch(build, path)
+    match = re.search(r'name="csrf_token"[^>]*value="([^"]+)"', html) or         re.search(r'value="([^"]+)"[^>]*name="csrf_token"', html)
     if not match:
         return False
-    data = urllib.parse.urlencode({
+    fields = {
         'csrf_token': match.group(1),
-        'username': USER,
+        'username': 'admin' if SITE == 'platform' else USER,
         'password': PASSWORD,
-    }).encode()
+    }
+    if SITE == 'platform':
+        fields['phone'] = os.environ.get('MODRYN_PLATFORM_PHONE', '')
+        fields['idnum'] = os.environ.get('MODRYN_PLATFORM_ID', '')
     try:
-        build.open(BASE + '/staff/login', data=data, timeout=30).read()
+        build.open(BASE + path, data=urllib.parse.urlencode(fields).encode(),
+                   timeout=30).read()
     except Exception:
         return False
-    return 'team-screen' in fetch(build, '/manage/team-screen')[:4000] or True
+    # Proved, not assumed: a sweep reporting a clean site it was never signed
+    # in to is worse than one that fails loudly.
+    landing = '/platform/home' if SITE == 'platform' else '/manage/team-screen'
+    return bool(fetch(build, landing))
 
 
 def scan(chunks, expected, allowed=()):
@@ -275,7 +304,7 @@ def main():
         if not sign_in(build):
             print("could not sign in as %s" % USER, file=sys.stderr)
             return 2
-        for path in PAGES:
+        for path in (PLATFORM_PAGES if SITE == 'platform' else PAGES):
             html = fetch(build, prefix + path)
             if not html:
                 continue

@@ -32,9 +32,75 @@ class ModrynPlatform(http.Controller):
     def _render(self, error=None):
         Type = request.env['modryn.subscription.type'].sudo()
         return request.render('modryn_platform.boutique_register', {
+            'title': _("Boutiques"),
             'shops': [s._row() for s in self._shops()],
             'types': Type.search([]),
             'error': error,
+        })
+
+    def _figures(self):
+        """The four numbers, counted rather than guessed.
+
+        An empty platform answers zero and the screen offers the door to add
+        the first shop — a dash or a blank would read as the page being broken
+        on the one day it is most likely to be opened.
+        """
+        Shop = request.env['modryn.boutique'].sudo()
+        Type = request.env['modryn.subscription.type'].sudo()
+        Feature = request.env['modryn.platform.feature'].sudo()
+        Partner = request.env['modryn.boutique.partner'].sudo()
+        return {
+            'shops': Shop.search_count([]),
+            'tiers': Type.search_count([]),
+            'features': Feature.search_count([]),
+            'partners': Partner.search_count([]),
+            # Shops on no tier at all. Named on the screen as a job to do
+            # rather than as a statistic: those are shops nobody is billing.
+            'untiered': Shop.search_count([('subscription_type_id', '=', False)]),
+        }
+
+    def _by_tier(self):
+        """Which boutiques sit on which tier, biggest first.
+
+        Only tiers that hold somebody. A list of four empty rows answers
+        nothing, and the tiers themselves are one screen away.
+        """
+        rows = []
+        for kind in request.env['modryn.subscription.type'].sudo().search([]):
+            shops = request.env['modryn.boutique'].sudo().search(
+                [('subscription_type_id', '=', kind.id)])
+            if not shops:
+                continue
+            rows.append({
+                'id': kind.id,
+                'name': kind.name or '',
+                'count': len(shops),
+                'shops': ' · '.join(shops.mapped('name')),
+            })
+        rows.sort(key=lambda r: r['count'], reverse=True)
+        return rows
+
+    @http.route('/platform/home', type='http', auth='user', website=True,
+                sitemap=False)
+    def platform_home(self, **kw):
+        if not self._is_platform_owner():
+            return request.not_found()
+        figures = self._figures()
+        # Built whole, with the count inside it. Split around a t-out it
+        # exported as "boutique(s) are on no subscription at all." with the
+        # number outside — a fragment nobody can place, since in Hebrew and
+        # Arabic the number does not sit where English puts it.
+        figures['untiered_says'] = _(
+            "%(count)s boutique(s) are on no subscription at all."
+        ) % {'count': figures['untiered']}
+        return request.render('modryn_platform.platform_home', {
+            'here': 'home',
+            # The browser tab, translated. Odoo would otherwise take it from
+            # the template's `name`, which is an ir.ui.view varchar that no
+            # .po can reach.
+            'title': _("Your platform"),
+            'figures': figures,
+            'by_tier': self._by_tier(),
         })
 
     @http.route('/platform/boutiques', type='http', auth='user', website=True,
@@ -137,6 +203,7 @@ class ModrynPlatform(http.Controller):
         Feature = request.env['modryn.platform.feature'].sudo().with_context(
             active_test=False)
         return {
+            'title': _("Subscriptions"),
             'types': Type.search([]),
             'features': Feature.search([]),
             'error': error,

@@ -9,11 +9,11 @@ _lt = LazyTranslate(__name__)
 
 GROUP_PLATFORM = 'modryn_platform.group_platform_owner'
 
-# Where the platform owner belongs the moment she is signed in. Her register,
-# not Odoo's back office: this database exists to answer one question — which
-# boutiques subscribe, and on what — and everything else Odoo puts on that
-# screen is furniture from a different product.
-LANDING = '/platform/boutiques'
+# Where the platform owner belongs the moment she is signed in. Her own home,
+# not Odoo's back office: this database exists to answer how the platform is
+# doing and who is on it, and everything else Odoo puts on that screen is
+# furniture from a different product.
+LANDING = '/platform/home'
 
 
 class ModrynPlatformAuth(http.Controller):
@@ -108,6 +108,49 @@ class ModrynPlatformAuth(http.Controller):
             request.session.logout(keep_db=True)
             return self._render(username, phone, str(self.REFUSED))
         return request.redirect(LANDING)
+
+    @http.route('/platform/lang', type='http', auth='user', website=True,
+                methods=['POST'], csrf=True, sitemap=False)
+    def platform_lang(self, lang=None, redirect=None, **post):
+        """Switch the language of the register.
+
+        Owner-gated like every other route here: a hidden form field has never
+        been a permission.
+        """
+        user = request.env.user
+        if user._is_public() or not user.has_group(GROUP_PLATFORM):
+            return request.not_found()
+        langs = request.env['res.lang'].sudo().search([])
+        target = langs.filtered(lambda l: l.code == lang)[:1]
+        if not target:
+            return request.redirect(redirect or LANDING)
+
+        # TWO writes, because "her language" is two different things. user.lang
+        # is the stored preference; a website page renders in the URL's
+        # language. Writing the preference alone changes nothing on screen —
+        # the boutiques' switch learned this the same way.
+        user.sudo().lang = target.code
+
+        path = redirect or LANDING
+        # Strip whatever language prefix the path already carries. Derived from
+        # the database's own languages rather than a hardcoded ('/en', '/ar'):
+        # switch a third on and a hardcoded list leaves its prefix in place, so
+        # the redirect lands back in the language she just left. Longest first,
+        # so a short code cannot shadow a longer one that starts with it.
+        for code in sorted(langs.mapped('url_code'), key=len, reverse=True):
+            if path == '/' + code or path.startswith('/' + code + '/'):
+                path = path[len(code) + 1:] or '/'
+                break
+        # Odoo serves the website's DEFAULT language with no prefix at all, and
+        # prefixing that one 404s.
+        default = request.env['website'].get_current_website().sudo().default_lang_id
+        if target.url_code != default.url_code:
+            path = '/' + target.url_code + (path if path.startswith('/')
+                                            else '/' + path)
+
+        response = request.redirect(path)
+        response.set_cookie('frontend_lang', target.code)
+        return response
 
     @http.route('/platform/logout', type='http', auth='public', website=True,
                 sitemap=False)

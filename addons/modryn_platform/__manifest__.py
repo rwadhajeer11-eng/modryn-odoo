@@ -28,9 +28,16 @@ a different and much larger thing — see .planning/BACKLOG.md.
         'security/platform_groups.xml',
         'security/ir.model.access.csv',
         'data/subscription_type_data.xml',
+        'views/shell_templates.xml',
         'views/platform_templates.xml',
+        'views/account_templates.xml',
         'views/login_templates.xml',
     ],
+    'assets': {
+        'web.assets_frontend': [
+            'modryn_platform/static/src/platform.scss',
+        ],
+    },
     'author': 'MODRYN',
     'license': 'LGPL-3',
 }

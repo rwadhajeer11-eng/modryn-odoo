@@ -1,0 +1,220 @@
+// MODRYN's palette, on the platform's own screens.
+//
+// Copied rather than imported, and that is the same decision this module makes
+// everywhere else: modryn_theme lives in a boutique database and this one never
+// sits beside it. The values are the product's own, from
+// modryn_theme/static/src/scss/primary_variables.scss — if they ever change
+// there, they change here too, which is the price of a module that has to be
+// installable on a database holding nothing else.
+$plat-bg:        #FDFBF7;
+$plat-surface:   #F6F0E6;
+$plat-ink:       #2B2118;
+$plat-ink-muted: #6B5D4F;
+$plat-gold:      #C9A227;
+$plat-gold-text: #6F5410;   // the only gold that may carry text (AA)
+$plat-gold-wash: #FBF5E4;
+$plat-border:    #E4DACA;
+$plat-danger:    #A03232;
+$plat-success:   #2E6B4F;
+
+.modryn_plat {
+    background: $plat-bg;
+    color: $plat-ink;
+    min-height: 100vh;
+
+    // No direction is set here. Odoo's website already puts dir on <html> from
+    // the language, and rtlcss mirrors this file for the RTL bundle — setting
+    // it again would fight both.
+
+    h1 {
+        font-size: 2rem;
+        font-weight: 300;
+        letter-spacing: .01em;
+        margin: 0 0 .25rem;
+    }
+
+    h2 {
+        font-size: 1.15rem;
+        font-weight: 600;
+        margin: 0;
+    }
+}
+
+// The bar every platform screen wears. One row, not the boutiques' two: there
+// are four screens here, and a second row of navigation for four things is a
+// row of empty space.
+.modryn_plat_nav {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    flex-wrap: wrap;
+    padding: .85rem 1.5rem;
+    background: #FFFFFF;
+    border-block-end: 1px solid $plat-border;
+
+    a { color: $plat-ink-muted; text-decoration: none; font-size: .95rem; }
+    a:hover { color: $plat-gold-text; }
+    a.is_here {
+        color: $plat-ink;
+        font-weight: 600;
+        border-block-end: 2px solid $plat-gold;
+        padding-block-end: .2rem;
+    }
+    a:focus-visible { outline: 2px solid $plat-gold; outline-offset: 3px; }
+
+    .brand_ {
+        font-family: Georgia, "Times New Roman", serif;
+        letter-spacing: .26em;
+        font-size: .95rem;
+        color: $plat-ink;
+    }
+    // Pushes everything after it to the far end, whichever end that is.
+    .spacer_ { margin-inline-start: auto; }
+}
+
+.modryn_plat_body { max-width: 1100px; margin: 0 auto; padding: 2rem 1.5rem 5rem; }
+
+.modryn_plat_lead { color: $plat-ink-muted; margin: 0 0 1.75rem; max-width: 68ch; }
+
+// A section of the screen. The boutiques' panels, and for the same reason: the
+// page reads as paper on a table rather than as boxes drawn on a form.
+.modryn_plat_panel {
+    background: #FFFFFF;
+    border: 1px solid $plat-border;
+    border-radius: 6px;
+    box-shadow: 0 1px 2px rgba(43, 33, 24, .05), 0 10px 26px rgba(43, 33, 24, .06);
+    padding: 1.35rem 1.5rem;
+    margin-block-end: 1.5rem;
+}
+
+.modryn_plat_head {
+    border-block-end: 1px solid $plat-gold;
+    padding-block-end: .6rem;
+    margin-block-end: 1.1rem;
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+// The doors on the home screen.
+.modryn_plat_tiles {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+    gap: 1rem;
+}
+
+.modryn_plat_tile {
+    display: block;
+    background: #FFFFFF;
+    border: 1px solid $plat-border;
+    border-radius: 6px;
+    padding: 1.25rem 1.35rem;
+    text-decoration: none;
+    color: $plat-ink;
+    box-shadow: 0 1px 2px rgba(43, 33, 24, .05);
+
+    .fa { color: $plat-gold-text; font-size: 1.2rem; margin-block-end: .6rem; display: block; }
+    .strong_ { display: block; font-weight: 600; margin-block-end: .2rem; }
+    .sub_ { display: block; color: $plat-ink-muted; font-size: .875rem; }
+
+    &:hover { border-color: $plat-gold; box-shadow: 0 8px 22px rgba(43, 33, 24, .09); }
+    &:focus-visible { outline: 2px solid $plat-gold; outline-offset: 3px; }
+}
+
+// Numbers worth reading at a glance.
+.modryn_plat_figures {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+    gap: 1rem;
+}
+
+.modryn_plat_figure {
+    background: $plat-gold-wash;
+    border: 1px solid $plat-border;
+    border-radius: 5px;
+    padding: .9rem 1rem;
+
+    .n_ {
+        font-size: 1.7rem;
+        font-weight: 600;
+        line-height: 1.1;
+        // Digits line up in a row of figures.
+        font-variant-numeric: tabular-nums;
+    }
+    .l_ { color: $plat-ink-muted; font-size: .85rem; }
+}
+
+.modryn_plat_sub    { color: $plat-ink-muted; font-size: .875rem; }
+.modryn_plat_strong { font-weight: 600; }
+.modryn_plat_error  { color: $plat-danger; }
+.modryn_plat_empty  { color: $plat-ink-muted; font-style: italic; }
+
+// Wide content scrolls inside its own box; the page never scrolls sideways.
+.modryn_plat_scroll { overflow-x: auto; }
+
+.modryn_plat_table {
+    width: 100%;
+    border-collapse: collapse;
+
+    th {
+        text-align: start;
+        font-weight: 600;
+        font-size: .85rem;
+        color: $plat-ink-muted;
+        border-block-end: 1px solid $plat-border;
+        padding: .5rem .6rem;
+        white-space: nowrap;
+    }
+    td {
+        border-block-end: 1px solid $plat-border;
+        padding: .7rem .6rem;
+        vertical-align: middle;
+    }
+    tr:last-child td { border-block-end: 0; }
+}
+
+.modryn_plat_badge {
+    display: inline-block;
+    font-size: .78rem;
+    padding: .15rem .55rem;
+    border-radius: 3px;
+    background: $plat-gold-wash;
+    color: $plat-gold-text;
+    border: 1px solid $plat-border;
+    white-space: nowrap;
+}
+
+// Forms, kept quiet so the gold stays on the things that matter.
+.modryn_plat {
+    label { font-size: .875rem; color: $plat-ink; margin-block-end: .25rem; }
+
+    .form-control, .form-select {
+        border-color: $plat-border;
+        &:focus {
+            border-color: $plat-gold;
+            box-shadow: 0 0 0 .18rem rgba(201, 162, 39, .18);
+        }
+    }
+
+    .btn_gold {
+        background: $plat-gold;
+        border: 0;
+        color: $plat-ink;
+        font-weight: 600;
+        padding: .5rem 1.1rem;
+        border-radius: 4px;
+        &:hover { background: darken($plat-gold, 6%); color: $plat-ink; }
+    }
+
+    .btn_quiet {
+        background: transparent;
+        border: 1px solid $plat-border;
+        color: $plat-ink;
+        padding: .35rem .8rem;
+        border-radius: 4px;
+        font-size: .875rem;
+        &:hover { border-color: $plat-gold; }
+    }
+}

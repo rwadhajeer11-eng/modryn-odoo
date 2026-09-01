@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- The shell every platform screen wears.
+         One bar, not the boutiques' two: there are four screens here, and a
+         second row of navigation for four things is a row of empty space.
+
+         Callers set `here` to their own key so the current tab is marked. A
+         page that forgets loses the underline and nothing else — the nav is
+         never the thing deciding what may be opened; each route asks
+         can-she-see-this itself. -->
+    <template id="platform_shell" name="MODRYN platform shell">
+        <t t-call="web.frontend_layout">
+            <t t-set="no_header" t-value="true"/>
+            <t t-set="no_footer" t-value="true"/>
+            <!-- The browser tab. Odoo takes it from the template's `name`,
+                 which is an ir.ui.view varchar and cannot be translated at
+                 all — so every tab on this Hebrew-and-Arabic product read
+                 English. Taken from the page's own `here` key instead, which
+                 every screen already sets to mark its nav tab.
+                 A page that arrives with a title of its own keeps it. -->
+            <t t-set="additional_title" t-value="additional_title or title"/>
+            <div id="wrap" class="modryn_plat">
+                <nav class="modryn_plat_nav">
+                    <span class="brand_">MODRYN</span>
+                    <a href="/platform/home"
+                       t-attf-class="#{'is_here' if here == 'home' else ''}">
+                        <i class="fa fa-home" aria-hidden="true"/> Home
+                    </a>
+                    <a href="/platform/boutiques"
+                       t-attf-class="#{'is_here' if here == 'boutiques' else ''}">
+                        <i class="fa fa-building-o" aria-hidden="true"/> Boutiques
+                    </a>
+                    <a href="/platform/plans"
+                       t-attf-class="#{'is_here' if here == 'plans' else ''}">
+                        <i class="fa fa-th-list" aria-hidden="true"/> Subscriptions
+                    </a>
+                    <a href="/platform/account"
+                       t-attf-class="#{'is_here' if here == 'account' else ''}">
+                        <i class="fa fa-user-o" aria-hidden="true"/> My company
+                    </a>
+
+                    <span class="spacer_"/>
+                    <t t-call="modryn_platform.platform_lang_picker"/>
+                    <a href="/platform/logout">
+                        <i class="fa fa-sign-out" aria-hidden="true"/> Sign out
+                    </a>
+                </nav>
+
+                <div class="modryn_plat_body">
+                    <t t-out="0"/>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- ======================== the home screen ======================== -->
+    <!-- What a platform owner opens the site to find out: how many shops,
+         how they are spread across the tiers, and where to go next. The
+         figures are counted here rather than guessed — an empty platform
+         says zero and offers the door to add the first shop. -->
+    <template id="platform_home" name="MODRYN platform home">
+        <t t-call="modryn_platform.platform_shell">
+            <t t-set="here" t-value="'home'"/>
+
+            <h1>Your platform</h1>
+            <p class="modryn_plat_lead">
+                Everything MODRYN runs, and who runs on it.
+            </p>
+
+            <section class="modryn_plat_panel">
+                <header class="modryn_plat_head">
+                    <h2>Where things stand</h2>
+                </header>
+                <div class="modryn_plat_figures">
+                    <div class="modryn_plat_figure">
+                        <div class="n_" t-out="figures['shops']"/>
+                        <div class="l_">Boutiques</div>
+                    </div>
+                    <div class="modryn_plat_figure">
+                        <div class="n_" t-out="figures['tiers']"/>
+                        <div class="l_">Subscription tiers</div>
+                    </div>
+                    <div class="modryn_plat_figure">
+                        <div class="n_" t-out="figures['features']"/>
+                        <div class="l_">Features you sell</div>
+                    </div>
+                    <div class="modryn_plat_figure">
+                        <div class="n_" t-out="figures['partners']"/>
+                        <div class="l_">Partners on file</div>
+                    </div>
+                </div>
+
+                <!-- Named on purpose. A count of shops with no tier is a job
+                     to do, not a statistic: those are shops nobody is billing
+                     for anything. -->
+                <p t-if="figures['untiered']" class="modryn_plat_sub mt-3 mb-0">
+                    <i class="fa fa-exclamation-triangle" aria-hidden="true"/>
+                    <t t-out="figures['untiered_says']"/>
+                    <a href="/platform/boutiques">Set them</a>
+                </p>
+            </section>
+
+            <section t-if="by_tier" class="modryn_plat_panel">
+                <header class="modryn_plat_head">
+                    <h2>Who is on what</h2>
+                </header>
+                <div class="modryn_plat_scroll">
+                    <table class="modryn_plat_table">
+                        <thead>
+                            <tr><th>Tier</th><th>Boutiques</th><th>Which</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="by_tier" t-as="row" t-key="row['id']">
+                                <td class="modryn_plat_strong" t-out="row['name']"/>
+                                <td t-out="row['count']"/>
+                                <td class="modryn_plat_sub" t-out="row['shops']"/>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section class="modryn_plat_panel">
+                <header class="modryn_plat_head">
+                    <h2>Where to go</h2>
+                </header>
+                <div class="modryn_plat_tiles">
+                    <a class="modryn_plat_tile" href="/platform/boutiques">
+                        <i class="fa fa-building-o" aria-hidden="true"/>
+                        <span class="strong_">Boutiques</span>
+                        <span class="sub_">Add a shop, change its subscription, or retire it.</span>
+                    </a>
+                    <a class="modryn_plat_tile" href="/platform/plans">
+                        <i class="fa fa-th-list" aria-hidden="true"/>
+                        <span class="strong_">Subscriptions</span>
+                        <span class="sub_">The tiers you sell and what each one includes.</span>
+                    </a>
+                    <a class="modryn_plat_tile" href="/platform/account">
+                        <i class="fa fa-user-o" aria-hidden="true"/>
+                        <span class="strong_">My company</span>
+                        <span class="sub_">Your own details, and how you sign in.</span>
+                    </a>
+                </div>
+            </section>
+        </t>
+    </template>
+
+</odoo>

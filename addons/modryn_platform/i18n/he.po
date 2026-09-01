@@ -1,0 +1,783 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-01 20:31+0000\n"
+"PO-Revision-Date: 2026-09-01 20:31+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: modryn_platform
+#. odoo-python
+#: code:addons/modryn_platform/controllers/platform.py:0
+#: model_terms:ir.ui.view,arch_db:modryn_platform.boutique_register
+#: model_terms:ir.ui.view,arch_db:modryn_platform.platform_home
+msgid "Boutiques"
+msgstr "בוטיקים"
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.boutique_register
+msgid ""
+"Every shop that subscribes to MODRYN. This is the platform's own\n"
+"                    register — it is not read out of any boutique's database, and no\n"
+"                    boutique can see it."
+msgstr ""
+"כל חנות שמנויה ל-MODRYN. זהו המרשם של הפלטפורמה עצמה — הוא לא נקרא ממסד "
+"הנתונים של אף בוטיק, ואף בוטיק לא רואה אותו."
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.boutique_register
+msgid "Add a boutique"
+msgstr "הוספת בוטיק"
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.boutique_register
+msgid "Add boutique"
+msgstr "הוספה"
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.boutique_register
+msgid "No."
+msgstr "מס'"
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.boutique_register
+msgid "Number"
+msgstr "מספר"
+
+#. module: modryn_platform
+#: model:ir.model.fields,field_description:modryn_platform.field_modryn_boutique__code
+msgid "Shop number"
+msgstr "מספר החנות"
+
+#. module: modryn_platform
+#: model:ir.model.fields,help:modryn_platform.field_modryn_boutique__code
+msgid "Four digits. How MODRYN refers to this shop."
+msgstr "ארבע ספרות. כך MODRYN מתייחסת לחנות הזו."
+
+#. module: modryn_platform
+#: model:ir.model.fields,field_description:modryn_platform.field_modryn_boutique__name
+#: model:ir.model.fields,field_description:modryn_platform.field_modryn_boutique_partner__name
+#: model:ir.model.fields,field_description:modryn_platform.field_modryn_platform_feature__name
+#: model:ir.model.fields,field_description:modryn_platform.field_modryn_subscription_type__name
+#: model_terms:ir.ui.view,arch_db:modryn_platform.boutique_register
+msgid "Name"
+msgstr "שם"
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.boutique_register
+msgid "Where"
+msgstr "היכן"
+
+#. module: modryn_platform
+#: model:ir.model.fields,field_description:modryn_platform.field_modryn_boutique__city
+#: model_terms:ir.ui.view,arch_db:modryn_platform.boutique_register
+#: model_terms:ir.ui.view,arch_db:modryn_platform.platform_account
+msgid "City"
+msgstr "עיר"
+
+#. module: modryn_platform
+#: model:ir.model.fields,field_description:modryn_platform.field_modryn_boutique__street
+#: model_terms:ir.ui.view,arch_db:modryn_platform.boutique_register
+#: model_terms:ir.ui.view,arch_db:modryn_platform.platform_account
+msgid "Street"
+msgstr "רחוב"
+
+#. module: modryn_platform
+#: model:ir.model.fields,field_description:modryn_platform.field_modryn_boutique__slug
+#: model_terms:ir.ui.view,arch_db:modryn_platform.boutique_register
+msgid "Subdomain"
+msgstr "תת-דומיין"
+
+#. module: modryn_platform
+#: model:ir.model.fields,help:modryn_platform.field_modryn_boutique__slug
+msgid "The tenant's hostname label, e.g. 'bella' for bella.modryn.co.il."
+msgstr "תווית שם המארח של הדייר, למשל 'bella' עבור bella.modryn.co.il."
+
+#. module: modryn_platform
+#: model:ir.model.fields,field_description:modryn_platform.field_modryn_boutique__partner_ids
+#: model_terms:ir.ui.view,arch_db:modryn_platform.boutique_register
+msgid "Partners"
+msgstr "שותפות"
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.boutique_register
+msgid "Partner {{0}} name"
+msgstr "שם שותפה {{0}}"
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.boutique_register
+msgid "Partner {{0}} phone"
+msgstr "טלפון שותפה {{0}}"
+
+#. module: modryn_platform
+#: model:ir.model.fields,field_description:modryn_platform.field_modryn_boutique_partner__phone
+#: model_terms:ir.ui.view,arch_db:modryn_platform.platform_account
+msgid "Phone"
+msgstr "טלפון"
+
+#. module: modryn_platform
+#: model:ir.model.fields,field_description:modryn_platform.field_modryn_boutique__subscription_type_id
+#: model_terms:ir.ui.view,arch_db:modryn_platform.boutique_register
+msgid "Subscription"
+msgstr "מנוי"
+
+#. module: modryn_platform
+#: model:ir.model,name:modryn_platform.model_modryn_subscription_type
+msgid "Subscription type"
+msgstr "סוג המנוי"
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.boutique_register
+#: model_terms:ir.ui.view,arch_db:modryn_platform.plans
+msgid "Save"
+msgstr "שמירה"
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.boutique_register
+#: model_terms:ir.ui.view,arch_db:modryn_platform.plans
+msgid "Archive"
+msgstr "העברה לארכיון"
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.boutique_register
+#: model_terms:ir.ui.view,arch_db:modryn_platform.plans
+msgid "Restore"
+msgstr "שחזור"
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.boutique_register
+msgid "No boutiques yet. Add the first one above."
+msgstr "עדיין אין בוטיקים. הוסיפי את הראשון למעלה."
+
+#. module: modryn_platform
+#: model:ir.model,name:modryn_platform.model_modryn_boutique
+msgid "A subscribing boutique"
+msgstr "בוטיק מנוי"
+
+#. module: modryn_platform
+#: model:ir.model,name:modryn_platform.model_modryn_boutique_partner
+msgid "A boutique partner"
+msgstr "שותפה בבוטיק"
+
+#. module: modryn_platform
+#: model:ir.model.fields,field_description:modryn_platform.field_modryn_boutique_partner__boutique_id
+msgid "Boutique"
+msgstr "בוטיק"
+
+#. module: modryn_platform
+#. odoo-python
+#: code:addons/modryn_platform/controllers/platform.py:0
+#: model_terms:ir.ui.view,arch_db:modryn_platform.plans
+msgid "Subscriptions"
+msgstr "מנויים"
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.boutique_register
+msgid "Subscriptions →"
+msgstr "מנויים ←"
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.plans
+msgid "← Boutiques"
+msgstr "← בוטיקים"
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.plans
+msgid "Features"
+msgstr "יכולות"
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.plans
+msgid "Feature name"
+msgstr "שם היכולת"
+
+#. module: modryn_platform
+#: model:ir.model.fields,field_description:modryn_platform.field_modryn_platform_feature__code
+msgid "Code"
+msgstr "קוד"
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.plans
+msgid "code (optional)"
+msgstr "קוד (לא חובה)"
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.plans
+msgid "What it covers"
+msgstr "מה זה כולל"
+
+#. module: modryn_platform
+#: model:ir.model.fields,help:modryn_platform.field_modryn_platform_feature__note
+msgid "What this covers, in your words."
+msgstr "מה זה כולל, במילים שלך."
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.plans
+msgid "Add"
+msgstr "הוספה"
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.plans
+msgid "No features yet. Add the first one above, then tick it onto a tier."
+msgstr "עדיין אין יכולות. הוסיפי את הראשונה למעלה, ואז סמני אותה במסלול."
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.plans
+msgid "Tiers"
+msgstr "מסלולים"
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.plans
+msgid "Tier name"
+msgstr "שם המסלול"
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.plans
+msgid "Note (optional)"
+msgstr "הערה (לא חובה)"
+
+#. module: modryn_platform
+#: model:ir.model.fields,field_description:modryn_platform.field_modryn_boutique__note
+#: model:ir.model.fields,field_description:modryn_platform.field_modryn_platform_feature__note
+#: model:ir.model.fields,field_description:modryn_platform.field_modryn_subscription_type__note
+msgid "Note"
+msgstr "הערה"
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.plans
+msgid "Add tier"
+msgstr "הוספת מסלול"
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.plans
+msgid "Archive tier"
+msgstr "מסלול לארכיון"
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.plans
+msgid "Restore tier"
+msgstr "שחזור מסלול"
+
+#. module: modryn_platform
+#: model:ir.model.fields,field_description:modryn_platform.field_modryn_subscription_type__feature_ids
+msgid "Includes"
+msgstr "כולל"
+
+#. module: modryn_platform
+#: model:ir.model.fields,help:modryn_platform.field_modryn_subscription_type__note
+msgid "What this tier includes. Shown only to the platform owner."
+msgstr "מה המסלול הזה כולל. מוצג רק לבעלת הפלטפורמה."
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.plans
+msgid "Add a feature above before ticking one on here."
+msgstr "הוסיפי יכולת למעלה לפני שמסמנים כאן."
+
+#. module: modryn_platform
+#: model:ir.model,name:modryn_platform.model_modryn_platform_feature
+msgid "A feature a subscription can include"
+msgstr "יכולת שמנוי יכול לכלול"
+
+#. module: modryn_platform
+#: model:modryn.subscription.type,name:modryn_platform.subscription_basic
+msgid "Basic"
+msgstr "בסיסי"
+
+#. module: modryn_platform
+#: model:modryn.subscription.type,name:modryn_platform.subscription_standard
+msgid "Standard"
+msgstr "סטנדרטי"
+
+#. module: modryn_platform
+#: model:modryn.subscription.type,name:modryn_platform.subscription_premium
+msgid "Premium"
+msgstr "פרימיום"
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.platform_login
+msgid "Platform"
+msgstr "פלטפורמה"
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.login_username_not_email
+#: model_terms:ir.ui.view,arch_db:modryn_platform.platform_account
+#: model_terms:ir.ui.view,arch_db:modryn_platform.platform_login
+msgid "Username"
+msgstr "שם משתמש"
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.login_username_not_email
+msgid "Enter your username"
+msgstr "הזיני שם משתמש"
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.platform_account
+#: model_terms:ir.ui.view,arch_db:modryn_platform.platform_login
+msgid "Phone number"
+msgstr "מספר טלפון"
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.platform_account
+#: model_terms:ir.ui.view,arch_db:modryn_platform.platform_login
+msgid "ID number"
+msgstr "מספר תעודת זהות"
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.platform_login
+msgid "Password"
+msgstr "סיסמה"
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.platform_login
+msgid "Sign in"
+msgstr "כניסה"
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.boutique_register
+#: model_terms:ir.ui.view,arch_db:modryn_platform.plans
+msgid "Sign out"
+msgstr "יציאה"
+
+#. module: modryn_platform
+#. odoo-python
+#: code:addons/modryn_platform/controllers/auth.py:0
+msgid "Something is wrong. Check what you entered and try again."
+msgstr "משהו לא בסדר. בדקי את מה שהזנת ונסי שוב."
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.platform_lang_picker
+msgid "Language"
+msgstr "שפה"
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.platform_lang_picker
+msgid "Apply language"
+msgstr "החלת השפה"
+
+#. module: modryn_platform
+#. odoo-python
+#: code:addons/modryn_platform/controllers/platform.py:0
+msgid "Please enter the shop's name"
+msgstr "נא להזין את שם החנות"
+
+#. module: modryn_platform
+#. odoo-python
+#: code:addons/modryn_platform/controllers/platform.py:0
+msgid "Please name the feature"
+msgstr "נא לתת שם ליכולת"
+
+#. module: modryn_platform
+#. odoo-python
+#: code:addons/modryn_platform/controllers/platform.py:0
+msgid "Please name the plan"
+msgstr "נא לתת שם למסלול"
+
+#. module: modryn_platform
+#. odoo-python
+#: code:addons/modryn_platform/controllers/platform.py:0
+msgid "A shop number is exactly four digits"
+msgstr "מספר חנות הוא ארבע ספרות בדיוק"
+
+#. module: modryn_platform
+#. odoo-python
+#: code:addons/modryn_platform/models/boutique.py:0
+msgid "A shop number is exactly four digits."
+msgstr "מספר חנות הוא ארבע ספרות בדיוק."
+
+#. module: modryn_platform
+#. odoo-python
+#: code:addons/modryn_platform/controllers/platform.py:0
+msgid "That shop number is already taken"
+msgstr "מספר החנות הזה כבר תפוס"
+
+#. module: modryn_platform
+#: model:ir.model.constraint,message:modryn_platform.constraint_modryn_boutique_code_uniq
+msgid "That shop number is already taken."
+msgstr "מספר החנות הזה כבר תפוס."
+
+#. module: modryn_platform
+#. odoo-python
+#: code:addons/modryn_platform/controllers/platform.py:0
+msgid "That feature already exists"
+msgstr "היכולת הזו כבר קיימת"
+
+#. module: modryn_platform
+#. odoo-python
+#: code:addons/modryn_platform/models/feature.py:0
+msgid "That feature already exists."
+msgstr "היכולת הזו כבר קיימת."
+
+#. module: modryn_platform
+#. odoo-python
+#: code:addons/modryn_platform/models/feature.py:0
+msgid "That feature code is already used."
+msgstr "קוד היכולת הזה כבר בשימוש."
+
+#. module: modryn_platform
+#. odoo-python
+#: code:addons/modryn_platform/controllers/platform.py:0
+msgid "That subscription type already exists"
+msgstr "סוג המנוי הזה כבר קיים"
+
+#. module: modryn_platform
+#. odoo-python
+#: code:addons/modryn_platform/models/subscription_type.py:0
+msgid "That subscription type already exists."
+msgstr "סוג המנוי הזה כבר קיים."
+
+#. module: modryn_platform
+#. odoo-python
+#: code:addons/modryn_platform/controllers/platform.py:0
+msgid "Those details aren't valid"
+msgstr "הפרטים האלה אינם תקינים"
+
+#. module: modryn_platform
+#. odoo-python
+#: code:addons/modryn_platform/models/boutique.py:0
+msgid "A shop can list at most %d partners."
+msgstr "חנות יכולה לרשום לכל היותר %d שותפות."
+
+#. module: modryn_platform
+#: model:res.groups.privilege,name:modryn_platform.privilege_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.platform_login
+msgid "MODRYN Platform"
+msgstr "MODRYN פלטפורמה"
+
+#. module: modryn_platform
+#: model:res.groups,name:modryn_platform.group_platform_owner
+msgid "Platform owner"
+msgstr "בעלת הפלטפורמה"
+
+#. module: modryn_platform
+#: model:res.groups,comment:modryn_platform.group_platform_owner
+msgid "Sees the register of subscribing boutiques."
+msgstr "רואה את מרשם הבוטיקים המנויים."
+
+#. module: modryn_platform
+#: model:ir.model.fields,field_description:modryn_platform.field_res_users__modryn_platform_phone
+msgid "Platform phone (hashed)"
+msgstr "טלפון הפלטפורמה (מוצפן)"
+
+#. module: modryn_platform
+#: model:ir.model.fields,field_description:modryn_platform.field_res_users__modryn_platform_idnum
+msgid "Platform ID number (hashed)"
+msgstr "תעודת זהות של הפלטפורמה (מוצפן)"
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.plans
+msgid ""
+"The tiers you sell, and what each one includes. Add a feature\n"
+"                    once and tick it on as many tiers as it belongs to."
+msgstr ""
+"המסלולים שאת מוכרת, ומה כל אחד כולל. הוסיפי יכולת פעם אחת וסמני אותה בכל "
+"המסלולים שהיא שייכת אליהם."
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.platform_shell
+msgid "<span class=\"brand_\">MODRYN</span>"
+msgstr "<span class=\"brand_\">MODRYN</span>"
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.platform_shell
+msgid "<i class=\"fa fa-home\" aria-hidden=\"true\"/> Home"
+msgstr "<i class=\"fa fa-home\" aria-hidden=\"true\"/> בית"
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.platform_shell
+msgid "<i class=\"fa fa-building-o\" aria-hidden=\"true\"/> Boutiques"
+msgstr "<i class=\"fa fa-building-o\" aria-hidden=\"true\"/> בוטיקים"
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.platform_shell
+msgid "<i class=\"fa fa-th-list\" aria-hidden=\"true\"/> Subscriptions"
+msgstr "<i class=\"fa fa-th-list\" aria-hidden=\"true\"/> מנויים"
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.platform_shell
+msgid "<i class=\"fa fa-user-o\" aria-hidden=\"true\"/> My company"
+msgstr "<i class=\"fa fa-user-o\" aria-hidden=\"true\"/> החברה שלי"
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.platform_shell
+msgid "<i class=\"fa fa-sign-out\" aria-hidden=\"true\"/> Sign out"
+msgstr "<i class=\"fa fa-sign-out\" aria-hidden=\"true\"/> יציאה"
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.platform_account
+msgid "<i class=\"fa fa-check\" aria-hidden=\"true\"/> Saved"
+msgstr "<i class=\"fa fa-check\" aria-hidden=\"true\"/> נשמר"
+
+#. module: modryn_platform
+#. odoo-python
+#: code:addons/modryn_platform/controllers/platform.py:0
+#: model_terms:ir.ui.view,arch_db:modryn_platform.platform_home
+msgid "Your platform"
+msgstr "הפלטפורמה שלך"
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.platform_home
+msgid "Everything MODRYN runs, and who runs on it."
+msgstr "כל מה ש-MODRYN מפעילה, ומי פועלת עליה."
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.platform_home
+msgid "Where things stand"
+msgstr "איפה הדברים עומדים"
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.platform_home
+msgid "Subscription tiers"
+msgstr "מסלולי מנוי"
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.platform_home
+msgid "Features you sell"
+msgstr "יכולות שאת מוכרת"
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.platform_home
+msgid "Partners on file"
+msgstr "שותפות רשומות"
+
+#. module: modryn_platform
+#. odoo-python
+#: code:addons/modryn_platform/controllers/platform.py:0
+msgid "%(count)s boutique(s) are on no subscription at all."
+msgstr "%(count)s בוטיקים אינם על שום מנוי."
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.platform_home
+msgid "Set them"
+msgstr "הגדרת מנוי"
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.platform_home
+msgid "Who is on what"
+msgstr "מי על מה"
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.platform_home
+msgid "Tier"
+msgstr "מסלול"
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.platform_home
+msgid "Which"
+msgstr "אילו"
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.platform_home
+msgid "Where to go"
+msgstr "לאן ממשיכים"
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.platform_home
+msgid ""
+"<i class=\"fa fa-building-o\" aria-hidden=\"true\"/>\n"
+"                        <span class=\"strong_\">Boutiques</span>\n"
+"                        <span class=\"sub_\">Add a shop, change its subscription, or retire it.</span>"
+msgstr ""
+"<i class=\"fa fa-building-o\" aria-hidden=\"true\"/>\n"
+"                        <span class=\"strong_\">בוטיקים</span>\n"
+"                        <span class=\"sub_\">הוספת חנות, שינוי המנוי שלה, או הוצאתה לגמלאות.</span>"
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.platform_home
+msgid ""
+"<i class=\"fa fa-th-list\" aria-hidden=\"true\"/>\n"
+"                        <span class=\"strong_\">Subscriptions</span>\n"
+"                        <span class=\"sub_\">The tiers you sell and what each one includes.</span>"
+msgstr ""
+"<i class=\"fa fa-th-list\" aria-hidden=\"true\"/>\n"
+"                        <span class=\"strong_\">מנויים</span>\n"
+"                        <span class=\"sub_\">המסלולים שאת מוכרת ומה כל אחד כולל.</span>"
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.platform_home
+msgid ""
+"<i class=\"fa fa-user-o\" aria-hidden=\"true\"/>\n"
+"                        <span class=\"strong_\">My company</span>\n"
+"                        <span class=\"sub_\">Your own details, and how you sign in.</span>"
+msgstr ""
+"<i class=\"fa fa-user-o\" aria-hidden=\"true\"/>\n"
+"                        <span class=\"strong_\">החברה שלי</span>\n"
+"                        <span class=\"sub_\">הפרטים שלך, ואיך את נכנסת.</span>"
+
+#. module: modryn_platform
+#. odoo-python
+#: code:addons/modryn_platform/controllers/account.py:0
+#: model_terms:ir.ui.view,arch_db:modryn_platform.platform_account
+msgid "My company"
+msgstr "החברה שלי"
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.platform_account
+msgid "Who you are on this platform, and how you get in."
+msgstr "מי את בפלטפורמה הזו, ואיך את נכנסת אליה."
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.platform_account
+msgid "The company"
+msgstr "החברה"
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.platform_account
+msgid ""
+"<span class=\"modryn_plat_sub\">\n"
+"                        Yours, not a boutique's.\n"
+"                    </span>"
+msgstr ""
+"<span class=\"modryn_plat_sub\">\n"
+"                        שלך, לא של בוטיק.\n"
+"                    </span>"
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.platform_account
+msgid "Company name"
+msgstr "שם החברה"
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.platform_account
+msgid "Company number"
+msgstr "ח.פ. / מספר חברה"
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.platform_account
+msgid "Email"
+msgstr "אימייל"
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.platform_account
+msgid "Save the company"
+msgstr "שמירת החברה"
+
+#. module: modryn_platform
+#. odoo-python
+#: code:addons/modryn_platform/controllers/account.py:0
+msgid "The company needs a name."
+msgstr "לחברה נדרש שם."
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.platform_account
+msgid "How you sign in"
+msgstr "איך את נכנסת"
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.platform_account
+msgid ""
+"<span class=\"modryn_plat_sub\">\n"
+"                        Four answers are asked for at the door.\n"
+"                    </span>"
+msgstr ""
+"<span class=\"modryn_plat_sub\">\n"
+"                        ארבע תשובות נדרשות בכניסה.\n"
+"                    </span>"
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.platform_account
+msgid ""
+"Your username, and the phone number and identity number\n"
+"                    kept against this account. The last two are stored the way\n"
+"                    a password is — nothing here can show them back to you, so\n"
+"                    changing one means typing the new value, not correcting the\n"
+"                    old."
+msgstr ""
+"שם המשתמש שלך, ומספר הטלפון ותעודת הזהות השמורים מול החשבון הזה. השניים "
+"האחרונים נשמרים כמו סיסמה — שום דבר כאן לא יכול להציג אותם בחזרה, ולכן שינוי"
+" אחד מהם פירושו הקלדת הערך החדש, לא תיקון הישן."
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.platform_account
+msgid "Your password, to confirm"
+msgstr "הסיסמה שלך, לאישור"
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.platform_account
+msgid "Save how I sign in"
+msgstr "שמירת אופן הכניסה"
+
+#. module: modryn_platform
+#. odoo-python
+#: code:addons/modryn_platform/controllers/account.py:0
+msgid "That password is not right."
+msgstr "הסיסמה אינה נכונה."
+
+#. module: modryn_platform
+#. odoo-python
+#: code:addons/modryn_platform/controllers/account.py:0
+msgid "You need a username."
+msgstr "נדרש שם משתמש."
+
+#. module: modryn_platform
+#. odoo-python
+#: code:addons/modryn_platform/controllers/account.py:0
+msgid "That username is taken."
+msgstr "שם המשתמש הזה תפוס."
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.platform_account
+msgid "Change the password"
+msgstr "שינוי הסיסמה"
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.platform_account
+msgid "Current password"
+msgstr "הסיסמה הנוכחית"
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.platform_account
+msgid "New password"
+msgstr "סיסמה חדשה"
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.platform_account
+msgid "New password again"
+msgstr "סיסמה חדשה שוב"
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.platform_account
+msgid "Change it"
+msgstr "שינוי"
+
+#. module: modryn_platform
+#. odoo-python
+#: code:addons/modryn_platform/controllers/account.py:0
+msgid "The two new passwords are not the same."
+msgstr "שתי הסיסמאות החדשות אינן זהות."
+
+#. module: modryn_platform
+#. odoo-python
+#: code:addons/modryn_platform/controllers/account.py:0
+msgid "A password needs at least %s characters."
+msgstr "סיסמה צריכה לפחות %s תווים."
+
+#. module: modryn_platform
+#: model:ir.model.fields,help:modryn_platform.field_modryn_platform_feature__code
+msgid ""
+"Optional short name for the product to check against, e.g. 'workshop'. Never"
+" shown to a boutique."
+msgstr ""
+"שם קצר אופציונלי שהמוצר בודק מולו, למשל 'workshop'. לעולם לא מוצג לבוטיק."
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.boutique_register
+msgid "<span class=\"text-muted\">Partners</span>"
+msgstr "<span class=\"text-muted\">שותפות</span>"
+
+#. module: modryn_platform
+#. odoo-python
+#: code:addons/modryn_platform/controllers/account.py:0
+msgid "Set — type to replace"
+msgstr "מוגדר — הקלידי כדי להחליף"
+
+#. module: modryn_platform
+#. odoo-python
+#: code:addons/modryn_platform/controllers/account.py:0
+msgid "Not set yet"
+msgstr "עדיין לא הוגדר"
