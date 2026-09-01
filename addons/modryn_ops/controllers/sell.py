@@ -1,0 +1,204 @@
+from odoo import _, http
+from odoo.http import request
+from odoo.tools.translate import LazyTranslate
+
+from odoo.addons.modryn_staff import nav
+from odoo.addons.modryn_staff.controllers import access
+
+_lt = LazyTranslate(__name__)
+
+# Anyone who serves a customer can take her money. The till is not a manager's
+# screen: on a Saturday the person standing with the bride is whoever is free,
+# and a shop where only two people can complete a sale queues at the counter.
+# The owner's controls live on HER screen, not on this one.
+nav.register('sell', '/sell', _lt("Sell"), 8, icon='fa-shopping-bag')
+
+
+class ModrynSell(http.Controller):
+    """The till.
+
+    Everything a bridal sale actually is, on one screen: who bought it, what
+    went in the bag, what it came to, what was taken off and why, and who
+    altered it. Before this the answer to all of that was a price typed into a
+    field on an appointment.
+
+    ONE FORM AND ONE SAVE, rather than a draft that fills up line by line. A
+    sale is finished at a counter with somebody waiting; a half-written one
+    sitting in the database is a thing to find and clean up later, and two
+    people sharing a till would find each other's.
+    """
+
+    # The catalogue, flattened for the search box. Read fresh on each GET: the
+    # rail changes as dresses sell, and a cached list sells one twice.
+    def _rail(self):
+        Template = request.env['product.template']
+        has_serial = 'modryn_serial' in Template._fields
+        has_kind = 'modryn_type_id' in Template._fields
+        has_accessory = 'modryn_is_accessory' in Template._fields
+        rows = []
+        for variant in request.env['product.product'].sudo().search(
+                [('product_tmpl_id.is_published', '=', True)]):
+            tmpl = variant.product_tmpl_id
+            size = variant.product_template_attribute_value_ids[:1].name
+            rows.append({
+                'id': variant.id,
+                'label': '%s%s' % (tmpl.name or '',
+                                   ' · %s' % size if size else ''),
+                'name': tmpl.name or '',
+                'serial': (tmpl.modryn_serial or '') if has_serial else '',
+                'kind': (tmpl.modryn_type_id.name or '') if has_kind else '',
+                # Odoo's own field. A scanner types it and presses Enter, which
+                # is why the box treats an exact barcode match as a choice
+                # rather than as one more thing to click.
+                'barcode': variant.barcode or '',
+                'price': round(variant.list_price or 0.0),
+                'accessory': bool(tmpl.modryn_is_accessory) if has_accessory
+                             else False,
+                'stock': variant.modryn_stock
+                         if 'modryn_stock' in variant._fields else 0,
+            })
+        return rows
+
+    def _me(self):
+        user = request.env.user
+        if user._is_public():
+            return None
+        return request.env['hr.employee'].sudo().search(
+            [('user_id', '=', user.id)], limit=1)
+
+    def _context(self, error=None, values=None):
+        return {
+            'rail': self._rail(),
+            'staff': request.env['hr.employee'].sudo().search(
+                [], order='name'),
+            'error': error,
+            # What she typed, handed back so a refusal never costs her the
+            # form: a counter is the worst place to retype a bride's number.
+            'values': values or {},
+            'active_tab': 'sell',
+        }
+
+    @http.route('/sell', type='http', auth='user', website=True,
+                methods=['GET'], sitemap=False)
+    def sell_form(self, saved=None, **kw):
+        if not access.can_view('sell'):
+            return request.not_found()
+        context = self._context()
+        context['saved'] = request.env['modryn.sale'].sudo().browse(
+            int(saved)) if saved and saved.isdigit() else None
+        if context['saved'] and not context['saved'].exists():
+            context['saved'] = None
+        # Built whole, with the numbers inside it. Split across the markup it
+        # exported as the fragments "item(s) ·" and "off", which a translator
+        # cannot order - in Hebrew and Arabic the count, the currency and the
+        # word all move.
+        if context['saved']:
+            sale = context['saved']
+            paid = '₪{:,}'.format(int(round(sale.total)))
+            if sale.discount_amount:
+                context['saved_line'] = _(
+                    "%(count)s item(s) · %(paid)s · %(discount)s off"
+                ) % {'count': len(sale.line_ids), 'paid': paid,
+                     'discount': sale.modryn_discount_sentence()}
+            else:
+                context['saved_line'] = _("%(count)s item(s) · %(paid)s") % {
+                    'count': len(sale.line_ids), 'paid': paid}
+        return request.render('modryn_ops.sell_screen', context)
+
+    @http.route('/sell', type='http', auth='user', website=True,
+                methods=['POST'], csrf=True, sitemap=False)
+    def sell_submit(self, **post):
+        if not access.can_view('sell'):
+            return request.not_found()
+        me = self._me()
+        if not me:
+            return request.not_found()
+
+        name = (post.get('customer_name') or '').strip()
+        phone = (post.get('customer_phone') or '').strip()
+
+        # The lines arrive as three parallel lists, one entry per row the
+        # screen built. Read together and zipped, because a row is only a row
+        # when it has all three.
+        variants = request.httprequest.form.getlist('line_variant')
+        labels = request.httprequest.form.getlist('line_label')
+        prices = request.httprequest.form.getlist('line_price')
+        lines = []
+        for index, label in enumerate(labels):
+            label = (label or '').strip()
+            if not label:
+                continue
+            try:
+                price = float((prices[index] if index < len(prices) else '0')
+                              or 0)
+            except (TypeError, ValueError):
+                price = 0.0
+            raw = variants[index] if index < len(variants) else ''
+            lines.append({
+                'variant_id': int(raw) if (raw or '').isdigit() else False,
+                'description': label,
+                # Never negative. A line that gives money back is a refund, and
+                # a refund is a different act on a different screen.
+                'price': max(price, 0.0),
+            })
+
+        kind = post.get('discount_kind') or 'none'
+        if kind not in ('none', 'percent', 'amount'):
+            kind = 'none'
+        try:
+            discount = float(post.get('discount_value') or 0)
+        except (TypeError, ValueError):
+            discount = 0.0
+        reason = (post.get('discount_reason') or '').strip()
+
+        altered = bool(post.get('altered'))
+        alteration_note = (post.get('alteration_note') or '').strip()
+        altered_by_raw = post.get('alteration_by_id') or ''
+
+        def refuse(message):
+            return request.render('modryn_ops.sell_screen', self._context(
+                error=message, values=dict(post, lines=lines)))
+
+        if not name:
+            return refuse(_("Please enter the customer's name."))
+        if not lines:
+            return refuse(_("Add at least one thing she is buying."))
+        # A discount with no reason is the row the owner would have to chase
+        # somebody about, so the form asks for it here rather than letting the
+        # tracking screen show a blank.
+        if kind != 'none' and discount > 0 and not reason:
+            return refuse(_("Say why the discount was given."))
+        if kind != 'none' and discount <= 0:
+            return refuse(_("Enter how much comes off."))
+        if altered and not alteration_note:
+            return refuse(_("Say what was altered."))
+
+        sale = request.env['modryn.sale'].sudo().create({
+            'customer_name': name,
+            'customer_phone': phone,
+            'employee_id': me.id,
+            'altered': altered,
+            'alteration_note': alteration_note if altered else False,
+            'alteration_by_id': int(altered_by_raw)
+                                if altered and altered_by_raw.isdigit()
+                                else False,
+            'discount_kind': kind,
+            'discount_value': discount if kind != 'none' else 0.0,
+            'discount_reason': reason if kind != 'none' else False,
+            'line_ids': [(0, 0, line) for line in lines],
+        })
+        sale.modryn_take_stock()
+
+        # A discount is money, so it goes in the trail the owner reads. Logged
+        # here and not in the model's create, because this is the only door a
+        # discount comes through and the audit row wants the ACTOR — env.user,
+        # which sudo() preserves and a cron would not have.
+        if sale.discount_amount and 'modryn.audit.log' in request.env:
+            request.env['modryn.audit.log'].modryn_log(
+                record=sale,
+                label="Discount",
+                field='discount_amount',
+                old='{:,}'.format(int(round(sale.subtotal))),
+                new='{:,}'.format(int(round(sale.total))),
+            )
+        return request.redirect('/sell?saved=%s' % sale.id)

@@ -36,6 +36,7 @@ the hooks this module defines.
         'views/ops_templates.xml',
         'views/dress_templates.xml',
         'views/shop_templates.xml',
+        'views/sell_templates.xml',
     ],
     # Wired to BOTH lifecycle paths: cloned tenants INSTALL (hooks), the
     # hand-built ones upgrade (migrations/) — see schema_guard.py.
@@ -46,6 +47,7 @@ the hooks this module defines.
         # same shape as modryn_staff's home.js, which also rides this bundle.
         'web.assets_frontend': [
             'modryn_ops/static/src/dresses.js',
+            'modryn_ops/static/src/sell.js',
         ],
     },
     'author': 'MODRYN',

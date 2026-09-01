@@ -9,7 +9,12 @@ GROUP_OWNER = 'modryn_staff.group_boutique_owner'
 # What a brand-new role may open until the owner says otherwise. Deliberately
 # NOT the floor board — the product decision this build implements is that
 # plain staff live on their own page unless the owner grants more.
-DEFAULT_PAGE_KEYS = ('roster', 'checkin')
+# 'sell' is here and 'floor' is not, and the difference is deliberate. Watching
+# the board is a job the owner hands out; taking a bride's money is the job a
+# saleswoman was hired for, and a new hire who cannot finish a sale until
+# somebody opens a matrix is a queue at the counter. Still a tick like every
+# other page - an owner who wants two people on the till unticks the rest.
+DEFAULT_PAGE_KEYS = ('roster', 'checkin', 'sell')
 
 # Pages the matrix may never take away. Kept as a tuple rather than repeated
 # literals so modryn_can_view and the owner's tick-list cannot disagree - and

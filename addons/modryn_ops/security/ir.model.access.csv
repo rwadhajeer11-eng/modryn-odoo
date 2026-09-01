@@ -6,3 +6,7 @@ access_task_template_owner,modryn.task.template.owner,model_modryn_task_template
 access_task_template_internal,modryn.task.template.internal,model_modryn_task_template,base.group_user,1,0,0,0
 access_dress_type_owner,modryn.dress.type.owner,model_modryn_dress_type,modryn_staff.group_boutique_owner,1,1,1,0
 access_dress_type_internal,modryn.dress.type.internal,model_modryn_dress_type,base.group_user,1,0,0,0
+access_sale_internal,modryn.sale.internal,model_modryn_sale,base.group_user,1,1,1,0
+access_sale_owner,modryn.sale.owner,model_modryn_sale,modryn_staff.group_boutique_owner,1,1,1,1
+access_sale_line_internal,modryn.sale.line.internal,model_modryn_sale_line,base.group_user,1,1,1,1
+access_sale_line_owner,modryn.sale.line.owner,model_modryn_sale_line,modryn_staff.group_boutique_owner,1,1,1,1

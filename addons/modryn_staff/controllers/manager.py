@@ -11,12 +11,12 @@ controller here follows; an announcement reaches every phone in the shop, and
 that is not a thing a page grant should be able to hand out.
 """
 
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import pytz
 import werkzeug.urls
 
-from odoo import _, http
+from odoo import _, fields, http
 from odoo.http import content_disposition, request
 from odoo.tools.translate import LazyTranslate
 
@@ -141,7 +141,7 @@ class ModrynManagerScreen(http.Controller):
     # 'hours' is the boutique's OPENING hours; 'worked' is who stood in it.
     # Two different questions that both want the word - named apart here so a
     # link can never quietly open the other one.
-    VIEWS = ('announce', 'team', 'hours', 'rooms', 'worked', 'sales')
+    VIEWS = ('announce', 'team', 'hours', 'rooms', 'worked', 'sales', 'track')
 
     def _account_form(self, editing=None, adding=False, errors=None, values=None):
         """The add/edit form's context, or nothing at all.
@@ -227,6 +227,79 @@ class ModrynManagerScreen(http.Controller):
     # use. One letter matches most of the shop and answers nothing.
     SALES_MIN_QUERY = 2
 
+    # How far back the page looks. Sixty days, because the question it answers
+    # is "what has been going on lately" and not "what has ever happened" - the
+    # audit log is the archive, and it is linked from here rather than copied.
+    TRACK_DAYS = 60
+    TRACK_LIMIT = 120
+
+    def _tracked(self):
+        """What happened lately that the owner would want to know about.
+
+        Merged and sorted here rather than in the template: two models with two
+        shapes have to become one column of events before anybody can read them
+        in order, and a template that sorted would be a template with a query
+        in it.
+        """
+        since = fields.Datetime.now() - timedelta(days=self.TRACK_DAYS)
+        rows = []
+
+        # Money off a price. The reason is not optional at the counter, which
+        # is what makes this list worth opening.
+        if 'modryn.sale' in request.env:
+            for sale in request.env['modryn.sale'].sudo().search([
+                    ('sold_at', '>=', fields.Datetime.to_string(since)),
+                    ('discount_amount', '>', 0),
+            ], order='sold_at desc', limit=self.TRACK_LIMIT):
+                rows.append({
+                    'kind': 'discount',
+                    'id': 'd%s' % sale.id,
+                    'when': sale.sold_at,
+                    'who': sale.employee_id.name or '',
+                    'about': sale.customer_name or '',
+                    'what': ' · '.join(sale.line_ids.mapped('description')),
+                    'why': sale.discount_reason or '',
+                    'from_amount': round(sale.subtotal or 0.0),
+                    'to_amount': round(sale.total or 0.0),
+                    'size': sale.modryn_discount_sentence(),
+                })
+
+        # A call for help. Who called, who she called, and what for - the three
+        # things a shout across the floor does not leave behind.
+        if 'modryn.sos.call' in request.env:
+            Call = request.env['modryn.sos.call'].sudo()
+            # Off the FIELD, not off the selection list on the model: that list
+            # is plain Python and is the English the file was written in. Read
+            # once, not once per call.
+            states = dict(Call.fields_get(['state'])['state']['selection'])
+            for call in Call.search([
+                    ('create_date', '>=', fields.Datetime.to_string(since)),
+            ], order='create_date desc', limit=self.TRACK_LIMIT):
+                rows.append({
+                    'kind': 'sos',
+                    'id': 's%s' % call.id,
+                    'when': call.create_date,
+                    'who': call.caller_id.name or '',
+                    # Empty means the general bell rather than one colleague,
+                    # and the screen says so rather than leaving a gap.
+                    'target': call.target_id.name or '',
+                    'about': call._customer_name(),
+                    'why': call.note or '',
+                    'state': states.get(call.state, call.state),
+                    'answered_by': call.acked_by_id.name or '',
+                    # The whole sentence, with the name inside it. Split around
+                    # a t-out it exported as the bare word "Called", which is
+                    # not a sentence in any language and least of all in one
+                    # where the name comes first.
+                    'called': (
+                        _("Called %(who)s") % {'who': call.target_id.name}
+                        if call.target_id else _("Called whoever was free")),
+                    'resolved': call.state == 'resolved',
+                })
+
+        rows.sort(key=lambda r: (r['when'] is not None, r['when']), reverse=True)
+        return rows[:self.TRACK_LIMIT]
+
     def _sales(self, query):
         """Everything sold to whoever matches `query`, newest first.
 
@@ -288,6 +361,40 @@ class ModrynManagerScreen(http.Controller):
                     'amount_is_catalogue': True,
                     'when': entry.modryn_outcome_at,
                     'by': entry.modryn_employee_id.name or '',
+                })
+
+        # The till. Its own model, with lines and a discount, so what it
+        # contributes here is richer than the other two: the items are named
+        # individually and the price carries the reason it is what it is.
+        Sale = request.env['modryn.sale'] if 'modryn.sale' in request.env             else None
+        if Sale is not None:
+            for sale in Sale.sudo().search([
+                    '|', ('customer_name', 'ilike', like),
+                         ('customer_phone', 'ilike', like),
+            ], order='sold_at desc', limit=60):
+                rows.append({
+                    'kind': 'till',
+                    'id': sale.id,
+                    'name': sale.customer_name or '',
+                    'phone': sale.customer_phone or '',
+                    'dress': ' · '.join(sale.line_ids.mapped('description')),
+                    'amount': round(sale.total or 0.0),
+                    # A till sale IS what she handed over - the one of the
+                    # three sources where the figure needs no apology.
+                    'amount_is_catalogue': False,
+                    'when': sale.sold_at,
+                    'by': sale.employee_id.name or '',
+                    # What came off, and why. Empty when nothing did, so the
+                    # card shows the block only when there is something to say.
+                    'discount': sale.modryn_discount_sentence(),
+                    'discount_amount': round(sale.discount_amount or 0.0),
+                    'before': round(sale.subtotal or 0.0),
+                    'discount_reason': sale.discount_reason or '',
+                    # The till records its own alteration, which is the one the
+                    # bride was told about at the counter. It is shown beside
+                    # the workshop's tasks rather than instead of them.
+                    'altered_here': sale.alteration_note or '',
+                    'altered_by': sale.alteration_by_id.name or '',
                 })
 
         # Newest first across BOTH kinds, which a single query could not do.
@@ -377,6 +484,11 @@ class ModrynManagerScreen(http.Controller):
         # The owner's panels, and only when she is going to see them: building a
         # closures list, or a roles list, for a manager who will never be shown
         # either is work for nobody.
+        if view == 'track':
+            context['tracked'] = self._tracked()
+            context['track_intro'] = _(
+                "The last %(days)s days. Money off a price, and calls for help."
+            ) % {'days': self.TRACK_DAYS}
         if view == 'sales':
             # The whole history, searched. Nothing is drawn until she has typed
             # two characters: a page that opens on every sale the boutique has

@@ -86,6 +86,23 @@ if held:
     removed['customers let go of'] = len(held)
     held.write({'state': 'done'})
 
+# Calls for help. Matched on the CALLER rather than on the note, because the
+# note is free text a spec writes whatever it likes into - and the owner's
+# tracking page shows the note, so the suite's words end up under a heading that
+# says "what has been going on".
+Sos = env['modryn.sos.call'].sudo()
+suite_staff = env['hr.employee'].with_context(active_test=False).sudo().search(
+    ['|', ('name', 'like', 'Roles Probe%'), ('name', 'like', 'QA %')])
+sweep('calls for help the suite made', Sos.search([
+    '|', ('caller_id', 'in', suite_staff.ids),
+         ('note', 'in', ('litter on purpose', 'QA', 'test'))]))
+
+# Sales the suite recorded. Lines go with them - ondelete='cascade' on sale_id -
+# so there is nothing left pointing at a receipt that is gone.
+if 'modryn.sale' in env:
+    Sale = env['modryn.sale'].sudo()
+    sweep('sales the suite made', Sale.search(named('customer_name')))
+
 Event = env['calendar.event'].sudo()
 sweep('test bookings', Event.search(
     [('modryn_is_booking', '=', True)] + named()))

@@ -37,6 +37,7 @@ msgstr "مهمة عابرة"
 #. module: modryn_ops
 #: model_terms:ir.ui.view,arch_db:modryn_ops.manage_checklists
 #: model_terms:ir.ui.view,arch_db:modryn_ops.manage_dress_kinds
+#: model_terms:ir.ui.view,arch_db:modryn_ops.sell_screen
 msgid "Add"
 msgstr "إضافة"
 
@@ -139,11 +140,13 @@ msgid "Create a Customer"
 msgstr "إنشاء زبونة"
 
 #. module: modryn_ops
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_sale__customer_name
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_task__customer_name
 msgid "Customer Name"
 msgstr "اسم الزبونة"
 
 #. module: modryn_ops
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_sale__customer_phone
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_task__customer_phone
 msgid "Customer Phone"
 msgstr "هاتف الزبونة"
@@ -259,6 +262,7 @@ msgstr "متأخرة"
 
 #. module: modryn_ops
 #: model_terms:ir.ui.view,arch_db:modryn_ops.manage_checklists
+#: model_terms:ir.ui.view,arch_db:modryn_ops.sell_screen
 msgid "Item"
 msgstr "البند"
 
@@ -267,6 +271,7 @@ msgstr "البند"
 #: model:ir.model.fields,field_description:modryn_ops.field_product_product__modryn_type_id
 #: model:ir.model.fields,field_description:modryn_ops.field_product_template__modryn_type_id
 #: model_terms:ir.ui.view,arch_db:modryn_ops.manage_dress_form
+#: model_terms:ir.ui.view,arch_db:modryn_ops.sell_screen
 msgid "Kind"
 msgstr "النوع"
 
@@ -677,6 +682,8 @@ msgid "Save"
 msgstr "حفظ"
 
 #. module: modryn_ops
+#. odoo-python
+#: code:addons/modryn_ops/models/audit_log.py:0
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_dress_type__name
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_task__name
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_task_template__name
@@ -720,6 +727,8 @@ msgstr "حدث في التقويم"
 #. module: modryn_ops
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_audit_log__create_uid
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_dress_type__create_uid
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_sale__create_uid
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_sale_line__create_uid
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_task__create_uid
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_task_template__create_uid
 msgid "Created by"
@@ -728,6 +737,8 @@ msgstr "أنشأه"
 #. module: modryn_ops
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_audit_log__create_date
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_dress_type__create_date
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_sale__create_date
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_sale_line__create_date
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_task__create_date
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_task_template__create_date
 msgid "Created on"
@@ -735,9 +746,12 @@ msgstr "أُنشئ في"
 
 #. module: modryn_ops
 #: model:ir.model.fields,field_description:modryn_ops.field_calendar_event__display_name
+#: model:ir.model.fields,field_description:modryn_ops.field_hr_employee__display_name
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_audit_log__display_name
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_dress_type__display_name
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_queue_entry__display_name
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_sale__display_name
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_sale_line__display_name
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_task__display_name
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_task_template__display_name
 #: model:ir.model.fields,field_description:modryn_ops.field_product_product__display_name
@@ -747,15 +761,19 @@ msgid "Display Name"
 msgstr "الاسم المعروض"
 
 #. module: modryn_ops
+#: model:ir.model,name:modryn_ops.model_hr_employee
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_task__employee_id
 msgid "Employee"
 msgstr "موظفة"
 
 #. module: modryn_ops
 #: model:ir.model.fields,field_description:modryn_ops.field_calendar_event__id
+#: model:ir.model.fields,field_description:modryn_ops.field_hr_employee__id
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_audit_log__id
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_dress_type__id
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_queue_entry__id
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_sale__id
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_sale_line__id
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_task__id
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_task_template__id
 #: model:ir.model.fields,field_description:modryn_ops.field_product_product__id
@@ -767,6 +785,8 @@ msgstr "المعرّف"
 #. module: modryn_ops
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_audit_log__write_uid
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_dress_type__write_uid
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_sale__write_uid
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_sale_line__write_uid
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_task__write_uid
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_task_template__write_uid
 msgid "Last Updated by"
@@ -775,6 +795,8 @@ msgstr "آخر تحديث بواسطة"
 #. module: modryn_ops
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_audit_log__write_date
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_dress_type__write_date
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_sale__write_date
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_sale_line__write_date
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_task__write_date
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_task_template__write_date
 msgid "Last Updated on"
@@ -996,6 +1018,7 @@ msgstr "الصور"
 #. module: modryn_ops
 #: model_terms:ir.ui.view,arch_db:modryn_ops.manage_dress_form
 #: model_terms:ir.ui.view,arch_db:modryn_ops.manage_reports
+#: model_terms:ir.ui.view,arch_db:modryn_ops.sell_screen
 msgid "Price (₪)"
 msgstr "السعر (₪)"
 
@@ -1274,6 +1297,7 @@ msgstr "الشارع"
 #. module: modryn_ops
 #. odoo-python
 #: code:addons/modryn_ops/models/audit_log.py:0
+#: model_terms:ir.ui.view,arch_db:modryn_ops.sell_screen
 msgid "Phone"
 msgstr "تلفون"
 
@@ -1294,3 +1318,280 @@ msgstr "الجنس"
 #: code:addons/modryn_ops/models/audit_log.py:0
 msgid "The system"
 msgstr "النظام"
+
+#. module: modryn_ops
+#. odoo-python
+#: code:addons/modryn_ops/controllers/sell.py:0
+#: model_terms:ir.ui.view,arch_db:modryn_ops.sell_screen
+msgid "Sell"
+msgstr "بيع"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.sell_screen
+msgid "What she is buying, what it comes to, and anything taken off."
+msgstr "شو عم تشتري، قديش بتطلع، وشو نزل من الحق."
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.sell_screen
+msgid "Who is buying"
+msgstr "مين عم تشتري"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.sell_screen
+msgid "Full name"
+msgstr "الاسم الكامل"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.sell_screen
+msgid "What she is buying"
+msgstr "شو عم تشتري"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.sell_screen
+msgid "Find it by name, kind, serial number or barcode"
+msgstr "دوّري بالاسم، النوع، الرقم التسلسلي أو الباركود"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.sell_screen
+msgid "Two letters or numbers is enough"
+msgstr "حرفين أو رقمين بكفّوا"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.sell_screen
+msgid "A scanner works here too — scan, and it goes straight on the list."
+msgstr "وقارئ الباركود بيشتغل هون كمان — اسحبي، وبينزل عالقائمة دغري."
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.sell_screen
+msgid "Something else"
+msgstr "إشي تاني"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.sell_screen
+msgid "A veil, a hire, a repair"
+msgstr "هينوما، تأجير، تصليح"
+
+#. module: modryn_ops
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_sale_line__price
+msgid "Price"
+msgstr "السعر"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.sell_screen
+msgid "Total"
+msgstr "المجموع"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.sell_screen
+msgid "Nothing on the list yet."
+msgstr "لسا ما في إشي بالقائمة."
+
+#. module: modryn_ops
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_sale__discount_value
+#: model_terms:ir.ui.view,arch_db:modryn_ops.sell_screen
+msgid "Discount"
+msgstr "تخفيض"
+
+#. module: modryn_ops
+#: model:ir.model.fields.selection,name:modryn_ops.selection__modryn_sale__discount_kind__none
+msgid "No discount"
+msgstr "بدون تخفيض"
+
+#. module: modryn_ops
+#: model:ir.model.fields.selection,name:modryn_ops.selection__modryn_sale__discount_kind__percent
+msgid "Percent off"
+msgstr "نسبة تخفيض"
+
+#. module: modryn_ops
+#: model:ir.model.fields.selection,name:modryn_ops.selection__modryn_sale__discount_kind__amount
+msgid "Amount off"
+msgstr "مبلغ تخفيض"
+
+#. module: modryn_ops
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_sale__discount_kind
+msgid "Kind of discount"
+msgstr "نوع التخفيض"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.sell_screen
+msgid "How much"
+msgstr "قديش"
+
+#. module: modryn_ops
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_sale__discount_reason
+#: model_terms:ir.ui.view,arch_db:modryn_ops.sell_screen
+msgid "Why"
+msgstr "ليش"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.sell_screen
+msgid "The sister of a bride we dressed"
+msgstr "أخت عروس لبّسناها"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.sell_screen
+msgid "A discount shows on the owner's screen with the reason beside it."
+msgstr "التخفيض بيبين بشاشة صاحبة المحل ومعه السبب."
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.sell_screen
+msgid ""
+"<select id=\"discount_kind\" name=\"discount_kind\" class=\"form-select\">\n"
+"                                <option value=\"none\">No discount</option>\n"
+"                                <option value=\"percent\">Percent off</option>\n"
+"                                <option value=\"amount\">Amount off</option>\n"
+"                            </select>"
+msgstr ""
+"<select id=\"discount_kind\" name=\"discount_kind\" class=\"form-select\">\n"
+"                                <option value=\"none\">بدون تخفيض</option>\n"
+"                                <option value=\"percent\">نسبة تخفيض</option>\n"
+"                                <option value=\"amount\">مبلغ تخفيض</option>\n"
+"                            </select>"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.sell_screen
+msgid "Alteration"
+msgstr "تعديل"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.sell_screen
+msgid "Something was altered"
+msgstr "انعمل تعديل"
+
+#. module: modryn_ops
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_sale__alteration_note
+#: model_terms:ir.ui.view,arch_db:modryn_ops.sell_screen
+msgid "What was altered"
+msgstr "شو التعديل"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.sell_screen
+msgid "Who altered it"
+msgstr "مين عملت التعديل"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.sell_screen
+msgid "<option value=\"\">— nobody yet —</option>"
+msgstr "<option value=\"\">— لسا ولا حدا —</option>"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.sell_screen
+msgid "Record the sale"
+msgstr "سجّلي البيعة"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.sell_screen
+msgid "Sold to"
+msgstr "انباع لـ"
+
+#. module: modryn_ops
+#. odoo-python
+#: code:addons/modryn_ops/controllers/sell.py:0
+msgid "%(count)s item(s) · %(paid)s"
+msgstr "%(count)s أغراض · %(paid)s"
+
+#. module: modryn_ops
+#. odoo-python
+#: code:addons/modryn_ops/controllers/sell.py:0
+msgid "%(count)s item(s) · %(paid)s · %(discount)s off"
+msgstr "%(count)s أغراض · %(paid)s · %(discount)s تخفيض"
+
+#. module: modryn_ops
+#. odoo-python
+#: code:addons/modryn_ops/controllers/sell.py:0
+msgid "Please enter the customer's name."
+msgstr "اكتبي اسم الزبونة."
+
+#. module: modryn_ops
+#. odoo-python
+#: code:addons/modryn_ops/controllers/sell.py:0
+msgid "Add at least one thing she is buying."
+msgstr "ضيفي إشي واحد عالأقل."
+
+#. module: modryn_ops
+#. odoo-python
+#: code:addons/modryn_ops/controllers/sell.py:0
+msgid "Say why the discount was given."
+msgstr "اكتبي ليش انعطى التخفيض."
+
+#. module: modryn_ops
+#. odoo-python
+#: code:addons/modryn_ops/controllers/sell.py:0
+msgid "Enter how much comes off."
+msgstr "اكتبي قديش بينزل من الحق."
+
+#. module: modryn_ops
+#. odoo-python
+#: code:addons/modryn_ops/controllers/sell.py:0
+msgid "Say what was altered."
+msgstr "اكتبي شو التعديل."
+
+#. module: modryn_ops
+#: model:ir.model,name:modryn_ops.model_modryn_sale
+msgid "A sale"
+msgstr "بيعة"
+
+#. module: modryn_ops
+#: model:ir.model,name:modryn_ops.model_modryn_sale_line
+msgid "A line on a sale"
+msgstr "سطر بالبيعة"
+
+#. module: modryn_ops
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_sale_line__sale_id
+msgid "The sale"
+msgstr "البيعة"
+
+#. module: modryn_ops
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_sale__employee_id
+msgid "Sold by"
+msgstr "باعتها"
+
+#. module: modryn_ops
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_sale__sold_at
+msgid "Sold on"
+msgstr "انباع بتاريخ"
+
+#. module: modryn_ops
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_sale__line_ids
+msgid "What she bought"
+msgstr "شو اشترت"
+
+#. module: modryn_ops
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_sale__altered
+msgid "Altered"
+msgstr "انعمل عليها تعديل"
+
+#. module: modryn_ops
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_sale__alteration_by_id
+msgid "Altered by"
+msgstr "التعديل عملته"
+
+#. module: modryn_ops
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_sale__subtotal
+msgid "Before the discount"
+msgstr "قبل التخفيض"
+
+#. module: modryn_ops
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_sale__discount_amount
+msgid "What came off"
+msgstr "قديش نزل"
+
+#. module: modryn_ops
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_sale__total
+msgid "What she paid"
+msgstr "قديش دفعت"
+
+#. module: modryn_ops
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_sale_line__variant_id
+msgid "From the rail"
+msgstr "من الرف"
+
+#. module: modryn_ops
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_sale_line__description
+msgid "What it was"
+msgstr "شو كان"
+
+#. module: modryn_ops
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_sale_line__stock_taken
+msgid "Taken off the rail"
+msgstr "نزلت عن الرف"

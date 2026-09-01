@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- The till. One form, one save: a sale is finished at a counter with
+         somebody waiting, and a draft that fills up line by line leaves
+         half-written receipts in the database for somebody to clean up. -->
+    <template id="sell_screen" name="MODRYN sell">
+        <t t-call="modryn_staff.staff_layout">
+            <t t-set="active_tab" t-value="'sell'"/>
+
+            <h1 class="mb-1">Sell</h1>
+            <p class="modryn_sub mb-4">
+                What she is buying, what it comes to, and anything taken off.
+            </p>
+
+            <div t-if="saved" class="modryn_panel p-3 mb-4 modryn_sold_ok">
+                <div class="modryn_strong">
+                    Sold to <t t-out="saved.customer_name"/>
+                </div>
+                <div class="modryn_sub" t-out="saved_line"/>
+            </div>
+
+            <p t-if="error" class="modryn_error mb-3" t-out="error"/>
+
+            <form action="/sell" method="post" class="modryn_sell">
+                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+
+                <!-- ============================ who ============================ -->
+                <section class="modryn_panel mb-4">
+                    <header class="modryn_panel_head"><h2>Who is buying</h2></header>
+                    <div class="row g-3">
+                        <div class="col-12 col-md-6">
+                            <label class="form-label" for="customer_name">Full name</label>
+                            <input type="text" id="customer_name" name="customer_name"
+                                   class="form-control" required="required"
+                                   t-att-value="values.get('customer_name')"/>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label class="form-label" for="customer_phone">Phone</label>
+                            <input type="tel" id="customer_phone" name="customer_phone"
+                                   class="form-control" dir="ltr" autocomplete="off"
+                                   t-att-value="values.get('customer_phone')"/>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- =========================== what ============================ -->
+                <section class="modryn_panel mb-4 modryn_sell_pick">
+                    <header class="modryn_panel_head"><h2>What she is buying</h2></header>
+
+                    <label class="form-label" for="sell_query">
+                        Find it by name, kind, serial number or barcode
+                    </label>
+                    <input type="text" id="sell_query" class="form-control modryn_sell_query"
+                           autocomplete="off" placeholder="Two letters or numbers is enough"/>
+                    <p class="modryn_sub mt-1">
+                        A scanner works here too — scan, and it goes straight on the list.
+                    </p>
+                    <div class="modryn_sell_results mt-2"/>
+
+                    <!-- The rail, for the search box to read. Rendered by the
+                         server because the catalogue is the server's, and
+                         re-read on every page load because dresses sell. -->
+                    <div class="d-none">
+                        <span t-foreach="rail" t-as="v" t-key="v['id']"
+                              class="modryn_sell_row"
+                              t-att-data-variant="v['id']"
+                              t-att-data-label="v['label']"
+                              t-att-data-name="v['name']"
+                              t-att-data-serial="v['serial']"
+                              t-att-data-kind="v['kind']"
+                              t-att-data-barcode="v['barcode']"
+                              t-att-data-price="v['price']"/>
+                    </div>
+
+                    <!-- Anything not on the rail: a veil from the box under the
+                         counter, a hire charge, a repair. A boutique sells
+                         those and inventing a catalogue row for each one is how
+                         a catalogue stops meaning anything. -->
+                    <div class="row g-2 align-items-end mt-3 modryn_sell_free">
+                        <div class="col-12 col-md-6">
+                            <label class="form-label" for="free_label">Something else</label>
+                            <input type="text" id="free_label" class="form-control modryn_free_label"
+                                   autocomplete="off" placeholder="A veil, a hire, a repair"/>
+                        </div>
+                        <div class="col-8 col-md-4">
+                            <label class="form-label" for="free_price">Price (₪)</label>
+                            <input type="number" id="free_price" class="form-control modryn_free_price"
+                                   min="0" step="1" dir="ltr"/>
+                        </div>
+                        <div class="col-4 col-md-2">
+                            <button type="button" class="btn btn-outline-dark w-100 modryn_free_add">
+                                Add
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- The basket. Rows are built by the screen; each carries
+                         its own hidden inputs, so one submit posts the lot. -->
+                    <table class="table modryn_table mt-3 modryn_sell_lines">
+                        <thead>
+                            <tr>
+                                <th>Item</th>
+                                <th style="width: 9rem;">Price (₪)</th>
+                                <th style="width: 4rem;"/>
+                            </tr>
+                        </thead>
+                        <tbody class="modryn_sell_body"/>
+                        <tfoot>
+                            <tr>
+                                <th>Total</th>
+                                <th dir="ltr" class="modryn_sell_total">0</th>
+                                <th/>
+                            </tr>
+                        </tfoot>
+                    </table>
+                    <p class="modryn_empty modryn_sell_none">Nothing on the list yet.</p>
+                </section>
+
+                <!-- ========================= discount ========================== -->
+                <section class="modryn_panel mb-4">
+                    <header class="modryn_panel_head"><h2>Discount</h2></header>
+                    <div class="row g-3 align-items-end">
+                        <div class="col-12 col-md-3">
+                            <label class="form-label" for="discount_kind">Kind</label>
+                            <select id="discount_kind" name="discount_kind" class="form-select">
+                                <option value="none">No discount</option>
+                                <option value="percent">Percent off</option>
+                                <option value="amount">Amount off</option>
+                            </select>
+                        </div>
+                        <div class="col-12 col-md-3">
+                            <label class="form-label" for="discount_value">How much</label>
+                            <input type="number" id="discount_value" name="discount_value"
+                                   class="form-control" min="0" step="1" dir="ltr"
+                                   t-att-value="values.get('discount_value')"/>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label class="form-label" for="discount_reason">Why</label>
+                            <input type="text" id="discount_reason" name="discount_reason"
+                                   class="form-control"
+                                   placeholder="The sister of a bride we dressed"
+                                   t-att-value="values.get('discount_reason')"/>
+                        </div>
+                    </div>
+                    <p class="modryn_sub mt-2 mb-0">
+                        A discount shows on the owner's screen with the reason beside it.
+                    </p>
+                </section>
+
+                <!-- ======================== alteration ========================= -->
+                <section class="modryn_panel mb-4">
+                    <header class="modryn_panel_head"><h2>Alteration</h2></header>
+                    <div class="form-check mb-3">
+                        <input type="checkbox" id="altered" name="altered"
+                               class="form-check-input" value="1"
+                               t-att-checked="'checked' if values.get('altered') else None"/>
+                        <label class="form-check-label" for="altered">
+                            Something was altered
+                        </label>
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-12 col-md-7">
+                            <label class="form-label" for="alteration_note">What was altered</label>
+                            <input type="text" id="alteration_note" name="alteration_note"
+                                   class="form-control"
+                                   t-att-value="values.get('alteration_note')"/>
+                        </div>
+                        <div class="col-12 col-md-5">
+                            <label class="form-label" for="alteration_by_id">Who altered it</label>
+                            <select id="alteration_by_id" name="alteration_by_id" class="form-select">
+                                <option value="">— nobody yet —</option>
+                                <option t-foreach="staff" t-as="w" t-key="w.id"
+                                        t-att-value="w.id" t-out="w.name"/>
+                            </select>
+                        </div>
+                    </div>
+                </section>
+
+                <button type="submit" class="btn btn-dark">Record the sale</button>
+            </form>
+        </t>
+    </template>
+
+</odoo>

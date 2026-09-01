@@ -107,7 +107,10 @@ register('home', '/staff/home', _lt("Main screen"), 5, icon='fa-home')
 # owner's grant matrix as something to take away: every woman on the floor must
 # be able to correct her own phone number. fa-user-o is FA4 - fa-user-circle is
 # FA5 and would render an invisible box with nothing in the log.
-register('profile', '/staff/profile', _lt("My details"), 90, icon='fa-user-o')
+# "My profile", which is what the page it opens is headed. The panel INSIDE it
+# is still "My details" - the details, as against the hours - and that is a
+# different string on purpose.
+register('profile', '/staff/profile', _lt("My profile"), 90, icon='fa-user-o')
 register('floor', '/floor', _lt("Floor board"), 10, icon='fa-th-large')
 register('roster', '/roster', _lt("Work schedule"), 20, icon='fa-calendar')
 register('checkin', '/queue/checkin', _lt("Walk-in check-in"), 60, icon='fa-qrcode')

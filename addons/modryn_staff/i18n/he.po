@@ -2622,6 +2622,8 @@ msgid "Look"
 msgstr "חיפוש"
 
 #. module: modryn_staff
+#. odoo-python
+#: code:addons/modryn_staff/nav.py:0
 #: model_terms:ir.ui.view,arch_db:modryn_staff.staff_profile
 msgid "My profile"
 msgstr "הפרופיל שלי"
@@ -3113,3 +3115,67 @@ msgstr "<option value=\"\">מסירה ל…</option>"
 #: model_terms:ir.ui.view,arch_db:modryn_staff.supervisor_actions
 msgid "<option value=\"\">Move her to…</option>"
 msgstr "<option value=\"\">העברה ל…</option>"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid ""
+"<i class=\"fa fa-binoculars\" aria-hidden=\"true\"/>\n"
+"                    <span class=\"modryn_strong\">What has been going on</span>\n"
+"                    <span class=\"modryn_sub\">Discounts given and why, and who called for help.</span>"
+msgstr ""
+"<i class=\"fa fa-binoculars\" aria-hidden=\"true\"/>\n"
+"                    <span class=\"modryn_strong\">מה קרה כאן</span>\n"
+"                    <span class=\"modryn_sub\">הנחות שניתנו ולמה, ומי ביקשה עזרה.</span>"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "What has been going on"
+msgstr "מה קרה כאן"
+
+#. module: modryn_staff
+#. odoo-python
+#: code:addons/modryn_staff/controllers/manager.py:0
+msgid "The last %(days)s days. Money off a price, and calls for help."
+msgstr "%(days)s הימים האחרונים. הנחות שניתנו, ובקשות עזרה."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "Nothing to report — no discounts and no calls for help."
+msgstr "אין מה לדווח — לא ניתנו הנחות ולא היו בקשות עזרה."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "Discount"
+msgstr "הנחה"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "Called for help"
+msgstr "ביקשה עזרה"
+
+#. module: modryn_staff
+#. odoo-python
+#: code:addons/modryn_staff/controllers/manager.py:0
+msgid "Called %(who)s"
+msgstr "פנתה אל %(who)s"
+
+#. module: modryn_staff
+#. odoo-python
+#: code:addons/modryn_staff/controllers/manager.py:0
+msgid "Called whoever was free"
+msgstr "פנתה למי שהייתה פנויה"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "Every change, in full"
+msgstr "כל השינויים, במלואם"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "Sold at the counter"
+msgstr "נמכר בקופה"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "Altered at the counter"
+msgstr "שינוי שנרשם בקופה"

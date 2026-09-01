@@ -42,6 +42,14 @@
                     <span class="modryn_strong">Hours worked</span>
                     <span class="modryn_sub">Who was on the floor, month by month — and fix it when the button was missed.</span>
                 </a>
+                <!-- The OWNER's. Things that happened on the floor she was
+                     not standing on - money taken off a price, and somebody
+                     calling for help. -->
+                <a t-if="is_owner" class="modryn_tile" href="/manage/team-screen?view=track">
+                    <i class="fa fa-binoculars" aria-hidden="true"/>
+                    <span class="modryn_strong">What has been going on</span>
+                    <span class="modryn_sub">Discounts given and why, and who called for help.</span>
+                </a>
                 <!-- The OWNER's. What the shop has taken is hers, and so is
                      the history of who bought what. -->
                 <a t-if="is_owner" class="modryn_tile" href="/manage/team-screen?view=sales">
@@ -460,6 +468,90 @@
                 </div>
             </section>
 
+            <!-- ================= what has been going on ================= -->
+            <!-- Two kinds of event on one page, because they are read for the
+                 same reason: something happened on the floor that the person
+                 who owns the shop did not see.
+
+                 Not the audit log. That is every field on every record, fifty
+                 rows to a page, and having to read it to find a discount is
+                 exactly why nobody does. This is the short list. -->
+            <section t-if="view == 'track' and is_owner" class="modryn_panel mb-4">
+                <header class="modryn_panel_head">
+                    <h2>What has been going on</h2>
+                </header>
+                <!-- Built in Python, whole. Split around the number it
+                     exported as "The last" and "days. Money off a price…",
+                     which are not sentences and cannot be ordered by a
+                     translator - in Hebrew and Arabic the number moves. -->
+                <p class="modryn_sub" t-out="track_intro"/>
+
+                <p t-if="not tracked" class="modryn_empty">
+                    Nothing to report — no discounts and no calls for help.
+                </p>
+
+                <div t-else="" class="modryn_track">
+                    <article t-foreach="tracked" t-as="row" t-key="row['id']"
+                             class="modryn_doc_row modryn_track_row">
+                        <div>
+                            <div class="modryn_card_marks">
+                                <span t-if="row['kind'] == 'discount'"
+                                      class="modryn_badge is_busy">Discount</span>
+                                <span t-else=""
+                                      t-attf-class="modryn_badge #{'is_free' if row.get('resolved') else 'is_busy'}">
+                                    Called for help
+                                </span>
+                                <span class="modryn_strong" t-out="row['who']"/>
+                            </div>
+
+                            <!-- A discount: what came off, from what to what,
+                                 and the sentence she gave for it. -->
+                            <t t-if="row['kind'] == 'discount'">
+                                <div class="modryn_sub">
+                                    <t t-out="row['about']"/>
+                                    <t t-if="row['what']"> · <t t-out="row['what']"/></t>
+                                </div>
+                                <div dir="ltr" class="modryn_strong">
+                                    <t t-out="row['size']"/>
+                                    <span class="modryn_sub">
+                                        <span t-esc="'₪{:,}'.format(row['from_amount'])"/>
+                                        <span class="modryn_becomes" aria-hidden="true"/>
+                                        <span t-esc="'₪{:,}'.format(row['to_amount'])"/>
+                                    </span>
+                                </div>
+                                <div class="modryn_sub" t-out="row['why']"/>
+                            </t>
+
+                            <!-- A call for help: who she called, what for, and
+                                 whether anybody went. -->
+                            <t t-else="">
+                                <div class="modryn_sub">
+                                    <t t-out="row['called']"/>
+                                    <t t-if="row['about']"> · <t t-out="row['about']"/></t>
+                                </div>
+                                <div t-if="row['why']" t-out="row['why']"/>
+                                <div class="modryn_sub">
+                                    <t t-out="row['state']"/>
+                                    <t t-if="row['answered_by']">
+                                        · <t t-out="row['answered_by']"/>
+                                    </t>
+                                </div>
+                            </t>
+                        </div>
+                        <div class="modryn_sub" dir="ltr">
+                            <t t-if="row['when']"
+                               t-esc="row['when'].strftime('%d.%m.%Y %H:%M')"/>
+                        </div>
+                    </article>
+                </div>
+
+                <!-- The archive is a different question, and it is one screen
+                     away rather than reproduced here. -->
+                <a class="btn btn-sm btn-outline-dark mt-3" href="/manage/audit">
+                    Every change, in full
+                </a>
+            </section>
+
             <!-- ===================== dresses sold ===================== -->
             <!-- A bride comes back three years later with a sister, or a seam,
                  or a question about what she paid, and there was nowhere to
@@ -504,7 +596,9 @@
                              class="modryn_card">
                         <div class="modryn_card_marks">
                             <span class="modryn_strong" t-out="sale['name']"/>
-                            <span t-if="sale['kind'] == 'walkin'"
+                            <span t-if="sale['kind'] == 'till'"
+                                  class="modryn_badge is_muted">Sold at the counter</span>
+                            <span t-elif="sale['kind'] == 'walkin'"
                                   class="modryn_badge is_muted">Walk-in</span>
                             <span t-else="" class="modryn_badge is_muted">Booking</span>
                         </div>
@@ -535,6 +629,33 @@
                                 <dt>Sold by</dt>
                                 <dd t-out="sale['by']"/>
                             </t>
+                            <!-- What came off the price, and why. The reason is
+                                 required at the counter precisely so this line
+                                 can never be a number on its own: a discount
+                                 with no sentence beside it is the row the owner
+                                 would have to go and ask somebody about. -->
+                            <t t-if="sale.get('discount')">
+                                <dt>Discount</dt>
+                                <dd>
+                                    <span dir="ltr" t-out="sale['discount']"/>
+                                    <span class="modryn_sub" dir="ltr">
+                                        <span t-esc="'₪{:,}'.format(sale['before'])"/>
+                                        <span class="modryn_becomes" aria-hidden="true"/>
+                                        <span t-esc="'₪{:,}'.format(sale['amount'])"/>
+                                    </span>
+                                    <div t-if="sale.get('discount_reason')"
+                                         class="modryn_sub" t-out="sale['discount_reason']"/>
+                                </dd>
+                            </t>
+                            <t t-if="sale.get('altered_here')">
+                                <dt>Altered at the counter</dt>
+                                <dd>
+                                    <t t-out="sale['altered_here']"/>
+                                    <span t-if="sale.get('altered_by')" class="modryn_sub">
+                                        — <t t-out="sale['altered_by']"/>
+                                    </span>
+                                </dd>
+                            </t>
                         </dl>
 
                         <!-- What the workshop did to it, matched on her number.
@@ -563,7 +684,12 @@
                                       t-out="alt['state']"/>
                             </div>
                         </div>
-                        <p t-else="" class="modryn_sub mb-0">Nothing was altered.</p>
+                        <!-- Only when NEITHER half has anything: the counter
+                             records its own alteration, and a card that says
+                             "take it up 4cm" and "nothing was altered" one line
+                             apart is a card nobody can act on. -->
+                        <p t-elif="not sale.get('altered_here')"
+                           class="modryn_sub mb-0">Nothing was altered.</p>
                     </article>
                 </div>
             </section>
