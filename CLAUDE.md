@@ -147,11 +147,16 @@ bella is `miri` and on qa it is `qaowner`; `admin` exists only on the separate
 `platform` database. Odoo's own `/web/login` labels its field "Email" and there
 are no email addresses on any of these accounts — it takes the USERNAME.
 
-**Green baseline** (2026-08-31): `verify.sh` reports **409 passed, 0 failed,
+**Green baseline** (2026-09-01): `verify.sh` reports **407 passed, 0 failed,
 6 skipped**, and the browser suite **35 passed, 1 skipped** (the skip is
 `realsms.spec.js`, which needs Twilio credentials nobody should export here).
-Both are green —
-treat any failure as a regression you caused, and do not "fix" a check to make
+Both are green. It was 409 on 31.08: two checks are DATA-conditional and
+stopped firing when playground litter was swept, not because anything was
+removed — proved by stashing the day's work and re-running, which produced the
+same check set on the same database. If the number moves again, do that before
+believing anything about it.
+
+Treat any failure as a regression you caused, and do not "fix" a check to make
 it pass without first proving the check is the thing that is wrong.
 
 **Two ways the browser suite goes red that are not the code**, both learned the
