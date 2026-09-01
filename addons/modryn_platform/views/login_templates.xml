@@ -94,6 +94,23 @@
                                    autofocus="autofocus" required="required"
                                    t-att-value="username"/>
                         </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="phone">Phone number</label>
+                            <input type="tel" id="phone" name="phone" dir="ltr"
+                                   class="form-control" autocomplete="off"
+                                   required="required" t-att-value="phone"/>
+                        </div>
+                        <!-- autocomplete off and never handed back on a
+                             refusal: this is a national identity number, and a
+                             browser offering it from a dropdown or a cached
+                             page holding it are both worse than typing it
+                             again. -->
+                        <div class="mb-3">
+                            <label class="form-label" for="idnum">ID number</label>
+                            <input type="password" id="idnum" name="idnum" dir="ltr"
+                                   class="form-control" autocomplete="off"
+                                   required="required"/>
+                        </div>
                         <div class="mb-4">
                             <label class="form-label" for="password">Password</label>
                             <input type="password" id="password" name="password"
