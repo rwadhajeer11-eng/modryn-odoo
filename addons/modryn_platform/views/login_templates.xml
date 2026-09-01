@@ -20,4 +20,91 @@
         </xpath>
     </template>
 
+    <!-- MODRYN's own sign-in for the platform owner. The stock one wore "Your
+         Logo", a paragraph of Odoo's demo copy about disruptive products, and
+         "Powered by odoo" in the footer - and landed her in a chat app. -->
+    <template id="platform_login" name="MODRYN platform sign-in">
+        <t t-call="web.frontend_layout">
+            <t t-set="no_header" t-value="true"/>
+            <t t-set="no_footer" t-value="true"/>
+            <div id="wrap" class="modryn_platform_login">
+                <style>
+                    .modryn_platform_login {
+                        min-height: 100vh;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        background: #FDFBF7;
+                    }
+                    .modryn_platform_login .card_ {
+                        background: #FFFFFF;
+                        border: 1px solid #E4DACA;
+                        border-radius: 6px;
+                        box-shadow: 0 12px 32px rgba(43, 33, 24, .07);
+                        padding: 34px 32px;
+                        width: 100%;
+                        max-width: 380px;
+                    }
+                    .modryn_platform_login .brand_ {
+                        font-family: Georgia, "Times New Roman", serif;
+                        letter-spacing: .28em;
+                        font-size: 20px;
+                        color: #2B2118;
+                        text-align: center;
+                        margin: 0;
+                    }
+                    .modryn_platform_login .sub_ {
+                        text-align: center;
+                        color: #6B5D4F;
+                        font-size: 14px;
+                        margin: 4px 0 26px;
+                    }
+                    .modryn_platform_login label { color: #2B2118; font-size: 14px; }
+                    .modryn_platform_login .go_ {
+                        background: #C9A227;
+                        border: 0;
+                        color: #2B2118;
+                        font-weight: 600;
+                        width: 100%;
+                        padding: 11px;
+                        border-radius: 4px;
+                    }
+                    .modryn_platform_login .go_:hover { background: #B89422; }
+                    .modryn_platform_login .err_ {
+                        color: #A03232;
+                        font-size: 14px;
+                        margin-bottom: 14px;
+                    }
+                </style>
+
+                <div class="card_">
+                    <p class="brand_">MODRYN</p>
+                    <p class="sub_">Platform</p>
+
+                    <p t-if="error" class="err_" t-out="error"/>
+
+                    <form action="/platform/login" method="post">
+                        <input type="hidden" name="csrf_token"
+                               t-att-value="request.csrf_token()"/>
+
+                        <div class="mb-3">
+                            <label class="form-label" for="username">Username</label>
+                            <input type="text" id="username" name="username"
+                                   class="form-control" autocomplete="username"
+                                   autofocus="autofocus" required="required"
+                                   t-att-value="username"/>
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label" for="password">Password</label>
+                            <input type="password" id="password" name="password"
+                                   class="form-control" autocomplete="current-password"
+                                   required="required"/>
+                        </div>
+                        <button type="submit" class="go_">Sign in</button>
+                    </form>
+                </div>
+            </div>
+        </t>
+    </template>
+
 </odoo>
