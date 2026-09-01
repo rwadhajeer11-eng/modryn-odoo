@@ -281,16 +281,33 @@ Queue = env['modryn.queue.entry'].sudo()
 phone_seq = 7300000
 
 
+OPEN = ('waiting', 'called')
+
+
 def _walkin(name, kind, state, hint=''):
-    """One walk-in, or nothing if she is already on the board.
+    """One walk-in, or nothing if she is already there.
 
     Found by NAME rather than topped up by count: the board is churned by every
     browser run, so a count guard would re-add these on some runs and not on
     others, and the same bride would appear twice.
+
+    But WHICH rows count as "already there" depends on what she is for, and
+    getting this wrong emptied the board once already:
+
+    - A bride who is meant to be WAITING or BEING HELPED is furniture. The
+      browser suite takes her, finishes her, and walks off - four of six were
+      gone after two runs - so she is looked for among the OPEN rows only, and
+      a consumed one is replaced. The closed row stays where it is; a bride who
+      came in twice is a Tuesday, not a bug.
+    - A FINISHED one is history. She is looked for by name in any state, because
+      re-adding her would invent a second visit and the reports would count it.
     """
     global phone_seq
     phone_seq += 1
-    if Queue.with_context(active_test=False).search_count([('name', '=', name)]):
+    domain = [('name', '=', name)]
+    if state in OPEN:
+        domain.append(('state', 'in', OPEN))
+    if Queue.with_context(active_test=False).search_count(domain):
         return None
     return Queue.create({
         'name': name,

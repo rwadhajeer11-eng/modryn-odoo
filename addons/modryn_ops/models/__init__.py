@@ -1,5 +1,6 @@
 from . import audit_log
 from . import calendar_event
+from . import hr_employee
 from . import res_partner
 from . import task
 from . import dress_type

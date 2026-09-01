@@ -1256,3 +1256,39 @@ msgstr "מכירה ממוצעת (₪)"
 #: model_terms:ir.ui.view,arch_db:modryn_ops.manage_reports
 msgid "sold"
 msgstr "נמכרו"
+
+#. module: modryn_ops
+#. odoo-python
+#: code:addons/modryn_ops/models/audit_log.py:0
+msgid "City"
+msgstr "עיר"
+
+#. module: modryn_ops
+#. odoo-python
+#: code:addons/modryn_ops/models/audit_log.py:0
+msgid "Street"
+msgstr "רחוב"
+
+#. module: modryn_ops
+#. odoo-python
+#: code:addons/modryn_ops/models/audit_log.py:0
+msgid "Phone"
+msgstr "טלפון"
+
+#. module: modryn_ops
+#. odoo-python
+#: code:addons/modryn_ops/models/audit_log.py:0
+msgid "Second phone"
+msgstr "טלפון נוסף"
+
+#. module: modryn_ops
+#. odoo-python
+#: code:addons/modryn_ops/models/audit_log.py:0
+msgid "Gender"
+msgstr "מגדר"
+
+#. module: modryn_ops
+#. odoo-python
+#: code:addons/modryn_ops/models/audit_log.py:0
+msgid "The system"
+msgstr "המערכת"

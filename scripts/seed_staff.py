@@ -106,6 +106,12 @@ for name, job, level, username, phone in PEOPLE[SLUG]:
         admin = env.ref('base.user_admin', raise_if_not_found=False)
         if admin:
             admin.write({
+                # Her NAME, and not only her login. The navbar greets the user
+                # record, not the employee one, so without this the owner of a
+                # Hebrew boutique reads "Administrator" on every screen - the
+                # Odoo default this account was born with. The employee row
+                # below has always been right; nobody was reading it.
+                'name': name,
                 'login': username,
                 'password': DEMO_PASSWORD,
                 'group_ids': [(4, env.ref('modryn_staff.group_boutique_owner').id)],

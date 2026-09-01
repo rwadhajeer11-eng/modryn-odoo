@@ -25,6 +25,15 @@ FIELD_LABELS = {
     'modryn_outcome_note': _lt("Outcome note"),
     'modryn_outcome_by_id': _lt("Closed by"),
     'modryn_employee_id': _lt("Stylist"),
+    # A member of staff's own details, changed by her on /staff/profile or by
+    # the owner on the team screen. Same treatment as the rest: named here so
+    # the reader sees her own language, whatever the row was written in.
+    'name': _lt("Name"),
+    'work_phone': _lt("Phone"),
+    'modryn_backup_phone': _lt("Second phone"),
+    'modryn_city': _lt("City"),
+    'modryn_street': _lt("Street"),
+    'modryn_gender': _lt("Gender"),
 }
 
 class ModrynAuditLog(models.Model):
@@ -71,6 +80,70 @@ class ModrynAuditLog(models.Model):
             'new': new or '',
         })
 
+    def _row_list(self):
+        """Every row in this set, formatted - the recordset form of _row().
+
+        Added for the team cards, which ask for one person's last few edits and
+        would otherwise loop and call _row() per record in a controller. One
+        place formats an audit row; there is no second copy to drift.
+        """
+        return [record._row() for record in self]
+
+    def _actor(self):
+        """Who did it, and "the system" when nobody did.
+
+        Cron jobs, seeders and maintenance scripts run as Odoo's root account,
+        so the trail read "OdooBot" ninety times down the owner's page. Matched
+        on the USER rather than on the stored text: actor_name is denormalised
+        deliberately, so that a row keeps naming whoever did it even after the
+        account is renamed - and a name match would break on exactly that.
+        """
+        root = self.env.ref('base.user_root', raise_if_not_found=False)
+        if root and self.user_id and self.user_id.id == root.id:
+            return str(_lt("The system"))
+        return self.actor_name or ''
+
+    @staticmethod
+    def _money(text):
+        """"6700.0" as 6,700 - and anything unparseable exactly as stored.
+
+        The stored text is str() of a float. Nothing is rounded away: a price
+        with agorot on it keeps them, because a boutique that wrote 6,700.50
+        meant the fifty.
+        """
+        try:
+            amount = float(text)
+        except (TypeError, ValueError):
+            return text
+        if amount == int(amount):
+            return '{:,}'.format(int(amount))
+        return '{:,.2f}'.format(amount)
+
+    def _value(self, text):
+        """A stored selection label, in the reader's language.
+
+        The column holds the ENGLISH label - that is what _modryn_audit_repr
+        wrote, in every row, since the first one - so the map is keyed on
+        English and old rows come out translated with no migration.
+
+        Anything that is not a selection (a price, a note, a name) is returned
+        untouched: those are the boutique's own words and not ours to change.
+        """
+        if not text or not self.field or self.model not in self.env:
+            return text
+        field = self.env[self.model]._fields.get(self.field)
+        if field is not None and field.type in ('float', 'monetary'):
+            return self._money(text)
+        # selection can be a callable or the name of a method; only a plain
+        # list can be read backwards from its labels.
+        if not field or field.type != 'selection'                 or not isinstance(field.selection, list):
+            return text
+        translated = dict(self.env[self.model].sudo().fields_get(
+            [self.field])[self.field]['selection'])
+        by_english = {label: translated.get(code, label)
+                      for code, label in field.selection}
+        return by_english.get(text, text)
+
     def _row(self):
         self.ensure_one()
         # Translated HERE, from the language-free field name, so every reader
@@ -80,11 +153,11 @@ class ModrynAuditLog(models.Model):
         return {
             'id': self.id,
             'when': local.strftime('%d.%m.%Y %H:%M'),
-            'actor': self.actor_name or '',
+            'actor': self._actor(),
             'label': str(FIELD_LABELS[self.field]) if self.field in FIELD_LABELS
                      else self.label,
-            'old': self.old or '',
-            'new': self.new or '',
+            'old': self._value(self.old or ''),
+            'new': self._value(self.new or ''),
             'model': self.model,
             'res_id': self.res_id,
         }

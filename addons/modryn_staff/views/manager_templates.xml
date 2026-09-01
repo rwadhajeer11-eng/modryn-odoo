@@ -388,6 +388,55 @@
                                 <span class="modryn_sub" dir="ltr" t-out="doc['at']"/>
                             </div>
                         </div>
+
+                        <!-- WHAT SHE CHANGED, and what it said before.
+                             /staff/profile writes straight over her details, so
+                             until now a corrected phone number simply replaced
+                             the old one and the boutique rang a number nobody
+                             could account for. The audit log has always held
+                             this, but as one flat table of the whole shop fifty
+                             rows to a page - which nobody reads to find out
+                             that one woman changed her street. The question is
+                             asked about a PERSON, so it is answered here.
+
+                             Empty says nothing at all rather than "no changes":
+                             a card that announces the absence of news on every
+                             one of eight people is eight lines of noise. -->
+                        <div t-if="member.get('changes')" class="mt-3">
+                            <div class="modryn_sub">Changed details</div>
+                            <div t-foreach="member['changes']" t-as="change"
+                                 t-key="change['id']" class="modryn_doc_row">
+                                <div>
+                                    <span class="modryn_strong" t-out="change['label']"/>
+                                    <div class="modryn_sub">
+                                        <!-- Old THEN new, and the old one struck
+                                             through: the eye should not have to
+                                             work out which of two values is the
+                                             one on file now. -->
+                                        <t t-if="change['old']">
+                                            <del t-out="change['old']"/>
+                                            <span class="modryn_becomes"
+                                                  aria-hidden="true"/>
+                                        </t>
+                                        <span t-out="change['new'] or '—'"/>
+                                    </div>
+                                </div>
+                                <div class="modryn_sub" dir="ltr">
+                                    <t t-out="change['when']"/>
+                                </div>
+                            </div>
+                            <!-- Whoever did it. Usually she did, on her own
+                                 details screen - but the owner's account form
+                                 writes the same fields, so the log must say
+                                 which, or "she changed her number" is an
+                                 accusation the record cannot support. -->
+                            <div class="modryn_sub mt-1">
+                                <t t-foreach="member['changes'][:1]" t-as="last"
+                                   t-key="last['id']">
+                                    Last changed by <t t-out="last['actor'] or '—'"/>
+                                </t>
+                            </div>
+                        </div>
                     </article>
                 </div>
 

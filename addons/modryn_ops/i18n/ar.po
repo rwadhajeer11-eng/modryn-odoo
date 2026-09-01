@@ -1258,3 +1258,39 @@ msgstr "معدل البيعة (₪)"
 #: model_terms:ir.ui.view,arch_db:modryn_ops.manage_reports
 msgid "sold"
 msgstr "انباعت"
+
+#. module: modryn_ops
+#. odoo-python
+#: code:addons/modryn_ops/models/audit_log.py:0
+msgid "City"
+msgstr "المدينة"
+
+#. module: modryn_ops
+#. odoo-python
+#: code:addons/modryn_ops/models/audit_log.py:0
+msgid "Street"
+msgstr "الشارع"
+
+#. module: modryn_ops
+#. odoo-python
+#: code:addons/modryn_ops/models/audit_log.py:0
+msgid "Phone"
+msgstr "تلفون"
+
+#. module: modryn_ops
+#. odoo-python
+#: code:addons/modryn_ops/models/audit_log.py:0
+msgid "Second phone"
+msgstr "تلفون تاني"
+
+#. module: modryn_ops
+#. odoo-python
+#: code:addons/modryn_ops/models/audit_log.py:0
+msgid "Gender"
+msgstr "الجنس"
+
+#. module: modryn_ops
+#. odoo-python
+#: code:addons/modryn_ops/models/audit_log.py:0
+msgid "The system"
+msgstr "النظام"

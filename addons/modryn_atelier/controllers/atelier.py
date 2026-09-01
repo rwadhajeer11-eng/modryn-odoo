@@ -168,7 +168,14 @@ class ModrynAtelier(http.Controller):
                 'overdue': len([t for t in open_tasks if t.is_overdue]),
             })
         load.sort(key=lambda r: (-r['open'], r['name']))
-        return {'by_state': by_state, 'states': STATES, 'load': load,
+        # Off the FIELD, not off the constant - the same reason spelled out on
+        # the home screen's task_states above. These four words are the board's
+        # column headings and the labels on every move button; read from STATES
+        # they were English on a Hebrew page and on an Arabic one, which is
+        # every reader this product has.
+        labels = dict(Task.modryn_selection('state'))
+        states = [(code, labels.get(code, label)) for code, label in STATES]
+        return {'by_state': by_state, 'states': states, 'load': load,
                 'queue': queue, 'only': only}
 
     def _variant_rows(self):

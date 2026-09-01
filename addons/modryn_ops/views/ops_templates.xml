@@ -231,8 +231,8 @@
                         <span class="modryn_sub">
                             <t t-out="m['stats']['sold']"/> sold
                         </span>
-                        <span class="modryn_sub" dir="ltr">
-                            <t t-out="m['stats']['conversion']"/>%
+                        <span class="modryn_sub">
+                            Conversion <span dir="ltr"><t t-out="m['stats']['conversion']"/>%</span>
                         </span>
                         <span class="modryn_sub" dir="ltr">
                             <!-- Same formatting as the tile above: revenue is a
@@ -245,24 +245,24 @@
                     <div class="row g-2 mt-2">
                         <div class="col-6 col-md-3">
                             <div class="modryn_sub">Conversion</div>
-                            <div class="modryn_strong fs-5" dir="ltr">
+                            <div class="modryn_strong fs-5">
                                 <t t-out="m['stats']['conversion']"/>%
                             </div>
                         </div>
                         <div class="col-6 col-md-3">
                             <div class="modryn_sub">Contact conversion</div>
-                            <div class="modryn_strong fs-5" dir="ltr">
+                            <div class="modryn_strong fs-5">
                                 <t t-out="m['stats']['contact_conversion']"/>%
                             </div>
                         </div>
                         <div class="col-6 col-md-3">
                             <div class="modryn_sub">Revenue (₪)</div>
-                            <div class="modryn_strong fs-5" dir="ltr"
+                            <div class="modryn_strong fs-5"
                                  t-esc="'{:,}'.format(int(m['stats']['revenue']))"/>
                         </div>
                         <div class="col-6 col-md-3">
                             <div class="modryn_sub">No-shows</div>
-                            <div class="modryn_strong fs-5" dir="ltr">
+                            <div class="modryn_strong fs-5">
                                 <t t-out="m['stats']['no_show_rate']"/>%
                             </div>
                         </div>
@@ -276,7 +276,7 @@
                         </div>
                         <div class="col-6 col-md-3">
                             <div class="modryn_sub">Average sale (₪)</div>
-                            <div class="modryn_strong fs-5" dir="ltr"
+                            <div class="modryn_strong fs-5"
                                  t-out="m['stats']['atv']"/>
                         </div>
                         <div class="col-6 col-md-3">

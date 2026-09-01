@@ -31,9 +31,14 @@
 
                  Set in the LAYOUT for the same reason unread_count is: a page
                  whose controller forgot would silently fall back to English
-                 with nothing to report it. -->
+                 with nothing to report it.
+
+                 A page that arrives with a title of its OWN keeps it: the
+                 public check-in sets "Join the queue" and has no tab to look
+                 up, so overwriting it put the untranslatable template name in
+                 the tab for every member of staff who opened that page. -->
             <t t-set="additional_title"
-               t-value="request.env['modryn.role.page'].modryn_page_title(active_tab)"/>
+               t-value="additional_title or request.env['modryn.role.page'].modryn_page_title(active_tab)"/>
             <!-- dir follows the user's language: staff screens are he (rtl) or
                  en (ltr) by per-user preference. -->
             <div id="wrap" t-att-dir="'ltr' if (request.env.lang or 'he_IL').startswith('en') else 'rtl'"

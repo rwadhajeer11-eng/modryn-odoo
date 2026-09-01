@@ -3083,3 +3083,33 @@ msgstr "· הסתיימה"
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
 msgid "Nothing was altered."
 msgstr "לא בוצע שום שינוי."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "Changed details"
+msgstr "פרטים שהשתנו"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "Last changed by"
+msgstr "השינוי האחרון בוצע על ידי"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.supervisor_actions
+msgid "Give her to"
+msgstr "מסירה לעובדת"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.supervisor_actions
+msgid "Hand her to"
+msgstr "העברה לעובדת אחרת"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.supervisor_actions
+msgid "<option value=\"\">Give her to…</option>"
+msgstr "<option value=\"\">מסירה ל…</option>"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.supervisor_actions
+msgid "<option value=\"\">Move her to…</option>"
+msgstr "<option value=\"\">העברה ל…</option>"

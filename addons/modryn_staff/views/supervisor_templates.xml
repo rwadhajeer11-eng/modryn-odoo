@@ -276,12 +276,24 @@
                 <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
                 <input type="hidden" name="kind" t-att-value="target['kind']"/>
                 <input type="hidden" name="record_id" t-att-value="target['id']"/>
-                <select name="employee_id" class="form-select form-select-sm"
-                        t-att-aria-label="'Hand her to' if held else 'Give her to'">
-                    <option value="">
-                        <t t-if="held">Move her to…</t>
-                        <t t-else="">Give her to…</t>
-                    </option>
+                <!-- Two selects and not one t-att-aria-label, because a
+                     string quoted inside an attribute EXPRESSION is invisible
+                     to the translation exporter: it never reaches a .po, no
+                     audit can report it missing, and the screen reader
+                     announced English on a Hebrew page - to the one person who
+                     cannot see the screen to work around it. Written as markup,
+                     the exporter reads it. -->
+                <select t-if="held" name="employee_id"
+                        class="form-select form-select-sm"
+                        aria-label="Hand her to">
+                    <option value="">Move her to…</option>
+                    <option t-foreach="on_floor" t-as="w" t-key="w['id']"
+                            t-att-value="w['id']" t-out="w['name']"/>
+                </select>
+                <select t-else="" name="employee_id"
+                        class="form-select form-select-sm"
+                        aria-label="Give her to">
+                    <option value="">Give her to…</option>
                     <option t-foreach="on_floor" t-as="w" t-key="w['id']"
                             t-att-value="w['id']" t-out="w['name']"/>
                 </select>

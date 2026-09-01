@@ -90,8 +90,30 @@ class ModrynManagerScreen(http.Controller):
                 'name': doc.name,
                 'at': doc.create_date.strftime('%d.%m.%Y')
                       if doc.create_date else '',
-            } for doc in self._papers(employee)]))
+            } for doc in self._papers(employee)],
+                changes=self._changes(employee)))
         return out
+
+    # How many edits a card carries. Five, because this is a "has anything moved
+    # lately" glance and not the archive - the audit page is the archive, and it
+    # is linked from here rather than reproduced.
+    CHANGES_SHOWN = 5
+
+    def _changes(self, employee):
+        """Her own details, as they were changed.
+
+        Guarded on the model EXISTING, not assumed: the audit log lives in
+        modryn_ops and this module is underneath it, so a boutique running the
+        staff module without the operations one gets a card with no history
+        rather than a traceback. The same `in env` guard the outcome fields get.
+        """
+        if 'modryn.audit.log' not in request.env:
+            return []
+        return [dict(row, id=row['id']) for row in request.env[
+            'modryn.audit.log'].sudo().search([
+                ('model', '=', 'hr.employee'),
+                ('res_id', '=', employee.id),
+            ], limit=self.CHANGES_SHOWN)._row_list()]
 
     def _recent(self):
         Announcement = request.env['modryn.announcement'].sudo()
@@ -277,14 +299,19 @@ class ModrynManagerScreen(http.Controller):
         # three ways by three people and a number is a number - so a bride who
         # bought and then had it taken in reads as one story on one row.
         Task = request.env['modryn.alteration.task'].sudo()
+        # The state's label in HER language. The model's own helper, because
+        # reading _fields[...].selection hands back the module-level list, which
+        # is plain Python and therefore English - it printed "Intake" on a
+        # Hebrew page. Looked up once, not once per task.
+        states = dict(Task.modryn_selection('state')) if hasattr(
+            Task, 'modryn_selection') else {}
         for row in rows:
             row['alterations'] = [{
                 'what': task.note or '',
                 'pieces': ', '.join(task.piece_ids.mapped('name')),
                 'taken_in': task.create_date,
                 'finished': task.delivered_at,
-                'state': dict(task._fields['state'].selection).get(
-                    task.state, task.state),
+                'state': states.get(task.state, task.state),
                 'done': task.state == 'delivered',
             } for task in Task.search(
                 self._same_person(row), order='create_date desc')]
