@@ -42,6 +42,9 @@
     platform - so this sits AFTER it, small, in the gold, and reads as a
     maker's mark rather than a second brand competing with the first.
 
+    BEFORE the shop's logo and not after it, which on a right-to-left page
+    puts it hard against the right edge - the first thing on the line.
+
     A WORDMARK AND NOT AN IMAGE. There is no logo file anywhere in this
     repository; MODRYN is set as letterspaced capitals in the display face, on
     the platform's own site and here. Text scales, prints, reads at any size,
@@ -54,9 +57,8 @@
          INHERIT view, so its arch holds the element as it is written
          there - class comes from t-attf-class, which hasclass() cannot
          see, and the upgrade failed loudly saying so. -->
-    <xpath expr="//a[@data-name='Navbar Logo']" position="after">
+    <xpath expr="//a[@data-name='Navbar Logo']" position="before">
       <span class="modryn_by">
-        <span class="modryn_by_pre">by</span>
         <span class="modryn_by_mark">MODRYN</span>
       </span>
     </xpath>

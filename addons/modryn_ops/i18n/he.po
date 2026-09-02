@@ -1385,6 +1385,7 @@ msgid "No discount"
 msgstr "בלי הנחה"
 
 #. module: modryn_ops
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_discount_code__percent
 #: model:ir.model.fields.selection,name:modryn_ops.selection__modryn_sale__discount_kind__percent
 msgid "Percent off"
 msgstr "אחוז הנחה"
@@ -1637,3 +1638,47 @@ msgstr "<b class=\"d-none d-lg-block\">סוג</b>"
 #: code:addons/modryn_ops/models/audit_log.py:0
 msgid "Why the discount"
 msgstr "סיבת ההנחה"
+
+#. module: modryn_ops
+#: model:ir.model,name:modryn_ops.model_modryn_discount_code
+msgid "A discount code"
+msgstr "קוד הנחה"
+
+#. module: modryn_ops
+#: model:ir.model.fields,help:modryn_ops.field_modryn_discount_code__note
+msgid "What it is for, in your words. Nobody outside sees it."
+msgstr "בשביל מה, במילים שלך. אף אחד מבחוץ לא רואה."
+
+#. module: modryn_ops
+#. odoo-python
+#: code:addons/modryn_ops/models/discount_code.py:0
+msgid "A discount is between 1 and 100 percent."
+msgstr "הנחה היא בין 1 ל-100 אחוז."
+
+#. module: modryn_ops
+#. odoo-python
+#: code:addons/modryn_ops/models/discount_code.py:0
+msgid "That code already exists."
+msgstr "הקוד הזה כבר קיים."
+
+#. module: modryn_ops
+#. odoo-python
+#: code:addons/modryn_ops/controllers/sell.py:0
+msgid "There is no discount code called %s."
+msgstr "אין קוד הנחה בשם %s."
+
+#. module: modryn_ops
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_discount_code__code
+#: model_terms:ir.ui.view,arch_db:modryn_ops.sell_screen
+msgid "Code"
+msgstr "קוד"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.products_kind_filter
+msgid "Show these"
+msgstr "הצג אותם"
+
+#. module: modryn_ops
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_discount_code__times_used
+msgid "Times Used"
+msgstr "מספר שימושים"

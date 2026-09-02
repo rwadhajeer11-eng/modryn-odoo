@@ -59,10 +59,16 @@
         boutique's own list under שמלות ואקססוריז - סוגים, so one shop offers
         נסיכה and מרמייד and the next offers עדינה and צנועה.
 
-        INSIDE ODOO'S OWN FILTER FORM rather than a form of its own, so one
-        submit carries the kind and the size together and its js_attributes
-        handler still auto-submits on a tick. A second form beside it would
-        have thrown away her size the moment she chose a kind.
+        ITS OWN FORM, WITH A BUTTON. It began inside Odoo's attribute form,
+        which auto-submits on every tick: choosing two kinds meant two page
+        loads, and the page jumped under her hand after the first. She ticks as
+        many as she likes now and presses once.
+
+        The cost of leaving that form is that this one has to carry the rest of
+        the state itself - the sizes, the price range, the sort order - or
+        choosing a kind would quietly throw her size away. That is what the
+        hidden inputs below are, and there is no other way round it: one form
+        posts one form's fields.
 
         Priority 30: this arch is only correct after website_sale's own
         products_attributes has put the attribute block in, and views are
@@ -72,8 +78,23 @@
               inherit_id="website_sale.product_attribute_filters_form"
               priority="30"
               name="MODRYN: filter the collection by kind">
-        <xpath expr="//t[@t-set='visible_attributes']" position="before">
-            <div t-if="modryn_kinds" class="nav-item mb-3 modryn_kind_filter">
+        <xpath expr="//form" position="before">
+            <form t-if="modryn_kinds" method="get" t-att-action="keep(kind=0)"
+                  class="nav-item mb-3 modryn_kind_filter">
+                <!-- Everything the OTHER form would have posted. Without these
+                     her size and her price range fall off the moment she picks
+                     a kind. -->
+                <t t-foreach="request.httprequest.args.getlist('attribute_values')"
+                   t-as="chosen">
+                    <input type="hidden" name="attribute_values" t-att-value="chosen"/>
+                </t>
+                <input t-if="request.params.get('min_price')" type="hidden"
+                       name="min_price" t-att-value="request.params.get('min_price')"/>
+                <input t-if="request.params.get('max_price')" type="hidden"
+                       name="max_price" t-att-value="request.params.get('max_price')"/>
+                <input t-if="request.params.get('order')" type="hidden"
+                       name="order" t-att-value="request.params.get('order')"/>
+
                 <h6 class="mb-3"><b class="d-none d-lg-block">Kind</b></h6>
                 <div t-foreach="modryn_kinds" t-as="kind" class="form-check">
                     <input type="checkbox" name="kind" t-att-value="kind.id"
@@ -83,7 +104,10 @@
                     <label class="form-check-label" t-attf-for="modryn_kind_#{kind.id}"
                            t-out="kind.name"/>
                 </div>
-            </div>
+                <button type="submit" class="btn btn-outline-dark btn-sm mt-2">
+                    Show these
+                </button>
+            </form>
         </xpath>
     </template>
 

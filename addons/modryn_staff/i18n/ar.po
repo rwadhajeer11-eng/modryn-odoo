@@ -3248,3 +3248,90 @@ msgstr "الإيميل"
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
 msgid "Street"
 msgstr "الشارع"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "Discount codes"
+msgstr "أكواد الخصم"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid ""
+"A word, and what it takes off. The till asks for it by name:\n"
+"                    whoever is at the counter types the word instead of deciding\n"
+"                    an amount, and the reason on the owner's screen writes\n"
+"                    itself. Percent only — a fixed sum would give a veil away\n"
+"                    and take a tenth off a gown."
+msgstr ""
+"كلمة، وقديش بتنزّل. الكاش بيسأل عنها بالاسم: الي عالكاش بتكتب الكلمة بدل ما "
+"تقرر مبلغ، والسبب بيتكتب لحاله بشاشة صاحبة المحل. نسبة بس — مبلغ ثابت بيعطي "
+"الطرحة ببلاش وبينزّل عُشر من الفستان."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "The code"
+msgstr "الكود"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "What it is for"
+msgstr "لشو"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "Add the code"
+msgstr "ضيفي الكود"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "Used"
+msgstr "الاستخدامات"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "Stop it"
+msgstr "وقّفيه"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "Use it again"
+msgstr "رجّعيه"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "No codes yet. Add the first one above."
+msgstr "ما في أكواد لسا. ضيفي الأول من فوق."
+
+#. module: modryn_staff
+#. odoo-python
+#: code:addons/modryn_staff/controllers/manager.py:0
+msgid "The code needs a word."
+msgstr "الكود بدّه كلمة."
+
+#. module: modryn_staff
+#. odoo-python
+#: code:addons/modryn_staff/controllers/manager.py:0
+msgid "A discount is between 1 and 100 percent."
+msgstr "الخصم بين ١ و١٠٠ بالمية."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "Percent off"
+msgstr "نسبة الخصم"
+
+#. module: modryn_staff
+#. odoo-python
+#: code:addons/modryn_staff/controllers/manager.py:0
+msgid "That code already exists."
+msgstr "هذا الكود موجود."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid ""
+"<i class=\"fa fa-tag\" aria-hidden=\"true\"/>\n"
+"                    <span class=\"modryn_strong\">Discount codes</span>\n"
+"                    <span class=\"modryn_sub\">A word that takes a percentage off at the till.</span>"
+msgstr ""
+"<i class=\"fa fa-tag\" aria-hidden=\"true\"/>\n"
+"                    <span class=\"modryn_strong\">أكواد الخصم</span>\n"
+"                    <span class=\"modryn_sub\">كلمة بتنزّل نسبة عالكاش.</span>"

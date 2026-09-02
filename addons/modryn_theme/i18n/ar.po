@@ -214,3 +214,14 @@ msgid ""
 "WhatsApp is on a different line."
 msgstr ""
 "اتركيها فاضية عشان يستخدم تلفون المحل. عبّيها بس إذا الواتساب على خط تاني."
+
+#. module: modryn_theme
+#: model_terms:ir.ui.view,arch_db:modryn_theme.header_modryn_mark
+msgid ""
+"<span class=\"modryn_by\">\n"
+"        <span class=\"modryn_by_mark\">MODRYN</span>\n"
+"      </span>"
+msgstr ""
+"<span class=\"modryn_by\">\n"
+"        <span class=\"modryn_by_mark\">MODRYN</span>\n"
+"      </span>"

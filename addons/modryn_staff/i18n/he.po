@@ -3244,3 +3244,90 @@ msgstr "אימייל"
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
 msgid "Street"
 msgstr "רחוב"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "Discount codes"
+msgstr "קודי הנחה"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid ""
+"A word, and what it takes off. The till asks for it by name:\n"
+"                    whoever is at the counter types the word instead of deciding\n"
+"                    an amount, and the reason on the owner's screen writes\n"
+"                    itself. Percent only — a fixed sum would give a veil away\n"
+"                    and take a tenth off a gown."
+msgstr ""
+"מילה, וכמה היא מורידה. הקופה מבקשת אותה בשם: מי שעומדת בקופה מקלידה את המילה"
+" במקום להחליט על סכום, והסיבה במסך של הבעלים נכתבת מעצמה. אחוזים בלבד — סכום"
+" קבוע היה נותן הינומה בחינם ומוריד עשירית משמלה."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "The code"
+msgstr "הקוד"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "What it is for"
+msgstr "בשביל מה"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "Add the code"
+msgstr "הוספת קוד"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "Used"
+msgstr "שימושים"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "Stop it"
+msgstr "עצירה"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "Use it again"
+msgstr "הפעלה מחדש"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "No codes yet. Add the first one above."
+msgstr "עדיין אין קודים. הוסיפי את הראשון למעלה."
+
+#. module: modryn_staff
+#. odoo-python
+#: code:addons/modryn_staff/controllers/manager.py:0
+msgid "The code needs a word."
+msgstr "לקוד צריך מילה."
+
+#. module: modryn_staff
+#. odoo-python
+#: code:addons/modryn_staff/controllers/manager.py:0
+msgid "A discount is between 1 and 100 percent."
+msgstr "הנחה היא בין 1 ל-100 אחוז."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "Percent off"
+msgstr "אחוז הנחה"
+
+#. module: modryn_staff
+#. odoo-python
+#: code:addons/modryn_staff/controllers/manager.py:0
+msgid "That code already exists."
+msgstr "הקוד הזה כבר קיים."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid ""
+"<i class=\"fa fa-tag\" aria-hidden=\"true\"/>\n"
+"                    <span class=\"modryn_strong\">Discount codes</span>\n"
+"                    <span class=\"modryn_sub\">A word that takes a percentage off at the till.</span>"
+msgstr ""
+"<i class=\"fa fa-tag\" aria-hidden=\"true\"/>\n"
+"                    <span class=\"modryn_strong\">קודי הנחה</span>\n"
+"                    <span class=\"modryn_sub\">מילה שמורידה אחוזים בקופה.</span>"

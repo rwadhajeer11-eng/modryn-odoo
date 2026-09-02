@@ -139,22 +139,17 @@ body {
 // boutique, and this says who built the room rather than whose room it is.
 .modryn_by {
     display: inline-flex;
-    align-items: baseline;
-    gap: .3rem;
-    // Logical margin: it follows the writing direction, so the mark sits after
-    // the shop's name in Hebrew and Arabic without a second rule.
-    margin-inline-start: .6rem;
+    align-items: center;
+    // Logical margin: it follows the writing direction, so the gap falls
+    // between the two marks in Hebrew and Arabic and in English alike.
+    margin-inline-end: .9rem;
     white-space: nowrap;
-
-    .modryn_by_pre {
-        font-size: .62rem;
-        letter-spacing: .04em;
-        opacity: .6;
-    }
 
     .modryn_by_mark {
         font-family: 'Frank Ruhl Libre', serif;
-        font-size: .78rem;
+        // The shop's own name's size, not a footnote under it: both are marks
+        // and they stand at the same height.
+        font-size: 1.25rem;
         letter-spacing: .22em;
         // #7F612B is the ONLY gold permitted as text - see the three-gold law
         // at the top of this file.

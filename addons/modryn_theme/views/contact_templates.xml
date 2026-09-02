@@ -29,6 +29,30 @@
     <xpath expr="//div[@id='wrap']" position="before">
       <t t-set="additional_title">Contact us</t>
     </xpath>
+    <!--
+        WHAT THE FORM ASKS FOR. Odoo's contact page wants a name, a phone, an
+        email, a company, a subject and a message - six boxes, three of them
+        starred - to ask a bridal shop a question. A company name, on a page
+        where the visitor is a bride.
+
+        Three now: her name, her phone, and what she wants to ask. A boutique
+        rings back; it does not write.
+
+        The subject goes on as a hidden value rather than being deleted: the
+        lead this creates is titled with it, and a list of leads all called
+        nothing is a list nobody can work from. Email stays in the record as
+        whatever the visitor is known by, and is simply not demanded.
+    -->
+    <xpath expr="//div[@data-type='email']" position="replace"/>
+    <xpath expr="//input[@name='company']/ancestor::div[1]" position="replace"/>
+    <xpath expr="//input[@name='subject']" position="replace">
+      <input id="contact5" type="hidden" class="form-control s_website_form_input"
+             name="subject" value="A question from the website"/>
+    </xpath>
+    <xpath expr="//input[@name='subject']/ancestor::div[1]" position="attributes">
+      <attribute name="class">s_website_form_field s_website_form_dnone</attribute>
+    </xpath>
+
     <xpath expr="//div[hasclass('col-lg-4')][hasclass('offset-lg-1')]"
            position="replace">
       <div class="col-lg-4 offset-lg-1 mt-4 mt-lg-0">

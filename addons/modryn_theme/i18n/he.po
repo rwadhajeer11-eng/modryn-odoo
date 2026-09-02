@@ -213,3 +213,14 @@ msgid ""
 "Leave this empty to use the shop's phone number. Fill it in only when "
 "WhatsApp is on a different line."
 msgstr "השאירי ריק כדי להשתמש בטלפון של החנות. מלאי רק אם הוואטסאפ על קו אחר."
+
+#. module: modryn_theme
+#: model_terms:ir.ui.view,arch_db:modryn_theme.header_modryn_mark
+msgid ""
+"<span class=\"modryn_by\">\n"
+"        <span class=\"modryn_by_mark\">MODRYN</span>\n"
+"      </span>"
+msgstr ""
+"<span class=\"modryn_by\">\n"
+"        <span class=\"modryn_by_mark\">MODRYN</span>\n"
+"      </span>"

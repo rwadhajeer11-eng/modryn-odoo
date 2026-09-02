@@ -135,7 +135,13 @@
                                    class="form-control" min="0" step="1" dir="ltr"
                                    t-att-value="values.get('discount_value')"/>
                         </div>
-                        <div class="col-12 col-md-6">
+                        <div class="col-12 col-md-3">
+                            <label class="form-label" for="discount_code">Code</label>
+                            <input type="text" id="discount_code" name="discount_code"
+                                   class="form-control" dir="ltr" autocomplete="off"
+                                   t-att-value="values.get('discount_code')"/>
+                        </div>
+                        <div class="col-12 col-md-3">
                             <label class="form-label" for="discount_reason">Why</label>
                             <input type="text" id="discount_reason" name="discount_reason"
                                    class="form-control"

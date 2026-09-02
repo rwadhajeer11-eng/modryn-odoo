@@ -63,6 +63,13 @@
                     <span class="modryn_sub">The rooms a customer can be shown into.</span>
                 </a>
                 <!-- The owner's. These hours decide what a customer can book. -->
+                <!-- The MANAGER's, not the owner's: she is the one who
+                     decides that this week's fair gets ten percent. -->
+                <a class="modryn_tile" href="/manage/team-screen?view=codes">
+                    <i class="fa fa-tag" aria-hidden="true"/>
+                    <span class="modryn_strong">Discount codes</span>
+                    <span class="modryn_sub">A word that takes a percentage off at the till.</span>
+                </a>
                 <!-- WHAT THE WORLD IS TOLD about this boutique. Beside the
                      opening hours on purpose: both are answers a customer gets
                      without asking anybody, and both were only settable by
@@ -893,6 +900,77 @@
                  only: these hours decide what a customer can book, and
                  the routes behind the forms refuse anybody else - the
                  tile is simply not drawn for a manager. -->
+            <section t-if="view == 'codes'" class="modryn_panel mb-4">
+                <h1 class="mb-2">Discount codes</h1>
+                <p class="text-muted mb-4">
+                    A word, and what it takes off. The till asks for it by name:
+                    whoever is at the counter types the word instead of deciding
+                    an amount, and the reason on the owner's screen writes
+                    itself. Percent only — a fixed sum would give a veil away
+                    and take a tenth off a gown.
+                </p>
+
+                <div t-if="codes_error" class="modryn_field_error mb-3" role="alert"
+                     t-out="codes_error"/>
+
+                <form action="/manage/codes/new" method="post"
+                      class="row g-2 mb-4" style="max-width: 700px;">
+                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                    <div class="col-12 col-md-4">
+                        <label class="form-label" for="code_word">The code</label>
+                        <input type="text" id="code_word" name="code" dir="ltr"
+                               class="form-control" required="required"/>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <label class="form-label" for="code_percent">Percent off</label>
+                        <input type="number" id="code_percent" name="percent"
+                               min="1" max="100" step="1" dir="ltr"
+                               class="form-control" required="required"/>
+                    </div>
+                    <div class="col-12 col-md-5">
+                        <label class="form-label" for="code_note">What it is for</label>
+                        <input type="text" id="code_note" name="note" class="form-control"/>
+                    </div>
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-primary">Add the code</button>
+                    </div>
+                </form>
+
+                <p t-if="not codes" class="text-muted">
+                    No codes yet. Add the first one above.
+                </p>
+                <div t-if="codes" class="table-responsive">
+                    <table class="table align-middle" style="max-width: 700px;">
+                        <thead>
+                            <tr>
+                                <th>The code</th><th>Percent off</th>
+                                <th>What it is for</th><th>Used</th><th/>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="codes" t-as="rule"
+                                t-attf-class="#{'' if rule.active else 'text-muted'}">
+                                <td dir="ltr"><strong t-out="rule.code"/></td>
+                                <td dir="ltr"><t t-out="int(rule.percent)"/>%</td>
+                                <td t-out="rule.note or ''"/>
+                                <td dir="ltr" t-out="rule.times_used"/>
+                                <td class="text-end">
+                                    <form t-attf-action="/manage/codes/archive/#{rule.id}"
+                                          method="post" class="d-inline">
+                                        <input type="hidden" name="csrf_token"
+                                               t-att-value="request.csrf_token()"/>
+                                        <button type="submit" class="btn btn-sm btn-outline-dark">
+                                            <t t-if="rule.active">Stop it</t>
+                                            <t t-else="">Use it again</t>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
             <section t-if="view == 'shop' and is_owner" class="modryn_panel mb-4">
                 <h1 class="mb-2">Your shop's details</h1>
                 <p class="text-muted mb-4">

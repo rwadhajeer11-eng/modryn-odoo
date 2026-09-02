@@ -17,6 +17,7 @@ import pytz
 import werkzeug.urls
 
 from odoo import _, fields, http
+from odoo.exceptions import ValidationError
 from odoo.http import content_disposition, request
 from odoo.tools.translate import LazyTranslate
 
@@ -142,7 +143,7 @@ class ModrynManagerScreen(http.Controller):
     # Two different questions that both want the word - named apart here so a
     # link can never quietly open the other one.
     VIEWS = ('announce', 'team', 'hours', 'rooms', 'worked', 'sales',
-             'track', 'shop')
+             'track', 'shop', 'codes')
 
     def _account_form(self, editing=None, adding=False, errors=None, values=None):
         """The add/edit form's context, or nothing at all.
@@ -507,6 +508,14 @@ class ModrynManagerScreen(http.Controller):
             context.update(self._worked_context(
                 whose=whose, month=request.params.get('month'),
                 error=request.params.get('error')))
+        if view == 'codes':
+            # THE MANAGER'S, not the owner's. She is the one who decides that
+            # this week's fair gets ten percent, and making her find the owner
+            # to type it is how a code stops being used at all.
+            Code = request.env['modryn.discount.code'].sudo().with_context(
+                active_test=False)
+            context['codes'] = Code.search([])
+            context['codes_error'] = request.params.get('error') or ''
         if access.is_owner():
             if view == 'hours':
                 context.update(ModrynManage().hours_context(
@@ -550,6 +559,60 @@ class ModrynManagerScreen(http.Controller):
                 'whatsapp_number': company.modryn_whatsapp_number(),
             },
         }
+
+    # ------------------------------------------------------- discount codes
+    @http.route('/manage/codes/new', type='http', auth='user', website=True,
+                methods=['POST'], csrf=True, sitemap=False)
+    def code_new(self, **post):
+        """A word, and what it takes off.
+
+        MANAGER AND OWNER BOTH: this is the screen named after the manager and
+        the decision is hers to make.
+        """
+        if not (access.is_manager() or access.can_view('boss')):
+            return access.deny()
+
+        def refuse(message):
+            return request.redirect('/manage/team-screen?view=codes&error=%s'
+                                    % werkzeug.urls.url_quote(message))
+
+        code = (post.get('code') or '').strip()
+        if not code:
+            return refuse(_("The code needs a word."))
+        try:
+            percent = float(post.get('percent') or 0)
+        except (TypeError, ValueError):
+            return refuse(_("A discount is between 1 and 100 percent."))
+        if not 0 < percent <= 100:
+            return refuse(_("A discount is between 1 and 100 percent."))
+
+        try:
+            with request.env.cr.savepoint():
+                request.env['modryn.discount.code'].sudo().create({
+                    'code': code,
+                    'percent': percent,
+                    'note': (post.get('note') or '').strip(),
+                })
+        except ValidationError as err:
+            return refuse(err.args[0] if err.args else _("That code already exists."))
+        return request.redirect('/manage/team-screen?view=codes')
+
+    @http.route('/manage/codes/archive/<int:code_id>', type='http', auth='user',
+                website=True, methods=['POST'], csrf=True, sitemap=False)
+    def code_archive(self, code_id, **post):
+        """Retire a code, or bring it back.
+
+        Archived and never deleted: a sale made with it carries the word in its
+        reason, and a code removed from the table would leave that sentence
+        unexplained on the owner's screen months later.
+        """
+        if not (access.is_manager() or access.can_view('boss')):
+            return access.deny()
+        rule = request.env['modryn.discount.code'].sudo().with_context(
+            active_test=False).browse(code_id).exists()
+        if rule:
+            rule.active = not rule.active
+        return request.redirect('/manage/team-screen?view=codes')
 
     @http.route('/manage/shop-details', type='http', auth='user', website=True,
                 methods=['POST'], csrf=True, sitemap=False)

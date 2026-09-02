@@ -151,6 +151,15 @@ class ModrynSell(http.Controller):
             discount = 0.0
         reason = (post.get('discount_reason') or '').strip()
 
+        # A CODE OVERRULES THE TWO BOXES BESIDE IT. She typed a word the
+        # manager decided in advance; letting a number typed by hand beat it
+        # would make the code a suggestion, and there would be no point having
+        # one. The reason writes itself, so the owner's screen reads
+        # "10% off — BRIDE10" rather than a blank somebody has to chase.
+        typed_code = (post.get('discount_code') or '').strip()
+        rule = request.env['modryn.discount.code'].sudo().modryn_find(typed_code) \
+            if typed_code else None
+
         altered = bool(post.get('altered'))
         alteration_note = (post.get('alteration_note') or '').strip()
         altered_by_raw = post.get('alteration_by_id') or ''
@@ -158,6 +167,16 @@ class ModrynSell(http.Controller):
         def refuse(message):
             return request.render('modryn_ops.sell_screen', self._context(
                 error=message, values=dict(post, lines=lines)))
+
+        # A WRONG CODE IS REFUSED, never quietly ignored: a saleswoman who
+        # typed BRDIE10 and saw the sale go through would believe the bride got
+        # her ten percent, and nobody would find out until the month is counted.
+        if typed_code and not rule:
+            return refuse(_("There is no discount code called %s.") % typed_code)
+        if rule:
+            kind = 'percent'
+            discount = rule.percent
+            reason = rule.code
 
         if not name:
             return refuse(_("Please enter the customer's name."))
@@ -188,6 +207,11 @@ class ModrynSell(http.Controller):
             'line_ids': [(0, 0, line) for line in lines],
         })
         sale.modryn_take_stock()
+        if rule:
+            # Counted so the manager can see which of her codes anybody is
+            # actually using. sudo: the woman at the counter may read a code
+            # and may not write one.
+            rule.sudo().times_used += 1
 
         # A discount is money, so it goes in the trail the owner reads. Logged
         # here and not in the model's create, because this is the only door a
