@@ -700,11 +700,6 @@ msgstr ""
 
 #. module: modryn_platform
 #: model_terms:ir.ui.view,arch_db:modryn_platform.platform_account
-msgid "Your password, to confirm"
-msgstr "كلمة السر تبعك، للتأكيد"
-
-#. module: modryn_platform
-#: model_terms:ir.ui.view,arch_db:modryn_platform.platform_account
 msgid "Save how I sign in"
 msgstr "حفظ طريقة الدخول"
 
@@ -733,18 +728,13 @@ msgstr "تغيير كلمة السر"
 
 #. module: modryn_platform
 #: model_terms:ir.ui.view,arch_db:modryn_platform.platform_account
-msgid "Current password"
-msgstr "كلمة السر الحالية"
-
-#. module: modryn_platform
-#: model_terms:ir.ui.view,arch_db:modryn_platform.platform_account
 msgid "New password"
 msgstr "كلمة سر جديدة"
 
 #. module: modryn_platform
 #: model_terms:ir.ui.view,arch_db:modryn_platform.platform_account
 msgid "New password again"
-msgstr "كلمة السر الجديدة كمان مرة"
+msgstr "كلمة السر الجديدة مرة تانية"
 
 #. module: modryn_platform
 #: model_terms:ir.ui.view,arch_db:modryn_platform.platform_account
@@ -1222,3 +1212,52 @@ msgid ""
 "Clear a name to remove that\n"
 "                                                partner."
 msgstr "امسح الاسم عشان تشيل الشريك."
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.platform_account
+msgid "To save this, type the four answers you sign in with."
+msgstr "عشان تحفظ، اكتب الأربع إجابات الي بتفوت فيهن."
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.platform_account
+msgid "Edit"
+msgstr "تعديل"
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.platform_account
+msgid "Save this person"
+msgstr "احفظ هالشخص"
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.platform_account
+msgid ""
+"Leave the phone, the ID number and\n"
+"                                                the password empty to keep them as\n"
+"                                                they are — they are stored the way\n"
+"                                                a password is and cannot be shown\n"
+"                                                back."
+msgstr ""
+"اترك التلفون ورقم الهوية وكلمة السر فاضيين عشان يضلوا زي ما هن — محفوظين زي "
+"كلمة السر وما بنقدر نرجع نعرضهن."
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.platform_account
+msgid "Yours is above"
+msgstr "تبعك فوق"
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.platform_account
+msgid "New phone number"
+msgstr "تلفون جديد"
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.platform_account
+msgid "New ID number"
+msgstr "رقم هوية جديد"
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.platform_account
+msgid ""
+"To save this, type the four\n"
+"                                                        answers you sign in with."
+msgstr "عشان تحفظ، اكتب الأربع إجابات الي بتفوت فيهن."

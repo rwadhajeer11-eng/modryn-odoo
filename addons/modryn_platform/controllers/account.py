@@ -1,4 +1,3 @@
-import odoo
 from odoo import _, http
 from odoo.http import request
 
@@ -112,23 +111,44 @@ class ModrynPlatformAccount(http.Controller):
         })
         return request.redirect('/platform/account?saved=1')
 
-    def _password_holds(self, user, password):
-        """Is this her current password?
+    @staticmethod
+    def _keep_my_session():
+        """Stay signed in after changing your own password.
 
-        Verified by authenticating, which is the only check that goes through
-        Odoo's own hashing and its own rate limiting. A comparison written here
-        would be a second implementation of the one thing worth not writing
-        twice.
+        A password change invalidates every session that account has, which is
+        the point of it - but that includes THIS one, and being thrown to the
+        login page by the screen you just used reads as the change having
+        failed. Setting session.uid is not enough and was the bug here: the
+        session also carries a token derived from the password, and it is the
+        token the next request is checked against. Recomputed exactly as Odoo's
+        own portal does it after the same operation.
         """
-        if not password:
-            return False
-        try:
-            user.sudo()._check_credentials(
-                {'type': 'password', 'password': password},
-                {'interactive': False})
-        except odoo.exceptions.AccessDenied:
-            return False
-        return True
+        request.session.session_token = request.env.user._compute_session_token(
+            request.session.sid)
+
+    def _four_answers_ok(self, post):
+        """All four sign-in answers, checked as the door checks them.
+
+        THE BAR FOR EVERY CHANGE ON THIS SCREEN THAT TOUCHES WHO CAN GET IN:
+        my own answers, my password, adding a person, editing one, removing
+        one. A password on its own used to be enough, and that made the two
+        extra factors weaker than having none - anybody reaching a session left
+        open could rewrite the very answers that keep them out, using the one
+        answer they had already got past.
+
+        The fields are named `auth_*` rather than the bare names the other
+        screens use, because this screen has forms carrying BOTH a username to
+        prove and a username to set, and one name for two meanings is how a
+        form starts saving the wrong one.
+
+        Never short-circuited: modryn_platform_credentials_ok checks all four
+        before answering, so a wrong one costs the same time as a right one.
+        """
+        return request.env.user.modryn_platform_credentials_ok(
+            login=post.get('auth_username') or '',
+            phone=post.get('auth_phone') or '',
+            idnum=post.get('auth_idnum') or '',
+            password=post.get('auth_password') or '')
 
     @http.route('/platform/account/login', type='http', auth='user',
                 website=True, methods=['POST'], csrf=True, sitemap=False)
@@ -137,19 +157,16 @@ class ModrynPlatformAccount(http.Controller):
         if not user:
             return request.not_found()
 
-        # Her CURRENT password, to change any of these. Without it, anybody who
-        # reached a session she left open could rewrite the very answers that
-        # keep them out — which would make the extra two factors weaker than
-        # having none, because they would look like protection.
-        if not self._password_holds(user, post.get('current_password')):
-            return self._render(error=_("That password is not right."))
+        # ALL FOUR, not the password alone. See _four_answers_ok.
+        if not self._four_answers_ok(post):
+            return self._render(error=_("Those details aren't valid"))
 
-        login = (post.get('username') or '').strip()
+        login = (post.get('new_username') or '').strip()
         if not login:
             return self._render(error=_("You need a username."))
 
-        phone = (post.get('factor_phone') or '').strip()
-        idnum = (post.get('factor_id') or '').strip()
+        phone = (post.get('new_phone') or '').strip()
+        idnum = (post.get('new_idnum') or '').strip()
 
         # BLANK MEANS LEAVE IT, not clear it. The two are stored as hashes and
         # cannot be shown back, so the form has nothing to put in the box — an
@@ -173,8 +190,8 @@ class ModrynPlatformAccount(http.Controller):
         if not user:
             return request.not_found()
 
-        if not self._password_holds(user, post.get('old_password')):
-            return self._render(error=_("That password is not right."))
+        if not self._four_answers_ok(post):
+            return self._render(error=_("Those details aren't valid"))
 
         new = post.get('new_password') or ''
         again = post.get('new_password2') or ''
@@ -185,10 +202,7 @@ class ModrynPlatformAccount(http.Controller):
                 "A password needs at least %s characters.") % MIN_PASSWORD)
 
         user.sudo().write({'password': new})
-        # Odoo ends every other session on a password change; this one is kept
-        # so she is not thrown out of the screen she just used. Signing out is
-        # a link away if that is what she wanted.
-        request.session.uid = user.id
+        self._keep_my_session()
         return request.redirect('/platform/account?saved=1')
 
     @http.route('/platform/account/user/new', type='http', auth='user',
@@ -204,8 +218,8 @@ class ModrynPlatformAccount(http.Controller):
         me = self._owner()
         if not me:
             return request.not_found()
-        if not self._password_holds(me, post.get('current_password')):
-            return self._render(error=_("That password is not right."))
+        if not self._four_answers_ok(post):
+            return self._render(error=_("Those details aren't valid"))
 
         login = (post.get('new_login') or '').strip()
         name = (post.get('new_name') or '').strip() or login
@@ -234,6 +248,66 @@ class ModrynPlatformAccount(http.Controller):
         created.modryn_set_platform_factors(phone=phone, idnum=idnum)
         return request.redirect('/platform/account?saved=1#people')
 
+    @http.route('/platform/account/user/edit/<int:user_id>', type='http',
+                auth='user', website=True, methods=['POST'], csrf=True,
+                sitemap=False)
+    def account_user_edit(self, user_id, **post):
+        """Correct somebody's username, name, or any of their four answers.
+
+        The list could add people and remove them and nothing in between, so a
+        mistyped phone number meant deleting the person and making them again -
+        which is a different thing from correcting them, and reads as one on
+        any screen that lists who was removed.
+
+        BLANK MEANS LEAVE IT for the phone, the identity number and the
+        password. All three are stored as hashes and cannot be shown back, so
+        the form has nothing to put in the box; treating an empty field as
+        "erase" would lock somebody out on the next save of their name.
+
+        ANY ACCOUNT MAY EDIT ANY OTHER, and no account is the main one. The
+        four answers asked for are the answers of whoever is doing it.
+        """
+        me = self._owner()
+        if not me:
+            return request.not_found()
+        if not self._four_answers_ok(post):
+            return self._render(error=_("Those details aren't valid"))
+
+        target = request.env['res.users'].sudo().browse(user_id).exists()
+        if not target or not target.has_group(GROUP_PLATFORM):
+            return request.redirect('/platform/account#people')
+
+        login = (post.get('login') or '').strip()
+        if not login:
+            return self._render(error=_("You need a username."))
+        if login != target.login and request.env['res.users'].sudo().search_count(
+                [('login', '=', login), ('id', '!=', target.id)]):
+            return self._render(error=_("That username is taken."))
+
+        password = post.get('password') or ''
+        if password and len(password) < MIN_PASSWORD:
+            return self._render(error=_(
+                "A password needs at least %s characters.") % MIN_PASSWORD)
+
+        values = {'login': login,
+                  'name': (post.get('name') or '').strip() or login}
+        if password:
+            values['password'] = password
+        target.write(values)
+
+        phone = (post.get('phone') or '').strip()
+        idnum = (post.get('idnum') or '').strip()
+        if phone or idnum:
+            target.modryn_set_platform_factors(
+                phone=phone or None, idnum=idnum or None)
+
+        # The list offers no Edit against your own row, but a POST can still
+        # name your own id, and changing your own password there ends your
+        # session in exactly the same way.
+        if target.id == me.id and password:
+            self._keep_my_session()
+        return request.redirect('/platform/account?saved=1#people')
+
     @http.route('/platform/account/user/delete/<int:user_id>', type='http',
                 auth='user', website=True, methods=['POST'], csrf=True,
                 sitemap=False)
@@ -246,19 +320,38 @@ class ModrynPlatformAccount(http.Controller):
         SELF-DELETION IS REFUSED, and not because of permissions: it is the one
         mistake that cannot be undone from the screen that made it, since the
         account doing the undoing would be the account that just went.
+
+        NOBODY IS THE MAIN ACCOUNT. Anyone here can remove anyone else,
+        including whoever made them, and the four answers asked for are the
+        answers of whoever is doing it.
+
+        WHAT "REMOVE" DOES depends on what the row is, and the difference is
+        not about rank. A person added on this screen is a row that exists for
+        this screen, and it is unlinked. `admin` is not: on this database it is
+        Odoo's OWN administrator record, pointed at by ir_model_data and by
+        half the modules installed, and unlinking it would not remove a person
+        from the platform - it would break the database they were removed from.
+        So for a row Odoo owns, removing means TAKING ITS PLATFORM ACCESS AWAY.
+        The result on this screen is identical: the row leaves the list and
+        that account can no longer sign in.
         """
         me = self._owner()
         if not me:
             return request.not_found()
 
-        if not me.modryn_platform_credentials_ok(
-                login=post.get('username') or '',
-                phone=post.get('phone') or '',
-                idnum=post.get('idnum') or '',
-                password=post.get('password') or ''):
+        if not self._four_answers_ok(post):
             return self._render(error=_("Those details aren't valid"))
 
         target = request.env['res.users'].sudo().browse(user_id).exists()
-        if target and target.id != me.id and target.has_group(GROUP_PLATFORM):
+        if not target or target.id == me.id or not target.has_group(GROUP_PLATFORM):
+            return request.redirect('/platform/account?saved=1#people')
+
+        # Does Odoo itself own this row? An xml id is the plain answer: rows
+        # created on this screen have none, and base.user_admin has one.
+        owned_by_odoo = request.env['ir.model.data'].sudo().search_count(
+            [('model', '=', 'res.users'), ('res_id', '=', target.id)])
+        if owned_by_odoo:
+            target.write({'group_ids': [(3, request.env.ref(GROUP_PLATFORM).id)]})
+        else:
             target.unlink()
         return request.redirect('/platform/account?saved=1#people')

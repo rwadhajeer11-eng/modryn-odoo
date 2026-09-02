@@ -700,11 +700,6 @@ msgstr ""
 
 #. module: modryn_platform
 #: model_terms:ir.ui.view,arch_db:modryn_platform.platform_account
-msgid "Your password, to confirm"
-msgstr "הסיסמה שלך, לאישור"
-
-#. module: modryn_platform
-#: model_terms:ir.ui.view,arch_db:modryn_platform.platform_account
 msgid "Save how I sign in"
 msgstr "שמירת אופן הכניסה"
 
@@ -730,11 +725,6 @@ msgstr "שם המשתמש הזה תפוס."
 #: model_terms:ir.ui.view,arch_db:modryn_platform.platform_account
 msgid "Change the password"
 msgstr "שינוי הסיסמה"
-
-#. module: modryn_platform
-#: model_terms:ir.ui.view,arch_db:modryn_platform.platform_account
-msgid "Current password"
-msgstr "הסיסמה הנוכחית"
 
 #. module: modryn_platform
 #: model_terms:ir.ui.view,arch_db:modryn_platform.platform_account
@@ -1225,3 +1215,52 @@ msgid ""
 "Clear a name to remove that\n"
 "                                                partner."
 msgstr "מחיקת שם מסירה את השותף."
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.platform_account
+msgid "To save this, type the four answers you sign in with."
+msgstr "כדי לשמור, הקלד את ארבע התשובות שאתה נכנס איתן."
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.platform_account
+msgid "Edit"
+msgstr "עריכה"
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.platform_account
+msgid "Save this person"
+msgstr "שמירת האדם הזה"
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.platform_account
+msgid ""
+"Leave the phone, the ID number and\n"
+"                                                the password empty to keep them as\n"
+"                                                they are — they are stored the way\n"
+"                                                a password is and cannot be shown\n"
+"                                                back."
+msgstr ""
+"השאר את הטלפון, מספר תעודת הזהות והסיסמה ריקים כדי להשאיר אותם כמו שהם — הם "
+"נשמרים כמו סיסמה ואי אפשר להציג אותם בחזרה."
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.platform_account
+msgid "Yours is above"
+msgstr "שלך למעלה"
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.platform_account
+msgid "New phone number"
+msgstr "טלפון חדש"
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.platform_account
+msgid "New ID number"
+msgstr "תעודת זהות חדשה"
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.platform_account
+msgid ""
+"To save this, type the four\n"
+"                                                        answers you sign in with."
+msgstr "כדי לשמור, הקלד את ארבע התשובות שאתה נכנס איתן."

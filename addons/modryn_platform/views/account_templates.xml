@@ -94,34 +94,51 @@
                 <form action="/platform/account/login" method="post" class="row g-3 mt-1">
                     <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
                     <div class="col-12 col-md-4">
-                        <label class="form-label" for="username">Username</label>
-                        <input type="text" id="username" name="username"
+                        <label class="form-label" for="new_username">Username</label>
+                        <input type="text" id="new_username" name="new_username"
                                class="form-control" required="required"
                                autocomplete="username" t-att-value="account['login']"/>
                     </div>
                     <div class="col-12 col-md-4">
-                        <label class="form-label" for="factor_phone">Phone number</label>
-                        <input type="text" id="factor_phone" name="factor_phone"
+                        <label class="form-label" for="new_phone">Phone number</label>
+                        <input type="text" id="new_phone" name="new_phone"
                                class="form-control" dir="ltr" autocomplete="off"
                                t-att-placeholder="account['phone_hint']"/>
                     </div>
                     <div class="col-12 col-md-4">
-                        <label class="form-label" for="factor_id">ID number</label>
-                        <input type="password" id="factor_id" name="factor_id"
+                        <label class="form-label" for="new_idnum">ID number</label>
+                        <input type="password" id="new_idnum" name="new_idnum"
                                class="form-control" dir="ltr" autocomplete="off"
                                t-att-placeholder="account['id_hint']"/>
                     </div>
+                    <!-- ALL FOUR, not the password alone. Anybody reaching a
+                         session left open on a counter could otherwise rewrite
+                         the very answers that keep them out, using the single
+                         answer they had already got past. -->
                     <div class="col-12">
-                        <!-- Her CURRENT password, to change any of the three
-                             above. Without it, anybody who reaches a session
-                             she left open on a shop floor could rewrite the
-                             answers that keep them out. -->
-                        <label class="form-label" for="current_password">
-                            Your password, to confirm
-                        </label>
-                        <input type="password" id="current_password" name="current_password"
-                               class="form-control" style="max-width: 22rem;"
-                               required="required" autocomplete="current-password"/>
+                        <div class="modryn_plat_sub mb-2">To save this, type the four answers you sign in with.</div>
+                        <div class="row g-2">
+                            <div class="col-6 col-md-3">
+                                <input type="text" name="auth_username" dir="ltr"
+                                       class="form-control" autocomplete="off"
+                                       placeholder="Username"/>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <input type="text" name="auth_phone" dir="ltr"
+                                       class="form-control" autocomplete="off"
+                                       placeholder="Phone number"/>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <input type="password" name="auth_idnum" dir="ltr"
+                                       class="form-control" autocomplete="off"
+                                       placeholder="ID number"/>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <input type="password" name="auth_password"
+                                       class="form-control" autocomplete="off"
+                                       placeholder="Password"/>
+                            </div>
+                        </div>
                     </div>
                     <div class="col-12">
                         <button type="submit" class="btn_gold">Save how I sign in</button>
@@ -155,11 +172,100 @@
                                 </td>
                                 <td t-out="person['name']"/>
                                 <td class="text-end">
-                                    <!-- No delete against your own row. It is
-                                         the one mistake that cannot be undone
-                                         from the screen that made it. -->
-                                    <span t-if="person['is_me']" class="modryn_plat_sub">-</span>
-                                    <details t-else="" class="modryn_plat_ask">
+                                    <!-- YOUR OWN ROW carries neither control.
+                                         Your four answers are the section above
+                                         this one, and deleting yourself is the
+                                         single mistake that cannot be undone
+                                         from the screen that made it - the
+                                         account doing the undoing would be the
+                                         account that just went. Nobody is the
+                                         main account: anyone here can edit or
+                                         remove anyone else, including whoever
+                                         made them. -->
+                                    <span t-if="person['is_me']" class="modryn_plat_sub">
+                                        Yours is above
+                                    </span>
+                                    <details t-if="not person['is_me']" class="modryn_plat_ask">
+                                        <summary class="btn_quiet">Edit</summary>
+                                        <div class="modryn_plat_confirm">
+                                            <div class="modryn_plat_sub">
+                                                Leave the phone, the ID number and
+                                                the password empty to keep them as
+                                                they are — they are stored the way
+                                                a password is and cannot be shown
+                                                back.
+                                            </div>
+                                            <form t-attf-action="/platform/account/user/edit/#{person['id']}"
+                                                  method="post" class="row g-2 mt-1">
+                                                <input type="hidden" name="csrf_token"
+                                                       t-att-value="request.csrf_token()"/>
+                                                <div class="col-12 col-sm-6">
+                                                    <input type="text" name="login" dir="ltr"
+                                                           class="form-control form-control-sm"
+                                                           autocomplete="off"
+                                                           t-att-value="person['login']"/>
+                                                </div>
+                                                <div class="col-12 col-sm-6">
+                                                    <input type="text" name="name"
+                                                           class="form-control form-control-sm"
+                                                           t-att-value="person['name']"/>
+                                                </div>
+                                                <div class="col-12 col-sm-4">
+                                                    <input type="text" name="phone" dir="ltr"
+                                                           class="form-control form-control-sm"
+                                                           autocomplete="off"
+                                                           placeholder="New phone number"/>
+                                                </div>
+                                                <div class="col-12 col-sm-4">
+                                                    <input type="password" name="idnum" dir="ltr"
+                                                           class="form-control form-control-sm"
+                                                           autocomplete="off"
+                                                           placeholder="New ID number"/>
+                                                </div>
+                                                <div class="col-12 col-sm-4">
+                                                    <input type="password" name="password"
+                                                           class="form-control form-control-sm"
+                                                           autocomplete="off"
+                                                           placeholder="New password"/>
+                                                </div>
+                                                <div class="col-12">
+                                                    <div class="modryn_plat_sub mb-2">
+                                                        To save this, type the four
+                                                        answers you sign in with.
+                                                    </div>
+                                                    <div class="row g-2">
+                                                        <div class="col-6">
+                                                            <input type="text" name="auth_username" dir="ltr"
+                                                                   class="form-control form-control-sm"
+                                                                   autocomplete="off" placeholder="Username"/>
+                                                        </div>
+                                                        <div class="col-6">
+                                                            <input type="text" name="auth_phone" dir="ltr"
+                                                                   class="form-control form-control-sm"
+                                                                   autocomplete="off" placeholder="Phone number"/>
+                                                        </div>
+                                                        <div class="col-6">
+                                                            <input type="password" name="auth_idnum" dir="ltr"
+                                                                   class="form-control form-control-sm"
+                                                                   autocomplete="off" placeholder="ID number"/>
+                                                        </div>
+                                                        <div class="col-6">
+                                                            <input type="password" name="auth_password"
+                                                                   class="form-control form-control-sm"
+                                                                   autocomplete="off" placeholder="Password"/>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-12">
+                                                    <button type="submit" class="btn_gold">
+                                                        Save this person
+                                                    </button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </details>
+                                    <details t-if="not person['is_me']"
+                                             class="modryn_plat_ask modryn_plat_danger_row">
                                         <summary class="btn_quiet">Remove</summary>
                                         <div class="modryn_plat_confirm">
                                             <div class="modryn_plat_sub">
@@ -171,22 +277,22 @@
                                                 <input type="hidden" name="csrf_token"
                                                        t-att-value="request.csrf_token()"/>
                                                 <div class="col-6">
-                                                    <input type="text" name="username"
+                                                    <input type="text" name="auth_username" dir="ltr"
                                                            class="form-control form-control-sm"
                                                            autocomplete="off" placeholder="Username"/>
                                                 </div>
                                                 <div class="col-6">
-                                                    <input type="text" name="phone" dir="ltr"
+                                                    <input type="text" name="auth_phone" dir="ltr"
                                                            class="form-control form-control-sm"
                                                            autocomplete="off" placeholder="Phone number"/>
                                                 </div>
                                                 <div class="col-6">
-                                                    <input type="password" name="idnum" dir="ltr"
+                                                    <input type="password" name="auth_idnum" dir="ltr"
                                                            class="form-control form-control-sm"
                                                            autocomplete="off" placeholder="ID number"/>
                                                 </div>
                                                 <div class="col-6">
-                                                    <input type="password" name="password"
+                                                    <input type="password" name="auth_password"
                                                            class="form-control form-control-sm"
                                                            autocomplete="off" placeholder="Password"/>
                                                 </div>
@@ -243,12 +349,31 @@
                                    class="form-control form-control-sm"
                                    autocomplete="new-password" required="required"/>
                         </div>
-                        <div class="col-12 col-md-4">
-                            <label class="form-label" for="new_confirm">Your password, to confirm</label>
-                            <input type="password" id="new_confirm" name="current_password"
-                                   class="form-control form-control-sm"
-                                   autocomplete="current-password" required="required"/>
+                        <div class="col-12">
+                        <div class="modryn_plat_sub mb-2">To save this, type the four answers you sign in with.</div>
+                        <div class="row g-2">
+                            <div class="col-6 col-md-3">
+                                <input type="text" name="auth_username" dir="ltr"
+                                       class="form-control" autocomplete="off"
+                                       placeholder="Username"/>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <input type="text" name="auth_phone" dir="ltr"
+                                       class="form-control" autocomplete="off"
+                                       placeholder="Phone number"/>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <input type="password" name="auth_idnum" dir="ltr"
+                                       class="form-control" autocomplete="off"
+                                       placeholder="ID number"/>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <input type="password" name="auth_password"
+                                       class="form-control" autocomplete="off"
+                                       placeholder="Password"/>
+                            </div>
                         </div>
+                    </div>
                         <div class="col-12">
                             <button type="submit" class="btn_gold">Add this person</button>
                         </div>
@@ -263,23 +388,42 @@
                 </header>
                 <form action="/platform/account/password" method="post" class="row g-3">
                     <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
-                    <div class="col-12 col-md-4">
-                        <label class="form-label" for="old_password">Current password</label>
-                        <input type="password" id="old_password" name="old_password"
-                               class="form-control" required="required"
-                               autocomplete="current-password"/>
-                    </div>
-                    <div class="col-12 col-md-4">
+                    <div class="col-12 col-md-6">
                         <label class="form-label" for="new_password">New password</label>
                         <input type="password" id="new_password" name="new_password"
                                class="form-control" required="required"
                                autocomplete="new-password"/>
                     </div>
-                    <div class="col-12 col-md-4">
+                    <div class="col-12 col-md-6">
                         <label class="form-label" for="new_password2">New password again</label>
                         <input type="password" id="new_password2" name="new_password2"
                                class="form-control" required="required"
                                autocomplete="new-password"/>
+                    </div>
+                    <div class="col-12">
+                        <div class="modryn_plat_sub mb-2">To save this, type the four answers you sign in with.</div>
+                        <div class="row g-2">
+                            <div class="col-6 col-md-3">
+                                <input type="text" name="auth_username" dir="ltr"
+                                       class="form-control" autocomplete="off"
+                                       placeholder="Username"/>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <input type="text" name="auth_phone" dir="ltr"
+                                       class="form-control" autocomplete="off"
+                                       placeholder="Phone number"/>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <input type="password" name="auth_idnum" dir="ltr"
+                                       class="form-control" autocomplete="off"
+                                       placeholder="ID number"/>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <input type="password" name="auth_password"
+                                       class="form-control" autocomplete="off"
+                                       placeholder="Password"/>
+                            </div>
+                        </div>
                     </div>
                     <div class="col-12">
                         <button type="submit" class="btn_gold">Change it</button>
