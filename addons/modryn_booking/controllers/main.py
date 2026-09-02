@@ -230,6 +230,9 @@ class ModrynBooking(http.Controller):
     def _render_form(self, dress=None, variant=None, errors=None, values=None):
         return request.render('modryn_booking.booking_form', {
             'days': self._slots(),
+            # Empty when the boutique has written no list: the form then does
+            # not ask, rather than asking a question with no answers in it.
+            'customer_kinds': request.env['modryn.customer.kind'].sudo().search([]),
             'dress': dress,
             'variant': variant,
             'variants': dress.product_variant_ids if dress else None,
@@ -294,6 +297,18 @@ class ModrynBooking(http.Controller):
         # on the input is a UI courtesy, not a control.
         if not post.get('terms'):
             errors['terms'] = _("Please accept the cancellation terms")
+
+        # WHO SHE IS, checked against the boutique's own list and not against
+        # anything this module decided. A shop that only sees brides has one
+        # line in that list, so "a bridesmaid" is not something the form can be
+        # made to accept by editing the page - the id has to be one of hers.
+        kinds = request.env['modryn.customer.kind'].sudo().search([])
+        kind = None
+        if kinds:
+            raw_kind = post.get('customer_kind') or ''
+            kind = kinds.filtered(lambda k: str(k.id) == raw_kind)[:1]
+            if not kind:
+                errors['customer_kind'] = _("Please say who is coming")
 
         start = None
         if not slot:
@@ -366,6 +381,7 @@ class ModrynBooking(http.Controller):
             'modryn_booking_type': 'dress' if dress else 'consult',
             'modryn_variant_id': variant.id if variant else False,
             'modryn_customer_phone': phone,
+            'modryn_customer_kind_id': kind.id if kind else False,
             'modryn_terms_accepted_at': datetime.utcnow(),
         }
         # Named explicitly because sudo() below does NOT change env.user — see

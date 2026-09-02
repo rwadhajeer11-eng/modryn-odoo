@@ -63,6 +63,17 @@
                     <span class="modryn_sub">The rooms a customer can be shown into.</span>
                 </a>
                 <!-- The owner's. These hours decide what a customer can book. -->
+                <!-- WHAT THE WEBSITE MAY GIVE AWAY, hour by hour. Beside the
+                     opening hours because a person reads the two together:
+                     when the door is unlocked, and how much of that time is on
+                     sale to strangers. An HOURGLASS would collide with the
+                     hours-worked tile and a clock with the opening-hours one,
+                     so this wears a list. -->
+                <a class="modryn_tile" href="/manage/team-screen?view=queue">
+                    <i class="fa fa-list-ol" aria-hidden="true"/>
+                    <span class="modryn_strong">Booking hours</span>
+                    <span class="modryn_sub">How many appointments each hour gives out, and who may ask.</span>
+                </a>
                 <!-- The MANAGER's, not the owner's: she is the one who
                      decides that this week's fair gets ten percent. -->
                 <a class="modryn_tile" href="/manage/team-screen?view=codes">
@@ -900,6 +911,101 @@
                  only: these hours decide what a customer can book, and
                  the routes behind the forms refuse anybody else - the
                  tile is simply not drawn for a manager. -->
+            <section t-if="view == 'queue'" class="modryn_panel mb-4">
+                <h1 class="mb-2">Booking hours</h1>
+                <p class="text-muted mb-4">
+                    Opening hours say when the door is unlocked. This says how
+                    much of that time the WEBSITE may give away — two at eleven,
+                    none at two because that hour is kept for the brides who
+                    telephone, four on a Thursday evening. An hour set to none
+                    stays open; it simply is not offered online.
+                </p>
+
+                <div t-if="queue_error" class="modryn_field_error mb-3" role="alert"
+                     t-out="queue_error"/>
+
+                <!-- ============ who may ask ============ -->
+                <h2 class="h5 mb-2">Who may book</h2>
+                <p class="text-muted mb-3">
+                    The list is the rule. A boutique that only sees brides writes
+                    one line here, and the booking page then offers one thing to
+                    be. Whoever books has to say which she is.
+                </p>
+
+                <form action="/manage/queue-kind/new" method="post"
+                      class="row g-2 mb-3" style="max-width: 640px;">
+                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                    <div class="col-12 col-md-5">
+                        <label class="form-label" for="kind_name">Who</label>
+                        <input type="text" id="kind_name" name="name" class="form-control"
+                               required="required" placeholder="A bride"/>
+                    </div>
+                    <div class="col-12 col-md-5">
+                        <label class="form-label" for="kind_note">A word about it</label>
+                        <input type="text" id="kind_note" name="note" class="form-control"
+                               placeholder="Shown under the name on the booking page"/>
+                    </div>
+                    <div class="col-12 col-md-2 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary w-100">Add</button>
+                    </div>
+                </form>
+
+                <p t-if="not queue_kinds" class="modryn_empty mb-4">
+                    Nobody listed yet. Until you add one, anybody may ask for an
+                    appointment without saying who she is.
+                </p>
+                <table t-if="queue_kinds" class="table align-middle mb-5"
+                       style="max-width: 640px;">
+                    <tbody>
+                        <tr t-foreach="queue_kinds" t-as="kind"
+                            t-attf-class="#{'' if kind.active else 'modryn_archived'}">
+                            <td><strong t-out="kind.name"/></td>
+                            <td class="text-muted" t-out="kind.note or ''"/>
+                            <td class="text-end">
+                                <form t-attf-action="/manage/queue-kind/archive/#{kind.id}"
+                                      method="post" class="d-inline">
+                                    <input type="hidden" name="csrf_token"
+                                           t-att-value="request.csrf_token()"/>
+                                    <button type="submit" class="btn btn-sm btn-outline-dark">
+                                        <t t-if="kind.active">Stop offering it</t>
+                                        <t t-else="">Offer it again</t>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <!-- ============ the grid ============ -->
+                <h2 class="h5 mb-2">How many an hour</h2>
+                <p t-if="not queue_days" class="modryn_empty">
+                    No opening hours yet, so there are no hours to give away. Set
+                    them on the opening hours screen first.
+                </p>
+
+                <form t-if="queue_days" action="/manage/queue-hours" method="post">
+                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                    <div class="modryn_queue_grid">
+                        <div t-foreach="queue_days" t-as="day" class="modryn_queue_day">
+                            <div class="modryn_strong mb-2" t-out="day['label']"/>
+                            <label t-foreach="day['hours']" t-as="slot"
+                                   class="modryn_queue_hour">
+                                <span dir="ltr" t-out="slot['text']"/>
+                                <!-- The dot in an hour becomes a dash: a name
+                                     with a dot in it is read as a nested field
+                                     by some form parsers, and this one has to
+                                     survive being read back apart. -->
+                                <input type="number" min="0" max="20" step="1" dir="ltr"
+                                       t-attf-name="hour_#{day['code']}_#{str(slot['hour']).replace('.', '-')}"
+                                       t-att-value="slot['how_many']"
+                                       class="form-control form-control-sm"/>
+                            </label>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary mt-3">Save the week</button>
+                </form>
+            </section>
+
             <section t-if="view == 'codes'" class="modryn_panel mb-4">
                 <h1 class="mb-2">Discount codes</h1>
                 <p class="text-muted mb-4">
@@ -1058,18 +1164,12 @@
                        t-att-value="hours_values.get('opens') or '10:00'"/>
                 <input type="time" name="closes" class="form-control w-auto" dir="ltr"
                        t-att-value="hours_values.get('closes') or '18:00'"/>
-                <!-- Spelt out, unlike the two time boxes: a bare number next to a
-                     clock reads as minutes. Defaulted to one so an owner who
-                     ignores it keeps the week she already had. min="1" is the
-                     browser's half of the check — the route re-checks it, because
-                     a hand-made POST is not obliged to obey an attribute. -->
-                <label class="d-flex align-items-center gap-2 mb-0" for="capacity">
-                    <span class="text-muted">How many fittings at once</span>
-                    <input type="number" id="capacity" name="capacity" min="1" step="1"
-                           t-att-value="hours_values.get('capacity') or '1'"
-                           dir="ltr" class="form-control w-auto"
-                           style="max-width: 5.5rem;"/>
-                </label>
+                <!-- "How many fittings at once" used to sit here. It was one
+                     number for a whole window, and the question a manager
+                     actually has is about ONE HOUR - two at eleven, none at
+                     two, four on Thursday evening. It is asked on the booking
+                     hours screen now, hour by hour. This screen answers only
+                     when the door is unlocked. -->
                 <button type="submit" class="btn btn-primary">Add</button>
             </form>
 
@@ -1079,7 +1179,7 @@
 
             <table t-if="hours" class="table modryn_table align-middle" style="max-width: 640px;">
                 <thead>
-                    <tr><th>Day</th><th>Opens</th><th>Closes</th><th>At once</th><th/></tr>
+                    <tr><th>Day</th><th>Opens</th><th>Closes</th><th/></tr>
                 </thead>
                 <tbody>
                     <tr t-foreach="hours" t-as="h"
@@ -1087,21 +1187,6 @@
                         <td t-out="h['day']"/>
                         <td dir="ltr" t-out="h['opens']"/>
                         <td dir="ltr" t-out="h['closes']"/>
-                        <!-- Editable in place. Every window a boutique owns was
-                             seeded at one fitting, and a window's day and start
-                             time cannot be re-used, so a read-only cell here
-                             would mean the number could never be corrected. -->
-                        <td dir="ltr">
-                            <form t-attf-action="/manage/hours/capacity/#{h['id']}" method="post"
-                                  class="d-flex align-items-center gap-1">
-                                <input type="hidden" name="csrf_token"
-                                       t-att-value="request.csrf_token()"/>
-                                <input type="number" name="capacity" min="1" max="20" step="1"
-                                       class="form-control form-control-sm" style="width: 4.5rem"
-                                       t-att-value="h['capacity']"/>
-                                <button type="submit" class="btn btn-sm btn-outline-dark">Save</button>
-                            </form>
-                        </td>
                         <td class="text-end">
                             <form t-attf-action="/manage/hours/archive/#{h['id']}" method="post"
                                   class="d-inline">

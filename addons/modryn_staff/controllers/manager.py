@@ -21,7 +21,21 @@ from odoo.exceptions import ValidationError
 from odoo.http import content_disposition, request
 from odoo.tools.translate import LazyTranslate
 
+from odoo.addons.modryn_booking.models.opening_hours import (
+    weekday_selection as _hours_weekday_selection)
+from odoo.addons.modryn_booking.models.queue_hours import (
+    DEFAULT_PER_HOUR as QUEUE_DEFAULT)
+
 from .. import nav
+
+
+def _hours_weekdays():
+    """Sunday first, the same order the opening-hours screen uses.
+
+    Called rather than stored: the labels are translated at read time, and a
+    module-level list would freeze whichever language happened to import it.
+    """
+    return _hours_weekday_selection(None)
 from . import access
 from .manage import ModrynManage, _file_papers, _levels, _personal_from
 
@@ -143,7 +157,7 @@ class ModrynManagerScreen(http.Controller):
     # Two different questions that both want the word - named apart here so a
     # link can never quietly open the other one.
     VIEWS = ('announce', 'team', 'hours', 'rooms', 'worked', 'sales',
-             'track', 'shop', 'codes')
+             'track', 'shop', 'codes', 'queue')
 
     def _account_form(self, editing=None, adding=False, errors=None, values=None):
         """The add/edit form's context, or nothing at all.
@@ -508,6 +522,9 @@ class ModrynManagerScreen(http.Controller):
             context.update(self._worked_context(
                 whose=whose, month=request.params.get('month'),
                 error=request.params.get('error')))
+        if view == 'queue':
+            context.update(self._queue_hours_context(
+                error=request.params.get('error')))
         if view == 'codes':
             # THE MANAGER'S, not the owner's. She is the one who decides that
             # this week's fair gets ten percent, and making her find the owner
@@ -559,6 +576,125 @@ class ModrynManagerScreen(http.Controller):
                 'whatsapp_number': company.modryn_whatsapp_number(),
             },
         }
+
+    # --------------------------------------------------------- booking hours
+    @staticmethod
+    def _queue_hours_context(error=None):
+        """The grid to draw, and the kinds of visitor she accepts.
+
+        ONE ROW PER HOUR THE DOOR IS OPEN, taken from the opening hours rather
+        than from the grid itself: an hour she has just set to none must stay on
+        the screen, or she could never set it back. The number shown is what she
+        said, or the default for an hour she has not spoken about.
+        """
+        Hours = request.env['modryn.opening.hours']
+        Queue = request.env['modryn.queue.hour'].sudo()
+        said = Queue.modryn_grid()
+        days = []
+        open_hours = Hours.modryn_open_hours_by_weekday()
+        for code, label in _hours_weekdays():
+            hours = open_hours.get(code) or []
+            if not hours:
+                continue
+            days.append({
+                'code': code,
+                'label': label,
+                'hours': [{
+                    'hour': hour,
+                    'text': '%02d:%02d' % (int(hour), round((hour % 1) * 60)),
+                    'how_many': said.get(code, {}).get(round(hour, 4),
+                                                       QUEUE_DEFAULT),
+                } for hour in hours],
+            })
+        return {
+            'queue_error': error or '',
+            'queue_days': days,
+            'queue_kinds': request.env['modryn.customer.kind'].sudo()
+                           .with_context(active_test=False).search([]),
+        }
+
+    @http.route('/manage/queue-hours', type='http', auth='user', website=True,
+                methods=['POST'], csrf=True, sitemap=False)
+    def queue_hours_save(self, **post):
+        """The whole grid at once.
+
+        REPLACE-SET, not a row at a time: the form posts every hour it drew, so
+        what is stored is exactly what she is looking at. Saving one cell at a
+        time would mean a page load per hour, and a week has fifty of them.
+        """
+        if not (access.is_manager() or access.can_view('boss')):
+            return access.deny()
+        form = request.httprequest.form
+        Queue = request.env['modryn.queue.hour'].sudo()
+        wanted = {}
+        for key in form.keys():
+            # hour_<weekday>_<hour with the dot as an underscore>
+            if not key.startswith('hour_'):
+                continue
+            _, weekday, raw_hour = key.split('_', 2)
+            try:
+                hour = float(raw_hour.replace('-', '.'))
+                how_many = int(form.get(key) or 0)
+            except (TypeError, ValueError):
+                continue
+            wanted[(weekday, round(hour, 4))] = max(how_many, 0)
+
+        if not wanted:
+            return request.redirect('/manage/team-screen?view=queue')
+
+        existing = {(row.weekday, round(row.hour, 4)): row
+                    for row in Queue.search([])}
+        for key, how_many in wanted.items():
+            row = existing.get(key)
+            if row:
+                row.how_many = how_many
+            else:
+                Queue.create({'weekday': key[0], 'hour': key[1],
+                              'how_many': how_many})
+        return request.redirect('/manage/team-screen?view=queue')
+
+    @http.route('/manage/queue-kind/new', type='http', auth='user', website=True,
+                methods=['POST'], csrf=True, sitemap=False)
+    def queue_kind_new(self, **post):
+        """Another kind of visitor who may ask for an appointment."""
+        if not (access.is_manager() or access.can_view('boss')):
+            return access.deny()
+        name = (post.get('name') or '').strip()
+        if not name:
+            return request.redirect('/manage/team-screen?view=queue&error=%s'
+                                    % werkzeug.urls.url_quote(
+                                        _("Give the kind of visitor a name.")))
+        try:
+            with request.env.cr.savepoint():
+                request.env['modryn.customer.kind'].sudo().create({
+                    'name': name,
+                    'note': (post.get('note') or '').strip(),
+                })
+        except ValidationError as err:
+            return request.redirect(
+                '/manage/team-screen?view=queue&error=%s'
+                % werkzeug.urls.url_quote(
+                    err.args[0] if err.args
+                    else _("That kind of visitor already exists.")))
+        return request.redirect('/manage/team-screen?view=queue')
+
+    @http.route('/manage/queue-kind/archive/<int:kind_id>', type='http',
+                auth='user', website=True, methods=['POST'], csrf=True,
+                sitemap=False)
+    def queue_kind_archive(self, kind_id, **post):
+        """Stop offering a kind, or offer it again.
+
+        Archived and never deleted: appointments point at it, and a kind
+        removed from the table would leave those bookings saying nothing about
+        who turned up.
+        """
+        if not (access.is_manager() or access.can_view('boss')):
+            return access.deny()
+        kind = request.env['modryn.customer.kind'].sudo().with_context(
+            active_test=False).browse(kind_id).exists()
+        if kind:
+            kind.active = not kind.active
+        return request.redirect('/manage/team-screen?view=queue')
 
     # ------------------------------------------------------- discount codes
     @http.route('/manage/codes/new', type='http', auth='user', website=True,

@@ -53,6 +53,44 @@
           </div>
         </div>
       </section>
+
+      <!--
+        WHEN THE DOOR IS OPEN, on the page a bride lands on.
+
+        It was nowhere: she could book a fitting without ever being told the
+        shop shuts on Friday, and the first she would learn of it is the
+        booking page having no Friday in its list - which reads as a broken
+        page rather than as a closed day.
+
+        EVERY DAY IS DRAWN, the shut ones included. A list that quietly leaves
+        Friday out makes her count the rows.
+      -->
+      <!-- t-set on its OWN <t>, not on the section. QWeb treats t-set as a
+           directive that CONSUMES the node it sits on: written on the section,
+           it set the variable and rendered nothing at all, and the page came
+           back without the table and without an error. -->
+      <t t-set="week" t-value="request.env['modryn.opening.hours'].modryn_week()"/>
+      <section style="background:#FDFBF7;">
+        <div t-if="week" class="container py-5">
+          <div class="mx-auto" style="max-width: 520px;">
+            <h2 class="h4 text-center mb-4">When we are open</h2>
+            <table class="table modryn_open_week mb-0">
+              <tbody>
+                <tr t-foreach="week" t-as="day">
+                  <th scope="row" class="fw-normal" t-out="day['label']"/>
+                  <td class="text-end">
+                    <span t-if="day['closed']" class="text-muted">Closed</span>
+                    <t t-else="">
+                      <span t-foreach="day['ranges']" t-as="span" dir="ltr"
+                            class="ms-2" t-out="span"/>
+                    </t>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
     </xpath>
   </template>
 

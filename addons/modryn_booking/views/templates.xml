@@ -50,6 +50,27 @@
                                  t-out="errors['phone']"/>
                         </div>
 
+                        <!-- WHO IS COMING. Drawn only when the boutique has
+                             written a list: a question with no answers in it is
+                             worse than no question. The list IS the rule - a
+                             shop that only sees brides writes one line, and
+                             this then offers one thing to be. -->
+                        <div t-if="customer_kinds" class="mb-3">
+                            <label class="form-label" for="customer_kind">Who is coming</label>
+                            <select id="customer_kind" name="customer_kind" class="form-select">
+                                <option value="">— Choose —</option>
+                                <t t-foreach="customer_kinds" t-as="kind">
+                                    <option t-att-value="kind.id"
+                                            t-att-selected="'selected' if values.get('customer_kind') == str(kind.id) else None">
+                                        <t t-out="kind.name"/>
+                                        <t t-if="kind.note"> — <t t-out="kind.note"/></t>
+                                    </option>
+                                </t>
+                            </select>
+                            <div t-if="errors.get('customer_kind')" class="text-danger small mt-1"
+                                 t-out="errors['customer_kind']"/>
+                        </div>
+
                         <!-- Size picker: only on the dress path. -->
                         <div t-if="dress" class="mb-3">
                             <label class="form-label" for="variant_id">Size</label>

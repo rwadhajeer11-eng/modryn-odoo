@@ -53,6 +53,13 @@ class CalendarEvent(models.Model):
         required=True,
     )
     modryn_customer_phone = fields.Char(string="Customer phone")
+
+    # WHO SHE SAID SHE IS. Many2one and not a Char: the boutique writes the
+    # list, and a free-typed word could not be counted or filtered later. A
+    # booking made before the shop wrote any list keeps a blank, which reads as
+    # "nobody asked" and is the truth about it.
+    modryn_customer_kind_id = fields.Many2one(
+        'modryn.customer.kind', string="Who is coming", ondelete='restrict')
     # Israeli boutiques run on phone numbers, and the PRD requires the client to
     # accept cancellation/no-show terms before the booking is final. Storing the
     # acceptance time (not a bare boolean) is what makes it evidence.

@@ -1438,3 +1438,35 @@
         margin: 0;
     }
 }
+
+//==============================================================================
+// The booking-hours grid
+//==============================================================================
+// A column per open day, an hour a line inside it. Columns and NOT a table,
+// because the days do not share their hours: Thursday runs to nine and Sunday
+// stops at six, and a table would need a cell for every hour of every day with
+// most of them empty and none of them meaning anything.
+.modryn_queue_grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(9.5rem, 1fr));
+    gap: 1.25rem;
+}
+
+.modryn_queue_day {
+    // A day and its hours stay together when the grid wraps.
+    break-inside: avoid;
+}
+
+.modryn_queue_hour {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: .5rem;
+    margin-block-end: .35rem;
+
+    input {
+        width: 4.5rem;
+        // Digits do not jump about as she types.
+        font-variant-numeric: tabular-nums;
+    }
+}

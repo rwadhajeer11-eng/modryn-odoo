@@ -3335,3 +3335,112 @@ msgstr ""
 "<i class=\"fa fa-tag\" aria-hidden=\"true\"/>\n"
 "                    <span class=\"modryn_strong\">أكواد الخصم</span>\n"
 "                    <span class=\"modryn_sub\">كلمة بتنزّل نسبة عالكاش.</span>"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "Booking hours"
+msgstr "ساعات الأدوار"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid ""
+"Opening hours say when the door is unlocked. This says how\n"
+"                    much of that time the WEBSITE may give away — two at eleven,\n"
+"                    none at two because that hour is kept for the brides who\n"
+"                    telephone, four on a Thursday evening. An hour set to none\n"
+"                    stays open; it simply is not offered online."
+msgstr ""
+"ساعات الفتح بتقول إمتى الباب مفتوح. هون بتقولي قديش من هالوقت الموقع بيقدر "
+"يوزّع — تنتين بالحداشر، ولا واحد بالتنتين لأن هالساعة محجوزة للعرايس الي "
+"بتحكي بالتلفون، أربعة الخميس بالمسا. الساعة الي بتحطيها صفر بتضل مفتوحة؛ بس "
+"ما بتنعرض بالموقع."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "Who may book"
+msgstr "مين بتقدر تحجز"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid ""
+"The list is the rule. A boutique that only sees brides writes\n"
+"                    one line here, and the booking page then offers one thing to\n"
+"                    be. Whoever books has to say which she is."
+msgstr ""
+"القائمة هي القاعدة. محل بيستقبل عرايس بس بيكتب هون سطر واحد، وصفحة الحجز "
+"بتعرض خيار واحد. الي بتحجز لازم تقول شو هي."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "A word about it"
+msgstr "كلمة عنها"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "A bride"
+msgstr "عروس"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "Shown under the name on the booking page"
+msgstr "بيبين تحت الاسم بصفحة حجز الدور"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid ""
+"Nobody listed yet. Until you add one, anybody may ask for an\n"
+"                    appointment without saying who she is."
+msgstr ""
+"ما في حدا بالقائمة لسا. لحد ما تضيفي، أي وحدة بتقدر تطلب دور بدون ما تقول شو"
+" هي."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "Stop offering it"
+msgstr "وقّفيه"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "Offer it again"
+msgstr "رجّعيه"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "How many an hour"
+msgstr "كم بكل ساعة"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid ""
+"No opening hours yet, so there are no hours to give away. Set\n"
+"                    them on the opening hours screen first."
+msgstr ""
+"ما في ساعات فتح لسا، فما في ساعات توزّعيها. حدّديها الأول بشاشة ساعات الفتح."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "Save the week"
+msgstr "احفظي الأسبوع"
+
+#. module: modryn_staff
+#. odoo-python
+#: code:addons/modryn_staff/controllers/manager.py:0
+msgid "Give the kind of visitor a name."
+msgstr "عطي النوع اسم."
+
+#. module: modryn_staff
+#. odoo-python
+#: code:addons/modryn_staff/controllers/manager.py:0
+msgid "That kind of visitor already exists."
+msgstr "هذا النوع موجود."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid ""
+"<i class=\"fa fa-list-ol\" aria-hidden=\"true\"/>\n"
+"                    <span class=\"modryn_strong\">Booking hours</span>\n"
+"                    <span class=\"modryn_sub\">How many appointments each hour gives out, and who may ask.</span>"
+msgstr ""
+"<i class=\"fa fa-list-ol\" aria-hidden=\"true\"/>\n"
+"                    <span class=\"modryn_strong\">ساعات الأدوار</span>\n"
+"                    <span class=\"modryn_sub\">كم دور بتوزّع كل ساعة، ومين بتقدر تطلب.</span>"

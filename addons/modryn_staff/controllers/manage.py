@@ -715,34 +715,6 @@ class ModrynManage(http.Controller):
             return self._hours_bounce(post, taken)
         return request.redirect('/manage/team-screen?view=hours')
 
-    @http.route('/manage/hours/capacity/<int:hours_id>', type='http', auth='user',
-                website=True, methods=['POST'], csrf=True, sitemap=False)
-    def hours_capacity(self, hours_id, **post):
-        """Change how many fittings an EXISTING window takes.
-
-        Without this the feature is unreachable on every boutique that exists:
-        the five seeded windows are all capacity 1, hours_new refuses a duplicate
-        (weekday, start_hour) and the model constrains it too — counting archived
-        rows — so a window can never be re-created to carry a different number.
-        A one-field POST rather than a general edit form: capacity is the only
-        thing about a window that a boutique changes week to week.
-        """
-        if not self._require_owner():
-            return request.not_found()
-        window = self._hours().browse(hours_id).exists()
-        if not window:
-            return request.not_found()
-        capacity = _to_capacity(post.get('capacity'))
-        if capacity is None:
-            return self._hours_bounce(post, (
-                _("Fittings at once has to be a whole number between 1 and %d.") % MAX_CAPACITY))
-        # Lowering it below what is already booked cancels nothing — those
-        # fittings stand, and the hour simply stops being offered until they
-        # drain. Refusing here would strand an owner who has just lost a
-        # fitting room and cannot say so.
-        window.capacity = capacity
-        return request.redirect('/manage/team-screen?view=hours')
-
     @http.route('/manage/hours/archive/<int:hours_id>', type='http', auth='user',
                 website=True, methods=['POST'], csrf=True, sitemap=False)
     def hours_archive(self, hours_id, **post):

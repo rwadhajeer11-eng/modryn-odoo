@@ -1,3 +1,7 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_modryn_opening_hours_internal,modryn.opening.hours.internal,model_modryn_opening_hours,base.group_user,1,0,0,0
 access_modryn_closure_internal,modryn.closure.internal,model_modryn_closure,base.group_user,1,0,0,0
+access_queue_hour_public,modryn.queue.hour.public,model_modryn_queue_hour,base.group_public,1,0,0,0
+access_queue_hour_internal,modryn.queue.hour.internal,model_modryn_queue_hour,base.group_user,1,1,1,1
+access_customer_kind_public,modryn.customer.kind.public,model_modryn_customer_kind,base.group_public,1,0,0,0
+access_customer_kind_internal,modryn.customer.kind.internal,model_modryn_customer_kind,base.group_user,1,1,1,1

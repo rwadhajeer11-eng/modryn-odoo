@@ -225,3 +225,13 @@ msgstr ""
 "<span class=\"modryn_by\">\n"
 "        <span class=\"modryn_by_mark\">MODRYN</span>\n"
 "      </span>"
+
+#. module: modryn_theme
+#: model_terms:ir.ui.view,arch_db:modryn_theme.homepage_hero
+msgid "When we are open"
+msgstr "إمتى بنفتح"
+
+#. module: modryn_theme
+#: model_terms:ir.ui.view,arch_db:modryn_theme.homepage_hero
+msgid "Closed"
+msgstr "مسكّر"

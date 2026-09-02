@@ -2657,7 +2657,7 @@ msgstr "בשביל מה"
 #: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
 msgid "Who"
-msgstr "את מי"
+msgstr "מי"
 
 #. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
@@ -3331,3 +3331,110 @@ msgstr ""
 "<i class=\"fa fa-tag\" aria-hidden=\"true\"/>\n"
 "                    <span class=\"modryn_strong\">קודי הנחה</span>\n"
 "                    <span class=\"modryn_sub\">מילה שמורידה אחוזים בקופה.</span>"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "Booking hours"
+msgstr "שעות התורים"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid ""
+"Opening hours say when the door is unlocked. This says how\n"
+"                    much of that time the WEBSITE may give away — two at eleven,\n"
+"                    none at two because that hour is kept for the brides who\n"
+"                    telephone, four on a Thursday evening. An hour set to none\n"
+"                    stays open; it simply is not offered online."
+msgstr ""
+"שעות פתיחה אומרות מתי הדלת פתוחה. כאן את אומרת כמה מהזמן הזה האתר רשאי לחלק "
+"— שתיים באחת עשרה, אף אחת בשתיים כי השעה הזו שמורה לכלות שמתקשרות, ארבע "
+"בחמישי בערב. שעה שמוגדרת אפס נשארת פתוחה; היא פשוט לא מוצעת באתר."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "Who may book"
+msgstr "מי יכולה לקבוע תור"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid ""
+"The list is the rule. A boutique that only sees brides writes\n"
+"                    one line here, and the booking page then offers one thing to\n"
+"                    be. Whoever books has to say which she is."
+msgstr ""
+"הרשימה היא הכלל. בוטיק שמקבל רק כלות כותב כאן שורה אחת, ואז עמוד קביעת התור "
+"מציע אפשרות אחת. מי שקובעת תור חייבת לומר מה היא."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "A word about it"
+msgstr "מילה על זה"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "A bride"
+msgstr "כלה"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "Shown under the name on the booking page"
+msgstr "מוצג מתחת לשם בעמוד קביעת התור"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid ""
+"Nobody listed yet. Until you add one, anybody may ask for an\n"
+"                    appointment without saying who she is."
+msgstr ""
+"עדיין אין אף אחת ברשימה. עד שתוסיפי, כל אחת יכולה לבקש תור בלי לומר מה היא."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "Stop offering it"
+msgstr "הפסקת ההצעה"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "Offer it again"
+msgstr "הצעה מחדש"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "How many an hour"
+msgstr "כמה בכל שעה"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid ""
+"No opening hours yet, so there are no hours to give away. Set\n"
+"                    them on the opening hours screen first."
+msgstr ""
+"עדיין אין שעות פתיחה, אז אין שעות לחלק. קבעי אותן קודם במסך שעות הפתיחה."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "Save the week"
+msgstr "שמירת השבוע"
+
+#. module: modryn_staff
+#. odoo-python
+#: code:addons/modryn_staff/controllers/manager.py:0
+msgid "Give the kind of visitor a name."
+msgstr "תני שם לסוג המבקרת."
+
+#. module: modryn_staff
+#. odoo-python
+#: code:addons/modryn_staff/controllers/manager.py:0
+msgid "That kind of visitor already exists."
+msgstr "סוג המבקרת הזה כבר קיים."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid ""
+"<i class=\"fa fa-list-ol\" aria-hidden=\"true\"/>\n"
+"                    <span class=\"modryn_strong\">Booking hours</span>\n"
+"                    <span class=\"modryn_sub\">How many appointments each hour gives out, and who may ask.</span>"
+msgstr ""
+"<i class=\"fa fa-list-ol\" aria-hidden=\"true\"/>\n"
+"                    <span class=\"modryn_strong\">שעות התורים</span>\n"
+"                    <span class=\"modryn_sub\">כמה תורים כל שעה מחלקת, ומי יכולה לבקש.</span>"

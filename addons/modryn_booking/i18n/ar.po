@@ -437,3 +437,73 @@ msgstr "آخر تحديث بواسطة"
 #: model:ir.model.fields,field_description:modryn_booking.field_modryn_opening_hours__write_date
 msgid "Last Updated on"
 msgstr "آخر تحديث في"
+
+#. module: modryn_booking
+#: model:ir.model,name:modryn_booking.model_modryn_queue_hour
+msgid "How many online bookings an hour takes"
+msgstr "كم دور من الموقع بتاخد الساعة"
+
+#. module: modryn_booking
+#: model:ir.model.fields,field_description:modryn_booking.field_modryn_queue_hour__how_many
+msgid "How many"
+msgstr "كم"
+
+#. module: modryn_booking
+#: model:ir.model,name:modryn_booking.model_modryn_customer_kind
+msgid "A kind of visitor who may book"
+msgstr "نوع زبونة بتقدر تحجز"
+
+#. module: modryn_booking
+#: model:ir.model.fields,help:modryn_booking.field_modryn_customer_kind__note
+msgid "Shown under the name on the booking page."
+msgstr "بيبين تحت الاسم بصفحة حجز الدور."
+
+#. module: modryn_booking
+#. odoo-python
+#: code:addons/modryn_booking/models/queue_hours.py:0
+msgid "That kind of visitor already exists."
+msgstr "هذا النوع موجود."
+
+#. module: modryn_booking
+#. odoo-python
+#: code:addons/modryn_booking/models/queue_hours.py:0
+msgid "An hour cannot take a negative number of bookings."
+msgstr "الساعة ما بتقدر تاخد عدد سالب من الأدوار."
+
+#. module: modryn_booking
+#. odoo-python
+#: code:addons/modryn_booking/models/queue_hours.py:0
+msgid "That hour is already in the list."
+msgstr "هالساعة موجودة بالقائمة."
+
+#. module: modryn_booking
+#: model:ir.model.fields,field_description:modryn_booking.field_calendar_event__modryn_customer_kind_id
+#: model_terms:ir.ui.view,arch_db:modryn_booking.booking_form
+msgid "Who is coming"
+msgstr "مين جايّة"
+
+#. module: modryn_booking
+#. odoo-python
+#: code:addons/modryn_booking/controllers/main.py:0
+msgid "Please say who is coming"
+msgstr "احكيلنا مين جايّة"
+
+#. module: modryn_booking
+#: model:ir.model.fields,field_description:modryn_booking.field_modryn_queue_hour__hour
+msgid "Hour"
+msgstr "الساعة"
+
+#. module: modryn_booking
+#: model:ir.model.fields,field_description:modryn_booking.field_modryn_customer_kind__note
+msgid "Note"
+msgstr "ملاحظة"
+
+#. module: modryn_booking
+#: model:ir.model.fields,field_description:modryn_booking.field_modryn_customer_kind__sequence
+msgid "Sequence"
+msgstr "الترتيب"
+
+#. module: modryn_booking
+#: model_terms:ir.ui.view,arch_db:modryn_booking.booking_form
+msgid "<option value=\"\">— Choose —</option>"
+msgstr "<option value=\"\">— اختاري —</option>"

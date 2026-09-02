@@ -1,6 +1,11 @@
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
 
+# Imported lazily inside the method that needs it would be tidier, but this
+# module is imported before queue_hours in models/__init__.py and the constant
+# is a plain int - see the note there for why it is 1 and not 0.
+DEFAULT_PER_HOUR = 1
+
 # One slot length for the whole boutique, deliberately not a field. Per-
 # appointment-type DURATION is still a later feature and stays out on purpose:
 # a 90-minute fitting overlaps the next hour, and no unique index on a start
@@ -89,6 +94,10 @@ class ModrynOpeningHours(models.Model):
     # because that is how a boutique already says it: "Thursday evening we can
     # take two". It also leaves room for min(capacity, rostered stylists) later
     # without another table.
+    # NO LONGER ASKED FOR ON ANY SCREEN. "How many at the same time" is a
+    # question about one hour, not about a window, and it is asked on the
+    # queue-hours grid now. The column stays because rows carry it and dropping
+    # a column is a migration, not a screen change; nothing reads it.
     capacity = fields.Integer(
         string="Fittings at once",
         default=1,
@@ -132,16 +141,33 @@ class ModrynOpeningHours(models.Model):
         user: opening hours are printed on the shop door, there is nothing here
         to leak, and the alternative is a 500 on the storefront.
         """
+        # HOW MANY comes from the queue-hours grid now, not from the window.
+        # The window says the door is unlocked; the grid says how much of that
+        # time is on sale to strangers, hour by hour - which is a different
+        # question and the one a manager actually has. An hour the grid has
+        # nothing to say about takes DEFAULT_PER_HOUR, so a boutique that has
+        # never opened that screen behaves exactly as it did.
+        grid = self.env['modryn.queue.hour'].modryn_grid()
+
         by_day = {}
         # search() drops archived rows by itself (active_test), which is how an
         # owner switches a window off without losing it.
         for window in self.sudo().search(domain):
             hours = by_day.setdefault(window.weekday, {})
+            said = grid.get(window.weekday, {})
             for hour in _starts(window.start_hour, window.end_hour):
+                how_many = said.get(round(hour, 4), DEFAULT_PER_HOUR)
+                if how_many <= 0:
+                    # Open, and deliberately not on sale online. Dropped from
+                    # the mapping entirely rather than offered with a zero: an
+                    # hour that appears with nothing behind it is an hour a
+                    # bride presses and is refused by.
+                    hours.pop(hour, None)
+                    continue
                 # Overlapping windows on one weekday: the roomier one wins.
                 # max() rather than last-write, so the answer does not depend on
                 # _order — and so an hour is never offered twice.
-                hours[hour] = max(hours.get(hour, 0), window.capacity)
+                hours[hour] = max(hours.get(hour, 0), how_many)
         # Sorted keys, because callers render these in order and several of them
         # iterate the dict directly rather than sorting it themselves.
         return {day: dict(sorted(hours.items())) for day, hours in by_day.items()}
@@ -160,6 +186,57 @@ class ModrynOpeningHours(models.Model):
         """{hour_float: capacity_int} for that date. Empty dict means shut."""
         weekday = str(day_date.weekday())
         return self._capacities([('weekday', '=', weekday)]).get(weekday, {})
+
+    @api.model
+    def modryn_week(self):
+        """The week as a customer reads it: every day, open or shut.
+
+        EVERY DAY, including the shut ones. A list that silently omits Friday
+        leaves a bride counting the rows to work out whether Friday is missing
+        or whether she misread - and "Friday: closed" is the answer she came
+        for as much as any opening time is.
+
+        Two windows on one day come back as two ranges on one line, because
+        that is what a shop with a lunch break actually does.
+
+        sudo() for the same reason the rest of this model uses it: opening hours
+        are printed on the door, and the alternative is a 500 on the storefront.
+        """
+        by_day = {}
+        for window in self.sudo().search([]):
+            by_day.setdefault(window.weekday, []).append(
+                (window.start_hour, window.end_hour))
+
+        def clock(value):
+            return '%02d:%02d' % (int(value), round((value % 1) * 60))
+
+        week = []
+        for code, label in weekday_selection(None):
+            windows = sorted(by_day.get(code) or [])
+            week.append({
+                'code': code,
+                'label': label,
+                'closed': not windows,
+                'ranges': ['%s–%s' % (clock(a), clock(b)) for a, b in windows],
+            })
+        return week
+
+    @api.model
+    def modryn_open_hours_by_weekday(self):
+        """{weekday_str: [hour, ...]} — every hour the door is unlocked.
+
+        IGNORES THE QUEUE GRID ON PURPOSE, which is the whole reason it is not
+        modryn_hours_by_weekday. That one answers "what may a bride be offered",
+        and an hour set to none online is correctly missing from it. This one
+        answers "what hours exist to have an opinion about", which is what the
+        manager's grid has to draw a row for — including the ones she has just
+        set to none, or she could never set them back.
+        """
+        by_day = {}
+        for window in self.sudo().search([]):
+            hours = by_day.setdefault(window.weekday, set())
+            hours.update(_starts(window.start_hour, window.end_hour))
+        return {day: sorted(hours) for day, hours in by_day.items()}
 
     @api.model
     def modryn_hours_by_weekday(self):
