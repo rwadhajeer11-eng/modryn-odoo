@@ -806,14 +806,6 @@ msgstr "שותף נוסף"
 #. module: modryn_platform
 #: model_terms:ir.ui.view,arch_db:modryn_platform.boutique_register
 msgid ""
-"Clear a name to remove that\n"
-"                                                partner. Save, and three more\n"
-"                                                blank rows come back."
-msgstr "מחיקת שם מסירה את השותף. אחרי שמירה חוזרות שלוש שורות ריקות."
-
-#. module: modryn_platform
-#: model_terms:ir.ui.view,arch_db:modryn_platform.boutique_register
-msgid ""
 "Archive this boutique? It leaves the\n"
 "                                            list and moves into the archive."
 msgstr "להעביר את הבוטיק לארכיון? הוא יורד מהרשימה ועובר לארכיון."
@@ -971,13 +963,6 @@ msgstr "של מי"
 #: model_terms:ir.ui.view,arch_db:modryn_platform.boutique_register
 msgid "Partner"
 msgstr "שותף"
-
-#. module: modryn_platform
-#: model_terms:ir.ui.view,arch_db:modryn_platform.boutique_register
-msgid ""
-"Fill as many as the shop has. Blank rows are\n"
-"                                ignored, and more come back after saving."
-msgstr "מלא כמה שיש לחנות. שורות ריקות מתעלמים מהן, ואחרי שמירה חוזרות עוד."
 
 #. module: modryn_platform
 #: model_terms:ir.ui.view,arch_db:modryn_platform.boutique_register
@@ -1216,3 +1201,27 @@ msgstr "סידור עבודה"
 #: model:modryn.platform.screen,name:modryn_platform.screen_atelier
 msgid "Workshop"
 msgstr "סדנה"
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.boutique_register
+msgid "Add another partner"
+msgstr "הוספת שותף נוסף"
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.boutique_register
+msgid "Add another sign-in"
+msgstr "הוספת כניסה נוספת"
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.boutique_register
+msgid ""
+"Fill as many as the shop has. Blank rows are\n"
+"                                ignored."
+msgstr "מלא כמה שיש לחנות. שורות ריקות מתעלמים מהן."
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.boutique_register
+msgid ""
+"Clear a name to remove that\n"
+"                                                partner."
+msgstr "מחיקת שם מסירה את השותף."

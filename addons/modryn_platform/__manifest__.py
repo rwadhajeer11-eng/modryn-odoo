@@ -38,6 +38,7 @@ a different and much larger thing — see .planning/BACKLOG.md.
     'assets': {
         'web.assets_frontend': [
             'modryn_platform/static/src/platform.scss',
+            'modryn_platform/static/src/rows.js',
         ],
     },
     'author': 'MODRYN',

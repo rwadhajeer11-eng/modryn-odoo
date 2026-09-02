@@ -79,31 +79,37 @@
                             </select>
                         </div>
 
-                        <!-- Partner rows, always rendered and always blank
-                             ones spare. Blank rows are dropped server-side, so
-                             a one-owner shop costs no clicks and a six-way
-                             partnership needs no "add another" button and
-                             therefore no JavaScript. Save and the form comes
-                             back with fresh blanks, which is what makes "as
-                             many as you want" true rather than "up to eight". -->
-                        <div class="col-12">
+                        <!-- AS MANY PARTNERS AS THE SHOP HAS. Two blank pairs
+                             are served, and the button adds another, and
+                             another. Blank rows are dropped server-side, so a
+                             one-owner shop costs no clicks either.
+
+                             The button is hidden until rows.js shows it: with
+                             the script gone the two rows still save, and nobody
+                             is left pressing something that does nothing. -->
+                        <div class="col-12" data-modryn-rows="partners">
                             <hr class="my-2"/>
                             <label class="form-label">Partners</label>
-                        </div>
-                        <t t-foreach="[1, 2, 3, 4, 5, 6]" t-as="n">
-                            <div class="col-md-3">
-                                <input type="text" name="partner_name" class="form-control"
-                                       placeholder="Partner"/>
+                            <div data-modryn-stack="1">
+                                <div t-foreach="[1, 2]" t-as="n"
+                                     class="row g-2 mb-2" data-modryn-row="1">
+                                    <div class="col-7">
+                                        <input type="text" name="partner_name"
+                                               class="form-control" placeholder="Partner"/>
+                                    </div>
+                                    <div class="col-5">
+                                        <input type="text" name="partner_phone" dir="ltr"
+                                               class="form-control" placeholder="Phone"/>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="col-md-3">
-                                <input type="text" name="partner_phone" class="form-control"
-                                       dir="ltr" placeholder="Phone"/>
-                            </div>
-                        </t>
-                        <div class="col-12">
-                            <p class="modryn_plat_sub mb-0">
+                            <button type="button" class="btn_quiet"
+                                    data-modryn-add="1" hidden="hidden">
+                                Add another partner
+                            </button>
+                            <p class="modryn_plat_sub mb-0 mt-2">
                                 Fill as many as the shop has. Blank rows are
-                                ignored, and more come back after saving.
+                                ignored.
                             </p>
                         </div>
 
@@ -116,24 +122,33 @@
                              Several, because a shop with two partners gets two
                              accounts and a register holding one would be
                              describing half the shop. -->
-                        <div class="col-12">
+                        <div class="col-12" data-modryn-rows="accounts">
                             <hr class="my-2"/>
                             <label class="form-label">Sign-ins issued to this shop</label>
+                            <div data-modryn-stack="1">
+                                <div t-foreach="[1, 2]" t-as="n"
+                                     class="row g-2 mb-2" data-modryn-row="1">
+                                    <div class="col-4">
+                                        <input type="text" name="account_username"
+                                               class="form-control" dir="ltr"
+                                               autocomplete="off" placeholder="Username"/>
+                                    </div>
+                                    <div class="col-4">
+                                        <input type="text" name="account_password"
+                                               class="form-control" dir="ltr"
+                                               autocomplete="off" placeholder="Password"/>
+                                    </div>
+                                    <div class="col-4">
+                                        <input type="text" name="account_holder"
+                                               class="form-control" placeholder="Whose it is"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="button" class="btn_quiet"
+                                    data-modryn-add="1" hidden="hidden">
+                                Add another sign-in
+                            </button>
                         </div>
-                        <t t-foreach="[1, 2, 3]" t-as="n">
-                            <div class="col-md-4">
-                                <input type="text" name="account_username" class="form-control"
-                                       dir="ltr" autocomplete="off" placeholder="Username"/>
-                            </div>
-                            <div class="col-md-4">
-                                <input type="text" name="account_password" class="form-control"
-                                       dir="ltr" autocomplete="off" placeholder="Password"/>
-                            </div>
-                            <div class="col-md-4">
-                                <input type="text" name="account_holder" class="form-control"
-                                       placeholder="Whose it is"/>
-                            </div>
-                        </t>
                         <div class="col-12">
                             <p class="modryn_plat_sub mb-0">
                                 Kept so it can be read back, which means it is
@@ -292,89 +307,104 @@
 
                                         <!-- Partners, as many as the shop has.
                                              Every existing one is a row that can
-                                             be emptied to drop it, and three
-                                             blank pairs wait at the end so that
-                                             adding one is typing rather than
-                                             pressing something first. -->
-                                        <div class="col-12">
+                                             be emptied to drop it, one blank pair
+                                             waits at the end, and the button
+                                             makes another whenever he wants one.
+
+                                             The blank row is LAST on purpose:
+                                             the button clones the last row, and
+                                             cloning a filled one would copy a
+                                             partner's name into the new pair. -->
+                                        <div class="col-12" data-modryn-rows="partners">
                                             <label class="form-label">Partners</label>
-                                            <div t-foreach="shop['partners']" t-as="p"
-                                                 class="row g-2 mb-2">
-                                                <div class="col-7">
-                                                    <input type="text" name="partner_name"
-                                                           class="form-control form-control-sm"
-                                                           t-att-value="p['name']"/>
+                                            <div data-modryn-stack="1">
+                                                <div t-foreach="shop['partners']" t-as="p"
+                                                     class="row g-2 mb-2" data-modryn-row="1">
+                                                    <div class="col-7">
+                                                        <input type="text" name="partner_name"
+                                                               class="form-control form-control-sm"
+                                                               t-att-value="p['name']"/>
+                                                    </div>
+                                                    <div class="col-5">
+                                                        <input type="text" name="partner_phone" dir="ltr"
+                                                               class="form-control form-control-sm"
+                                                               t-att-value="p['phone']"/>
+                                                    </div>
                                                 </div>
-                                                <div class="col-5">
-                                                    <input type="text" name="partner_phone" dir="ltr"
-                                                           class="form-control form-control-sm"
-                                                           t-att-value="p['phone']"/>
+                                                <div class="row g-2 mb-2" data-modryn-row="1">
+                                                    <div class="col-7">
+                                                        <input type="text" name="partner_name"
+                                                               class="form-control form-control-sm"
+                                                               placeholder="Another partner"/>
+                                                    </div>
+                                                    <div class="col-5">
+                                                        <input type="text" name="partner_phone" dir="ltr"
+                                                               class="form-control form-control-sm"
+                                                               placeholder="Phone"/>
+                                                    </div>
                                                 </div>
                                             </div>
-                                            <div t-foreach="[1, 2, 3]" t-as="blank"
-                                                 class="row g-2 mb-2">
-                                                <div class="col-7">
-                                                    <input type="text" name="partner_name"
-                                                           class="form-control form-control-sm"
-                                                           placeholder="Another partner"/>
-                                                </div>
-                                                <div class="col-5">
-                                                    <input type="text" name="partner_phone" dir="ltr"
-                                                           class="form-control form-control-sm"
-                                                           placeholder="Phone"/>
-                                                </div>
-                                            </div>
-                                            <p class="modryn_plat_sub mb-0">
+                                            <button type="button" class="btn_quiet"
+                                                    data-modryn-add="1" hidden="hidden">
+                                                Add another partner
+                                            </button>
+                                            <p class="modryn_plat_sub mb-0 mt-2">
                                                 Clear a name to remove that
-                                                partner. Save, and three more
-                                                blank rows come back.
+                                                partner.
                                             </p>
                                         </div>
 
                                         <!-- The sign-ins MODRYN issued to this
                                              shop. Existing rows can be edited
-                                             or emptied to drop them; the blanks
-                                             below are how another is added. -->
-                                        <div class="col-12">
+                                             or emptied to drop them; one blank
+                                             waits below and the button makes
+                                             another, as many as the shop was
+                                             given. -->
+                                        <div class="col-12" data-modryn-rows="accounts">
                                             <label class="form-label">Sign-ins issued to this shop</label>
-                                            <div t-foreach="shop['accounts']" t-as="acc"
-                                                 class="row g-2 mb-2">
-                                                <div class="col-4">
-                                                    <input type="text" name="account_username" dir="ltr"
-                                                           class="form-control form-control-sm"
-                                                           autocomplete="off"
-                                                           t-att-value="acc['username']"/>
+                                            <div data-modryn-stack="1">
+                                                <div t-foreach="shop['accounts']" t-as="acc"
+                                                     class="row g-2 mb-2" data-modryn-row="1">
+                                                    <div class="col-4">
+                                                        <input type="text" name="account_username" dir="ltr"
+                                                               class="form-control form-control-sm"
+                                                               autocomplete="off"
+                                                               t-att-value="acc['username']"/>
+                                                    </div>
+                                                    <div class="col-4">
+                                                        <input type="text" name="account_password" dir="ltr"
+                                                               class="form-control form-control-sm"
+                                                               autocomplete="off"
+                                                               t-att-value="acc['password']"/>
+                                                    </div>
+                                                    <div class="col-4">
+                                                        <input type="text" name="account_holder"
+                                                               class="form-control form-control-sm"
+                                                               t-att-value="acc['holder']"/>
+                                                    </div>
                                                 </div>
-                                                <div class="col-4">
-                                                    <input type="text" name="account_password" dir="ltr"
-                                                           class="form-control form-control-sm"
-                                                           autocomplete="off"
-                                                           t-att-value="acc['password']"/>
-                                                </div>
-                                                <div class="col-4">
-                                                    <input type="text" name="account_holder"
-                                                           class="form-control form-control-sm"
-                                                           t-att-value="acc['holder']"/>
+                                                <div class="row g-2 mb-2" data-modryn-row="1">
+                                                    <div class="col-4">
+                                                        <input type="text" name="account_username" dir="ltr"
+                                                               class="form-control form-control-sm"
+                                                               autocomplete="off" placeholder="Username"/>
+                                                    </div>
+                                                    <div class="col-4">
+                                                        <input type="text" name="account_password" dir="ltr"
+                                                               class="form-control form-control-sm"
+                                                               autocomplete="off" placeholder="Password"/>
+                                                    </div>
+                                                    <div class="col-4">
+                                                        <input type="text" name="account_holder"
+                                                               class="form-control form-control-sm"
+                                                               placeholder="Whose it is"/>
+                                                    </div>
                                                 </div>
                                             </div>
-                                            <div t-foreach="[1, 2]" t-as="blank"
-                                                 class="row g-2 mb-2">
-                                                <div class="col-4">
-                                                    <input type="text" name="account_username" dir="ltr"
-                                                           class="form-control form-control-sm"
-                                                           autocomplete="off" placeholder="Username"/>
-                                                </div>
-                                                <div class="col-4">
-                                                    <input type="text" name="account_password" dir="ltr"
-                                                           class="form-control form-control-sm"
-                                                           autocomplete="off" placeholder="Password"/>
-                                                </div>
-                                                <div class="col-4">
-                                                    <input type="text" name="account_holder"
-                                                           class="form-control form-control-sm"
-                                                           placeholder="Whose it is"/>
-                                                </div>
-                                            </div>
+                                            <button type="button" class="btn_quiet"
+                                                    data-modryn-add="1" hidden="hidden">
+                                                Add another sign-in
+                                            </button>
                                             <p class="modryn_plat_sub mb-0">
                                                 Kept so it can be read back,
                                                 which means it is kept readable.

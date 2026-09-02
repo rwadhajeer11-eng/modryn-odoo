@@ -806,14 +806,6 @@ msgstr "شريك إضافي"
 #. module: modryn_platform
 #: model_terms:ir.ui.view,arch_db:modryn_platform.boutique_register
 msgid ""
-"Clear a name to remove that\n"
-"                                                partner. Save, and three more\n"
-"                                                blank rows come back."
-msgstr "امسح الاسم عشان تشيل الشريك. بعد الحفظ بترجع تلات أسطر فاضية."
-
-#. module: modryn_platform
-#: model_terms:ir.ui.view,arch_db:modryn_platform.boutique_register
-msgid ""
 "Archive this boutique? It leaves the\n"
 "                                            list and moves into the archive."
 msgstr "تأرشف هالمحل؟ بينزل عن القائمة وبيروح عالأرشيف."
@@ -971,13 +963,6 @@ msgstr "لمين"
 #: model_terms:ir.ui.view,arch_db:modryn_platform.boutique_register
 msgid "Partner"
 msgstr "شريك"
-
-#. module: modryn_platform
-#: model_terms:ir.ui.view,arch_db:modryn_platform.boutique_register
-msgid ""
-"Fill as many as the shop has. Blank rows are\n"
-"                                ignored, and more come back after saving."
-msgstr "عبّي قد ما عند المحل. الأسطر الفاضية بتتجاهل، وبعد الحفظ بترجع كمان."
 
 #. module: modryn_platform
 #: model_terms:ir.ui.view,arch_db:modryn_platform.boutique_register
@@ -1213,3 +1198,27 @@ msgstr "جدول العمل"
 #: model:modryn.platform.screen,name:modryn_platform.screen_atelier
 msgid "Workshop"
 msgstr "الورشة"
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.boutique_register
+msgid "Add another partner"
+msgstr "ضيف شريك كمان"
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.boutique_register
+msgid "Add another sign-in"
+msgstr "ضيف تسجيل دخول كمان"
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.boutique_register
+msgid ""
+"Fill as many as the shop has. Blank rows are\n"
+"                                ignored."
+msgstr "عبّي قد ما عند المحل. الأسطر الفاضية بتتجاهل."
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.boutique_register
+msgid ""
+"Clear a name to remove that\n"
+"                                                partner."
+msgstr "امسح الاسم عشان تشيل الشريك."
