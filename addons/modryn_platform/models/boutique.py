@@ -39,6 +39,10 @@ class ModrynBoutique(models.Model):
                        help="The tenant's hostname label, e.g. 'bella' for bella.modryn.co.il.")
     subscription_type_id = fields.Many2one('modryn.subscription.type',
                                            string="Subscription")
+    # The sign-ins MODRYN issued to this shop. A note of what was handed over,
+    # not the accounts themselves - those live in the boutique's own database.
+    account_ids = fields.One2many(
+        'modryn.boutique.account', 'boutique_id', string="Sign-ins")
     partner_ids = fields.One2many('modryn.boutique.partner', 'boutique_id',
                                   string="Partners")
     note = fields.Text()
@@ -68,6 +72,10 @@ class ModrynBoutique(models.Model):
             'subscription': self.subscription_type_id.name or '',
             'partners': [{'name': p.name, 'phone': p.phone or ''}
                          for p in self.partner_ids],
+            'accounts': [{'username': a.username or '',
+                          'password': a.sudo().password or '',
+                          'holder': a.holder or ''}
+                         for a in self.account_ids],
             'note': self.note or '',
             'active': self.active,
         }

@@ -169,6 +169,7 @@ msgid "A boutique partner"
 msgstr "שותפה בבוטיק"
 
 #. module: modryn_platform
+#: model:ir.model.fields,field_description:modryn_platform.field_modryn_boutique_account__boutique_id
 #: model:ir.model.fields,field_description:modryn_platform.field_modryn_boutique_partner__boutique_id
 msgid "Boutique"
 msgstr "בוטיק"
@@ -309,6 +310,7 @@ msgid "Platform"
 msgstr "פלטפורמה"
 
 #. module: modryn_platform
+#: model:ir.model.fields,field_description:modryn_platform.field_modryn_boutique_account__username
 #: model_terms:ir.ui.view,arch_db:modryn_platform.boutique_register
 #: model_terms:ir.ui.view,arch_db:modryn_platform.login_username_not_email
 #: model_terms:ir.ui.view,arch_db:modryn_platform.platform_account
@@ -336,6 +338,7 @@ msgid "ID number"
 msgstr "מספר תעודת זהות"
 
 #. module: modryn_platform
+#: model:ir.model.fields,field_description:modryn_platform.field_modryn_boutique_account__password
 #: model_terms:ir.ui.view,arch_db:modryn_platform.boutique_register
 #: model_terms:ir.ui.view,arch_db:modryn_platform.platform_account
 #: model_terms:ir.ui.view,arch_db:modryn_platform.platform_login
@@ -945,3 +948,59 @@ msgstr "<option value=\"\">-</option>"
 #: model_terms:ir.ui.view,arch_db:modryn_platform.boutique_register
 msgid "<option value=\"\">—</option>"
 msgstr "<option value=\"\">—</option>"
+
+#. module: modryn_platform
+#: model:ir.model.fields,field_description:modryn_platform.field_modryn_boutique__account_ids
+msgid "Sign-ins"
+msgstr "כניסות"
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.boutique_register
+msgid "Sign-ins issued to this shop"
+msgstr "כניסות שהונפקו לחנות הזו"
+
+#. module: modryn_platform
+#: model:ir.model,name:modryn_platform.model_modryn_boutique_account
+msgid "A boutique sign-in the platform issued"
+msgstr "כניסה לחנות שהפלטפורמה הנפיקה"
+
+#. module: modryn_platform
+#: model:ir.model.fields,field_description:modryn_platform.field_modryn_boutique_account__holder
+msgid "Who it belongs to"
+msgstr "של מי זה"
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.boutique_register
+msgid "Whose it is"
+msgstr "של מי"
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.boutique_register
+msgid "Partner"
+msgstr "שותף"
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.boutique_register
+msgid ""
+"Fill as many as the shop has. Blank rows are\n"
+"                                ignored, and more come back after saving."
+msgstr "מלא כמה שיש לחנות. שורות ריקות מתעלמים מהן, ואחרי שמירה חוזרות עוד."
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.boutique_register
+msgid ""
+"Kept so it can be read back,\n"
+"                                                which means it is kept readable.\n"
+"                                                No other screen shows it."
+msgstr ""
+"נשמר כדי שתוכל לקרוא אותו בחזרה, כלומר הוא נשמר קריא. אף מסך אחר לא מציג "
+"אותו."
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.boutique_register
+msgid ""
+"Kept so it can be read back, which means it is\n"
+"                                kept readable. No other screen shows it."
+msgstr ""
+"נשמר כדי שתוכל לקרוא אותו בחזרה, כלומר הוא נשמר קריא. אף מסך אחר לא מציג "
+"אותו."

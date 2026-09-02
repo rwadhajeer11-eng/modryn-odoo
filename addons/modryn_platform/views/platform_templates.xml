@@ -79,24 +79,70 @@
                             </select>
                         </div>
 
-                        <!-- Four partner rows, always rendered. Blank ones are
-                             dropped server-side, so the common one-owner shop
-                             costs no clicks and a four-way partnership needs no
-                             "add another" button and therefore no JS. -->
-                        <div class="col-12"><hr class="my-2"/><span class="text-muted">Partners</span></div>
-                        <t t-foreach="[1, 2, 3, 4]" t-as="n">
+                        <!-- Partner rows, always rendered and always blank
+                             ones spare. Blank rows are dropped server-side, so
+                             a one-owner shop costs no clicks and a six-way
+                             partnership needs no "add another" button and
+                             therefore no JavaScript. Save and the form comes
+                             back with fresh blanks, which is what makes "as
+                             many as you want" true rather than "up to eight". -->
+                        <div class="col-12">
+                            <hr class="my-2"/>
+                            <label class="form-label">Partners</label>
+                        </div>
+                        <t t-foreach="[1, 2, 3, 4, 5, 6]" t-as="n">
                             <div class="col-md-3">
                                 <input type="text" name="partner_name" class="form-control"
-                                       t-attf-placeholder="Partner #{n} name"/>
+                                       placeholder="Partner"/>
                             </div>
                             <div class="col-md-3">
                                 <input type="text" name="partner_phone" class="form-control"
-                                       dir="ltr" t-attf-placeholder="Partner #{n} phone"/>
+                                       dir="ltr" placeholder="Phone"/>
                             </div>
                         </t>
+                        <div class="col-12">
+                            <p class="modryn_plat_sub mb-0">
+                                Fill as many as the shop has. Blank rows are
+                                ignored, and more come back after saving.
+                            </p>
+                        </div>
+
+                        <!-- WHAT MODRYN HANDED THIS SHOP TO SIGN IN WITH. The
+                             real accounts live in the boutique's own database;
+                             these are the platform's note of what was issued,
+                             which is the question nobody could answer without
+                             opening that database.
+
+                             Several, because a shop with two partners gets two
+                             accounts and a register holding one would be
+                             describing half the shop. -->
+                        <div class="col-12">
+                            <hr class="my-2"/>
+                            <label class="form-label">Sign-ins issued to this shop</label>
+                        </div>
+                        <t t-foreach="[1, 2, 3]" t-as="n">
+                            <div class="col-md-4">
+                                <input type="text" name="account_username" class="form-control"
+                                       dir="ltr" autocomplete="off" placeholder="Username"/>
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" name="account_password" class="form-control"
+                                       dir="ltr" autocomplete="off" placeholder="Password"/>
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" name="account_holder" class="form-control"
+                                       placeholder="Whose it is"/>
+                            </div>
+                        </t>
+                        <div class="col-12">
+                            <p class="modryn_plat_sub mb-0">
+                                Kept so it can be read back, which means it is
+                                kept readable. No other screen shows it.
+                            </p>
+                        </div>
 
                         <div class="col-12 mt-2">
-                            <button type="submit" class="btn btn-primary">Add boutique</button>
+                            <button type="submit" class="btn_gold">Add boutique</button>
                         </div>
                     </form>
                 </details>
@@ -134,6 +180,10 @@
                                     </span>
                                 </div>
                                 <span t-if="not shop['partners']" class="modryn_plat_sub">—</span>
+                                <div t-if="shop['accounts']" class="modryn_plat_sub">
+                                    <i class="fa fa-key" aria-hidden="true"/>
+                                    <t t-out="len(shop['accounts'])"/>
+                                </div>
                             </td>
                             <td>
                                 <!-- Editable in place: a shop moving up a tier is
@@ -281,6 +331,57 @@
                                             </p>
                                         </div>
 
+                                        <!-- The sign-ins MODRYN issued to this
+                                             shop. Existing rows can be edited
+                                             or emptied to drop them; the blanks
+                                             below are how another is added. -->
+                                        <div class="col-12">
+                                            <label class="form-label">Sign-ins issued to this shop</label>
+                                            <div t-foreach="shop['accounts']" t-as="acc"
+                                                 class="row g-2 mb-2">
+                                                <div class="col-4">
+                                                    <input type="text" name="account_username" dir="ltr"
+                                                           class="form-control form-control-sm"
+                                                           autocomplete="off"
+                                                           t-att-value="acc['username']"/>
+                                                </div>
+                                                <div class="col-4">
+                                                    <input type="text" name="account_password" dir="ltr"
+                                                           class="form-control form-control-sm"
+                                                           autocomplete="off"
+                                                           t-att-value="acc['password']"/>
+                                                </div>
+                                                <div class="col-4">
+                                                    <input type="text" name="account_holder"
+                                                           class="form-control form-control-sm"
+                                                           t-att-value="acc['holder']"/>
+                                                </div>
+                                            </div>
+                                            <div t-foreach="[1, 2]" t-as="blank"
+                                                 class="row g-2 mb-2">
+                                                <div class="col-4">
+                                                    <input type="text" name="account_username" dir="ltr"
+                                                           class="form-control form-control-sm"
+                                                           autocomplete="off" placeholder="Username"/>
+                                                </div>
+                                                <div class="col-4">
+                                                    <input type="text" name="account_password" dir="ltr"
+                                                           class="form-control form-control-sm"
+                                                           autocomplete="off" placeholder="Password"/>
+                                                </div>
+                                                <div class="col-4">
+                                                    <input type="text" name="account_holder"
+                                                           class="form-control form-control-sm"
+                                                           placeholder="Whose it is"/>
+                                                </div>
+                                            </div>
+                                            <p class="modryn_plat_sub mb-0">
+                                                Kept so it can be read back,
+                                                which means it is kept readable.
+                                                No other screen shows it.
+                                            </p>
+                                        </div>
+
                                         <div class="col-12">
                                             <button type="submit" class="btn_gold">Save the boutique</button>
                                         </div>
@@ -323,7 +424,8 @@
                                 <tr><th>No.</th><th>Name</th><th>Where</th><th/></tr>
                             </thead>
                             <tbody>
-                                <tr t-foreach="archived" t-as="shop" t-key="shop['id']">
+                                <t t-foreach="archived" t-as="shop">
+                                <tr>
                                     <td dir="ltr" t-out="shop['code']"/>
                                     <td>
                                         <strong t-out="shop['name']"/>
@@ -341,12 +443,15 @@
                                                    t-att-value="request.csrf_token()"/>
                                             <button type="submit" class="btn_quiet">Restore</button>
                                         </form>
-
-                                        <!-- Four answers to destroy a row. The
-                                             same four the door asks, because
-                                             this is the only button here that
-                                             cannot be undone. -->
-                                        <details class="modryn_plat_ask">
+                                    </td>
+                                </tr>
+                                <!-- Its own row, because it is a four-field
+                                     form: in the action cell it left the shop's
+                                     details floating in the middle of a tall
+                                     row with the buttons stacked above them. -->
+                                <tr>
+                                    <td colspan="4" class="p-0">
+                                        <details class="modryn_plat_ask modryn_plat_danger_row">
                                             <summary class="btn_quiet">Delete for good</summary>
                                             <div class="modryn_plat_confirm">
                                                 <div class="modryn_plat_sub">
@@ -357,25 +462,25 @@
                                                       method="post" class="row g-2 mt-1">
                                                     <input type="hidden" name="csrf_token"
                                                            t-att-value="request.csrf_token()"/>
-                                                    <div class="col-6">
+                                                    <div class="col-6 col-md-3">
                                                         <input type="text" name="username"
                                                                class="form-control form-control-sm"
                                                                autocomplete="off"
                                                                placeholder="Username"/>
                                                     </div>
-                                                    <div class="col-6">
+                                                    <div class="col-6 col-md-3">
                                                         <input type="text" name="phone" dir="ltr"
                                                                class="form-control form-control-sm"
                                                                autocomplete="off"
                                                                placeholder="Phone number"/>
                                                     </div>
-                                                    <div class="col-6">
+                                                    <div class="col-6 col-md-3">
                                                         <input type="password" name="idnum" dir="ltr"
                                                                class="form-control form-control-sm"
                                                                autocomplete="off"
                                                                placeholder="ID number"/>
                                                     </div>
-                                                    <div class="col-6">
+                                                    <div class="col-6 col-md-3">
                                                         <input type="password" name="password"
                                                                class="form-control form-control-sm"
                                                                autocomplete="off"
@@ -391,6 +496,7 @@
                                         </details>
                                     </td>
                                 </tr>
+                                </t>
                             </tbody>
                         </table>
                         </div>
@@ -433,7 +539,7 @@
                                placeholder="What it covers"/>
                     </div>
                     <div class="col-md-2">
-                        <button type="submit" class="btn btn-outline-dark w-100">Add</button>
+                        <button type="submit" class="btn_quiet w-100">Add</button>
                     </div>
                 </form>
 
@@ -479,7 +585,7 @@
                                placeholder="Note (optional)"/>
                     </div>
                     <div class="col-md-2">
-                        <button type="submit" class="btn btn-outline-dark w-100">Add tier</button>
+                        <button type="submit" class="btn_quiet w-100">Add tier</button>
                     </div>
                 </form>
 
@@ -506,7 +612,7 @@
                             </label>
                         </t>
                         <div class="mt-2">
-                            <button type="submit" class="btn btn-sm btn-primary">Save</button>
+                            <button type="submit" class="btn_gold">Save</button>
                         </div>
                     </form>
                     <form t-attf-action="/platform/plans/type/archive/#{ty.id}" method="post"

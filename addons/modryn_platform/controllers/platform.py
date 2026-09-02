@@ -21,6 +21,46 @@ class ModrynPlatform(http.Controller):
         user = request.env.user
         return not user._is_public() and user.has_group(GROUP_PLATFORM)
 
+    @staticmethod
+    def _list_values(form):
+        """Partners and sign-ins, as the form posted them.
+
+        getlist, because a repeated field name is how an HTML form says "several
+        of these" - the idiom modryn_staff's role-page matrix already uses.
+
+        REWRITTEN WHOLE, not diffed: a form that posts the list it was shown is
+        describing the shop as it should now be. A diff would need ids in the
+        page and a rule for every row that came back missing.
+
+        ONLY WHEN THE FORM CARRIED THE LIST. The tier dropdown on the row posts
+        to the edit route with nothing else in it, and reading its silence as
+        "no partners" would empty the shop on a subscription change. Measured:
+        six partners saved, then the dropdown alone saved, and the six stayed.
+        """
+        values = {}
+        if 'partner_name' in form:
+            names = form.getlist('partner_name')
+            phones = form.getlist('partner_phone')
+            values['partner_ids'] = [(5, 0, 0)] + [
+                (0, 0, {'name': name.strip(),
+                        'phone': (phones[i] if i < len(phones) else '').strip(),
+                        'sequence': i * 10})
+                for i, name in enumerate(names) if name.strip()]
+        if 'account_username' in form:
+            users = form.getlist('account_username')
+            words = form.getlist('account_password')
+            holders = form.getlist('account_holder')
+            # A username is what makes a row a row. A password with no username
+            # beside it is not a sign-in; it would sit in the list as a secret
+            # belonging to nobody.
+            values['account_ids'] = [(5, 0, 0)] + [
+                (0, 0, {'username': user.strip(),
+                        'password': (words[i] if i < len(words) else '').strip(),
+                        'holder': (holders[i] if i < len(holders) else '').strip(),
+                        'sequence': i * 10})
+                for i, user in enumerate(users) if user.strip()]
+        return values
+
     def _shops(self, archived=False):
         """The live register, or the archive. Never both in one list.
 
@@ -140,16 +180,9 @@ class ModrynPlatform(http.Controller):
         if type_id:
             values['subscription_type_id'] = int(type_id)
 
-        # Up to four partners, posted as parallel lists. getlist, because a
-        # repeated field name is how an HTML form says "several of these" — the
-        # idiom modryn_staff/manage.py already uses for the role-page matrix.
-        form = request.httprequest.form
-        names = form.getlist('partner_name')
-        phones = form.getlist('partner_phone')
-        partners = [(0, 0, {'name': n.strip(), 'phone': (phones[i] if i < len(phones) else '').strip()})
-                    for i, n in enumerate(names) if n.strip()]
-        if partners:
-            values['partner_ids'] = partners
+        # Partners and sign-ins, through the same reader the edit form uses:
+        # one place that knows how a repeated field name becomes a list.
+        values.update(self._list_values(request.httprequest.form))
 
         # Savepoint: a constraint the model enforces has to come back as a
         # sentence rather than poisoning the request's transaction.
@@ -183,23 +216,7 @@ class ModrynPlatform(http.Controller):
         elif 'subscription_type_id' in post:
             values['subscription_type_id'] = False
 
-        # The partners, rewritten whole. A form that posts the list it was shown
-        # is describing the shop as it should now be, so the honest write is
-        # "these are the partners" rather than a diff of what changed — which
-        # would need ids in the page and a rule for every one that went missing.
-        #
-        # Only when the form actually carried them: the tier dropdown in the row
-        # posts to this same route, and treating its silence as "no partners"
-        # would wipe them on a subscription change.
-        form = request.httprequest.form
-        if 'partner_name' in form:
-            names = form.getlist('partner_name')
-            phones = form.getlist('partner_phone')
-            values['partner_ids'] = [(5, 0, 0)] + [
-                (0, 0, {'name': n.strip(),
-                        'phone': (phones[i] if i < len(phones) else '').strip(),
-                        'sequence': i * 10})
-                for i, n in enumerate(names) if n.strip()]
+        values.update(self._list_values(request.httprequest.form))
         try:
             with request.env.cr.savepoint(), mute_logger('odoo.sql_db'):
                 shop.write(values)

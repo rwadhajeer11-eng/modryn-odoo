@@ -223,28 +223,37 @@ $plat-success:   #2E6B4F;
 // because it is one press away from being one; what opens under it is the
 // confirmation, and nothing here needs JavaScript to work.
 .modryn_plat_ask {
-    display: inline-block;
-    position: relative;
+    // Not inline-block, and NOT position:relative. Both were there to hang an
+    // absolutely-positioned panel off the button, and that panel covered the
+    // row beneath it on the register and was cut in half inside the archive.
+    display: block;
 
     > summary {
         cursor: pointer;
         list-style: none;
+        display: inline-block;
         &::-webkit-details-marker { display: none; }
     }
 }
 
+// IN THE FLOW, deliberately. As an absolute box it was clipped by the scroll
+// wrapper around the table: CSS does not allow overflow-x: auto beside
+// overflow-y: visible - the other axis becomes auto too - so a wrapper added to
+// stop a wide table pushing the page sideways silently became a box that cuts
+// off anything positioned out of it.
+//
+// As a block it makes the row taller instead. Nothing overlaps, nothing clips,
+// there is no z-index to lose and no guess about which way it should open; on a
+// narrow screen it wraps rather than hanging off the edge.
 .modryn_plat_confirm {
-    position: absolute;
-    inset-inline-end: 0;
-    z-index: 20;
-    min-width: 20rem;
-    margin-block-start: .4rem;
+    margin-block-start: .5rem;
     padding: .9rem 1rem;
     text-align: start;
-    background: #FFFFFF;
+    background: $plat-gold-wash;
     border: 1px solid $plat-gold;
     border-radius: 5px;
-    box-shadow: 0 12px 30px rgba(43, 33, 24, .16);
+    // Wide enough to read, never wider than the cell it grew inside.
+    max-width: 26rem;
 
     > .modryn_plat_sub { margin-block-end: .6rem; }
 }
@@ -262,6 +271,10 @@ $plat-success:   #2E6B4F;
     &[open] > summary { border-block-end: 1px solid $plat-border; }
 }
 
+// The action column. Buttons sit in a row; a confirmation opening under one of
+// them pushes the cell taller rather than being squeezed beside them.
+.modryn_plat_table td .modryn_plat_ask { margin-block-start: .35rem; }
+
 .modryn_plat_archive_head {
     cursor: pointer;
     font-weight: 600;
@@ -270,4 +283,18 @@ $plat-success:   #2E6B4F;
     gap: .55rem;
 
     .fa { color: $plat-gold-text; }
+}
+
+// A tall row must not leave the short cells floating in the middle of it. Any
+// row can grow now that confirmations open in the flow.
+.modryn_plat_table td { vertical-align: top; }
+
+// The delete row, set apart: it is the only control in the product that
+// destroys rather than hides, and it should not look like Restore beside it.
+.modryn_plat_danger_row {
+    border-block-start: 1px solid $plat-border;
+    padding: .5rem .6rem .9rem;
+
+    > summary { color: $plat-danger; }
+    .modryn_plat_confirm { border-color: $plat-danger; background: #FFFFFF; }
 }
