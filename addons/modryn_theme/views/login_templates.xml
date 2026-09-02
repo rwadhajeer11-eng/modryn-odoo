@@ -20,4 +20,18 @@
         </xpath>
     </template>
 
+    <!--
+        "Sign in" in the customers' header pointed at /web/login - Odoo's own
+        administrator door - on the page a bride browses dresses on. She has no
+        account there and never will: customers identify themselves by a code
+        sent to their phone at /my/login, and staff sign in at /staff/login.
+
+        A door nobody on that page can open is not neutral. It invites the one
+        visitor who WILL try things, and it is the same door this product has
+        already closed on the platform's side for the same reason.
+    -->
+    <record id="portal.user_sign_in" model="ir.ui.view">
+        <field name="active" eval="False"/>
+    </record>
+
 </odoo>

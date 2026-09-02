@@ -56,4 +56,61 @@
         </xpath>
     </template>
 
+    <!--
+        THE BUYING HALF OF THE SHOP, CLOSED.
+
+        modryn.scss has hidden the grid tile's "add to cart" since the theme was
+        written and says in its own comment that a display-level removal is not
+        the fix. It also never covered the product page, the header, or the cart
+        page itself. Signed out, on a dress at eleven thousand shekels, a
+        customer was offered: Add to cart, Add to compare, a wishlist, a cart in
+        the header, and from it Order - Address - Payment. No payment provider
+        is configured, so what that offered was a checkout that fails at the
+        last step, which is worse than no checkout at all.
+
+        t-if="False" on the wrapper rather than CSS: a rule in a stylesheet is
+        undone by the next stylesheet, and a bride with a reader or a slow
+        connection could still reach a button that was only painted away.
+
+        `active="False"` is not used here - these are primary templates that the
+        page t-calls, and a deactivated one is a different kind of surprise.
+        Emptying them keeps the call site working and says what is intended.
+    -->
+    <template id="product_no_cart"
+              inherit_id="website_sale.cta_wrapper"
+              name="MODRYN: no cart, no compare, no wishlist">
+        <xpath expr="//div[@id='o_wsale_cta_wrapper']" position="attributes">
+            <attribute name="t-if">False</attribute>
+        </xpath>
+    </template>
+
+    <template id="header_no_cart"
+              inherit_id="website_sale.header_cart_link"
+              name="MODRYN: no cart in the header">
+        <!-- Odoo's own switch for this line, set to false rather than a class
+             added on top of it: show_cart is what the markup already asks. -->
+        <xpath expr="//t[@t-set='show_cart']" position="after">
+            <t t-set="show_cart" t-value="False"/>
+        </xpath>
+    </template>
+
+    <!--
+        Odoo's product page carries a small print block that read, under an
+        11,000 shekel gown: "Terms and Conditions / 30-day money-back guarantee
+        / Shipping: 2-3 Business Days". In English, on a Hebrew page, about a
+        dress that is fitted over months and never posted to anybody.
+
+        A money-back guarantee is a promise about money. Leaving it there
+        because it is Odoo's default and not ours is not a defence - it is on
+        the boutique's page over the boutique's name.
+
+        `active="False"` is right for this one where it was wrong for the cart:
+        this is one of Odoo's OPTIONAL page blocks, switched on and off in the
+        website editor by exactly this flag, and turning it off is what that
+        switch does. Nothing t-calls it expecting content.
+    -->
+    <record id="website_sale.product_terms_and_conditions" model="ir.ui.view">
+        <field name="active" eval="False"/>
+    </record>
+
 </odoo>
