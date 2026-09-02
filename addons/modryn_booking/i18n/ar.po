@@ -236,7 +236,7 @@ msgstr "الحجز عبر الإنترنت مغلق حالياً"
 #. module: modryn_booking
 #: model:ir.model,name:modryn_booking.model_modryn_opening_hours
 msgid "Opening hours"
-msgstr "ساعات العمل"
+msgstr "ساعات الفتح"
 
 #. module: modryn_booking
 #. odoo-python

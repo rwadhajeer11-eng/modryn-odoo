@@ -4,3 +4,5 @@ access_modryn_boutique_partner_owner,modryn.boutique.partner.owner,model_modryn_
 access_modryn_subscription_type_owner,modryn.subscription.type.owner,model_modryn_subscription_type,modryn_platform.group_platform_owner,1,1,1,1
 access_modryn_platform_feature_owner,modryn.platform.feature.owner,model_modryn_platform_feature,modryn_platform.group_platform_owner,1,1,1,1
 access_boutique_account_owner,modryn.boutique.account.owner,model_modryn_boutique_account,modryn_platform.group_platform_owner,1,1,1,1
+access_platform_screen_owner,modryn.platform.screen.owner,model_modryn_platform_screen,modryn_platform.group_platform_owner,1,1,1,1
+access_platform_section_owner,modryn.platform.section.owner,model_modryn_platform_section,modryn_platform.group_platform_owner,1,1,1,1

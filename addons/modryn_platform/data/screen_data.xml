@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- The screens MODRYN sells, and the boxes on the one that has them.
+
+         THE NAMES AND KEYS HERE ARE THE PRODUCT'S OWN, copied from the
+         nav.register() calls across the addons — 'boss' really is what the code
+         calls the manager's screen, and "Manager screen" really is the label a
+         boutique reads on the tab. Inventing prettier names here would give the
+         platform owner a catalogue that quietly disagreed with what he sells.
+
+         noupdate: he renames these, ticks them onto tiers and adds his own; a
+         module upgrade must not undo that. They are a starting point, the same
+         way the three subscription tiers are.
+
+         Ordered the way a boutique meets them, not alphabetically. -->
+    <data noupdate="1">
+
+        <record id="screen_home" model="modryn.platform.screen">
+            <field name="name">Main screen</field>
+            <field name="key">home</field>
+            <field name="sequence">5</field>
+        </record>
+
+        <record id="screen_sell" model="modryn.platform.screen">
+            <field name="name">Sell</field>
+            <field name="key">sell</field>
+            <field name="sequence">8</field>
+        </record>
+
+        <record id="screen_floor" model="modryn.platform.screen">
+            <field name="name">Floor board</field>
+            <field name="key">floor</field>
+            <field name="sequence">10</field>
+        </record>
+
+        <!-- The one with boxes. A tier can include this screen and only two of
+             its panels, which is the case the platform owner described. -->
+        <record id="screen_boss" model="modryn.platform.screen">
+            <field name="name">Manager screen</field>
+            <field name="key">boss</field>
+            <field name="sequence">12</field>
+        </record>
+
+        <record id="section_boss_announce" model="modryn.platform.section">
+            <field name="screen_id" ref="screen_boss"/>
+            <field name="name">Tell the team</field>
+            <field name="key">announce</field>
+            <field name="sequence">10</field>
+        </record>
+        <record id="section_boss_team" model="modryn.platform.section">
+            <field name="screen_id" ref="screen_boss"/>
+            <field name="name">The team</field>
+            <field name="key">team</field>
+            <field name="sequence">20</field>
+        </record>
+        <record id="section_boss_worked" model="modryn.platform.section">
+            <field name="screen_id" ref="screen_boss"/>
+            <field name="name">Hours worked</field>
+            <field name="key">worked</field>
+            <field name="sequence">30</field>
+        </record>
+        <record id="section_boss_track" model="modryn.platform.section">
+            <field name="screen_id" ref="screen_boss"/>
+            <field name="name">What has been going on</field>
+            <field name="key">track</field>
+            <field name="sequence">40</field>
+        </record>
+        <record id="section_boss_sales" model="modryn.platform.section">
+            <field name="screen_id" ref="screen_boss"/>
+            <field name="name">Dresses sold</field>
+            <field name="key">sales</field>
+            <field name="sequence">50</field>
+        </record>
+        <record id="section_boss_rooms" model="modryn.platform.section">
+            <field name="screen_id" ref="screen_boss"/>
+            <field name="name">Fitting rooms</field>
+            <field name="key">rooms</field>
+            <field name="sequence">60</field>
+        </record>
+        <record id="section_boss_hours" model="modryn.platform.section">
+            <field name="screen_id" ref="screen_boss"/>
+            <field name="name">Opening hours</field>
+            <field name="key">hours</field>
+            <field name="sequence">70</field>
+        </record>
+
+        <record id="screen_supervisor" model="modryn.platform.screen">
+            <field name="name">Shift supervisor</field>
+            <field name="key">supervisor</field>
+            <field name="sequence">15</field>
+        </record>
+
+        <record id="screen_roster" model="modryn.platform.screen">
+            <field name="name">Work schedule</field>
+            <field name="key">roster</field>
+            <field name="sequence">20</field>
+        </record>
+
+        <record id="screen_roles" model="modryn.platform.screen">
+            <field name="name">Roles</field>
+            <field name="key">roles</field>
+            <field name="sequence">25</field>
+        </record>
+
+        <record id="screen_atelier" model="modryn.platform.screen">
+            <field name="name">Workshop</field>
+            <field name="key">atelier</field>
+            <field name="sequence">30</field>
+        </record>
+
+        <record id="screen_dresses" model="modryn.platform.screen">
+            <field name="name">Dresses</field>
+            <field name="key">dresses</field>
+            <field name="sequence">35</field>
+        </record>
+
+        <record id="screen_reports" model="modryn.platform.screen">
+            <field name="name">Reports</field>
+            <field name="key">reports</field>
+            <field name="sequence">40</field>
+        </record>
+
+        <record id="screen_shifts" model="modryn.platform.screen">
+            <field name="name">Shifts</field>
+            <field name="key">shifts</field>
+            <field name="sequence">50</field>
+        </record>
+
+        <record id="screen_checkin" model="modryn.platform.screen">
+            <field name="name">Walk-in check-in</field>
+            <field name="key">checkin</field>
+            <field name="sequence">60</field>
+        </record>
+
+        <record id="screen_checklists" model="modryn.platform.screen">
+            <field name="name">Checklists</field>
+            <field name="key">checklists</field>
+            <field name="sequence">70</field>
+        </record>
+
+        <record id="screen_audit" model="modryn.platform.screen">
+            <field name="name">Audit</field>
+            <field name="key">audit</field>
+            <field name="sequence">80</field>
+        </record>
+
+        <!-- Every worker has one, and a tier that took it away would leave her
+             unable to correct her own phone number. Listed all the same: the
+             catalogue is the product, and leaving a screen out of it is how the
+             two drift apart. -->
+        <record id="screen_profile" model="modryn.platform.screen">
+            <field name="name">My profile</field>
+            <field name="key">profile</field>
+            <field name="sequence">90</field>
+        </record>
+
+    </data>
+</odoo>

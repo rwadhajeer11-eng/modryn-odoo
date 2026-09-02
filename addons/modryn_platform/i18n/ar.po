@@ -65,6 +65,8 @@ msgstr "أربع أرقام. هيك MODRYN بتشير لهالمحل."
 #: model:ir.model.fields,field_description:modryn_platform.field_modryn_boutique__name
 #: model:ir.model.fields,field_description:modryn_platform.field_modryn_boutique_partner__name
 #: model:ir.model.fields,field_description:modryn_platform.field_modryn_platform_feature__name
+#: model:ir.model.fields,field_description:modryn_platform.field_modryn_platform_screen__name
+#: model:ir.model.fields,field_description:modryn_platform.field_modryn_platform_section__name
 #: model:ir.model.fields,field_description:modryn_platform.field_modryn_subscription_type__name
 #: model_terms:ir.ui.view,arch_db:modryn_platform.boutique_register
 #: model_terms:ir.ui.view,arch_db:modryn_platform.platform_account
@@ -251,6 +253,7 @@ msgstr "ملاحظة (اختياري)"
 #: model:ir.model.fields,field_description:modryn_platform.field_modryn_platform_feature__note
 #: model:ir.model.fields,field_description:modryn_platform.field_modryn_subscription_type__note
 #: model_terms:ir.ui.view,arch_db:modryn_platform.boutique_register
+#: model_terms:ir.ui.view,arch_db:modryn_platform.plans
 msgid "Note"
 msgstr "ملاحظة"
 
@@ -278,11 +281,6 @@ msgstr "بتشمل"
 #: model:ir.model.fields,help:modryn_platform.field_modryn_subscription_type__note
 msgid "What this tier includes. Shown only to the platform owner."
 msgstr "شو بتشمل هالباقة. بتبيّن لصاحب المنصّة بس."
-
-#. module: modryn_platform
-#: model_terms:ir.ui.view,arch_db:modryn_platform.plans
-msgid "Add a feature above before ticking one on here."
-msgstr "ضيف ميزة من فوق قبل ما تأشّر هون."
 
 #. module: modryn_platform
 #: model:ir.model,name:modryn_platform.model_modryn_platform_feature
@@ -313,6 +311,7 @@ msgstr "المنصّة"
 #: model:ir.model.fields,field_description:modryn_platform.field_modryn_boutique_account__username
 #: model_terms:ir.ui.view,arch_db:modryn_platform.boutique_register
 #: model_terms:ir.ui.view,arch_db:modryn_platform.login_username_not_email
+#: model_terms:ir.ui.view,arch_db:modryn_platform.plans
 #: model_terms:ir.ui.view,arch_db:modryn_platform.platform_account
 #: model_terms:ir.ui.view,arch_db:modryn_platform.platform_login
 msgid "Username"
@@ -325,6 +324,7 @@ msgstr "اكتب اسم المستخدم"
 
 #. module: modryn_platform
 #: model_terms:ir.ui.view,arch_db:modryn_platform.boutique_register
+#: model_terms:ir.ui.view,arch_db:modryn_platform.plans
 #: model_terms:ir.ui.view,arch_db:modryn_platform.platform_account
 #: model_terms:ir.ui.view,arch_db:modryn_platform.platform_login
 msgid "Phone number"
@@ -332,6 +332,7 @@ msgstr "رقم التلفون"
 
 #. module: modryn_platform
 #: model_terms:ir.ui.view,arch_db:modryn_platform.boutique_register
+#: model_terms:ir.ui.view,arch_db:modryn_platform.plans
 #: model_terms:ir.ui.view,arch_db:modryn_platform.platform_account
 #: model_terms:ir.ui.view,arch_db:modryn_platform.platform_login
 msgid "ID number"
@@ -340,6 +341,7 @@ msgstr "رقم الهوية"
 #. module: modryn_platform
 #: model:ir.model.fields,field_description:modryn_platform.field_modryn_boutique_account__password
 #: model_terms:ir.ui.view,arch_db:modryn_platform.boutique_register
+#: model_terms:ir.ui.view,arch_db:modryn_platform.plans
 #: model_terms:ir.ui.view,arch_db:modryn_platform.platform_account
 #: model_terms:ir.ui.view,arch_db:modryn_platform.platform_login
 msgid "Password"
@@ -481,15 +483,6 @@ msgstr "تلفون المنصّة (مشفّر)"
 #: model:ir.model.fields,field_description:modryn_platform.field_res_users__modryn_platform_idnum
 msgid "Platform ID number (hashed)"
 msgstr "رقم هوية المنصّة (مشفّر)"
-
-#. module: modryn_platform
-#: model_terms:ir.ui.view,arch_db:modryn_platform.plans
-msgid ""
-"The tiers you sell, and what each one includes. Add a feature\n"
-"                    once and tick it on as many tiers as it belongs to."
-msgstr ""
-"الباقات الي بتبيعها، وشو بتشمل كل وحدة. ضيف ميزة مرة وحدة وأشّرها على كل "
-"الباقات الي بتخصها."
 
 #. module: modryn_platform
 #: model_terms:ir.ui.view,arch_db:modryn_platform.platform_shell
@@ -1000,3 +993,223 @@ msgid ""
 "Kept so it can be read back, which means it is\n"
 "                                kept readable. No other screen shows it."
 msgstr "محفوظ عشان تقدر تقراه، يعني محفوظ مقروء. ولا شاشة تانية بتوريه."
+
+#. module: modryn_platform
+#: model:ir.model,name:modryn_platform.model_modryn_platform_section
+msgid "A box on a screen"
+msgstr "خانة جوا شاشة"
+
+#. module: modryn_platform
+#: model:ir.model,name:modryn_platform.model_modryn_platform_screen
+msgid "A screen a subscription can include"
+msgstr "شاشة ممكن الاشتراك يشملها"
+
+#. module: modryn_platform
+#: model:modryn.platform.screen,name:modryn_platform.screen_audit
+msgid "Audit"
+msgstr "سجل التغييرات"
+
+#. module: modryn_platform
+#. odoo-python
+#: code:addons/modryn_platform/controllers/platform.py:0
+msgid "Boutiques are still on that subscription."
+msgstr "في محلات لسا على هالباقة."
+
+#. module: modryn_platform
+#: model:ir.model.fields,field_description:modryn_platform.field_modryn_platform_screen__section_ids
+#: model:ir.model.fields,field_description:modryn_platform.field_modryn_subscription_type__section_ids
+msgid "Boxes"
+msgstr "الخانات"
+
+#. module: modryn_platform
+#: model:modryn.platform.screen,name:modryn_platform.screen_checklists
+msgid "Checklists"
+msgstr "قوائم المهام"
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.plans
+msgid "Delete this tier"
+msgstr "امحي هذه الباقة"
+
+#. module: modryn_platform
+#: model:modryn.platform.screen,name:modryn_platform.screen_dresses
+msgid "Dresses"
+msgstr "الفساتين"
+
+#. module: modryn_platform
+#: model:modryn.platform.section,name:modryn_platform.section_boss_sales
+msgid "Dresses sold"
+msgstr "الفساتين الي انباعت"
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.plans
+msgid "Extras"
+msgstr "إضافات"
+
+#. module: modryn_platform
+#: model:modryn.platform.section,name:modryn_platform.section_boss_rooms
+msgid "Fitting rooms"
+msgstr "غرف القياس"
+
+#. module: modryn_platform
+#: model:modryn.platform.screen,name:modryn_platform.screen_floor
+msgid "Floor board"
+msgstr "لوحة الصالة"
+
+#. module: modryn_platform
+#: model:modryn.platform.section,name:modryn_platform.section_boss_worked
+msgid "Hours worked"
+msgstr "ساعات العمل"
+
+#. module: modryn_platform
+#: model:ir.model.fields,field_description:modryn_platform.field_modryn_platform_screen__key
+#: model:ir.model.fields,field_description:modryn_platform.field_modryn_platform_section__key
+msgid "Key"
+msgstr "المفتاح"
+
+#. module: modryn_platform
+#: model:modryn.platform.screen,name:modryn_platform.screen_home
+msgid "Main screen"
+msgstr "الشاشة الرئيسية"
+
+#. module: modryn_platform
+#: model:modryn.platform.screen,name:modryn_platform.screen_boss
+msgid "Manager screen"
+msgstr "شاشة المدير"
+
+#. module: modryn_platform
+#: model:modryn.platform.screen,name:modryn_platform.screen_profile
+msgid "My profile"
+msgstr "بروفايلي"
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.plans
+msgid "No screens listed yet."
+msgstr "ما في شاشات بالقائمة لسا."
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.plans
+msgid "No tiers yet. Add the first one above."
+msgstr "ما في باقات لسا. ضيف الأولى من فوق."
+
+#. module: modryn_platform
+#: model:modryn.platform.section,name:modryn_platform.section_boss_hours
+msgid "Opening hours"
+msgstr "ساعات الفتح"
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.plans
+msgid "Price"
+msgstr "السعر"
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.plans
+msgid "Price a month (₪)"
+msgstr "السعر بالشهر (₪)"
+
+#. module: modryn_platform
+#: model:ir.model.fields,field_description:modryn_platform.field_modryn_subscription_type__price
+msgid "Price per month"
+msgstr "السعر بالشهر"
+
+#. module: modryn_platform
+#: model:modryn.platform.screen,name:modryn_platform.screen_reports
+msgid "Reports"
+msgstr "التقارير"
+
+#. module: modryn_platform
+#: model:modryn.platform.screen,name:modryn_platform.screen_roles
+msgid "Roles"
+msgstr "الوظائف"
+
+#. module: modryn_platform
+#: model:ir.model.fields,field_description:modryn_platform.field_modryn_platform_section__screen_id
+msgid "Screen"
+msgstr "الشاشة"
+
+#. module: modryn_platform
+#: model:ir.model.fields,field_description:modryn_platform.field_modryn_subscription_type__screen_ids
+msgid "Screens"
+msgstr "الشاشات"
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.plans
+msgid "Screens, and the boxes on them"
+msgstr "الشاشات، والخانات الي فيها"
+
+#. module: modryn_platform
+#: model:modryn.platform.screen,name:modryn_platform.screen_sell
+msgid "Sell"
+msgstr "بيع"
+
+#. module: modryn_platform
+#: model:modryn.platform.screen,name:modryn_platform.screen_supervisor
+msgid "Shift supervisor"
+msgstr "مسؤولة الوردية"
+
+#. module: modryn_platform
+#: model:modryn.platform.screen,name:modryn_platform.screen_shifts
+msgid "Shifts"
+msgstr "المناوبات"
+
+#. module: modryn_platform
+#: model:modryn.platform.section,name:modryn_platform.section_boss_announce
+msgid "Tell the team"
+msgstr "رسالة للطاقم"
+
+#. module: modryn_platform
+#: model:ir.model.fields,help:modryn_platform.field_modryn_platform_section__key
+msgid "The product's own name for this box, if it has one."
+msgstr "الاسم الي النظام نفسه بيعطيه لهالخانة، إذا في."
+
+#. module: modryn_platform
+#: model:ir.model.fields,help:modryn_platform.field_modryn_platform_screen__key
+msgid ""
+"The product's own name for this screen, e.g. 'floor'. Never shown to a "
+"boutique."
+msgstr ""
+"الاسم الي النظام نفسه بيعطيه لهالشاشة، مثلاً 'floor'. ما بينعرض للمحل أبداً."
+
+#. module: modryn_platform
+#: model:modryn.platform.section,name:modryn_platform.section_boss_team
+msgid "The team"
+msgstr "الطاقم"
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.plans
+msgid ""
+"The tiers you sell: what each one costs a month, which\n"
+"                    screens it opens, and which boxes on those screens. Tick a\n"
+"                    screen to include it, then tick the boxes on it the boutique\n"
+"                    should see."
+msgstr ""
+"الباقات الي بتبيعها: قديش بيكلّف كل واحد بالشهر، أي شاشات بيفتح، وأي خانات "
+"جوا هالشاشات. علّم على الشاشة عشان تدخلها، وبعدين علّم على الخانات الي بدك "
+"المحل يشوفها."
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.plans
+msgid ""
+"This cannot be undone. Type everything you sign in\n"
+"                                with."
+msgstr "ما في رجعة عن هاد. اكتب كل الي بتفوت فيه."
+
+#. module: modryn_platform
+#: model:modryn.platform.screen,name:modryn_platform.screen_checkin
+msgid "Walk-in check-in"
+msgstr "تسجيل الوصول"
+
+#. module: modryn_platform
+#: model:modryn.platform.section,name:modryn_platform.section_boss_track
+msgid "What has been going on"
+msgstr "شو صار هون"
+
+#. module: modryn_platform
+#: model:modryn.platform.screen,name:modryn_platform.screen_roster
+msgid "Work schedule"
+msgstr "جدول العمل"
+
+#. module: modryn_platform
+#: model:modryn.platform.screen,name:modryn_platform.screen_atelier
+msgid "Workshop"
+msgstr "الورشة"

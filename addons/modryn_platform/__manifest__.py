@@ -27,12 +27,14 @@ a different and much larger thing — see .planning/BACKLOG.md.
     'data': [
         'security/platform_groups.xml',
         'security/ir.model.access.csv',
+        'data/screen_data.xml',
         'data/subscription_type_data.xml',
         'views/shell_templates.xml',
         'views/platform_templates.xml',
         'views/account_templates.xml',
         'views/login_templates.xml',
     ],
+    'post_init_hook': 'post_init_hook',
     'assets': {
         'web.assets_frontend': [
             'modryn_platform/static/src/platform.scss',

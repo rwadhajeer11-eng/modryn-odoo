@@ -290,8 +290,35 @@ class ModrynPlatform(http.Controller):
             'title': _("Subscriptions"),
             'types': Type.search([]),
             'features': Feature.search([]),
+            # The catalogue of what can be sold, in the order a boutique would
+            # meet the screens in.
+            'screens': request.env['modryn.platform.screen'].sudo().search([]),
             'error': error,
         }
+
+    @staticmethod
+    def _money(raw):
+        """A price out of a form field.
+
+        Never negative: a tier that pays the boutique is a typo, and storing it
+        would put a minus sign on somebody's invoice. Never a crash either - the
+        number field is a hint to the browser, not a promise about what arrives.
+        """
+        try:
+            return max(float(raw or 0), 0.0)
+        except (TypeError, ValueError):
+            return 0.0
+
+    @staticmethod
+    def _ticked(form, field):
+        """The ids a tick-list posted, as ints.
+
+        A checkbox only posts when it is ticked, so an absent name means "none
+        of them" - exactly right for a form that renders every box it could
+        tick. The digit check is not politeness: an id arriving as 'banana' is
+        somebody hand-making a POST, and int() would answer them with a 500.
+        """
+        return [int(v) for v in form.getlist(field) if str(v).isdigit()]
 
     @http.route('/platform/plans', type='http', auth='user', website=True,
                 sitemap=False)
@@ -347,30 +374,97 @@ class ModrynPlatform(http.Controller):
                 request.env['modryn.subscription.type'].sudo().create({
                     'name': name,
                     'note': (post.get('note') or '').strip(),
+                    'price': self._money(post.get('price')),
                 })
         except (ValidationError, IntegrityError):
             return request.redirect(
                 '/platform/plans?error=%s' % _("That subscription type already exists"))
         return request.redirect('/platform/plans')
 
-    @http.route('/platform/plans/type/features', type='http', auth='user', website=True,
-                methods=['POST'], csrf=True, sitemap=False)
-    def plan_features(self, **post):
-        """Which features a tier includes.
+    @http.route('/platform/plans/type/edit/<int:type_id>', type='http',
+                auth='user', website=True, methods=['POST'], csrf=True,
+                sitemap=False)
+    def plan_type_edit(self, type_id, **post):
+        """Rename a tier, price it, and set what it sells.
 
-        Replace-set from the ticked boxes, never a per-feature toggle: the form
-        posts the whole row, so what is stored is exactly what he is looking at.
-        A toggle would need the page to already agree with the database, and two
-        tabs open on this screen would then disagree with each other.
+        ONE ROUTE FOR ALL OF IT, because the tier's form posts as one: a price
+        typed beside a tick that did not save is worse than either failing
+        alone.
         """
         if not self._is_platform_owner():
             return request.not_found()
         tier = request.env['modryn.subscription.type'].sudo().with_context(
-            active_test=False).browse(int(post.get('type_id') or 0)).exists()
+            active_test=False).browse(type_id).exists()
         if not tier:
             return request.redirect('/platform/plans')
-        ids = [int(f) for f in request.httprequest.form.getlist('feature_ids') if f.isdigit()]
-        tier.write({'feature_ids': [(6, 0, ids)]})
+
+        values = {}
+        if 'name' in post:
+            name = (post.get('name') or '').strip()
+            if not name:
+                return request.redirect(
+                    '/platform/plans?error=%s' % _("Please name the plan"))
+            values['name'] = name
+        if 'note' in post:
+            values['note'] = (post.get('note') or '').strip()
+        if 'price' in post:
+            values['price'] = self._money(post.get('price'))
+
+        # `ticks_posted` is a hidden field the tick form carries. Without it an
+        # empty list is ambiguous - it could mean "untick everything" or "this
+        # form was not about ticks at all" - and reading the second as the first
+        # would strip a tier's screens every time its price was corrected.
+        form = request.httprequest.form
+        if 'ticks_posted' in form:
+            values['screen_ids'] = [(6, 0, self._ticked(form, 'screen_id'))]
+            values['section_ids'] = [(6, 0, self._ticked(form, 'section_id'))]
+            values['feature_ids'] = [(6, 0, self._ticked(form, 'feature_id'))]
+
+        try:
+            with request.env.cr.savepoint(), mute_logger('odoo.sql_db'):
+                tier.write(values)
+                # A box he left ticked under a screen he has just unticked.
+                tier.modryn_drop_orphan_sections()
+        except (ValidationError, IntegrityError):
+            return request.redirect('/platform/plans?error=%s'
+                                    % _("That subscription type already exists"))
+        return request.redirect('/platform/plans')
+
+    @http.route('/platform/plans/type/delete/<int:type_id>', type='http',
+                auth='user', website=True, methods=['POST'], csrf=True,
+                sitemap=False)
+    def plan_type_delete(self, type_id, **post):
+        """Remove a tier for good, on all four sign-in answers.
+
+        The same bar as deleting a boutique, and for the same reason: it cannot
+        be undone. A wrong answer removes nothing and says nothing about which.
+
+        A TIER SOMEBODY IS ON IS REFUSED, and this refusal DOES say why - it is
+        not a credential question, and the owner needs to know. Deleting it
+        would leave those shops on a subscription that no longer exists, which
+        the home screen then reports as shops nobody is billing.
+        """
+        if not self._is_platform_owner():
+            return request.not_found()
+
+        if not request.env.user.modryn_platform_credentials_ok(
+                login=post.get('username') or '',
+                phone=post.get('phone') or '',
+                idnum=post.get('idnum') or '',
+                password=post.get('password') or ''):
+            return request.redirect(
+                '/platform/plans?error=%s' % _("Those details aren't valid"))
+
+        tier = request.env['modryn.subscription.type'].sudo().with_context(
+            active_test=False).browse(type_id).exists()
+        if not tier:
+            return request.redirect('/platform/plans')
+        if request.env['modryn.boutique'].sudo().with_context(
+                active_test=False).search_count(
+                    [('subscription_type_id', '=', tier.id)]):
+            return request.redirect('/platform/plans?error=%s' % _(
+                "Boutiques are still on that subscription."))
+        tier.unlink()
         return request.redirect('/platform/plans')
 
     @http.route('/platform/plans/type/archive/<int:type_id>', type='http', auth='user',

@@ -516,8 +516,10 @@
             <div>
                 <h1>Subscriptions</h1>
                 <p class="modryn_plat_lead">
-                    The tiers you sell, and what each one includes. Add a feature
-                    once and tick it on as many tiers as it belongs to.
+                    The tiers you sell: what each one costs a month, which
+                    screens it opens, and which boxes on those screens. Tick a
+                    screen to include it, then tick the boxes on it the boutique
+                    should see.
                 </p>
 
                 <div t-if="error" class="alert alert-danger" role="alert" t-out="error"/>
@@ -573,55 +575,157 @@
                 </table>
 
                 <h2 class="h5">Tiers</h2>
+
                 <form action="/platform/plans/type/new" method="post"
                       class="row g-2 mb-4" style="max-width: 820px;">
                     <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
-                    <div class="col-md-5">
+                    <div class="col-12 col-md-4">
                         <input type="text" name="name" class="form-control"
                                placeholder="Tier name"/>
                     </div>
-                    <div class="col-md-5">
+                    <div class="col-12 col-md-4">
                         <input type="text" name="note" class="form-control"
                                placeholder="Note (optional)"/>
                     </div>
-                    <div class="col-md-2">
+                    <div class="col-6 col-md-2">
+                        <input type="number" name="price" min="0" step="0.01" dir="ltr"
+                               class="form-control" placeholder="Price"/>
+                    </div>
+                    <div class="col-6 col-md-2">
                         <button type="submit" class="btn_quiet w-100">Add tier</button>
                     </div>
                 </form>
 
-                <!-- One form per tier, posting the WHOLE set of ticks. Replace-set
-                     rather than per-feature toggles: what gets stored is exactly
-                     what he is looking at, so two tabs open here cannot disagree. -->
-                <div t-foreach="types" t-as="ty" class="mb-4 p-3 border rounded"
-                     t-attf-class="mb-4 p-3 border rounded #{'text-muted' if not ty.active else ''}">
-                    <form action="/platform/plans/type/features" method="post">
+                <p t-if="not types" class="modryn_plat_empty">
+                    No tiers yet. Add the first one above.
+                </p>
+
+                <!-- ONE FORM PER TIER, posting the price and the whole set of
+                     ticks together. Replace-set rather than per-item toggles:
+                     what gets stored is exactly what he is looking at, so two
+                     tabs open on this page cannot disagree about a tier.
+
+                     `ticks_posted` is the hidden field that makes an empty list
+                     mean "untick everything" rather than "this form was not
+                     about ticks" - without it, correcting a price would strip
+                     the tier's screens. -->
+                <div t-foreach="types" t-as="ty"
+                     t-attf-class="modryn_plat_panel #{'' if ty.active else 'modryn_plat_faded'}">
+
+                    <form t-attf-action="/platform/plans/type/edit/#{ty.id}" method="post">
                         <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
-                        <input type="hidden" name="type_id" t-att-value="ty.id"/>
-                        <div class="d-flex align-items-baseline justify-content-between mb-2">
-                            <strong t-out="ty.name"/>
-                            <span class="modryn_plat_sub" t-out="ty.note or ''"/>
+                        <input type="hidden" name="ticks_posted" value="1"/>
+
+                        <div class="row g-2 align-items-end mb-3">
+                            <div class="col-12 col-md-4">
+                                <label class="form-label modryn_plat_sub">Tier name</label>
+                                <input type="text" name="name" class="form-control"
+                                       t-att-value="ty.name"/>
+                            </div>
+                            <div class="col-12 col-md-4">
+                                <label class="form-label modryn_plat_sub">Note</label>
+                                <input type="text" name="note" class="form-control"
+                                       t-att-value="ty.note or ''"/>
+                            </div>
+                            <div class="col-6 col-md-2">
+                                <label class="form-label modryn_plat_sub">Price a month (₪)</label>
+                                <input type="number" name="price" min="0" step="0.01" dir="ltr"
+                                       class="form-control"
+                                       t-att-value="'%g' % ty.price if ty.price else ''"/>
+                            </div>
+                            <div class="col-6 col-md-2">
+                                <button type="submit" class="btn_gold w-100">Save</button>
+                            </div>
                         </div>
-                        <p t-if="not features" class="small text-muted mb-2">
-                            Add a feature above before ticking one on here.
+
+                        <!-- WHAT IT OPENS. The screens, and under each one the
+                             boxes that sit on it. A box is only ever offered
+                             under its own screen, so a tier cannot grant a panel
+                             on a screen it does not include. -->
+                        <div class="modryn_plat_sub mb-2">Screens, and the boxes on them</div>
+                        <p t-if="not screens" class="modryn_plat_empty">
+                            No screens listed yet.
                         </p>
-                        <t t-foreach="features" t-as="f">
-                            <label t-if="f.active" class="me-3">
-                                <input type="checkbox" name="feature_ids" t-att-value="f.id"
-                                       t-att-checked="'checked' if f in ty.feature_ids else None"/>
-                                <span t-out="f.name"/>
-                            </label>
-                        </t>
-                        <div class="mt-2">
-                            <button type="submit" class="btn_gold">Save</button>
+                        <div class="modryn_plat_screens">
+                            <div t-foreach="screens" t-as="sc" class="modryn_plat_screen">
+                                <label class="modryn_plat_strong">
+                                    <input type="checkbox" name="screen_id"
+                                           t-att-value="sc.id"
+                                           t-att-checked="'checked' if sc in ty.screen_ids else None"/>
+                                    <span t-out="sc.name"/>
+                                </label>
+                                <div t-if="sc.section_ids" class="modryn_plat_boxes">
+                                    <label t-foreach="sc.section_ids" t-as="sec">
+                                        <input type="checkbox" name="section_id"
+                                               t-att-value="sec.id"
+                                               t-att-checked="'checked' if sec in ty.section_ids else None"/>
+                                        <span t-out="sec.name"/>
+                                    </label>
+                                </div>
+                            </div>
                         </div>
+
+                        <t t-if="features">
+                            <div class="modryn_plat_sub mt-3 mb-2">Extras</div>
+                            <t t-foreach="features" t-as="f">
+                                <label t-if="f.active" class="me-3">
+                                    <input type="checkbox" name="feature_id" t-att-value="f.id"
+                                           t-att-checked="'checked' if f in ty.feature_ids else None"/>
+                                    <span t-out="f.name"/>
+                                </label>
+                            </t>
+                        </t>
                     </form>
-                    <form t-attf-action="/platform/plans/type/archive/#{ty.id}" method="post"
-                          class="mt-2">
-                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
-                        <button type="submit" class="btn_quiet">
-                            <t t-if="ty.active">Archive tier</t><t t-else="">Restore tier</t>
-                        </button>
-                    </form>
+
+                    <div class="mt-3">
+                        <form t-attf-action="/platform/plans/type/archive/#{ty.id}"
+                              method="post" class="d-inline">
+                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                            <button type="submit" class="btn_quiet">
+                                <t t-if="ty.active">Archive tier</t><t t-else="">Restore tier</t>
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Four answers, the same bar as deleting a boutique, and
+                         for the same reason: it cannot be undone. -->
+                    <details class="modryn_plat_ask modryn_plat_danger_row mt-2">
+                        <summary class="btn_quiet">Delete this tier</summary>
+                        <div class="modryn_plat_confirm">
+                            <div class="modryn_plat_sub">
+                                This cannot be undone. Type everything you sign in
+                                with.
+                            </div>
+                            <form t-attf-action="/platform/plans/type/delete/#{ty.id}"
+                                  method="post" class="row g-2">
+                                <input type="hidden" name="csrf_token"
+                                       t-att-value="request.csrf_token()"/>
+                                <div class="col-12 col-sm-6">
+                                    <input type="text" name="username" autocomplete="off"
+                                           class="form-control form-control-sm"
+                                           placeholder="Username"/>
+                                </div>
+                                <div class="col-12 col-sm-6">
+                                    <input type="text" name="phone" dir="ltr" autocomplete="off"
+                                           class="form-control form-control-sm"
+                                           placeholder="Phone number"/>
+                                </div>
+                                <div class="col-12 col-sm-6">
+                                    <input type="password" name="idnum" dir="ltr" autocomplete="off"
+                                           class="form-control form-control-sm"
+                                           placeholder="ID number"/>
+                                </div>
+                                <div class="col-12 col-sm-6">
+                                    <input type="password" name="password" autocomplete="off"
+                                           class="form-control form-control-sm"
+                                           placeholder="Password"/>
+                                </div>
+                                <div class="col-12">
+                                    <button type="submit" class="btn_gold">Delete this tier</button>
+                                </div>
+                            </form>
+                        </div>
+                    </details>
                 </div>
             </div>
         </t>

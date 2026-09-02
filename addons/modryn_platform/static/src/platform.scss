@@ -298,3 +298,55 @@ $plat-success:   #2E6B4F;
     > summary { color: $plat-danger; }
     .modryn_plat_confirm { border-color: $plat-danger; background: #FFFFFF; }
 }
+
+// WHAT A TIER OPENS. Screens across, and under each one the boxes that sit on
+// it. The nesting is the whole message - a box belongs to its screen, and
+// ticking it without the screen would mean nothing - so it is drawn as a line
+// hanging off the parent rather than as two lists side by side.
+//
+// COLUMNS, not a grid. A grid puts every item in a row, and one screen here
+// carries seven boxes under it, so its row became seven lines tall and the
+// three ordinary screens beside it sat in a hole that height. Columns flow:
+// the tall item takes the space it needs and the short ones close up under it.
+.modryn_plat_screens {
+    columns: 3;
+    column-gap: 1.75rem;
+
+    @media (max-width: 760px) { columns: 1; }
+}
+
+.modryn_plat_screen {
+    // A screen and the boxes under it are one thing; a column break between
+    // them would hand the boxes to the next column, under a different screen.
+    break-inside: avoid;
+    -webkit-column-break-inside: avoid;
+    page-break-inside: avoid;
+    // Enough air that the screens BELOW a screen-with-boxes do not read as
+    // more of its boxes.
+    margin-block-end: .9rem;
+
+    > label { display: block; }
+}
+
+.modryn_plat_boxes {
+    // Logical: `start` follows the writing direction, so this indents from the
+    // right in Hebrew and Arabic without a second rule.
+    margin-inline-start: 1.1rem;
+    padding-inline-start: .7rem;
+    border-inline-start: 2px solid $plat-gold;
+    margin-block-start: .2rem;
+
+    > label {
+        display: block;
+        color: $plat-ink-muted;
+        font-size: .875rem;
+    }
+}
+
+// An archived tier, still listed because it can be restored, but plainly not
+// on sale. Opacity rather than a grey colour: it fades the ticks too, which a
+// colour on the text would leave looking live.
+.modryn_plat_faded {
+    opacity: .62;
+    background: $plat-gold-wash;
+}

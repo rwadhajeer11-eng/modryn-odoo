@@ -319,7 +319,7 @@ msgstr "عرضن العمل في هذه المناوبة:"
 #. module: modryn_roster
 #: model:ir.model,name:modryn_roster.model_modryn_opening_hours
 msgid "Opening hours"
-msgstr "ساعات العمل"
+msgstr "ساعات الفتح"
 
 #. module: modryn_roster
 #: model_terms:ir.ui.view,arch_db:modryn_roster.roster_page

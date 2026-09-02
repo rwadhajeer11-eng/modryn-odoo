@@ -40,3 +40,36 @@ class ModrynSubscriptionType(models.Model):
         'modryn.platform.feature',
         'modryn_subscription_feature_rel', 'type_id', 'feature_id',
         string="Includes")
+
+    # WHAT IT COSTS. A float and not a monetary field: monetary drags in a
+    # currency per record and a company to read it from, and this platform sells
+    # in one currency. The symbol is on the label.
+    price = fields.Float(string="Price per month", default=0.0)
+
+    # WHICH SCREENS the tier opens, and WHICH BOXES on them. Two lists rather
+    # than one, because they answer different questions: a tier can include the
+    # manager's screen while including only two of its panels, which is exactly
+    # the case the platform owner described.
+    screen_ids = fields.Many2many(
+        'modryn.platform.screen',
+        'modryn_subscription_screen_rel', 'type_id', 'screen_id',
+        string="Screens")
+    section_ids = fields.Many2many(
+        'modryn.platform.section',
+        'modryn_subscription_section_rel', 'type_id', 'section_id',
+        string="Boxes")
+
+    def modryn_drop_orphan_sections(self):
+        """Forget any box whose screen this tier no longer sells.
+
+        The two lists can contradict each other - untick the manager's screen
+        and its seven boxes are still ticked underneath - and a tier holding a
+        panel on a screen it does not include is not a thing that can be sold.
+        Cleaned rather than refused: unticking a screen is a plain instruction,
+        and answering it with an error message would be a puzzle.
+        """
+        for tier in self:
+            keep = tier.section_ids.filtered(
+                lambda sec: sec.screen_id in tier.screen_ids)
+            if keep != tier.section_ids:
+                tier.section_ids = [(6, 0, keep.ids)]

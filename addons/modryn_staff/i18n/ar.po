@@ -884,7 +884,7 @@ msgstr "إعادة الفتح"
 #. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
 msgid "Opening hours"
-msgstr "ساعات العمل"
+msgstr "ساعات الفتح"
 
 #. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
