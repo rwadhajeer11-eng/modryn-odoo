@@ -63,6 +63,18 @@
                     <span class="modryn_sub">The rooms a customer can be shown into.</span>
                 </a>
                 <!-- The owner's. These hours decide what a customer can book. -->
+                <!-- WHAT THE WORLD IS TOLD about this boutique. Beside the
+                     opening hours on purpose: both are answers a customer gets
+                     without asking anybody, and both were only settable by
+                     somebody with a database in front of them. -->
+                <a t-if="is_owner" class="modryn_tile" href="/manage/team-screen?view=shop">
+                    <!-- An ADDRESS BOOK, not the phone the header wears and not
+                         the clock the hours wear: three tiles with a telephone
+                         on them stop telling each other apart. -->
+                    <i class="fa fa-address-card-o" aria-hidden="true"/>
+                    <span class="modryn_strong">Your shop's details</span>
+                    <span class="modryn_sub">The phone, the WhatsApp and the address your customers see.</span>
+                </a>
                 <a t-if="is_owner" class="modryn_tile" href="/manage/team-screen?view=hours">
                     <i class="fa fa-clock-o" aria-hidden="true"/>
                     <span class="modryn_strong">Opening hours</span>
@@ -881,6 +893,64 @@
                  only: these hours decide what a customer can book, and
                  the routes behind the forms refuse anybody else - the
                  tile is simply not drawn for a manager. -->
+            <section t-if="view == 'shop' and is_owner" class="modryn_panel mb-4">
+                <h1 class="mb-2">Your shop's details</h1>
+                <p class="text-muted mb-4">
+                    What a customer is told about you. This is what the top of
+                    your site shows, what the bottom of every page shows, and
+                    what the contact page answers with — change it here and the
+                    next visitor sees the new one.
+                </p>
+
+                <div t-if="shop_error" class="modryn_field_error mb-3" role="alert" t-out="shop_error"/>
+
+                <form action="/manage/shop-details" method="post"
+                      class="row g-3" style="max-width: 760px;">
+                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                    <div class="col-12 col-md-6">
+                        <label class="form-label" for="shop_name">The boutique's name</label>
+                        <input type="text" id="shop_name" name="name" class="form-control"
+                               required="required" t-att-value="shop['name']"/>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <label class="form-label" for="shop_phone">Phone</label>
+                        <input type="text" id="shop_phone" name="phone" dir="ltr"
+                               class="form-control" t-att-value="shop['phone']"/>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <label class="form-label" for="shop_whatsapp">WhatsApp</label>
+                        <input type="text" id="shop_whatsapp" name="whatsapp" dir="ltr"
+                               class="form-control" t-att-value="shop['whatsapp']"/>
+                        <div class="modryn_sub mt-1">
+                            Leave this empty and the phone above is used. Fill it in
+                            only if WhatsApp is on another line.
+                        </div>
+                        <div t-if="shop['whatsapp_number']" class="modryn_sub mt-1">
+                            The button will open:
+                            <span dir="ltr" t-out="shop['whatsapp_number']"/>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <label class="form-label" for="shop_email">Email</label>
+                        <input type="email" id="shop_email" name="email" dir="ltr"
+                               class="form-control" t-att-value="shop['email']"/>
+                    </div>
+                    <div class="col-12 col-md-8">
+                        <label class="form-label" for="shop_street">Street</label>
+                        <input type="text" id="shop_street" name="street"
+                               class="form-control" t-att-value="shop['street']"/>
+                    </div>
+                    <div class="col-12 col-md-4">
+                        <label class="form-label" for="shop_city">City</label>
+                        <input type="text" id="shop_city" name="city"
+                               class="form-control" t-att-value="shop['city']"/>
+                    </div>
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-primary">Save</button>
+                    </div>
+                </form>
+            </section>
+
             <section t-if="view == 'hours' and is_owner" class="modryn_panel mb-4">
             <h1 class="mb-2">Opening hours</h1>
             <p class="text-muted mb-4">

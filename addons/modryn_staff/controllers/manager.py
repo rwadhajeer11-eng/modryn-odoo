@@ -141,7 +141,8 @@ class ModrynManagerScreen(http.Controller):
     # 'hours' is the boutique's OPENING hours; 'worked' is who stood in it.
     # Two different questions that both want the word - named apart here so a
     # link can never quietly open the other one.
-    VIEWS = ('announce', 'team', 'hours', 'rooms', 'worked', 'sales', 'track')
+    VIEWS = ('announce', 'team', 'hours', 'rooms', 'worked', 'sales',
+             'track', 'shop')
 
     def _account_form(self, editing=None, adding=False, errors=None, values=None):
         """The add/edit form's context, or nothing at all.
@@ -513,11 +514,69 @@ class ModrynManagerScreen(http.Controller):
             elif view == 'rooms':
                 context.update(ModrynManage().rooms_context(
                     error=request.params.get('error')))
+            elif view == 'shop':
+                context.update(self._shop_details_context(
+                    error=request.params.get('error')))
             elif view == 'team':
                 context.update(self._account_form(
                     editing=editing, adding=adding,
                     errors=form_errors, values=form_values))
         return request.render('modryn_staff.manager_screen', context)
+
+    # ------------------------------------------------- the shop's own details
+    @staticmethod
+    def _shop_details_context(error=None):
+        """What a customer is told about this boutique.
+
+        THE SITE ALREADY READS ALL OF THIS - the header, the footer and the
+        contact page have read res.company since the theme was written - and
+        there has never been anywhere to type it. Every boutique therefore
+        showed Odoo's placeholders: an address in America, a phone nobody
+        answers, info@yourcompany.example.com. This is the missing half.
+        """
+        company = request.env.company.sudo()
+        return {
+            'shop_error': error or '',
+            'shop': {
+                'name': company.name or '',
+                'phone': company.phone or '',
+                'whatsapp': company.modryn_whatsapp or '',
+                'email': company.email or '',
+                'street': company.street or '',
+                'city': company.city or '',
+                # Shown back so she can see what the button will actually open,
+                # rather than trusting that her 052- turned into something
+                # WhatsApp accepts.
+                'whatsapp_number': company.modryn_whatsapp_number(),
+            },
+        }
+
+    @http.route('/manage/shop-details', type='http', auth='user', website=True,
+                methods=['POST'], csrf=True, sitemap=False)
+    def shop_details_save(self, **post):
+        """The owner's, like the opening hours and the fitting rooms.
+
+        A manager runs the floor; what the shop tells the world about itself is
+        not a floor decision.
+        """
+        if not access.is_owner():
+            return access.deny()
+        name = (post.get('name') or '').strip()
+        if not name:
+            return request.redirect(
+                '/manage/team-screen?view=shop&error=%s'
+                % _("The boutique needs a name."))
+        request.env.company.sudo().write({
+            'name': name,
+            # False and not '': an empty string is a value, and every template
+            # on the site guards with t-if - which an empty string passes.
+            'phone': (post.get('phone') or '').strip() or False,
+            'modryn_whatsapp': (post.get('whatsapp') or '').strip() or False,
+            'email': (post.get('email') or '').strip() or False,
+            'street': (post.get('street') or '').strip() or False,
+            'city': (post.get('city') or '').strip() or False,
+        })
+        return request.redirect('/manage/team-screen?view=shop')
 
     @http.route('/manage/team-screen', type='http', auth='user', website=True,
                 sitemap=False)

@@ -45,9 +45,10 @@ msgid ""
 msgstr "تصفّحي المجموعة، واحجزي موعد قياس خاص، واتركي الباقي علينا."
 
 #. module: modryn_theme
+#: model_terms:ir.ui.view,arch_db:modryn_theme.contactus_real_details
 #: model_terms:ir.ui.view,arch_db:modryn_theme.footer_modryn
 msgid "Contact us"
-msgstr "اتصلوا بنا"
+msgstr "تواصلي معنا"
 
 #. module: modryn_theme
 #: model_terms:ir.ui.view,arch_db:modryn_theme.homepage_hero
@@ -138,3 +139,78 @@ msgstr "المعرّف"
 #: model:ir.model,name:modryn_theme.model_product_template
 msgid "Product"
 msgstr "منتج"
+
+#. module: modryn_theme
+#: model_terms:ir.ui.view,arch_db:modryn_theme.contactus_real_details
+msgid "Send us the form and we will come back to you."
+msgstr "ابعتيلنا الاستمارة ومنرجعلك."
+
+#. module: modryn_theme
+#: model_terms:ir.ui.view,arch_db:modryn_theme.products_liked
+msgid ""
+"You have not saved any dresses yet. Press the heart on one and it\n"
+"          waits for you here."
+msgstr "لسا ما حفظتي ولا فستان. اضغطي على القلب على فستان وبيستناكي هون."
+
+#. module: modryn_theme
+#: model_terms:ir.ui.view,arch_db:modryn_theme.product_liked
+msgid ""
+"<i class=\"fa fa-heart-o\" aria-hidden=\"true\"/>\n"
+"        <span class=\"ms-2\">Save this dress</span>"
+msgstr ""
+"<i class=\"fa fa-heart-o\" aria-hidden=\"true\"/>\n"
+"        <span class=\"ms-2\">احفظي الفستان</span>"
+
+#. module: modryn_theme
+#: model_terms:ir.ui.view,arch_db:modryn_theme.contactus_real_details
+msgid "<i class=\"fa fa-whatsapp me-2\"/>Message us on WhatsApp"
+msgstr "<i class=\"fa fa-whatsapp me-2\"/>احكي معنا عالواتساب"
+
+#. module: modryn_theme
+#: model_terms:ir.ui.view,arch_db:modryn_theme.header_modryn_mark
+msgid ""
+"<span class=\"modryn_by\">\n"
+"        <span class=\"modryn_by_pre\">by</span>\n"
+"        <span class=\"modryn_by_mark\">MODRYN</span>\n"
+"      </span>"
+msgstr ""
+"<span class=\"modryn_by\">\n"
+"        <span class=\"modryn_by_pre\">من</span>\n"
+"        <span class=\"modryn_by_mark\">MODRYN</span>\n"
+"      </span>"
+
+#. module: modryn_theme
+#: model_terms:ir.ui.view,arch_db:modryn_theme.liked_words
+msgid ""
+"<span data-code=\"add\">Save this dress</span>\n"
+"      <span data-code=\"remove\">Remove from the ones you like</span>"
+msgstr ""
+"<span data-code=\"add\">احفظي الفستان</span>\n"
+"      <span data-code=\"remove\">شيليه من الفساتين الي حبيتيها</span>"
+
+#. module: modryn_theme
+#: model_terms:ir.ui.view,arch_db:modryn_theme.products_liked
+msgid ""
+"<span><i class=\"fa fa-heart me-1\" aria-hidden=\"true\"/>Only the ones I liked</span>\n"
+"          <span class=\"modryn_liked_badge\"><span id=\"modryn_liked_count\">0</span></span>"
+msgstr ""
+"<span><i class=\"fa fa-heart me-1\" aria-hidden=\"true\"/>بس الي حبيتها</span>\n"
+"          <span class=\"modryn_liked_badge\"><span id=\"modryn_liked_count\">0</span></span>"
+
+#. module: modryn_theme
+#: model:ir.model,name:modryn_theme.model_res_company
+msgid "Companies"
+msgstr "الشركات"
+
+#. module: modryn_theme
+#: model:ir.model.fields,field_description:modryn_theme.field_res_company__modryn_whatsapp
+msgid "WhatsApp number"
+msgstr "رقم الواتساب"
+
+#. module: modryn_theme
+#: model:ir.model.fields,help:modryn_theme.field_res_company__modryn_whatsapp
+msgid ""
+"Leave this empty to use the shop's phone number. Fill it in only when "
+"WhatsApp is on a different line."
+msgstr ""
+"اتركيها فاضية عشان يستخدم تلفون المحل. عبّيها بس إذا الواتساب على خط تاني."

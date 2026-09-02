@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <!--
+    THE TWO THINGS A BRIDE CAN DO WITH A DRESS.
+
+    Book a fitting for it, which this product already had, and mark it to come
+    back to, which it did not. The second is not a small want: she opens
+    fourteen dresses, likes three, and has no way to say so short of taking
+    screenshots of her own phone.
+
+    A HEART AND NOT ODOO'S WISHLIST. That one is a shopping feature - it ends
+    in "add all to cart", it wants an account, and it stores rows against a
+    customer who does not exist here, because this site has no customer
+    accounts at all. This heart lives in her own browser: no row, nothing sent
+    to us, nothing to ask her permission for. The cost is honest and small -
+    her hearts do not follow her from her phone to her laptop - and for "these
+    three, to show my mother later" that is the right trade.
+  -->
+
+  <!-- The words the script shows, as TEXT so the extractor finds them: that
+       file cannot import _t and Odoo does not read data-* attributes. -->
+  <template id="liked_words" name="MODRYN: the words the heart uses">
+    <div id="modryn_liked_words" class="d-none" aria-hidden="true">
+      <span data-code="add">Save this dress</span>
+      <span data-code="remove">Remove from the ones you like</span>
+    </div>
+  </template>
+
+  <!--
+    The grid: a heart on each tile, and a switch above them all.
+
+    Both live in website_sale.products rather than in the tile template,
+    because the filter has to be able to HIDE a tile and the element it hides
+    is the tile's outer column - which the tile template is rendered inside of
+    and cannot reach.
+  -->
+  <template id="products_liked" inherit_id="website_sale.products"
+            priority="40" name="MODRYN: the dresses she liked">
+
+    <!-- What the switch hides. On the column and not on the card: hiding the
+         card leaves its column standing and the grid grows holes. -->
+    <xpath expr="//div[@t-att-data-name='product_block_name']" position="attributes">
+      <attribute name="t-att-data-modryn-tile">product.id</attribute>
+    </xpath>
+
+    <!-- contains() on t-attf-class and NOT hasclass(): this wrapper's
+         class is built by a t-attf, and hasclass only sees a literal
+         class attribute. The upgrade said so loudly, which is the
+         behaviour this codebase asks its xpaths for. -->
+    <xpath expr="//div[contains(@t-attf-class, 'o_wsale_product_grid_wrapper')]"
+           position="inside">
+      <button type="button" class="modryn_like modryn_like_tile" hidden="hidden"
+              t-att-data-modryn-like="product.id" aria-pressed="false">
+        <i class="fa fa-heart-o" aria-hidden="true"/>
+      </button>
+    </xpath>
+
+    <xpath expr="//div[hasclass('o_wsale_products_main_row')]" position="before">
+      <t t-call="modryn_theme.liked_words"/>
+      <!-- Hidden until the script shows it: with that file gone, a switch that
+           hides nothing is a lie sitting on the page. -->
+      <div id="modryn_liked_switch" class="modryn_liked_switch mb-3" hidden="hidden">
+        <label class="form-check-label d-inline-flex align-items-center gap-2">
+          <input type="checkbox" id="modryn_liked_only" class="form-check-input mt-0"/>
+          <span><i class="fa fa-heart me-1" aria-hidden="true"/>Only the ones I liked</span>
+          <span class="modryn_liked_badge"><span id="modryn_liked_count">0</span></span>
+        </label>
+        <div id="modryn_liked_empty" class="text-muted mt-2" hidden="hidden">
+          You have not saved any dresses yet. Press the heart on one and it
+          waits for you here.
+        </div>
+      </div>
+    </xpath>
+  </template>
+
+  <!-- The dress page, under the booking button: the fitting is what this page
+       is for, and the heart is the smaller of the two answers. -->
+  <template id="product_liked" inherit_id="website_sale.product"
+            priority="40" name="MODRYN: a heart on the dress page">
+    <xpath expr="//div[@id='product_details']" position="inside">
+      <t t-call="modryn_theme.liked_words"/>
+      <button type="button" class="modryn_like modryn_like_big mt-3 w-100"
+              hidden="hidden" t-att-data-modryn-like="product.id"
+              aria-pressed="false">
+        <i class="fa fa-heart-o" aria-hidden="true"/>
+        <span class="ms-2">Save this dress</span>
+      </button>
+    </xpath>
+  </template>
+
+</odoo>

@@ -113,4 +113,24 @@
         <field name="active" eval="False"/>
     </record>
 
+    <!--
+        THE GRID TILE'S BUYING CHROME, removed rather than painted over.
+
+        modryn.scss hides .o_wsale_product_btn, and the sweep found what a
+        stylesheet cannot reach: "Add to Cart", "Compare" and "Handle your
+        wishlist from the menu icon" are still IN the page, still read out by a
+        screen reader, still found by the browser's own find-on-page, and still
+        in English on a Hebrew screen. The comment in that stylesheet has said
+        since it was written that a display-level removal is not the fix.
+    -->
+    <template id="products_item_no_buying"
+              inherit_id="website_sale.products_item"
+              priority="45"
+              name="MODRYN: no buying chrome on the tile">
+        <!-- A LITERAL class here, unlike the grid wrapper next door, so
+             hasclass is the right test - and the div is inside products_item
+             itself, lines 7 to 226 of Odoo's product_tile_templates.xml. -->
+        <xpath expr="//div[hasclass('o_wsale_product_btn')]" position="replace"/>
+    </template>
+
 </odoo>

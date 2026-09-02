@@ -34,6 +34,17 @@ FIELD_LABELS = {
     'modryn_city': _lt("City"),
     'modryn_street': _lt("Street"),
     'modryn_gender': _lt("Gender"),
+    # A sale's own fields. Without these the audit fell back to the label
+    # STORED at the time, which is the English the writer's code was written
+    # in - "Discount" sat in a Hebrew table and in an Arabic one.
+    # discount_AMOUNT is the one the audit records - the money taken off,
+    # computed and stored - and naming discount_value alone left the row
+    # printing the English label it was written with. Both are here because
+    # both can be logged.
+    'discount_amount': _lt("Discount"),
+    'discount_value': _lt("Discount"),
+    'discount_reason': _lt("Why the discount"),
+    'discount_kind': _lt("Kind of discount"),
 }
 
 class ModrynAuditLog(models.Model):

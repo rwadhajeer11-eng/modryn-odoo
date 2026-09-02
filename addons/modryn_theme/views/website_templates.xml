@@ -35,4 +35,31 @@
            position="replace"/>
   </template>
 
+  <!--
+    MODRYN, BESIDE THE BOUTIQUE'S OWN NAME.
+
+    The shop's logo is the shop's - a bride is at Bella Bridal, not at a
+    platform - so this sits AFTER it, small, in the gold, and reads as a
+    maker's mark rather than a second brand competing with the first.
+
+    A WORDMARK AND NOT AN IMAGE. There is no logo file anywhere in this
+    repository; MODRYN is set as letterspaced capitals in the display face, on
+    the platform's own site and here. Text scales, prints, reads at any size,
+    survives a dark background, and needs no asset to keep in step with the
+    other one.
+  -->
+  <template id="header_modryn_mark" inherit_id="website.option_header_brand_logo"
+            name="MODRYN: the platform's mark beside the shop's">
+    <!-- Matched on data-name and NOT on hasclass: the parent is an
+         INHERIT view, so its arch holds the element as it is written
+         there - class comes from t-attf-class, which hasclass() cannot
+         see, and the upgrade failed loudly saying so. -->
+    <xpath expr="//a[@data-name='Navbar Logo']" position="after">
+      <span class="modryn_by">
+        <span class="modryn_by_pre">by</span>
+        <span class="modryn_by_mark">MODRYN</span>
+      </span>
+    </xpath>
+  </template>
+
 </odoo>

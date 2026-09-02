@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <!--
+    THE CONTACT PAGE'S SIDEBAR, which shipped as literal placeholder text in
+    the page's own arch:
+
+        My Company
+        3575 Fake Buena Vista Avenue
+        +1 555-555-5556
+        info@yourcompany.example.com
+
+    A bride reading that learns the shop's address is in America and its phone
+    is a number nobody answers. It is not a snippet nobody edits by accident -
+    it is the answer to the one question this page exists for.
+
+    Replaced with the company's own details, the same source the header and the
+    footer already read, each line guarded so an unset one simply does not
+    render rather than showing a dash where an address should be.
+
+    AND A WHATSAPP BUTTON, because that is how a bride actually asks. It is
+    drawn only when there is a number to open it on.
+  -->
+  <template id="contactus_real_details" inherit_id="website.contactus"
+            name="MODRYN: the shop's own contact details">
+    <!-- The browser tab read "Contact Us" in English on a Hebrew page: Odoo
+         takes it from the page's name=, which is an ir.ui.view varchar and
+         cannot be translated. additional_title can. -->
+    <xpath expr="//div[@id='wrap']" position="before">
+      <t t-set="additional_title">Contact us</t>
+    </xpath>
+    <xpath expr="//div[hasclass('col-lg-4')][hasclass('offset-lg-1')]"
+           position="replace">
+      <div class="col-lg-4 offset-lg-1 mt-4 mt-lg-0">
+        <h5 t-out="res_company.name"/>
+        <ul class="list-unstyled mb-0 ps-2">
+          <li t-if="res_company.phone" class="mb-2">
+            <i class="fa fa-phone fa-fw me-2"/>
+            <a t-att-href="'tel:%s' % res_company.phone">
+              <span class="o_force_ltr" t-out="res_company.phone"/>
+            </a>
+          </li>
+          <li t-if="res_company.email" class="mb-2">
+            <i class="fa fa-1x fa-fw fa-envelope me-2"/>
+            <a t-att-href="'mailto:%s' % res_company.email" t-out="res_company.email"/>
+          </li>
+          <li t-if="res_company.street" class="mb-2">
+            <i class="fa fa-map-marker fa-fw me-2"/>
+            <span t-out="res_company.street"/><t t-if="res_company.city">, <span t-out="res_company.city"/></t>
+          </li>
+        </ul>
+
+        <!-- target=_blank with rel=noopener: wa.me hands the visitor to
+             WhatsApp, and a tab that can reach back into this one is a tab
+             that can rewrite the page it came from. -->
+        <t t-set="wa" t-value="res_company.modryn_whatsapp_url()"/>
+        <a t-if="wa" t-att-href="wa" target="_blank" rel="noopener"
+           class="btn btn-primary mt-3">
+          <i class="fa fa-whatsapp me-2"/>Message us on WhatsApp
+        </a>
+
+        <p t-if="not (res_company.phone or res_company.email or wa)"
+           class="text-muted mt-3">
+          Send us the form and we will come back to you.
+        </p>
+      </div>
+    </xpath>
+  </template>
+
+</odoo>

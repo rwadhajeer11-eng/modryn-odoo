@@ -131,3 +131,95 @@ body {
     color: #6B5D4F;
     font-size: 0.9rem;
 }
+
+//==============================================================================
+// 8. The maker's mark, and the heart
+//==============================================================================
+// MODRYN beside the boutique's name. Quiet on purpose: the customer is at the
+// boutique, and this says who built the room rather than whose room it is.
+.modryn_by {
+    display: inline-flex;
+    align-items: baseline;
+    gap: .3rem;
+    // Logical margin: it follows the writing direction, so the mark sits after
+    // the shop's name in Hebrew and Arabic without a second rule.
+    margin-inline-start: .6rem;
+    white-space: nowrap;
+
+    .modryn_by_pre {
+        font-size: .62rem;
+        letter-spacing: .04em;
+        opacity: .6;
+    }
+
+    .modryn_by_mark {
+        font-family: 'Frank Ruhl Libre', serif;
+        font-size: .78rem;
+        letter-spacing: .22em;
+        // #7F612B is the ONLY gold permitted as text - see the three-gold law
+        // at the top of this file.
+        color: #7F612B;
+        // MODRYN is a name, not a word: it reads left to right on an RTL page,
+        // and isolate keeps it from dragging the words beside it around.
+        direction: ltr;
+        unicode-bidi: isolate;
+    }
+}
+
+// The heart. An outline until she presses it, filled after - the SHAPE carries
+// the state, so it still says which is which to somebody who cannot see the
+// colour change.
+.modryn_like {
+    background: transparent;
+    border: 0;
+    color: #2B2118;
+    padding: .35rem;
+    line-height: 1;
+    cursor: pointer;
+
+    &:focus-visible {
+        outline: 2px solid #7F612B;
+        outline-offset: 2px;
+    }
+
+    &.modryn_liked_on { color: #B23A48; }
+}
+
+// On a tile, over the corner of the picture. Absolute inside the wrapper the
+// grid already positions relatively.
+.modryn_like_tile {
+    position: absolute;
+    inset-block-start: .35rem;
+    inset-inline-end: .35rem;
+    z-index: 2;
+    background: rgba(253, 251, 247, .82);
+    border-radius: 50%;
+    width: 2.25rem;
+    height: 2.25rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+// On the dress page it is a button beside the booking one, so it has to look
+// like a choice rather than a decoration.
+.modryn_like_big {
+    border: 1px solid #E6DCCB;
+    border-radius: 4px;
+    padding: .6rem 1rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover { border-color: #C5A059; }
+}
+
+.modryn_liked_switch .modryn_liked_badge {
+    background: #FBF5E4;
+    border: 1px solid #E6DCCB;
+    border-radius: 999px;
+    padding: 0 .5rem;
+    font-size: .8rem;
+    // Digits do not jump about as the count changes.
+    font-variant-numeric: tabular-nums;
+}

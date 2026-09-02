@@ -3179,3 +3179,68 @@ msgstr "נמכר בקופה"
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
 msgid "Altered at the counter"
 msgstr "שינוי שנרשם בקופה"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "Your shop's details"
+msgstr "הפרטים של החנות שלך"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid ""
+"What a customer is told about you. This is what the top of\n"
+"                    your site shows, what the bottom of every page shows, and\n"
+"                    what the contact page answers with — change it here and the\n"
+"                    next visitor sees the new one."
+msgstr ""
+"מה שלקוחה שומעת עלייך. זה מה שמופיע בראש האתר, בתחתית כל עמוד, ובעמוד צור "
+"קשר — שני כאן והמבקרת הבאה רואה את החדש."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "The boutique's name"
+msgstr "שם הבוטיק"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "WhatsApp"
+msgstr "וואטסאפ"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid ""
+"Leave this empty and the phone above is used. Fill it in\n"
+"                            only if WhatsApp is on another line."
+msgstr "השאירי ריק והטלפון שלמעלה ישמש. מלאי רק אם הוואטסאפ על קו אחר."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "The button will open:"
+msgstr "הכפתור יפתח את:"
+
+#. module: modryn_staff
+#. odoo-python
+#: code:addons/modryn_staff/controllers/manager.py:0
+msgid "The boutique needs a name."
+msgstr "לבוטיק צריך שם."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid ""
+"<i class=\"fa fa-address-card-o\" aria-hidden=\"true\"/>\n"
+"                    <span class=\"modryn_strong\">Your shop's details</span>\n"
+"                    <span class=\"modryn_sub\">The phone, the WhatsApp and the address your customers see.</span>"
+msgstr ""
+"<i class=\"fa fa-address-card-o\" aria-hidden=\"true\"/>\n"
+"                    <span class=\"modryn_strong\">הפרטים של החנות שלך</span>\n"
+"                    <span class=\"modryn_sub\">הטלפון, הוואטסאפ והכתובת שהלקוחות שלך רואות.</span>"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "Email"
+msgstr "אימייל"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "Street"
+msgstr "רחוב"

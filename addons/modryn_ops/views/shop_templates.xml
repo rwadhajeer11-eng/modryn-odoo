@@ -50,4 +50,56 @@
         </xpath>
     </template>
 
+    <!--
+        WHAT KIND OF THING, asked before what size and what price.
+
+        It is the first question a bride actually has - "show me the evening
+        dresses" - and Odoo's shop could not ask it: its filters know about
+        product attributes and price and nothing else. The words come from the
+        boutique's own list under שמלות ואקססוריז - סוגים, so one shop offers
+        נסיכה and מרמייד and the next offers עדינה and צנועה.
+
+        INSIDE ODOO'S OWN FILTER FORM rather than a form of its own, so one
+        submit carries the kind and the size together and its js_attributes
+        handler still auto-submits on a tick. A second form beside it would
+        have thrown away her size the moment she chose a kind.
+
+        Priority 30: this arch is only correct after website_sale's own
+        products_attributes has put the attribute block in, and views are
+        applied in priority order.
+    -->
+    <template id="products_kind_filter"
+              inherit_id="website_sale.product_attribute_filters_form"
+              priority="30"
+              name="MODRYN: filter the collection by kind">
+        <xpath expr="//t[@t-set='visible_attributes']" position="before">
+            <div t-if="modryn_kinds" class="nav-item mb-3 modryn_kind_filter">
+                <h6 class="mb-3"><b class="d-none d-lg-block">Kind</b></h6>
+                <div t-foreach="modryn_kinds" t-as="kind" class="form-check">
+                    <input type="checkbox" name="kind" t-att-value="kind.id"
+                           t-attf-id="modryn_kind_#{kind.id}"
+                           class="form-check-input"
+                           t-att-checked="'checked' if kind.id in modryn_kind_ids else None"/>
+                    <label class="form-check-label" t-attf-for="modryn_kind_#{kind.id}"
+                           t-out="kind.name"/>
+                </div>
+            </div>
+        </xpath>
+    </template>
+
+    <!--
+        The search box above the collection, off.
+
+        A bridal rail is thirty dresses on one page. Typing into a box is how
+        you find something in a catalogue of thousands; here it is a box that
+        finds nothing she could not already see, and it sat above the grid
+        taking the eye first. The filters are the thing that helps.
+
+        active="False" is the switch Odoo's own editor uses for this block, so
+        this is that switch and not a rule painted over it.
+    -->
+    <record id="website_sale.search" model="ir.ui.view">
+        <field name="active" eval="False"/>
+    </record>
+
 </odoo>

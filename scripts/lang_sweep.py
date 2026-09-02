@@ -100,6 +100,16 @@ PAGES = [
     '/manage/team-screen?view=worked',
     '/manage/team-screen?view=announce',
     '/manage/team-screen?view=sales',
+    '/manage/team-screen?view=track',
+    '/manage/team-screen?view=shop',
+    '/manage/dress-kinds',
+    '/sell',
+    # The customer's own three: the contact page answers with the shop's real
+    # details now, the booking form is what the storefront exists for, and the
+    # collection carries the kind filter and the heart.
+    '/contactus',
+    '/book',
+    '/shop?kind=1',
 ]
 
 # Names the tenant chose, which no translation can fix and none should. A

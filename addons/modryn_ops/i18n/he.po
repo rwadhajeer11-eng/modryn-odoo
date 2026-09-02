@@ -1395,6 +1395,7 @@ msgid "Amount off"
 msgstr "סכום הנחה"
 
 #. module: modryn_ops
+#: code:addons/modryn_ops/models/audit_log.py:0
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_sale__discount_kind
 msgid "Kind of discount"
 msgstr "סוג ההנחה"
@@ -1625,3 +1626,14 @@ msgstr ""
 "                <span data-code=\"add\">להוסיף {count} למידה הזו?</span>\n"
 "                <span data-code=\"remove\">להוריד {count} מהמידה הזו?</span>\n"
 "                <span data-code=\"same\">זה כבר המספר שיש כאן.</span>"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.products_kind_filter
+msgid "<b class=\"d-none d-lg-block\">Kind</b>"
+msgstr "<b class=\"d-none d-lg-block\">סוג</b>"
+
+#. module: modryn_ops
+#. odoo-python
+#: code:addons/modryn_ops/models/audit_log.py:0
+msgid "Why the discount"
+msgstr "סיבת ההנחה"

@@ -4,6 +4,10 @@
     <!-- Reuses modryn_staff's admin shell so the workshop looks like the rest of
          the staff tooling rather than a bolted-on page. -->
     <template id="dashboard" name="Atelier dashboard">
+        <!-- The tab's words. name= above is an ir.ui.view varchar and cannot
+             be translated, so the browser tab read "Atelier dashboard" on a
+             Hebrew screen and on an Arabic one. -->
+        <t t-set="additional_title">Workshop</t>
         <t t-call="modryn_staff.manage_layout">
             <div class="d-flex align-items-center justify-content-between mb-4">
                 <h1 class="mb-0">Workshop</h1>
@@ -381,6 +385,7 @@
 
     <!-- Owner-maintained garment pieces — same shape as the roles page. -->
     <template id="manage_pieces" name="Garment pieces">
+        <t t-set="additional_title">Garment pieces</t>
         <t t-call="modryn_staff.manage_layout">
             <h1 class="mb-2">Garment pieces</h1>
             <p class="text-muted mb-4">

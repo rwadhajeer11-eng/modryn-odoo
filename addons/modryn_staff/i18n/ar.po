@@ -3182,3 +3182,69 @@ msgstr "انباع عالكاونتر"
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
 msgid "Altered at the counter"
 msgstr "تعديل انسجّل عالكاونتر"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "Your shop's details"
+msgstr "تفاصيل محلك"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid ""
+"What a customer is told about you. This is what the top of\n"
+"                    your site shows, what the bottom of every page shows, and\n"
+"                    what the contact page answers with — change it here and the\n"
+"                    next visitor sees the new one."
+msgstr ""
+"شو بتعرفه الزبونة عنك. هاد الي بيطلع بأول الموقع، وبآخر كل صفحة، وبصفحة "
+"التواصل — غيّريه هون والزائرة الجاي بتشوف الجديد."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "The boutique's name"
+msgstr "اسم المحل"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "WhatsApp"
+msgstr "واتساب"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid ""
+"Leave this empty and the phone above is used. Fill it in\n"
+"                            only if WhatsApp is on another line."
+msgstr ""
+"اتركيها فاضية وبينستخدم التلفون الي فوق. عبّيها بس إذا الواتساب على خط تاني."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "The button will open:"
+msgstr "الزر رح يفتح:"
+
+#. module: modryn_staff
+#. odoo-python
+#: code:addons/modryn_staff/controllers/manager.py:0
+msgid "The boutique needs a name."
+msgstr "المحل بدّه اسم."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid ""
+"<i class=\"fa fa-address-card-o\" aria-hidden=\"true\"/>\n"
+"                    <span class=\"modryn_strong\">Your shop's details</span>\n"
+"                    <span class=\"modryn_sub\">The phone, the WhatsApp and the address your customers see.</span>"
+msgstr ""
+"<i class=\"fa fa-address-card-o\" aria-hidden=\"true\"/>\n"
+"                    <span class=\"modryn_strong\">تفاصيل محلك</span>\n"
+"                    <span class=\"modryn_sub\">التلفون والواتساب والعنوان الي بشوفوهن زبوناتك.</span>"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "Email"
+msgstr "الإيميل"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "Street"
+msgstr "الشارع"

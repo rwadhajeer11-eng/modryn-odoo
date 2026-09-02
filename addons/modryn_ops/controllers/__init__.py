@@ -4,3 +4,4 @@ from . import reports
 from . import tasks
 from . import dresses
 from . import sell
+from . import shop_filter
