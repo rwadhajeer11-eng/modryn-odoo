@@ -12,7 +12,6 @@ CODE_RE = re.compile(r'^\d{4}$')
 # A shop may be owned by up to four people. Not a business rule so much as a
 # shape: the register exists to be read at a glance, and a shop with eleven
 # partners listed is a shop nobody reads.
-MAX_PARTNERS = 4
 
 
 class ModrynBoutique(models.Model):
@@ -55,13 +54,6 @@ class ModrynBoutique(models.Model):
         for shop in self:
             if not CODE_RE.match(shop.code or ''):
                 raise ValidationError(_("A shop number is exactly four digits."))
-
-    @api.constrains('partner_ids')
-    def _check_partner_count(self):
-        for shop in self:
-            if len(shop.partner_ids) > MAX_PARTNERS:
-                raise ValidationError(
-                    _("A shop can list at most %d partners.") % MAX_PARTNERS)
 
     def _row(self):
         """Plain dicts for QWeb, the way every other MODRYN screen is fed."""

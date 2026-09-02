@@ -7,10 +7,6 @@ from odoo.tools import mute_logger
 
 GROUP_PLATFORM = 'modryn_platform.group_platform_owner'
 
-# Four partners per shop, matching the model's constraint. Checked here as well,
-# so the owner reads a sentence instead of meeting a traceback — the same
-# division of labour modryn_staff's manage controller uses.
-MAX_PARTNERS = 4
 
 
 class ModrynPlatform(http.Controller):
@@ -25,15 +21,23 @@ class ModrynPlatform(http.Controller):
         user = request.env.user
         return not user._is_public() and user.has_group(GROUP_PLATFORM)
 
-    def _shops(self, **kw):
+    def _shops(self, archived=False):
+        """The live register, or the archive. Never both in one list.
+
+        They were one list with the archived rows greyed out, which reads as a
+        register of forty shops when eight of them left last year.
+        """
         return request.env['modryn.boutique'].sudo().with_context(
-            active_test=False).search([])
+            active_test=False).search([('active', '=', not archived)])
 
     def _render(self, error=None):
         Type = request.env['modryn.subscription.type'].sudo()
         return request.render('modryn_platform.boutique_register', {
             'title': _("Boutiques"),
             'shops': [s._row() for s in self._shops()],
+            # Counted as well as listed: the disclosure says how many are
+            # inside it, so nobody has to open it to find out it is empty.
+            'archived': [s._row() for s in self._shops(archived=True)],
             'types': Type.search([]),
             'error': error,
         })
@@ -143,7 +147,7 @@ class ModrynPlatform(http.Controller):
         names = form.getlist('partner_name')
         phones = form.getlist('partner_phone')
         partners = [(0, 0, {'name': n.strip(), 'phone': (phones[i] if i < len(phones) else '').strip()})
-                    for i, n in enumerate(names) if n.strip()][:MAX_PARTNERS]
+                    for i, n in enumerate(names) if n.strip()]
         if partners:
             values['partner_ids'] = partners
 
@@ -168,13 +172,34 @@ class ModrynPlatform(http.Controller):
             return request.redirect('/platform/boutiques')
 
         values = {}
-        for field in ('name', 'city', 'street', 'slug'):
+        # `code` joins the list: a shop number typed wrong on the day it was
+        # added could not be corrected here at all, and it is the one field
+        # every other system refers to the shop by.
+        for field in ('code', 'name', 'city', 'street', 'slug', 'note'):
             if field in post:
                 values[field] = (post.get(field) or '').strip()
         if post.get('subscription_type_id'):
             values['subscription_type_id'] = int(post['subscription_type_id'])
         elif 'subscription_type_id' in post:
             values['subscription_type_id'] = False
+
+        # The partners, rewritten whole. A form that posts the list it was shown
+        # is describing the shop as it should now be, so the honest write is
+        # "these are the partners" rather than a diff of what changed — which
+        # would need ids in the page and a rule for every one that went missing.
+        #
+        # Only when the form actually carried them: the tier dropdown in the row
+        # posts to this same route, and treating its silence as "no partners"
+        # would wipe them on a subscription change.
+        form = request.httprequest.form
+        if 'partner_name' in form:
+            names = form.getlist('partner_name')
+            phones = form.getlist('partner_phone')
+            values['partner_ids'] = [(5, 0, 0)] + [
+                (0, 0, {'name': n.strip(),
+                        'phone': (phones[i] if i < len(phones) else '').strip(),
+                        'sequence': i * 10})
+                for i, n in enumerate(names) if n.strip()]
         try:
             with request.env.cr.savepoint(), mute_logger('odoo.sql_db'):
                 shop.write(values)
@@ -195,6 +220,48 @@ class ModrynPlatform(http.Controller):
             # bills against, and unlink would take its partners with it.
             shop.active = not shop.active
         return request.redirect('/platform/boutiques')
+
+    @http.route('/platform/boutiques/delete/<int:shop_id>', type='http',
+                auth='user', website=True, methods=['POST'], csrf=True,
+                sitemap=False)
+    def boutique_delete(self, shop_id, **post):
+        """Remove a boutique from the register, for good.
+
+        WHAT THIS DELETES, and the screen says so too: the platform's ROW about
+        the shop. Not the shop's database, not its dresses, not its brides —
+        those live in their own database, which this module has never been able
+        to reach. What goes is MODRYN's record that the shop was a customer.
+
+        ALL FOUR ANSWERS, the same ones the door asks. Archiving is reversible
+        and asks for a confirmation; this is not reversible and asks for proof.
+
+        A WRONG ANSWER SAYS NOTHING. Not which field, not "wrong password",
+        not "that shop is gone already" — the row simply stays. Anything more
+        specific is a free answer for somebody sitting at a screen its owner
+        walked away from.
+        """
+        if not self._is_platform_owner():
+            return request.not_found()
+
+        user = request.env.user
+        ok = user.modryn_platform_credentials_ok(
+            login=post.get('username') or '',
+            phone=post.get('phone') or '',
+            idnum=post.get('idnum') or '',
+            password=post.get('password') or '',
+        )
+        if not ok:
+            return request.redirect(
+                '/platform/boutiques?error=%s#archive' % _("Those details aren't valid"))
+
+        shop = request.env['modryn.boutique'].sudo().with_context(
+            active_test=False).browse(shop_id).exists()
+        # Archived only. A live shop is deleted by archiving it first, which is
+        # a second deliberate act — and it means a mistyped id in a hand-made
+        # POST cannot take out a shop that is still trading.
+        if shop and not shop.active:
+            shop.unlink()
+        return request.redirect('/platform/boutiques#archive')
 
     # ------------------------------------------------------ plans and features
     def _plans_context(self, error=None):

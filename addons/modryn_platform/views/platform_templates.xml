@@ -105,6 +105,7 @@
                     No boutiques yet. Add the first one above.
                 </p>
 
+                <div class="modryn_plat_scroll">
                 <table t-if="shops" class="modryn_plat_table">
                     <thead>
                         <tr>
@@ -113,8 +114,8 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr t-foreach="shops" t-as="shop"
-                            t-attf-class="#{'text-muted' if not shop['active'] else ''}">
+                        <t t-foreach="shops" t-as="shop">
+                        <tr>
                             <td dir="ltr" t-out="shop['code']"/>
                             <td>
                                 <strong t-out="shop['name']"/>
@@ -128,7 +129,7 @@
                             <td>
                                 <div t-foreach="shop['partners']" t-as="p" class="small">
                                     <t t-out="p['name']"/>
-                                    <span t-if="p['phone']" dir="ltr" class="text-muted">
+                                    <span t-if="p['phone']" dir="ltr" class="modryn_plat_sub">
                                         · <t t-out="p['phone']"/>
                                     </span>
                                 </div>
@@ -136,14 +137,15 @@
                             </td>
                             <td>
                                 <!-- Editable in place: a shop moving up a tier is
-                                     the single most common change to this row. -->
+                                     the single most common change to this row,
+                                     and it should not need the whole form. -->
                                 <form t-attf-action="/platform/boutiques/edit/#{shop['id']}"
                                       method="post" class="d-flex gap-1">
                                     <input type="hidden" name="csrf_token"
                                            t-att-value="request.csrf_token()"/>
                                     <select name="subscription_type_id"
                                             class="form-select form-select-sm w-auto">
-                                        <option value="">—</option>
+                                        <option value="">-</option>
                                         <t t-foreach="types" t-as="ty">
                                             <option t-att-value="ty.id"
                                                     t-att-selected="'selected' if ty.name == shop['subscription'] else None"
@@ -154,19 +156,246 @@
                                 </form>
                             </td>
                             <td class="text-end">
-                                <form t-attf-action="/platform/boutiques/archive/#{shop['id']}"
-                                      method="post" class="d-inline">
-                                    <input type="hidden" name="csrf_token"
-                                           t-att-value="request.csrf_token()"/>
-                                    <button type="submit" class="btn_quiet">
-                                        <t t-if="shop['active']">Archive</t>
-                                        <t t-else="">Restore</t>
-                                    </button>
-                                </form>
+                                <!-- Archiving ASKS. It used to happen on one
+                                     press and the row simply left the list,
+                                     which is also what pressing the wrong row
+                                     looks like. A details/summary rather than a
+                                     script: a confirmation that depends on
+                                     JavaScript is one that can silently not
+                                     happen. -->
+                                <details class="modryn_plat_ask">
+                                    <summary class="btn_quiet">Archive</summary>
+                                    <div class="modryn_plat_confirm">
+                                        <div class="modryn_plat_sub">
+                                            Archive this boutique? It leaves the
+                                            list and moves into the archive.
+                                        </div>
+                                        <form t-attf-action="/platform/boutiques/archive/#{shop['id']}"
+                                              method="post">
+                                            <input type="hidden" name="csrf_token"
+                                                   t-att-value="request.csrf_token()"/>
+                                            <button type="submit" class="btn_gold">Yes, archive</button>
+                                        </form>
+                                    </div>
+                                </details>
                             </td>
                         </tr>
+                        <!-- The whole shop, one row down and folded away. On the
+                             row it would be twelve fields wide; behind a
+                             disclosure it is a form somebody opened on purpose. -->
+                        <tr>
+                            <td colspan="6" class="p-0">
+                                <details class="modryn_plat_edit">
+                                    <summary>Edit everything</summary>
+                                    <form t-attf-action="/platform/boutiques/edit/#{shop['id']}"
+                                          method="post" class="row g-2 p-3">
+                                        <input type="hidden" name="csrf_token"
+                                               t-att-value="request.csrf_token()"/>
+                                        <div class="col-6 col-md-2">
+                                            <label class="form-label">Shop number</label>
+                                            <input type="text" name="code" dir="ltr"
+                                                   class="form-control form-control-sm"
+                                                   t-att-value="shop['code']"/>
+                                        </div>
+                                        <div class="col-6 col-md-4">
+                                            <label class="form-label">Name</label>
+                                            <input type="text" name="name"
+                                                   class="form-control form-control-sm"
+                                                   t-att-value="shop['name']"/>
+                                        </div>
+                                        <div class="col-6 col-md-3">
+                                            <label class="form-label">City</label>
+                                            <input type="text" name="city"
+                                                   class="form-control form-control-sm"
+                                                   t-att-value="shop['city']"/>
+                                        </div>
+                                        <div class="col-6 col-md-3">
+                                            <label class="form-label">Street</label>
+                                            <input type="text" name="street"
+                                                   class="form-control form-control-sm"
+                                                   t-att-value="shop['street']"/>
+                                        </div>
+                                        <div class="col-6 col-md-3">
+                                            <label class="form-label">Subdomain</label>
+                                            <input type="text" name="slug" dir="ltr"
+                                                   class="form-control form-control-sm"
+                                                   t-att-value="shop['slug']"/>
+                                        </div>
+                                        <div class="col-6 col-md-3">
+                                            <label class="form-label">Subscription</label>
+                                            <select name="subscription_type_id"
+                                                    class="form-select form-select-sm">
+                                                <option value="">-</option>
+                                                <t t-foreach="types" t-as="ty">
+                                                    <option t-att-value="ty.id"
+                                                            t-att-selected="'selected' if ty.name == shop['subscription'] else None"
+                                                            t-out="ty.name"/>
+                                                </t>
+                                            </select>
+                                        </div>
+                                        <div class="col-12 col-md-6">
+                                            <label class="form-label">Note</label>
+                                            <input type="text" name="note"
+                                                   class="form-control form-control-sm"
+                                                   t-att-value="shop['note']"/>
+                                        </div>
+
+                                        <!-- Partners, as many as the shop has.
+                                             Every existing one is a row that can
+                                             be emptied to drop it, and three
+                                             blank pairs wait at the end so that
+                                             adding one is typing rather than
+                                             pressing something first. -->
+                                        <div class="col-12">
+                                            <label class="form-label">Partners</label>
+                                            <div t-foreach="shop['partners']" t-as="p"
+                                                 class="row g-2 mb-2">
+                                                <div class="col-7">
+                                                    <input type="text" name="partner_name"
+                                                           class="form-control form-control-sm"
+                                                           t-att-value="p['name']"/>
+                                                </div>
+                                                <div class="col-5">
+                                                    <input type="text" name="partner_phone" dir="ltr"
+                                                           class="form-control form-control-sm"
+                                                           t-att-value="p['phone']"/>
+                                                </div>
+                                            </div>
+                                            <div t-foreach="[1, 2, 3]" t-as="blank"
+                                                 class="row g-2 mb-2">
+                                                <div class="col-7">
+                                                    <input type="text" name="partner_name"
+                                                           class="form-control form-control-sm"
+                                                           placeholder="Another partner"/>
+                                                </div>
+                                                <div class="col-5">
+                                                    <input type="text" name="partner_phone" dir="ltr"
+                                                           class="form-control form-control-sm"
+                                                           placeholder="Phone"/>
+                                                </div>
+                                            </div>
+                                            <p class="modryn_plat_sub mb-0">
+                                                Clear a name to remove that
+                                                partner. Save, and three more
+                                                blank rows come back.
+                                            </p>
+                                        </div>
+
+                                        <div class="col-12">
+                                            <button type="submit" class="btn_gold">Save the boutique</button>
+                                        </div>
+                                    </form>
+                                </details>
+                            </td>
+                        </tr>
+                        </t>
                     </tbody>
                 </table>
+                </div>
+
+                <!-- ========================= the archive ========================= -->
+                <!-- Its own place, not greyed-out rows mixed into the list above:
+                     a register of forty shops that shows forty rows, eight of
+                     which left last year, is a register nobody can count from. -->
+                <details id="archive" class="modryn_plat_panel mt-4">
+                    <summary class="modryn_plat_archive_head">
+                        <i class="fa fa-archive" aria-hidden="true"/>
+                        Archive
+                        <span class="modryn_plat_badge" t-out="len(archived)"/>
+                    </summary>
+
+                    <p t-if="not archived" class="modryn_plat_empty mt-3 mb-0">
+                        Nothing archived.
+                    </p>
+
+                    <div t-else="" class="mt-3">
+                        <p class="modryn_plat_sub">
+                            Boutiques that left the list. Restoring one puts it
+                            back. Deleting one removes MODRYN's record that the
+                            shop was ever a customer - it does not touch the
+                            shop's own database, which lives somewhere this
+                            screen cannot reach.
+                        </p>
+
+                        <div class="modryn_plat_scroll">
+                        <table class="modryn_plat_table">
+                            <thead>
+                                <tr><th>No.</th><th>Name</th><th>Where</th><th/></tr>
+                            </thead>
+                            <tbody>
+                                <tr t-foreach="archived" t-as="shop" t-key="shop['id']">
+                                    <td dir="ltr" t-out="shop['code']"/>
+                                    <td>
+                                        <strong t-out="shop['name']"/>
+                                        <div t-if="shop['slug']" class="modryn_plat_sub"
+                                             dir="ltr" t-out="shop['slug']"/>
+                                    </td>
+                                    <td>
+                                        <t t-out="shop['city']"/>
+                                        <t t-if="shop['street']">, <t t-out="shop['street']"/></t>
+                                    </td>
+                                    <td class="text-end">
+                                        <form t-attf-action="/platform/boutiques/archive/#{shop['id']}"
+                                              method="post" class="d-inline">
+                                            <input type="hidden" name="csrf_token"
+                                                   t-att-value="request.csrf_token()"/>
+                                            <button type="submit" class="btn_quiet">Restore</button>
+                                        </form>
+
+                                        <!-- Four answers to destroy a row. The
+                                             same four the door asks, because
+                                             this is the only button here that
+                                             cannot be undone. -->
+                                        <details class="modryn_plat_ask">
+                                            <summary class="btn_quiet">Delete for good</summary>
+                                            <div class="modryn_plat_confirm">
+                                                <div class="modryn_plat_sub">
+                                                    This cannot be undone. Enter
+                                                    everything you sign in with.
+                                                </div>
+                                                <form t-attf-action="/platform/boutiques/delete/#{shop['id']}"
+                                                      method="post" class="row g-2 mt-1">
+                                                    <input type="hidden" name="csrf_token"
+                                                           t-att-value="request.csrf_token()"/>
+                                                    <div class="col-6">
+                                                        <input type="text" name="username"
+                                                               class="form-control form-control-sm"
+                                                               autocomplete="off"
+                                                               placeholder="Username"/>
+                                                    </div>
+                                                    <div class="col-6">
+                                                        <input type="text" name="phone" dir="ltr"
+                                                               class="form-control form-control-sm"
+                                                               autocomplete="off"
+                                                               placeholder="Phone number"/>
+                                                    </div>
+                                                    <div class="col-6">
+                                                        <input type="password" name="idnum" dir="ltr"
+                                                               class="form-control form-control-sm"
+                                                               autocomplete="off"
+                                                               placeholder="ID number"/>
+                                                    </div>
+                                                    <div class="col-6">
+                                                        <input type="password" name="password"
+                                                               class="form-control form-control-sm"
+                                                               autocomplete="off"
+                                                               placeholder="Password"/>
+                                                    </div>
+                                                    <div class="col-12">
+                                                        <button type="submit" class="btn_gold">
+                                                            Delete this boutique
+                                                        </button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </details>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        </div>
+                    </div>
+                </details>
             </div>
         </t>
     </template>

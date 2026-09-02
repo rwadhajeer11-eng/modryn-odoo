@@ -129,6 +129,133 @@
                 </form>
             </section>
 
+            <!-- ===================== the people ===================== -->
+            <!-- The account screen assumed one owner, which is true on the day
+                 a platform is built and stops being true the moment somebody
+                 hires. The four answers are per USER, which is why they sit on
+                 res.users rather than in one shared config parameter. -->
+            <section id="people" class="modryn_plat_panel">
+                <header class="modryn_plat_head">
+                    <h2>Who else can get in</h2>
+                    <span class="modryn_plat_sub">
+                        Each person has their own four answers.
+                    </span>
+                </header>
+
+                <div class="modryn_plat_scroll">
+                    <table class="modryn_plat_table">
+                        <thead>
+                            <tr><th>Username</th><th>Name</th><th/></tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="others" t-as="person" t-key="person['id']">
+                                <td dir="ltr">
+                                    <t t-out="person['login']"/>
+                                    <span t-if="person['is_me']" class="modryn_plat_badge">You</span>
+                                </td>
+                                <td t-out="person['name']"/>
+                                <td class="text-end">
+                                    <!-- No delete against your own row. It is
+                                         the one mistake that cannot be undone
+                                         from the screen that made it. -->
+                                    <span t-if="person['is_me']" class="modryn_plat_sub">-</span>
+                                    <details t-else="" class="modryn_plat_ask">
+                                        <summary class="btn_quiet">Remove</summary>
+                                        <div class="modryn_plat_confirm">
+                                            <div class="modryn_plat_sub">
+                                                This cannot be undone. Enter
+                                                everything you sign in with.
+                                            </div>
+                                            <form t-attf-action="/platform/account/user/delete/#{person['id']}"
+                                                  method="post" class="row g-2 mt-1">
+                                                <input type="hidden" name="csrf_token"
+                                                       t-att-value="request.csrf_token()"/>
+                                                <div class="col-6">
+                                                    <input type="text" name="username"
+                                                           class="form-control form-control-sm"
+                                                           autocomplete="off" placeholder="Username"/>
+                                                </div>
+                                                <div class="col-6">
+                                                    <input type="text" name="phone" dir="ltr"
+                                                           class="form-control form-control-sm"
+                                                           autocomplete="off" placeholder="Phone number"/>
+                                                </div>
+                                                <div class="col-6">
+                                                    <input type="password" name="idnum" dir="ltr"
+                                                           class="form-control form-control-sm"
+                                                           autocomplete="off" placeholder="ID number"/>
+                                                </div>
+                                                <div class="col-6">
+                                                    <input type="password" name="password"
+                                                           class="form-control form-control-sm"
+                                                           autocomplete="off" placeholder="Password"/>
+                                                </div>
+                                                <div class="col-12">
+                                                    <button type="submit" class="btn_gold">
+                                                        Remove this person
+                                                    </button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </details>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- All four at once, because an account holding only two of
+                     them cannot sign in - the door refuses a user with nothing
+                     on file - and would sit in the list looking finished. -->
+                <details class="modryn_plat_edit mt-3">
+                    <summary>Add someone</summary>
+                    <form action="/platform/account/user/new" method="post"
+                          class="row g-2 p-3">
+                        <input type="hidden" name="csrf_token"
+                               t-att-value="request.csrf_token()"/>
+                        <div class="col-12 col-md-4">
+                            <label class="form-label" for="new_login">Username</label>
+                            <input type="text" id="new_login" name="new_login" dir="ltr"
+                                   class="form-control form-control-sm"
+                                   autocomplete="off" required="required"/>
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <label class="form-label" for="new_name">Their name</label>
+                            <input type="text" id="new_name" name="new_name"
+                                   class="form-control form-control-sm"/>
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <label class="form-label" for="new_phone">Phone number</label>
+                            <input type="text" id="new_phone" name="new_phone" dir="ltr"
+                                   class="form-control form-control-sm"
+                                   autocomplete="off" required="required"/>
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <label class="form-label" for="new_idnum">ID number</label>
+                            <input type="password" id="new_idnum" name="new_idnum" dir="ltr"
+                                   class="form-control form-control-sm"
+                                   autocomplete="off" required="required"/>
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <label class="form-label" for="new_user_password">Their password</label>
+                            <input type="password" id="new_user_password"
+                                   name="new_user_password"
+                                   class="form-control form-control-sm"
+                                   autocomplete="new-password" required="required"/>
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <label class="form-label" for="new_confirm">Your password, to confirm</label>
+                            <input type="password" id="new_confirm" name="current_password"
+                                   class="form-control form-control-sm"
+                                   autocomplete="current-password" required="required"/>
+                        </div>
+                        <div class="col-12">
+                            <button type="submit" class="btn_gold">Add this person</button>
+                        </div>
+                    </form>
+                </details>
+            </section>
+
             <!-- ==================== the password ==================== -->
             <section class="modryn_plat_panel">
                 <header class="modryn_plat_head">

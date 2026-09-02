@@ -218,3 +218,56 @@ $plat-success:   #2E6B4F;
         &:hover { border-color: $plat-gold; }
     }
 }
+
+// A disclosure that asks before it destroys. The summary looks like a button
+// because it is one press away from being one; what opens under it is the
+// confirmation, and nothing here needs JavaScript to work.
+.modryn_plat_ask {
+    display: inline-block;
+    position: relative;
+
+    > summary {
+        cursor: pointer;
+        list-style: none;
+        &::-webkit-details-marker { display: none; }
+    }
+}
+
+.modryn_plat_confirm {
+    position: absolute;
+    inset-inline-end: 0;
+    z-index: 20;
+    min-width: 20rem;
+    margin-block-start: .4rem;
+    padding: .9rem 1rem;
+    text-align: start;
+    background: #FFFFFF;
+    border: 1px solid $plat-gold;
+    border-radius: 5px;
+    box-shadow: 0 12px 30px rgba(43, 33, 24, .16);
+
+    > .modryn_plat_sub { margin-block-end: .6rem; }
+}
+
+// The fold-out editors: a shop's full form, and the add-a-person form.
+.modryn_plat_edit {
+    border-block-start: 1px solid $plat-border;
+
+    > summary {
+        cursor: pointer;
+        padding: .5rem .6rem;
+        color: $plat-gold-text;
+        font-size: .875rem;
+    }
+    &[open] > summary { border-block-end: 1px solid $plat-border; }
+}
+
+.modryn_plat_archive_head {
+    cursor: pointer;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: .55rem;
+
+    .fa { color: $plat-gold-text; }
+}

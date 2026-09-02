@@ -57,6 +57,41 @@ class ResUsers(models.Model):
             self.sudo().write(values)
         return True
 
+    def modryn_platform_credentials_ok(self, login, phone, idnum, password):
+        """All four, for an action that is not signing in.
+
+        The delete button asks exactly what the door asks, because destroying a
+        row somebody may be billing against deserves the same bar as walking in.
+
+        EVERY part is checked and the results combined at the end, never
+        short-circuited: a function that gives up on the first wrong answer
+        finishes measurably sooner than one that checks all four, and that
+        difference is readable from outside. It would say which parts were
+        already right — the exact thing the silent refusal exists to hide.
+        """
+        self.ensure_one()
+        # A wrong username is a wrong answer like any other. Compared here
+        # rather than used to look somebody up, because the caller is already
+        # signed in: the question is "are you who this session says", not
+        # "who are you".
+        login_ok = bool(login) and login.strip() == (self.login or '')
+
+        password_ok = False
+        if password:
+            try:
+                self.sudo()._check_credentials(
+                    {'type': 'password', 'password': password},
+                    {'interactive': False})
+                password_ok = True
+            except Exception:
+                # Any refusal is a refusal. AccessDenied is the expected one;
+                # anything else is still not a yes, and swallowing it here is
+                # what keeps the caller from learning which happened.
+                password_ok = False
+
+        factors_ok = self.modryn_check_platform_factors(phone, idnum)
+        return login_ok and password_ok and factors_ok
+
     def modryn_check_platform_factors(self, phone, idnum):
         """Do the typed phone and ID match what is on file?
 

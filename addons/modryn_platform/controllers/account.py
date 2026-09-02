@@ -51,6 +51,19 @@ class ModrynPlatformAccount(http.Controller):
                 'street': company.street or '',
                 'city': company.city or '',
             },
+            # Everybody who may open the platform. Read here rather than in
+            # the template so the "is this me" flag is decided once.
+            'others': [{
+                'id': other.id,
+                'login': other.login or '',
+                'name': other.name or '',
+                'is_me': other.id == user.id,
+                'ready': bool(other.sudo().read(
+                    ['modryn_platform_phone', 'modryn_platform_idnum'])[0]
+                    .get('modryn_platform_phone')),
+            } for other in request.env['res.users'].sudo().search(
+                [('group_ids', 'in', request.env.ref(
+                    GROUP_PLATFORM).ids)], order='login')],
             'account': {
                 'login': user.login or '',
                 'has_phone': bool(stored.get('modryn_platform_phone')),
@@ -177,3 +190,75 @@ class ModrynPlatformAccount(http.Controller):
         # a link away if that is what she wanted.
         request.session.uid = user.id
         return request.redirect('/platform/account?saved=1')
+
+    @http.route('/platform/account/user/new', type='http', auth='user',
+                website=True, methods=['POST'], csrf=True, sitemap=False)
+    def account_user_new(self, **post):
+        """Another person who may run the platform.
+
+        Created with all four answers at once, because an account that exists
+        with only two of them is an account that cannot sign in - the door
+        refuses a user with nothing on file, deliberately - and would sit in the
+        list looking finished.
+        """
+        me = self._owner()
+        if not me:
+            return request.not_found()
+        if not self._password_holds(me, post.get('current_password')):
+            return self._render(error=_("That password is not right."))
+
+        login = (post.get('new_login') or '').strip()
+        name = (post.get('new_name') or '').strip() or login
+        phone = (post.get('new_phone') or '').strip()
+        idnum = (post.get('new_idnum') or '').strip()
+        password = post.get('new_user_password') or ''
+
+        if not (login and phone and idnum and password):
+            return self._render(error=_(
+                "A new person needs a username, a phone number, an ID number "
+                "and a password."))
+        if len(password) < MIN_PASSWORD:
+            return self._render(error=_(
+                "A password needs at least %s characters.") % MIN_PASSWORD)
+        if request.env['res.users'].sudo().search_count([('login', '=', login)]):
+            return self._render(error=_("That username is taken."))
+
+        created = request.env['res.users'].sudo().create({
+            'name': name,
+            'login': login,
+            'password': password,
+            'company_id': me.company_id.id,
+            'company_ids': [(4, me.company_id.id)],
+            'group_ids': [(4, request.env.ref(GROUP_PLATFORM).id)],
+        })
+        created.modryn_set_platform_factors(phone=phone, idnum=idnum)
+        return request.redirect('/platform/account?saved=1#people')
+
+    @http.route('/platform/account/user/delete/<int:user_id>', type='http',
+                auth='user', website=True, methods=['POST'], csrf=True,
+                sitemap=False)
+    def account_user_delete(self, user_id, **post):
+        """Remove somebody, behind all four answers.
+
+        A WRONG ANSWER SAYS NOTHING about which one, the same silence the door
+        keeps and the boutique delete keeps.
+
+        SELF-DELETION IS REFUSED, and not because of permissions: it is the one
+        mistake that cannot be undone from the screen that made it, since the
+        account doing the undoing would be the account that just went.
+        """
+        me = self._owner()
+        if not me:
+            return request.not_found()
+
+        if not me.modryn_platform_credentials_ok(
+                login=post.get('username') or '',
+                phone=post.get('phone') or '',
+                idnum=post.get('idnum') or '',
+                password=post.get('password') or ''):
+            return self._render(error=_("Those details aren't valid"))
+
+        target = request.env['res.users'].sudo().browse(user_id).exists()
+        if target and target.id != me.id and target.has_group(GROUP_PLATFORM):
+            target.unlink()
+        return request.redirect('/platform/account?saved=1#people')

@@ -52,6 +52,7 @@ msgstr "الرقم"
 
 #. module: modryn_platform
 #: model:ir.model.fields,field_description:modryn_platform.field_modryn_boutique__code
+#: model_terms:ir.ui.view,arch_db:modryn_platform.boutique_register
 msgid "Shop number"
 msgstr "رقم المحل"
 
@@ -66,6 +67,7 @@ msgstr "أربع أرقام. هيك MODRYN بتشير لهالمحل."
 #: model:ir.model.fields,field_description:modryn_platform.field_modryn_platform_feature__name
 #: model:ir.model.fields,field_description:modryn_platform.field_modryn_subscription_type__name
 #: model_terms:ir.ui.view,arch_db:modryn_platform.boutique_register
+#: model_terms:ir.ui.view,arch_db:modryn_platform.platform_account
 msgid "Name"
 msgstr "الاسم"
 
@@ -117,6 +119,7 @@ msgstr "تلفون الشريك {{0}}"
 
 #. module: modryn_platform
 #: model:ir.model.fields,field_description:modryn_platform.field_modryn_boutique_partner__phone
+#: model_terms:ir.ui.view,arch_db:modryn_platform.boutique_register
 #: model_terms:ir.ui.view,arch_db:modryn_platform.platform_account
 msgid "Phone"
 msgstr "التلفون"
@@ -142,7 +145,7 @@ msgstr "حفظ"
 #: model_terms:ir.ui.view,arch_db:modryn_platform.boutique_register
 #: model_terms:ir.ui.view,arch_db:modryn_platform.plans
 msgid "Archive"
-msgstr "أرشفة"
+msgstr "الأرشيف"
 
 #. module: modryn_platform
 #: model_terms:ir.ui.view,arch_db:modryn_platform.boutique_register
@@ -153,7 +156,7 @@ msgstr "استرجاع"
 #. module: modryn_platform
 #: model_terms:ir.ui.view,arch_db:modryn_platform.boutique_register
 msgid "No boutiques yet. Add the first one above."
-msgstr "لسا ما في محلات. ضيفي الأول من فوق."
+msgstr "لسا ما في محلات. ضيف الأول من فوق."
 
 #. module: modryn_platform
 #: model:ir.model,name:modryn_platform.model_modryn_boutique
@@ -225,7 +228,7 @@ msgstr "إضافة"
 #. module: modryn_platform
 #: model_terms:ir.ui.view,arch_db:modryn_platform.plans
 msgid "No features yet. Add the first one above, then tick it onto a tier."
-msgstr "لسا ما في مزايا. ضيفي الأولى من فوق، وبعدين أشّريها على باقة."
+msgstr "لسا ما في مزايا. ضيف الأولى من فوق، وبعدين أشّرها على باقة."
 
 #. module: modryn_platform
 #: model_terms:ir.ui.view,arch_db:modryn_platform.plans
@@ -246,6 +249,7 @@ msgstr "ملاحظة (اختياري)"
 #: model:ir.model.fields,field_description:modryn_platform.field_modryn_boutique__note
 #: model:ir.model.fields,field_description:modryn_platform.field_modryn_platform_feature__note
 #: model:ir.model.fields,field_description:modryn_platform.field_modryn_subscription_type__note
+#: model_terms:ir.ui.view,arch_db:modryn_platform.boutique_register
 msgid "Note"
 msgstr "ملاحظة"
 
@@ -277,7 +281,7 @@ msgstr "شو بتشمل هالباقة. بتبيّن لصاحب المنصّة �
 #. module: modryn_platform
 #: model_terms:ir.ui.view,arch_db:modryn_platform.plans
 msgid "Add a feature above before ticking one on here."
-msgstr "ضيفي ميزة من فوق قبل ما تأشّري هون."
+msgstr "ضيف ميزة من فوق قبل ما تأشّر هون."
 
 #. module: modryn_platform
 #: model:ir.model,name:modryn_platform.model_modryn_platform_feature
@@ -305,6 +309,7 @@ msgid "Platform"
 msgstr "المنصّة"
 
 #. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.boutique_register
 #: model_terms:ir.ui.view,arch_db:modryn_platform.login_username_not_email
 #: model_terms:ir.ui.view,arch_db:modryn_platform.platform_account
 #: model_terms:ir.ui.view,arch_db:modryn_platform.platform_login
@@ -314,21 +319,25 @@ msgstr "اسم المستخدم"
 #. module: modryn_platform
 #: model_terms:ir.ui.view,arch_db:modryn_platform.login_username_not_email
 msgid "Enter your username"
-msgstr "اكتبي اسم المستخدم"
+msgstr "اكتب اسم المستخدم"
 
 #. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.boutique_register
 #: model_terms:ir.ui.view,arch_db:modryn_platform.platform_account
 #: model_terms:ir.ui.view,arch_db:modryn_platform.platform_login
 msgid "Phone number"
 msgstr "رقم التلفون"
 
 #. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.boutique_register
 #: model_terms:ir.ui.view,arch_db:modryn_platform.platform_account
 #: model_terms:ir.ui.view,arch_db:modryn_platform.platform_login
 msgid "ID number"
 msgstr "رقم الهوية"
 
 #. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.boutique_register
+#: model_terms:ir.ui.view,arch_db:modryn_platform.platform_account
 #: model_terms:ir.ui.view,arch_db:modryn_platform.platform_login
 msgid "Password"
 msgstr "كلمة السر"
@@ -348,7 +357,7 @@ msgstr "خروج"
 #. odoo-python
 #: code:addons/modryn_platform/controllers/auth.py:0
 msgid "Something is wrong. Check what you entered and try again."
-msgstr "في إشي غلط. افحصي الي كتبتيه وجرّبي كمان مرة."
+msgstr "في إشي غلط. افحص الي كتبته وجرّب كمان مرة."
 
 #. module: modryn_platform
 #: model_terms:ir.ui.view,arch_db:modryn_platform.platform_lang_picker
@@ -364,19 +373,19 @@ msgstr "تطبيق اللغة"
 #. odoo-python
 #: code:addons/modryn_platform/controllers/platform.py:0
 msgid "Please enter the shop's name"
-msgstr "اكتبي اسم المحل"
+msgstr "اكتب اسم المحل"
 
 #. module: modryn_platform
 #. odoo-python
 #: code:addons/modryn_platform/controllers/platform.py:0
 msgid "Please name the feature"
-msgstr "سمّي الميزة"
+msgstr "سمِّ الميزة"
 
 #. module: modryn_platform
 #. odoo-python
 #: code:addons/modryn_platform/controllers/platform.py:0
 msgid "Please name the plan"
-msgstr "سمّي الباقة"
+msgstr "سمِّ الباقة"
 
 #. module: modryn_platform
 #. odoo-python
@@ -433,6 +442,7 @@ msgstr "نوع الاشتراك هاد موجود."
 
 #. module: modryn_platform
 #. odoo-python
+#: code:addons/modryn_platform/controllers/account.py:0
 #: code:addons/modryn_platform/controllers/platform.py:0
 msgid "Those details aren't valid"
 msgstr "هالتفاصيل مش صحيحة"
@@ -475,7 +485,7 @@ msgid ""
 "The tiers you sell, and what each one includes. Add a feature\n"
 "                    once and tick it on as many tiers as it belongs to."
 msgstr ""
-"الباقات الي بتبيعيها، وشو بتشمل كل وحدة. ضيفي ميزة مرة وحدة وأشّريها على كل "
+"الباقات الي بتبيعها، وشو بتشمل كل وحدة. ضيف ميزة مرة وحدة وأشّرها على كل "
 "الباقات الي بتخصها."
 
 #. module: modryn_platform
@@ -585,7 +595,7 @@ msgid ""
 msgstr ""
 "<i class=\"fa fa-building-o\" aria-hidden=\"true\"/>\n"
 "                        <span class=\"strong_\">المحلات</span>\n"
-"                        <span class=\"sub_\">ضيفي محل، غيّري اشتراكه، أو أرشفيه.</span>"
+"                        <span class=\"sub_\">ضيف محل، غيّر اشتراكه، أو أرشفه.</span>"
 
 #. module: modryn_platform
 #: model_terms:ir.ui.view,arch_db:modryn_platform.platform_home
@@ -596,7 +606,7 @@ msgid ""
 msgstr ""
 "<i class=\"fa fa-th-list\" aria-hidden=\"true\"/>\n"
 "                        <span class=\"strong_\">الاشتراكات</span>\n"
-"                        <span class=\"sub_\">الباقات الي بتبيعيها وشو بتشمل كل وحدة.</span>"
+"                        <span class=\"sub_\">الباقات الي بتبيعها وشو بتشمل كل وحدة.</span>"
 
 #. module: modryn_platform
 #: model_terms:ir.ui.view,arch_db:modryn_platform.platform_home
@@ -607,7 +617,7 @@ msgid ""
 msgstr ""
 "<i class=\"fa fa-user-o\" aria-hidden=\"true\"/>\n"
 "                        <span class=\"strong_\">شركتي</span>\n"
-"                        <span class=\"sub_\">تفاصيلك، وكيف بتفوتي.</span>"
+"                        <span class=\"sub_\">تفاصيلك، وكيف بتفوت.</span>"
 
 #. module: modryn_platform
 #. odoo-python
@@ -634,7 +644,7 @@ msgid ""
 "                    </span>"
 msgstr ""
 "<span class=\"modryn_plat_sub\">\n"
-"                        تبعتك، مش تبعت محل.\n"
+"                        تبعك، مش تبع محل.\n"
 "                    </span>"
 
 #. module: modryn_platform
@@ -666,7 +676,7 @@ msgstr "الشركة بدها اسم."
 #. module: modryn_platform
 #: model_terms:ir.ui.view,arch_db:modryn_platform.platform_account
 msgid "How you sign in"
-msgstr "كيف بتفوتي"
+msgstr "كيف بتفوت"
 
 #. module: modryn_platform
 #: model_terms:ir.ui.view,arch_db:modryn_platform.platform_account
@@ -695,7 +705,7 @@ msgstr ""
 #. module: modryn_platform
 #: model_terms:ir.ui.view,arch_db:modryn_platform.platform_account
 msgid "Your password, to confirm"
-msgstr "كلمة السر تبعتك، للتأكيد"
+msgstr "كلمة السر تبعك، للتأكيد"
 
 #. module: modryn_platform
 #: model_terms:ir.ui.view,arch_db:modryn_platform.platform_account
@@ -774,10 +784,164 @@ msgstr "<span class=\"text-muted\">الشركاء</span>"
 #. odoo-python
 #: code:addons/modryn_platform/controllers/account.py:0
 msgid "Set — type to replace"
-msgstr "محدّد — اكتبي عشان تبدّليه"
+msgstr "محدّد — اكتب عشان تبدّله"
 
 #. module: modryn_platform
 #. odoo-python
 #: code:addons/modryn_platform/controllers/account.py:0
 msgid "Not set yet"
 msgstr "لسا ما انحدّد"
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.boutique_register
+msgid "Edit everything"
+msgstr "تعديل كل إشي"
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.boutique_register
+msgid "Save the boutique"
+msgstr "حفظ المحل"
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.boutique_register
+msgid "Another partner"
+msgstr "شريك إضافي"
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.boutique_register
+msgid ""
+"Clear a name to remove that\n"
+"                                                partner. Save, and three more\n"
+"                                                blank rows come back."
+msgstr "امسح الاسم عشان تشيل الشريك. بعد الحفظ بترجع تلات أسطر فاضية."
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.boutique_register
+msgid ""
+"Archive this boutique? It leaves the\n"
+"                                            list and moves into the archive."
+msgstr "تأرشف هالمحل؟ بينزل عن القائمة وبيروح عالأرشيف."
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.boutique_register
+msgid "Yes, archive"
+msgstr "آه، أرشفه"
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.boutique_register
+msgid "Nothing archived."
+msgstr "ما في إشي بالأرشيف."
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.boutique_register
+msgid ""
+"Boutiques that left the list. Restoring one puts it\n"
+"                            back. Deleting one removes MODRYN's record that the\n"
+"                            shop was ever a customer - it does not touch the\n"
+"                            shop's own database, which lives somewhere this\n"
+"                            screen cannot reach."
+msgstr ""
+"محلات نزلت عن القائمة. الاسترجاع بيرجّع المحل. الحذف بيمسح سجل MODRYN إنه "
+"المحل كان زبون — بس ما بيلمس قاعدة بيانات المحل نفسه، الي بمكان هالشاشة ما "
+"بتوصله."
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.boutique_register
+msgid "Delete for good"
+msgstr "حذف نهائي"
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.boutique_register
+msgid ""
+"This cannot be undone. Enter\n"
+"                                                    everything you sign in with."
+msgstr "ما في رجعة عن هاد. اكتب كل إشي بتفوت فيه."
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.platform_account
+msgid ""
+"This cannot be undone. Enter\n"
+"                                                everything you sign in with."
+msgstr "ما في رجعة عن هاد. اكتب كل إشي بتفوت فيه."
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.boutique_register
+msgid "Delete this boutique"
+msgstr "احذف هالمحل"
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.platform_account
+msgid "Who else can get in"
+msgstr "مين كمان بيقدر يفوت"
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.platform_account
+msgid ""
+"<span class=\"modryn_plat_sub\">\n"
+"                        Each person has their own four answers.\n"
+"                    </span>"
+msgstr ""
+"<span class=\"modryn_plat_sub\">\n"
+"                        كل واحد إله أربع إجاباته.\n"
+"                    </span>"
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.platform_account
+msgid "You"
+msgstr "إنت"
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.platform_account
+msgid "Remove"
+msgstr "إزالة"
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.platform_account
+msgid "Remove this person"
+msgstr "شيل هالشخص"
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.platform_account
+msgid "Add someone"
+msgstr "إضافة شخص"
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.platform_account
+msgid "Their name"
+msgstr "اسمه"
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.platform_account
+msgid "Their password"
+msgstr "كلمة السر تبعته"
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.platform_account
+msgid "Add this person"
+msgstr "ضيف هالشخص"
+
+#. module: modryn_platform
+#. odoo-python
+#: code:addons/modryn_platform/controllers/account.py:0
+msgid ""
+"A new person needs a username, a phone number, an ID number and a password."
+msgstr "الشخص الجديد بده اسم مستخدم، رقم تلفون، رقم هوية، وكلمة سر."
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.boutique_register
+msgid ""
+"<i class=\"fa fa-archive\" aria-hidden=\"true\"/>\n"
+"                        Archive"
+msgstr ""
+"<i class=\"fa fa-archive\" aria-hidden=\"true\"/>\n"
+"                        الأرشيف"
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.boutique_register
+msgid "<option value=\"\">-</option>"
+msgstr "<option value=\"\">-</option>"
+
+#. module: modryn_platform
+#: model_terms:ir.ui.view,arch_db:modryn_platform.boutique_register
+msgid "<option value=\"\">—</option>"
+msgstr "<option value=\"\">—</option>"
