@@ -171,6 +171,56 @@
         });
     }
 
+    // One press instead of a select-and-drag on a phone. The button is hidden
+    // in the markup and shown here, so with this file gone the box and the
+    // Open link still work and there is nothing dead to press.
+    //
+    // execCommand FIRST and the clipboard API second, which is the opposite of
+    // the usual advice and is right here: navigator.clipboard needs a secure
+    // context, and a boutique on http://<shop>.localtest.me is not one - a
+    // subdomain does not inherit localhost's exemption. The old call works on
+    // both, so it is the one that gets tried first.
+    function bindShopLink(page) {
+        const box = page.querySelector("#modryn_shop_link");
+        if (!box) {
+            return;
+        }
+        const input = box.querySelector("[data-modryn-link]");
+        const button = box.querySelector("[data-modryn-copy]");
+        if (!input || !button) {
+            return;
+        }
+        button.hidden = false;
+        const label = button.textContent;
+
+        button.addEventListener("click", function () {
+            input.focus();
+            input.select();
+            // iOS ignores select() on a readonly input without this.
+            input.setSelectionRange(0, input.value.length);
+
+            let copied = false;
+            try {
+                copied = document.execCommand("copy");
+            } catch (err) {
+                copied = false;
+            }
+            if (!copied && navigator.clipboard) {
+                navigator.clipboard.writeText(input.value).catch(function () {});
+                copied = true;
+            }
+            if (copied) {
+                // say() reads the word out of the hidden block, the only place
+                // in this file a translator can reach: it cannot import _t and
+                // Odoo does not extract data-* attributes.
+                button.textContent = say(page, "copied", 0);
+                setTimeout(function () {
+                    button.textContent = label;
+                }, 1500);
+            }
+        });
+    }
+
     ready(function () {
         const page = document.getElementById("modryn_dresses_page");
         if (!page) {
@@ -178,5 +228,6 @@
         }
         bindSearch(page);
         bindStock(page);
+        bindShopLink(page);
     });
 })();

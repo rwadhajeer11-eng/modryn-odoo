@@ -113,6 +113,17 @@ class ModrynDresses(ModrynManage):
             'dresses': self._dress_rows(),
             'error': error,
             'active_tab': 'dresses',
+            # THE LINK SHE GIVES OUT. Built from the host this request came in
+            # on, never written down: every boutique is its own subdomain and
+            # the same code serves all of them, so a hardcoded address would be
+            # one shop's address printed on every shop's screen. It also
+            # follows the machine - localtest.me here, the real domain in
+            # production - with nothing to remember to change.
+            #
+            # No language prefix: a bride should land in the shop's own
+            # language, not in whichever one the manager happened to be
+            # reading her own screen in.
+            'shop_url': request.httprequest.url_root.rstrip('/') + '/shop',
         })
 
     # ------------------------------------------------------------- helpers

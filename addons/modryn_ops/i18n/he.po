@@ -1185,17 +1185,6 @@ msgid "From two letters onwards. A kind brings back everything in it."
 msgstr "משתי אותיות והלאה. סוג מחזיר את כל מה שבתוכו."
 
 #. module: modryn_ops
-#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_dresses
-msgid ""
-"<span data-code=\"add\">Add {count} to this size?</span>\n"
-"                <span data-code=\"remove\">Take {count} off this size?</span>\n"
-"                <span data-code=\"same\">That is already the number here.</span>"
-msgstr ""
-"<span data-code=\"add\">להוסיף {count} למידה הזו?</span>\n"
-"                <span data-code=\"remove\">להוריד {count} מהמידה הזו?</span>\n"
-"                <span data-code=\"same\">זה כבר המספר שיש כאן.</span>"
-
-#. module: modryn_ops
 #: model:ir.model.fields,field_description:modryn_ops.field_calendar_event__modryn_visit_rating
 msgid "How the visit went"
 msgstr "איך עברה הפגישה"
@@ -1593,3 +1582,46 @@ msgstr "מה זה היה"
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_sale_line__stock_taken
 msgid "Taken off the rail"
 msgstr "ירדה מהמתלה"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_dresses
+msgid "The link for your customers"
+msgstr "הקישור ללקוחות שלך"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_dresses
+msgid ""
+"This is the page brides see: every dress on your rail, and a\n"
+"                    fitting to book on each one. Send it to her, or put it on\n"
+"                    your page."
+msgstr ""
+"זה העמוד שהכלות רואות: כל שמלה שעל המתלה, ועל כל אחת אפשר לקבוע מדידה. שלחי "
+"לה אותו, או שימי אותו בעמוד שלך."
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_dresses
+msgid "Your shop link"
+msgstr "הקישור לחנות שלך"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_dresses
+msgid "Copy it"
+msgstr "העתקה"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_dresses
+msgid "Open it"
+msgstr "פתיחה"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_dresses
+msgid ""
+"<span data-code=\"copied\">Copied</span>\n"
+"                <span data-code=\"add\">Add {count} to this size?</span>\n"
+"                <span data-code=\"remove\">Take {count} off this size?</span>\n"
+"                <span data-code=\"same\">That is already the number here.</span>"
+msgstr ""
+"<span data-code=\"copied\">הועתק</span>\n"
+"                <span data-code=\"add\">להוסיף {count} למידה הזו?</span>\n"
+"                <span data-code=\"remove\">להוריד {count} מהמידה הזו?</span>\n"
+"                <span data-code=\"same\">זה כבר המספר שיש כאן.</span>"

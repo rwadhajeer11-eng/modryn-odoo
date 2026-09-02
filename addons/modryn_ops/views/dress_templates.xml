@@ -23,6 +23,34 @@
                  in the product and must do nothing on the other ones. -->
             <div id="modryn_dresses_page">
 
+            <!-- THE LINK FOR CUSTOMERS. It belongs on this screen and not on a
+                 screen of its own: this is where she is when she thinks about
+                 what a bride will see, and a link she has to go and look for is
+                 a link she sends from memory and gets wrong.
+
+                 Read-only rather than plain text, so it can be selected in one
+                 gesture on a phone. The Copy button is hidden until the script
+                 shows it - with no JavaScript the box and the Open link still
+                 work, and nobody is left pressing something that does nothing. -->
+            <section id="modryn_shop_link" class="modryn_panel mb-4">
+                <h2 class="h6 mb-1">The link for your customers</h2>
+                <p class="modryn_sub mb-2">
+                    This is the page brides see: every dress on your rail, and a
+                    fitting to book on each one. Send it to her, or put it on
+                    your page.
+                </p>
+                <div class="d-flex gap-2 flex-wrap align-items-center">
+                    <input type="text" readonly="readonly" dir="ltr"
+                           class="form-control" style="max-width: 26rem;"
+                           aria-label="Your shop link"
+                           t-att-value="shop_url" data-modryn-link="1"/>
+                    <button type="button" class="btn btn-outline-dark"
+                            data-modryn-copy="1" hidden="hidden">Copy it</button>
+                    <a t-att-href="shop_url" target="_blank" rel="noopener"
+                       class="btn btn-outline-dark">Open it</a>
+                </div>
+            </section>
+
             <!-- The sentences the confirmation uses, as TEXT so the extractor
                  finds them - this file's script cannot import _t, and Odoo does
                  not extract data-* attributes. {count} is filled in by the
@@ -37,6 +65,11 @@
                      the markup itself had been fixed. The module failed to
                      install with "External ID not found in the system:
                      modryn_ops.n". -->
+                <!-- The word the copy button shows after a copy. IN HERE
+                     and not beside the button: a lone hidden span exports with
+                     its own markup wrapped around it, and the translator is
+                     then handed a tag instead of a word. -->
+                <span data-code="copied">Copied</span>
                 <span data-code="add">Add {count} to this size?</span>
                 <span data-code="remove">Take {count} off this size?</span>
                 <span data-code="same">That is already the number here.</span>
