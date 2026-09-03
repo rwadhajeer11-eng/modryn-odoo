@@ -81,6 +81,16 @@ test('act 3c — a complete booking takes the slot off the grid @writes', async 
   await page.locator('select[name="slot"]').selectOption(chosen);
   await page.fill('input[name="name"]', 'QA Bride');
   await page.fill('input[name="phone"]', qaPhone());
+  // WHO IS COMING, when the boutique has written a list to choose from. The
+  // list is per-boutique and may be empty, which is why this is conditional
+  // rather than a fill: a shop that has not written one is not asked, and a
+  // spec that always answered would be asserting a question that is not there.
+  const who = page.locator('select[name="customer_kind"]');
+  if (await who.count()) {
+    const options = (await who.locator('option').evaluateAll(
+      (os) => os.map((o) => o.value))).filter(Boolean);
+    await who.selectOption(options[0]);
+  }
   await page.locator('input[name="terms"]').check();
   await submitFormWith(page, 'slot');
 

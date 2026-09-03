@@ -1,411 +1,275 @@
-# A boutique with a past, so every screen has something real on it.
-#
-# The other seeders build a boutique that has just opened: staff, a few dresses,
-# an empty diary. That is the right starting point for the demo and the wrong one
-# for LOOKING at the product, because half these screens only say anything once
-# the shop has been trading for a month. Reports on an empty diary is a page of
-# zeroes; the workshop with no tasks is an empty column; hours worked with no
-# attendance is "nothing recorded yet" for everybody.
-#
-# So this fills in a MONTH BEHIND: appointments that were kept, sold and missed,
-# alteration work at every stage, shifts people actually stood, and a checklist
-# the shop runs every morning.
-#
-#   MODRYN_SLUG=qa ./odoo/odoo-bin shell -c odoo.conf -d qa \
-#       --db-filter='^qa$' --no-http < scripts/seed_playground.py
-#
-# IDEMPOTENT, and that is not a nicety here: it is meant to be run again after a
-# browser suite has churned the tenant. Everything it makes is found by name or
-# by date first, and topped up only if it is thin - so running it twice does not
-# double the month's takings and make the reports lie.
-#
-# NEVER on bella or noga. Those two are asserted by verify.sh down to their
-# opening-hours rows, and a seeder that adds a month of trading to them turns the
-# gate red in a way that is very hard to tell from a real regression. The guard
-# below refuses rather than trusting whoever typed the command.
+# -*- coding: utf-8 -*-
+"""Fill the playground so every screen has something on it.
 
-import os
-import random
-from datetime import date, datetime, time, timedelta
+WHAT THIS IS FOR. `qa` is the tenant meant to be clicked around, and half its
+screens were empty — not broken, just never filled in: no kinds of dress worth
+filtering by, nobody allowed to book, no booking hours, no discount codes, no
+fitting rooms, no announcement, one sale. A screen with nothing on it teaches
+nothing about whether it works.
 
-SLUG = os.environ.get('MODRYN_SLUG', '')
+NOT bella AND NOT noga. verify.sh asserts their seeded state down to the
+opening-hours rows, and adding a row to either turns the gate red in a way that
+looks like a regression and is not. This script refuses to run anywhere else.
 
-PROTECTED = ('bella', 'noga')
-if SLUG in PROTECTED:
-    raise SystemExit(
-        "refusing to run on %r: verify.sh asserts that tenant's seeded state "
-        "down to its opening hours, and a month of invented trading there is "
-        "indistinguishable from a regression. Use the qa tenant." % SLUG)
+IDEMPOTENT. Every block looks before it writes, so running it twice adds
+nothing and running it after a change tops up only what is missing.
 
-# One seed, so a second run against a fresh database produces the same shop.
-# Anybody comparing two screenshots a week apart should be reading a change they
-# made, not the dice.
-random.seed(20260831)
+    ./odoo/odoo-bin shell -c odoo.conf -d qa --no-http < scripts/seed_playground.py
+"""
+import datetime
 
-Employee = env['hr.employee'].sudo()
-Product = env['product.template'].sudo()
-Event = env['calendar.event'].sudo()
-Task = env['modryn.alteration.task'].sudo()
-Piece = env['modryn.garment.piece'].sudo()
-Attendance = env['modryn.shift.attendance'].sudo()
-Checklist = env['modryn.task.template'].sudo()
-
-TODAY = date.today()
-made = {}
+DB = env.cr.dbname
+assert DB == 'qa', (
+    "This fills a playground and only a playground. bella and noga are asserted "
+    "by verify.sh; %r is not qa." % DB)
 
 
-def note(what, n):
-    made[what] = made.get(what, 0) + n
+def say(what, count):
+    print('  %-32s %s' % (what, count))
 
 
-# --------------------------------------------------------------- the people
-staff = Employee.search([('modryn_level', 'in', ('owner', 'manager', 'staff'))])
-if not staff:
-    raise SystemExit("no staff on this tenant - run scripts/seed_staff.py first")
-sellers = staff.filtered(lambda e: e.modryn_level != 'owner') or staff
-
-# --------------------------------------------------------------- the rail
-# A rail worth looking at. The catalogue seeder ships three; a boutique with
-# three dresses tells you nothing about how the picker behaves when a
-# saleswoman types two letters and gets a list back.
-GOWNS = [
-    ("שמלת כלה אביגיל", 9800.0, {'36': 2, '38': 1, '40': 1}),
-    ("שמלת כלה תמר", 11200.0, {'34': 1, '36': 2, '38': 0}),
-    ("שמלת כלה שירה", 7400.0, {'36': 3, '38': 2, '40': 1}),
-    ("שמלת כלה מיכל", 13900.0, {'36': 1, '38': 1}),
-    ("שמלת ערב ליאור", 3800.0, {'34': 2, '36': 2, '38': 1}),
-    ("שמלת ערב דנה", 4600.0, {'36': 1, '38': 3}),
-    ("שמלת כלה רותם", 8200.0, {'38': 2, '40': 2}),
-    ("שמלת ערב הילה", 5100.0, {'34': 1, '36': 1, '38': 1}),
+# ============================================================ kinds of dress
+# Three languages on each, because the filter on /shop prints these to a bride
+# and the boutique's own list is the only place those words exist.
+KINDS = [
+    ('Princess', 'נסיכה', 'أميرة', False),
+    ('Mermaid', 'מרמייד', 'حورية', False),
+    ('A-line', 'גזרת A', 'قصة A', False),
+    ('Simple', 'עדינה', 'بسيطة', False),
+    ('Modest', 'צנועה', 'محتشمة', False),
+    ('Evening', 'ערב', 'سهرة', False),
+    ('Veil', 'הינומה', 'طرحة', True),
+    ('Jewellery', 'תכשיט', 'إكسسوار', True),
 ]
-size_attr = env['product.attribute'].sudo().search([('name', 'ilike', 'מידה')], limit=1)
-for name, price, sizes in GOWNS:
-    if Product.with_context(active_test=False).search_count([('name', '=', name)]):
-        continue
-    values = {
-        'name': name,
-        'type': 'consu',
-        'is_storable': True,
-        'list_price': price,
-        'is_published': True,
+Kind = env['modryn.dress.type']
+made = 0
+for en, he, ar, accessory in KINDS:
+    kind = Kind.with_context(active_test=False).search(
+        ['|', ('name', '=ilike', en), ('name', '=ilike', he)], limit=1)
+    if not kind:
+        kind = Kind.create({'name': en, 'is_accessory': accessory,
+                            'sequence': 10 + KINDS.index((en, he, ar, accessory))})
+        made += 1
+    # ALL THREE, even for a kind that already existed. The two qa started with
+    # were typed in Hebrew and had Hebrew sitting in the en_US slot as well —
+    # so an Arabic-reading bride read Hebrew, and the round-robin below, which
+    # looks kinds up by their English name, could not find them at all.
+    kind.with_context(lang='en_US').name = en
+    kind.with_context(lang='he_IL').name = he
+    kind.with_context(lang='ar_001').name = ar
+say('kinds of dress (new)', made)
+
+# Every published thing gets one. A rail where five of thirteen can be filtered
+# is a filter that looks broken.
+Template = env['product.template']
+by_word = {}
+for kind in Kind.search([]):
+    by_word[kind.with_context(lang='en_US').name.lower()] = kind
+GUESS = [
+    ('veil', 'veil'), ('הינומה', 'veil'),
+    ('belt', 'jewellery'), ('חגורת', 'jewellery'), ('סרט', 'jewellery'),
+    ('glove', 'jewellery'), ('כפפות', 'jewellery'),
+    ('ערב', 'evening'),
+]
+# The bridal cuts, in turn. A rail where every gown is a princess makes the
+# filter look broken the first time somebody tries it: one tick and nothing
+# changes. Spreading them means every kind on the list finds something.
+CUTS = ['princess', 'mermaid', 'a-line', 'simple', 'modest']
+placed = 0
+turn = 0
+for tmpl in Template.search([('is_published', '=', True),
+                             ('modryn_type_id', '=', False)], order='id'):
+    name = (tmpl.name or '').lower()
+    word = next((k for needle, k in GUESS if needle in name), None)
+    if word is None:
+        word = CUTS[turn % len(CUTS)]
+        turn += 1
+    kind = by_word.get(word)
+    if kind:
+        tmpl.modryn_type_id = kind.id
+        placed += 1
+say('dresses given a kind', placed)
+
+# The old seed called every accessory a veil, so the jewellery kind had nothing
+# and the filter hid it - a kind on the boutique's list that a bride can never
+# see is worse than not having it.
+veil = by_word.get('veil')
+jewellery = by_word.get('jewellery')
+moved = 0
+if veil and jewellery:
+    for tmpl in Template.search([('modryn_type_id', '=', veil.id)]):
+        name = (tmpl.name or '')
+        if any(word in name for word in ('חגורת', 'סרט', 'כפפות', 'belt',
+                                         'ribbon', 'glove')):
+            tmpl.modryn_type_id = jewellery.id
+            moved += 1
+say('accessories moved off the veil', moved)
+
+# ============================================================= who may book
+VISITORS = [
+    ('A bride', 'כלה', 'عروس', 'The one wearing it'),
+    ("A bride's sister", 'אחות של כלה', 'أخت العروس', ''),
+    ('Mother of the bride', 'אמא של הכלה', 'أم العروس', ''),
+    ('An evening dress', 'שמלת ערב', 'فستان سهرة', 'Not a wedding'),
+]
+Visitor = env['modryn.customer.kind']
+made = 0
+for index, (en, he, ar, note) in enumerate(VISITORS):
+    who = Visitor.with_context(active_test=False).search(
+        ['|', ('name', '=ilike', en), ('name', '=ilike', he)], limit=1)
+    if not who:
+        who = Visitor.create({'name': en, 'note': note,
+                              'sequence': 10 + index * 10})
+        made += 1
+    who.with_context(lang='he_IL').name = he
+    who.with_context(lang='ar_001').name = ar
+say('who may book (new)', made)
+
+# =========================================================== booking hours
+# A week a real boutique could have: ordinary days two an hour, Thursday
+# evening busier, Friday morning only, Saturday shut. Written only when the
+# grid is empty, so a week set by hand is never overwritten.
+Queue = env['modryn.queue.hour']
+if not Queue.search_count([]):
+    WEEK = {
+        '6': [(10, 2), (11, 2), (12, 2), (13, 1), (14, 1), (15, 2), (16, 2), (17, 2)],
+        '0': [(10, 2), (11, 2), (12, 2), (13, 1), (14, 1), (15, 2), (16, 2), (17, 2)],
+        '1': [(10, 2), (11, 2), (12, 2), (13, 1), (14, 1), (15, 2), (16, 2), (17, 2)],
+        '2': [(10, 2), (11, 2), (12, 2), (13, 1), (14, 1), (15, 2), (16, 2), (17, 2)],
+        '3': [(10, 2), (11, 2), (12, 2), (13, 1), (14, 1), (15, 2), (16, 2),
+              (17, 3), (18, 3), (19, 3), (20, 2)],
+        '4': [(9, 2), (10, 2), (11, 2), (12, 1)],
     }
-    if size_attr:
-        values['attribute_line_ids'] = [(0, 0, {
-            'attribute_id': size_attr.id,
-            'value_ids': [(6, 0, [
-                env['product.attribute.value'].sudo().search([
-                    ('attribute_id', '=', size_attr.id), ('name', '=', s),
-                ], limit=1).id or
-                env['product.attribute.value'].sudo().create({
-                    'attribute_id': size_attr.id, 'name': s,
-                }).id for s in sizes
-            ])],
-        })]
-    tmpl = Product.create(values)
-    # Stock per size, so "sold out" is a real state on the finish picker and not
-    # something only the code has ever seen.
-    #
-    # modryn_stock, NOT Odoo's warehouse quantity. The rail is the boutique's
-    # own count on the variant - the owner types it into the Dresses screen and
-    # every reader here (the screen, the finish picker, the storefront's
-    # sold-out badge) asks that field. The first pass filled stock.quant
-    # instead, which is Odoo's inventory and something nothing in this product
-    # reads: qty_available came back 2/1/1 and every screen still said "this
-    # size has gone".
-    for variant in tmpl.product_variant_ids:
-        label = variant.product_template_attribute_value_ids[:1].name or '36'
-        variant.modryn_stock = sizes.get(label, 0)
-    note('gowns', 1)
+    rows = 0
+    for weekday, hours in WEEK.items():
+        for hour, how_many in hours:
+            Queue.create({'weekday': weekday, 'hour': float(hour),
+                          'how_many': how_many})
+            rows += 1
+    say('booking-hour rows', rows)
+else:
+    say('booking-hour rows (kept)', Queue.search_count([]))
 
-# --------------------------------------------------------- what the shop runs
-MORNINGS = [
-    ("לפתוח את התריסים ולהדליק את התאורה", 1),
-    ("לבדוק שכל חדרי המדידה נקיים", 1),
-    ("לעבור על התורים של היום", 1),
-    ("לבדוק שהקיטור עובד", 2),
+# Friday morning has to be OPEN as well, or the front page says shut on a day
+# the booking grid sells.
+Hours = env['modryn.opening.hours']
+if not Hours.with_context(active_test=False).search_count([('weekday', '=', '4')]):
+    Hours.create({'weekday': '4', 'start_hour': 9.0, 'end_hour': 13.0})
+    say('Friday opening window', 'added')
+
+# ============================================================ discount codes
+CODES = [
+    ('BRIDE10', 10, 'The autumn fair'),
+    ('SISTER5', 5, 'A sister of a bride we dressed'),
+    ('STAFF20', 20, 'Family and staff'),
 ]
-for label, order in MORNINGS:
-    if not Checklist.with_context(active_test=False).search_count(
-            [('name', '=', label)]):
-        Checklist.create({'name': label, 'sequence': order})
-        note('checklist items', 1)
+Code = env['modryn.discount.code']
+made = 0
+for word, percent, note in CODES:
+    if not Code.with_context(active_test=False).search_count([('code', '=ilike', word)]):
+        Code.create({'code': word, 'percent': percent, 'note': note})
+        made += 1
+say('discount codes (new)', made)
 
-# ------------------------------------------------------ a month of trading
-# Appointments that already happened, with outcomes on them. This is what the
-# reports screen reads: without closed visits carrying a price it can only ever
-# show zero, which reads as the page being broken rather than as the shop being
-# new.
-OUTCOMES = (['sold'] * 5) + (['not_sold'] * 3) + ['no_show']
-existing_past = Event.search_count([
-    ('modryn_is_booking', '=', True),
-    ('modryn_outcome', '!=', False),
-])
-if existing_past < 25:
-    for days_ago in range(1, 29):
-        day = TODAY - timedelta(days=days_ago)
-        if day.weekday() == 4:          # Friday: the shop is shut
-            continue
-        for hour in (11, 14, 17):
-            if random.random() > 0.55:
-                continue
-            start = datetime.combine(day, time(hour=hour - 3))   # local -> UTC
-            if Event.search_count([
-                    ('modryn_is_booking', '=', True), ('start', '=', start)]):
-                continue
-            who = random.choice(sellers)
-            outcome = random.choice(OUTCOMES)
-            event = Event.create({
-                'name': random.choice([
-                    "נועה כהן", "מאיה לוי", "שירה אברהם", "יעל מזרחי",
-                    "תמר בן דוד", "רותם פרץ", "הילה שמש", "דנה אזולאי",
-                ]),
-                'start': start,
-                'stop': start + timedelta(hours=1),
-                'modryn_is_booking': True,
-                'modryn_customer_phone': '+9725%08d' % random.randint(0, 99999999),
-                'modryn_employee_id': who.id,
-            })
-            # WHICH gown, when one was sold. The sales history reads this - a
-            # sale with a price and no dress answers "how much" and not "what",
-            # which is half the question a bride asks three years later.
-            gown = random.choice(GOWNS)[0] if outcome == 'sold' else ''
-            event.write({
-                'modryn_sale_items': gown,
-                'modryn_outcome': outcome,
-                'modryn_outcome_at': start + timedelta(hours=1),
-                'modryn_outcome_by_id': who.id,
-                'modryn_sale_amount': (
-                    round(random.uniform(4000, 13000), -2) if outcome == 'sold' else 0.0),
-                'modryn_visit_rating': random.choice([0, 3, 4, 4, 5, 5]),
-            })
-            note('past appointments', 1)
+# ============================================================= fitting rooms
+ROOMS = [('Room 1', 'חדר 1'), ('Room 2', 'חדר 2'), ('The big room', 'החדר הגדול')]
+Room = env['modryn.fitting.room']
+made = 0
+for index, (en, he) in enumerate(ROOMS):
+    if not Room.with_context(active_test=False).search_count(
+            ['|', ('name', '=ilike', en), ('name', '=ilike', he)]):
+        Room.create({'name': he, 'sequence': 10 + index * 10})
+        made += 1
+say('fitting rooms (new)', made)
 
-# -------------------------------------------------- a diary that points forward
-# The block above is everything that already HAPPENED, because that is what the
-# reports read. It leaves every screen about what happens NEXT empty: today's
-# list, "coming later" on the floor, and the shift supervisor's arrival panel,
-# which cannot say anything without a bride due inside the quarter hour.
-#
-# Nothing here carries an outcome. These have not happened yet, and writing one
-# on a future appointment would put takings in the month's figures for a visit
-# nobody has had - the reports would count a sale that has not been made.
-BOOKED = [
-    "אורית שרון", "ליאור דהן", "מיכל ברק", "עדי נחום", "שני גולן",
-    "רוני אלמוג", "טל ביטון", "אביגיל רון", "נטע חדד", "סיון מור",
-]
-# The SHOP's date, not the machine's. The boutique runs three hours ahead of
-# UTC, so for those three hours either side of midnight date.today() is still
-# yesterday in the shop - and the dense day, the one that makes the arrival
-# panel say anything, would be seeded entirely into the past.
-local_today = (datetime.now() + timedelta(hours=3)).date()
-ahead = Event.search_count([
-    ('modryn_is_booking', '=', True),
-    ('start', '>', datetime.now()),
-    ('modryn_cancelled_at', '=', False),
-])
-if ahead < 20:
-    for days_ahead in range(0, 14):
-        day = local_today + timedelta(days=days_ahead)
-        if day.weekday() == 4:          # Friday: the shop is shut
-            continue
-        # TODAY is seeded every half hour across the working day, and the rest
-        # of the fortnight is seeded the way a boutique actually books - four or
-        # five fittings, spread. The dense day is not decoration: the arrival
-        # panel only says anything about the next fifteen minutes, so a diary
-        # that jumps from eleven to two shows an empty panel for most of the
-        # afternoon and reads as a feature that does not work.
-        if days_ahead == 0:
-            slots = [(h, m) for h in range(10, 19) for m in (0, 30)]
-        else:
-            slots = [(11, 0), (12, 30), (14, 0), (16, 0), (17, 30)]
-            slots = random.sample(slots, random.randint(3, 5))
-        for hour, minute in sorted(slots):
-            start = datetime.combine(day, time(hour=hour - 3, minute=minute))
-            # An hour that has already gone is not a booking to come. Seeding
-            # one would leave a visit nobody can ever close, and the reports
-            # count exactly those - "still to close" would climb by ten every
-            # time this ran in the afternoon.
-            if start <= datetime.now():
-                continue
-            if Event.search_count([
-                    ('modryn_is_booking', '=', True), ('start', '=', start)]):
-                continue
-            Event.create({
-                'name': random.choice(BOOKED),
-                'start': start,
-                'stop': start + timedelta(hours=1),
-                'modryn_is_booking': True,
-                'modryn_customer_phone': '+9725%08d' % random.randint(0, 99999999),
-                # Some are spoken for and some are not, which is the state a
-                # supervisor's screen is actually for: an unclaimed fitting is
-                # the one she has to hand to somebody.
-                'modryn_employee_id': random.choice(sellers).id
-                if random.random() < 0.6 else False,
-            })
-            note('appointments to come', 1)
+# ============================================================== a closure
+Closure = env['modryn.closure']
+if not Closure.with_context(active_test=False).search_count([]):
+    first = datetime.date.today() + datetime.timedelta(days=21)
+    Closure.create({'name': 'ראש השנה', 'date_from': first,
+                    'date_to': first + datetime.timedelta(days=1),
+                    'full_day': True})
+    say('closure', 'one, three weeks out')
 
-# ------------------------------------------------------------- the floor
-# The board the shop stares at all day, and the seeder never put a single row on
-# it. It looked alive only because the browser suite leaves its brides behind -
-# so the most-used screen in the product was reading "QA Walkin 1446" thirty
-# times over, and tidying the litter away would have emptied it completely.
-#
-# TWO ARE BEING HELD, and that is the point of seeding this at all. The shift
-# supervisor's screen answers "who has whom", and with nobody held it is a
-# heading over white space: the panel cannot be judged, and neither can the
-# controls that take a customer off a worker or hand her to another.
-#
-# The rest is the shape of a real morning: some waiting, some finished, and the
-# finished ones carrying what came of the visit - a gown and a price, or a
-# polite no. Those are what the sales history reads on the walk-in side; without
-# them that screen only ever finds appointments and half of it is untested by
-# eye.
-FLOOR_WAITING = [
-    ("חן ליבנה", 'bride', "האמא מגיעה ב-16:00"),
-    ("אפרת סבן", 'bride', ""),
-    ("מור יעקובי", 'evening', "מחפשת שמלת ערב, לא כלה"),
-    ("ספיר אוחיון", 'bride', ""),
-    ("לינוי טל", 'bride', "רגישה לסיכות של ההינומה"),
-    ("גל אשכנזי", 'evening', ""),
-]
-FLOOR_HELD = [("ריקי דוד", 'bride'), ("אלין חזן", 'bride')]
-FLOOR_DONE = [
-    ("שקד ניסים", 'sold', 5),
-    ("יובל קדוש", 'sold', 4),
-    ("אודליה בר", 'not_sold', 3),
-    ("נופר גבאי", 'sold', 5),
-    ("רעות שלו", 'not_sold', 0),
-    ("ליטל עמר", 'sold', 4),
-]
-Queue = env['modryn.queue.entry'].sudo()
-phone_seq = 7300000
-
-
-OPEN = ('waiting', 'called')
-
-
-def _walkin(name, kind, state, hint=''):
-    """One walk-in, or nothing if she is already there.
-
-    Found by NAME rather than topped up by count: the board is churned by every
-    browser run, so a count guard would re-add these on some runs and not on
-    others, and the same bride would appear twice.
-
-    But WHICH rows count as "already there" depends on what she is for, and
-    getting this wrong emptied the board once already:
-
-    - A bride who is meant to be WAITING or BEING HELPED is furniture. The
-      browser suite takes her, finishes her, and walks off - four of six were
-      gone after two runs - so she is looked for among the OPEN rows only, and
-      a consumed one is replaced. The closed row stays where it is; a bride who
-      came in twice is a Tuesday, not a bug.
-    - A FINISHED one is history. She is looked for by name in any state, because
-      re-adding her would invent a second visit and the reports would count it.
-    """
-    global phone_seq
-    phone_seq += 1
-    domain = [('name', '=', name)]
-    if state in OPEN:
-        domain.append(('state', 'in', OPEN))
-    if Queue.with_context(active_test=False).search_count(domain):
-        return None
-    return Queue.create({
-        'name': name,
-        'phone': '+97259%06d' % phone_seq,
-        'client_type': kind,
-        'state': state,
-        'staff_note': hint or False,
+# ============================================================ an announcement
+Announcement = env['modryn.announcement']
+if not Announcement.search_count([]):
+    author = env['hr.employee'].search([('name', 'ilike', 'owner')], limit=1) \
+        or env['hr.employee'].search([], limit=1)
+    Announcement.create({
+        'body': 'שישי הקרוב פתוחות עד 13:00. מי שיכולה להישאר לסידור הרף '
+                'אחרי הסגירה — תודיע לי.',
+        'author_id': author.id if author else False,
+        'author_name': author.name if author else '',
     })
+    say('announcement', 'one')
 
+# ================================================================== sales
+# The owner's "dresses sold" screen searches by name, and her reports count
+# months. One sale answers neither. Written only when there is almost nothing,
+# so a real till session is never buried under invented ones.
+Sale = env['modryn.sale']
+if Sale.search_count([]) < 4:
+    import random
 
-# `hint`, not `note`: the file's own note() counter is a module-level function,
-# and a loop variable called note shadows it for the rest of the run.
-for name, kind, hint in FLOOR_WAITING:
-    if _walkin(name, kind, 'waiting', hint) is not None:
-        note('walk-ins waiting', 1)
-
-# Held BY somebody: a stint with no stylist on it is not what the supervisor's
-# screen is about, and an empty "assigned to" would read as the panel being
-# broken rather than as the floor being quiet.
-for i, (name, kind) in enumerate(FLOOR_HELD):
-    entry = _walkin(name, kind, 'called')
-    if entry is not None:
-        entry.write({'modryn_employee_id': sellers[i % len(sellers)].id})
-        note('walk-ins being helped', 1)
-
-for name, outcome, rating in FLOOR_DONE:
-    entry = _walkin(name, 'bride', 'done')
-    if entry is None:
-        continue
-    values = {'modryn_outcome': outcome, 'modryn_visit_rating': rating}
-    # WHICH gown, when one was sold. The sales history reads this: a walk-in
-    # sale with no dress on it answers "how much" and not "what", which is the
-    # half a bride asks about three years later.
-    if outcome == 'sold' and 'modryn_variant_id' in Queue._fields:
-        variant = env['product.product'].sudo().search(
-            [('product_tmpl_id.is_published', '=', True)], limit=1,
-            offset=random.randint(0, 4))
-        if variant:
-            values['modryn_variant_id'] = variant.id
-    entry.write(values)
-    note('walk-ins finished', 1)
-
-# ------------------------------------------------------------- the workshop
-# One task in every state, so the columns are not three empty headings.
-seamstress = staff.filtered(
-    lambda e: any('תופרת' in (r.name or '') for r in e.modryn_role_ids))
-seamstress = seamstress[:1] or sellers[:1]
-pieces = Piece.search([], limit=3)
-WORK = [
-    ("נועה כהן", 'intake', '2', "לקצר 4 ס\"מ"),
-    ("מאיה לוי", 'in_progress', '1', "להצר במותן"),
-    ("שירה אברהם", 'ready', '1', "מוכן לאיסוף"),
-    ("יעל מזרחי", 'delivered', '0', "נמסר"),
-    ("תמר בן דוד", 'in_progress', '2', "דחוף — החתונה בשבת"),
-]
-for customer, state, priority, text in WORK:
-    if Task.with_context(active_test=False).search_count(
-            [('customer_name', '=', customer)]):
-        continue
-    Task.create({
-        'customer_name': customer,
-        'customer_phone': '+9725%08d' % random.randint(0, 99999999),
-        'state': state,
-        'priority': priority,
-        'note': text,
-        'due_date': TODAY + timedelta(days=random.randint(2, 20)),
-        'seamstress_id': seamstress.id if seamstress else False,
-        'piece_ids': [(6, 0, pieces[:2].ids)] if pieces else False,
-    })
-    note('alteration tasks', 1)
-
-# --------------------------------------------------------- hours on the floor
-# Four weeks of shifts for everybody, so "hours worked" has months to choose
-# between and a total worth reading.
-for employee in staff:
-    for days_ago in range(1, 29):
-        day = TODAY - timedelta(days=days_ago)
-        if day.weekday() in (4, 5):
-            continue
-        if random.random() > 0.6:
-            continue
-        started = datetime.combine(day, time(hour=6))       # 09:00 local
-        if Attendance.search_count([
-                ('employee_id', '=', employee.id), ('started_at', '=', started)]):
-            continue
-        Attendance.create({
-            'employee_id': employee.id,
-            'started_at': started,
-            'ended_at': started + timedelta(hours=random.choice([5, 6, 7, 8, 8, 9])),
-        })
-        note('shifts stood', 1)
+    seller = env['hr.employee'].search([], limit=1)
+    # GOWNS, not the first twenty variants on the rail. Sorted by price, the
+    # first twenty are belts and gloves, and a month's takings that read 240
+    # shekels teaches nothing about the report that prints them.
+    variants = env['product.product'].search(
+        [('product_tmpl_id.is_published', '=', True),
+         ('product_tmpl_id.modryn_is_accessory', '=', False)],
+        order='list_price desc', limit=20)
+    BRIDES = [
+        ('מירב כהן', '050-1112233'),
+        ('נור אבו-חסן', '052-2223344'),
+        ('שירה לוי', '054-3334455'),
+        ('רים חדאד', '053-4445566'),
+    ]
+    made = 0
+    for index, (name, phone) in enumerate(BRIDES):
+        if not variants:
+            break
+        variant = variants[index % len(variants)]
+        price = variant.list_price or 4200.0
+        values = {
+            'customer_name': name,
+            'customer_phone': phone,
+            'employee_id': seller.id if seller else False,
+            'line_ids': [(0, 0, {
+                'variant_id': variant.id,
+                'description': variant.product_tmpl_id.name,
+                'price': price,
+            })],
+        }
+        # One of the four bought with a code, one with a hand-typed discount,
+        # two at full price - so the tracking screen has all three shapes on it.
+        if index == 0:
+            values.update(discount_kind='percent', discount_value=10.0,
+                          discount_reason='BRIDE10')
+        elif index == 1:
+            values.update(discount_kind='amount', discount_value=300.0,
+                          discount_reason='אחות של כלה שקנתה אצלנו')
+        if index == 2:
+            values.update(altered=True,
+                          alteration_note='לקצר את השובל ולהצר במותן')
+        Sale.create(values)
+        made += 1
+    say('sales written', made)
 
 env.cr.commit()
 
-print("")
-print("  the playground is stocked:")
-for what in sorted(made):
-    print("     %-22s %s" % (what, made[what]))
-if not made:
-    print("     nothing to add - it was already stocked")
-print("")
+print('\nwhat the playground holds now:')
+for label, model in (
+        ('dresses published', 'product.template'),
+        ('kinds of dress', 'modryn.dress.type'),
+        ('who may book', 'modryn.customer.kind'),
+        ('booking-hour rows', 'modryn.queue.hour'),
+        ('opening windows', 'modryn.opening.hours'),
+        ('discount codes', 'modryn.discount.code'),
+        ('fitting rooms', 'modryn.fitting.room'),
+        ('closures', 'modryn.closure'),
+        ('announcements', 'modryn.announcement'),
+        ('sales', 'modryn.sale')):
+    domain = [('is_published', '=', True)] if model == 'product.template' else []
+    say(label, env[model].with_context(active_test=False).search_count(domain))
