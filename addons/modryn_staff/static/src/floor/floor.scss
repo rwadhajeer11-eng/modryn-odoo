@@ -1462,6 +1462,88 @@
     font-variant-numeric: tabular-nums;
 }
 
+// The month. Fixed cells rather than content-sized ones: a calendar whose
+// columns move when one day happens to hold a two-digit number stops reading
+// as a calendar.
+.modryn_month {
+    table-layout: fixed;
+
+    thead th {
+        font-size: .8rem;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+}
+
+.modryn_month_day {
+    display: block;
+    min-height: 3.4rem;
+    padding: .35rem .4rem;
+    border: 1px solid rgba(0, 0, 0, .08);
+    border-radius: 6px;
+    text-align: center;
+    text-decoration: none;
+    color: inherit;
+
+    &:hover { border-color: $modryn-gold; }
+
+    // Its own hours. The one thing on this screen a manager cannot work out by
+    // looking: two identical-looking days, one of which will follow a change
+    // to the week and one of which will not.
+    &.is_own {
+        border-color: $modryn-gold;
+        background: rgba(201, 162, 39, .12);
+    }
+
+    &.is_today { font-weight: 700; }
+
+    &.is_chosen {
+        outline: 2px solid $modryn-gold;
+        outline-offset: 1px;
+    }
+
+    &.is_past {
+        opacity: .45;
+        border-style: dashed;
+    }
+}
+
+.modryn_month_num {
+    display: block;
+    font-variant-numeric: tabular-nums;
+}
+
+.modryn_month_seats {
+    display: block;
+    font-size: .8rem;
+    color: $modryn-ink-muted;
+    font-variant-numeric: tabular-nums;
+
+    &.is_shut { opacity: .5; }
+}
+
+// One day's twenty-four boxes. A wrapping row rather than a table: there is
+// only one column of numbers here, and a 24-row table for it is a long scroll
+// for something that fits on two lines.
+// A GRID and not a wrapping row. Twenty-four boxes on a flex row broke as
+// twenty and four, and the four orphans read as a second, different thing
+// rather than the tail of the same list. Even columns keep it one object.
+.modryn_dayhours {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(4.2rem, 1fr));
+    gap: .4rem;
+}
+
+.modryn_dayhour {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: .15rem;
+    font-size: .75rem;
+    color: $modryn-ink-muted;
+    font-variant-numeric: tabular-nums;
+}
+
 .modryn_queue_grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(9.5rem, 1fr));

@@ -98,6 +98,14 @@ class HrEmployee(models.Model):
     # server restart with its meaning intact, which a session flag would not.
     modryn_on_shift_since = fields.Datetime(readonly=True, copy=False)
 
+    # Her own birthday, not Odoo's hr `birthday`: this install carries a slim
+    # hr with no such column, the same reason modryn_id_number and modryn_gender
+    # exist beside it.
+    modryn_birthday = fields.Date(
+        string="Date of birth",
+        help="So the boutique knows when to wish her a happy one.",
+    )
+
     modryn_gender = fields.Selection(
         selection=[('female', "Female"), ('male', "Male"), ('other', "Prefer not to say")],
         string="Gender")

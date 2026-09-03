@@ -1,3 +1,5 @@
+from werkzeug.urls import url_quote
+
 from odoo import _, http
 from odoo.http import request
 from odoo.tools.translate import LazyTranslate
@@ -73,13 +75,25 @@ class ModrynOpsTasks(http.Controller):
 
     # ---------------------------------------------------- owner: checklists
     @http.route('/manage/checklists', type='http', auth='user', website=True, sitemap=False)
-    def checklists(self, error=None, **kw):
+    def checklists(self, error=None, edit=None, confirm=None, **kw):
         if not access.can_view('checklists'):
             return request.not_found()
         templates = request.env['modryn.task.template'].sudo().with_context(
             active_test=False).search([])
+
+        # Two sub-states of the same page, both server-rendered: the row she
+        # pressed Edit on becomes a form in place, and the row she pressed
+        # Delete on asks the question in words. Neither is a browser dialog,
+        # because a dialog here is a JavaScript string no .po file can reach.
+        def one(value):
+            if value and str(value).isdigit():
+                return templates.filtered(lambda t: t.id == int(value))
+            return templates.browse()
+
         return request.render('modryn_ops.manage_checklists', {
             'templates': templates,
+            'editing': one(edit),
+            'confirming': one(confirm),
             'error': error,
             'active_tab': 'checklists',
         })
@@ -96,18 +110,85 @@ class ModrynOpsTasks(http.Controller):
         if Template.with_context(active_test=False).search_count([('name', '=ilike', name)]):
             return request.redirect(
                 '/manage/checklists?error=%s' % _("That checklist item already exists"))
-        kind = post.get('kind') if post.get('kind') in ('opening', 'closing') else 'opening'
-        # The form posts "11:30"; the model stores wall-clock hours as a float.
+        kind = self._checklist_kind(post)
+        Template.create({'name': name, 'kind': kind,
+                         'due_hour': self._checklist_hour(post, kind)})
+        return request.redirect('/manage/checklists')
+
+    @staticmethod
+    def _checklist_kind(post):
+        return post.get('kind') if post.get('kind') in ('opening', 'closing') else 'opening'
+
+    @staticmethod
+    def _checklist_hour(post, kind):
+        """The form posts "11:30"; the model stores wall-clock hours as a float.
+
+        ONE reader for both doors. It was inline in the add route, and an edit
+        route carrying its own copy is how the two ends up disagreeing about
+        what an empty box means.
+        """
+        fallback = 11.0 if kind == 'opening' else 20.0
         raw = (post.get('due_time') or '').strip()
         try:
             hour, minute = (raw.split(':') + ['0'])[:2]
             due_hour = int(hour) + int(minute) / 60.0
         except (TypeError, ValueError):
-            due_hour = 11.0 if kind == 'opening' else 20.0
-        if not 0 <= due_hour < 24:
-            due_hour = 11.0 if kind == 'opening' else 20.0
-        Template.create({'name': name, 'kind': kind, 'due_hour': due_hour})
+            return fallback
+        return due_hour if 0 <= due_hour < 24 else fallback
+
+    @http.route('/manage/checklists/edit/<int:template_id>', type='http',
+                auth='user', website=True, methods=['POST'], csrf=True,
+                sitemap=False)
+    def checklists_edit(self, template_id, **post):
+        """Change the words, the half of the day, or the time.
+
+        TODAY'S LIST IS NOT REWRITTEN. This morning already copied the name onto
+        an instance somebody may have ticked, and reaching back to change it
+        would edit a record of what was done. The new wording starts with
+        tomorrow's list, which is the answer that keeps the history true.
+        """
+        if not access.can_view('checklists'):
+            return request.not_found()
+        Template = request.env['modryn.task.template'].sudo().with_context(
+            active_test=False)
+        template = Template.browse(template_id).exists()
+        if not template:
+            return request.redirect('/manage/checklists')
+        name = (post.get('name') or '').strip()
+        if not name:
+            return request.redirect('/manage/checklists?error=%s'
+                                    % url_quote(_("Please enter a name")))
+        if Template.search_count([('id', '!=', template.id),
+                                  ('name', '=ilike', name)]):
+            return request.redirect(
+                '/manage/checklists?error=%s'
+                % url_quote(_("That checklist item already exists")))
+        kind = self._checklist_kind(post)
+        template.write({'name': name, 'kind': kind,
+                        'due_hour': self._checklist_hour(post, kind)})
         return request.redirect('/manage/checklists')
+
+    @http.route('/manage/checklists/delete/<int:template_id>', type='http',
+                auth='user', website=True, methods=['POST'], csrf=True,
+                sitemap=False)
+    def checklists_delete(self, template_id, **post):
+        """Gone for good, and safely.
+
+        Unlike a role or a discount code, deleting this one loses nothing:
+        every task the morning ever made carries its OWN copy of the name, and
+        the link back here is ondelete='set null'. Yesterday still reads
+        correctly with the template gone.
+        """
+        if not access.can_view('checklists'):
+            return request.not_found()
+        template = request.env['modryn.task.template'].sudo().with_context(
+            active_test=False).browse(template_id).exists()
+        if not template:
+            return request.redirect('/manage/checklists')
+        name = template.name
+        template.unlink()
+        return request.redirect('/manage/checklists?error=%s'
+                                % url_quote(_("%s was deleted.", name)))
 
     @http.route('/manage/checklists/archive/<int:template_id>', type='http',
                 auth='user', website=True, methods=['POST'], csrf=True, sitemap=False)

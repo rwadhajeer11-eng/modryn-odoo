@@ -121,6 +121,7 @@ msgstr "اسم المستخدم"
 #. module: modryn_theme
 #: model:ir.model.fields,field_description:modryn_theme.field_ir_http__display_name
 #: model:ir.model.fields,field_description:modryn_theme.field_product_template__display_name
+#: model:ir.model.fields,field_description:modryn_theme.field_res_company__display_name
 msgid "Display Name"
 msgstr "الاسم المعروض"
 
@@ -132,6 +133,7 @@ msgstr "توجيه HTTP"
 #. module: modryn_theme
 #: model:ir.model.fields,field_description:modryn_theme.field_ir_http__id
 #: model:ir.model.fields,field_description:modryn_theme.field_product_template__id
+#: model:ir.model.fields,field_description:modryn_theme.field_res_company__id
 msgid "ID"
 msgstr "المعرّف"
 

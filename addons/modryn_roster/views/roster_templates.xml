@@ -439,6 +439,24 @@
                         </div>
                         <div t-if="not slot['working'] and not slot['available']"
                              class="modryn_sub">Nobody offered.</div>
+                        <!-- ANYONE ELSE on the team. Shut by default and last
+                             in the cell, because the women who offered are the
+                             answer to the question a planner is asking and
+                             burying them under twelve other names would be the
+                             wrong screen. Open it when the offers do not cover
+                             the shift. -->
+                        <details t-if="slot['others']" class="modryn_planner_any">
+                            <summary>Someone else</summary>
+                            <div class="modryn_planner_free">
+                                <button t-foreach="slot['others']" t-as="o" t-key="o['id']"
+                                        type="button"
+                                        class="modryn_badge is_muted modryn_planner_pick"
+                                        t-att-data-slot="str(slot['id'])"
+                                        t-att-data-employee="str(o['id'])"
+                                        data-working="1"
+                                        t-out="o['name']"/>
+                            </div>
+                        </details>
                     </div>
                 </div>
             </div>

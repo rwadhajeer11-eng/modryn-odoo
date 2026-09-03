@@ -5,3 +5,5 @@ access_queue_hour_public,modryn.queue.hour.public,model_modryn_queue_hour,base.g
 access_queue_hour_internal,modryn.queue.hour.internal,model_modryn_queue_hour,base.group_user,1,1,1,1
 access_customer_kind_public,modryn.customer.kind.public,model_modryn_customer_kind,base.group_public,1,0,0,0
 access_customer_kind_internal,modryn.customer.kind.internal,model_modryn_customer_kind,base.group_user,1,1,1,1
+access_queue_day_public,modryn.queue.day.public,model_modryn_queue_day,base.group_public,1,0,0,0
+access_queue_day_internal,modryn.queue.day.internal,model_modryn_queue_day,base.group_user,1,1,1,1

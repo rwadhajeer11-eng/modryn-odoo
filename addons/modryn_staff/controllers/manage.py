@@ -94,11 +94,23 @@ def _levels():
 # place so the hire form and the edit form cannot drift apart - the bug where a
 # field is saveable on one screen and silently dropped on the other is exactly
 # what a second copy of this dict buys you.
-PERSONAL_FIELDS = ('id_number', 'city', 'street', 'backup_phone', 'gender')
+PERSONAL_FIELDS = ('id_number', 'city', 'street', 'backup_phone', 'gender',
+                   'birthday')
+
+
+# The fields that hold a DATE rather than a word. An empty text box posts '',
+# and writing '' to a Date column raises - so the blank has to become False
+# before it reaches the ORM. One tuple rather than a check per field, so the
+# next date added here cannot forget.
+DATE_FIELDS = ('birthday',)
 
 
 def _personal_values(post):
-    return {'modryn_%s' % f: (post.get(f) or '').strip() for f in PERSONAL_FIELDS}
+    values = {}
+    for field in PERSONAL_FIELDS:
+        raw = (post.get(field) or '').strip()
+        values['modryn_%s' % field] = (raw or False) if field in DATE_FIELDS else raw
+    return values
 
 
 def _personal_from(employee):
@@ -203,6 +215,11 @@ class ModrynManage(http.Controller):
             'backup_phone': e.modryn_backup_phone or '',
             'city': e.modryn_city or '',
             'street': e.modryn_street or '',
+            # Formatted here rather than in the template: a bare Date prints
+            # 2001-05-04 on a screen where every other date in the product is
+            # written the way this boutique writes one.
+            'birthday': e.modryn_birthday.strftime('%d.%m.%Y')
+                        if e.modryn_birthday else '',
             # Deliberately NOT in the list: modryn_id_number. The list is the
             # screen left open on the counter all day, and an identity number
             # is the one field here that is worth something to somebody who
@@ -421,11 +438,19 @@ class ModrynManage(http.Controller):
 
     # ------------------------------------------------------------------ roles
     @http.route('/manage/roles', type='http', auth='user', website=True, sitemap=False)
-    def roles_list(self, error=None, **kw):
+    def roles_list(self, error=None, confirm=None, **kw):
         if not self._require_owner():
             return request.not_found()
         roles = request.env['modryn.staff.role'].sudo().with_context(
             active_test=False).search([])
+        # A SERVER-RENDERED confirmation, not a browser confirm(). The sentence
+        # has to name the role and say what deleting costs, and a window.confirm
+        # string is neither translatable through the .po files nor readable to
+        # anyone who has JavaScript off. This draws the question as markup, in
+        # her language, on the row she pressed.
+        confirming = roles.browse()
+        if confirm and str(confirm).isdigit():
+            confirming = roles.filtered(lambda r: r.id == int(confirm))
         # The access matrix: BOTH rows of the navbar now. It used to be the top
         # row only, so an owner who wanted her manager in Dresses or Reports had
         # nowhere to say so. 'home' and 'profile' are never columns - they
@@ -441,9 +466,19 @@ class ModrynManage(http.Controller):
         for grant in request.env['modryn.role.page'].sudo().search(
                 [('role_id', 'in', roles.ids)]):
             granted.setdefault(grant.role_id.id, []).append(grant.page_key)
+        # How many women carry each role, so the screen can offer Delete only
+        # where deleting is actually possible, instead of offering it and then
+        # refusing. Counted with active_test off: an archived saleswoman still
+        # carries her role, and her card still prints it.
+        Employee = request.env['hr.employee'].sudo().with_context(active_test=False)
+        wearing = {}
+        for role in roles:
+            wearing[role.id] = Employee.search_count(
+                [('modryn_role_ids', 'in', role.id)])
         return request.render('modryn_staff.manage_roles', {
             'roles': roles, 'error': error, 'active_tab': 'roles',
             'pages': pages, 'granted': granted,
+            'confirming': confirming, 'wearing': wearing,
         })
 
     @http.route('/manage/roles/pages', type='http', auth='user', website=True,
@@ -505,6 +540,39 @@ class ModrynManage(http.Controller):
         if role:
             role.active = not role.active
         return request.redirect('/manage/roles')
+
+    @http.route('/manage/roles/delete/<int:role_id>', type='http', auth='user',
+                website=True, methods=['POST'], csrf=True, sitemap=False)
+    def roles_delete(self, role_id, **post):
+        """Gone for good — but only when nobody is wearing it.
+
+        Refused BY NAME rather than silently, and with the alternative in the
+        same sentence: a role two saleswomen carry is a real job the boutique
+        no longer fills, and Archive is what that means. Deleting it would blank
+        the role off their cards with nothing to explain where it went.
+
+        The grants and the shift-coverage targets go with it — both are declared
+        ondelete='cascade' — which is why this is a real question and not a
+        press. A role deleted by mistake takes its page access with it.
+        """
+        if not self._require_owner():
+            return request.not_found()
+        role = request.env['modryn.staff.role'].sudo().with_context(
+            active_test=False).browse(role_id).exists()
+        if not role:
+            return request.redirect('/manage/roles')
+        wearing = request.env['hr.employee'].sudo().with_context(
+            active_test=False).search_count([('modryn_role_ids', 'in', role.id)])
+        if wearing:
+            return request.redirect('/manage/roles?error=%s' % werkzeug.urls.url_quote(_(
+                "%(role)s cannot be deleted — %(count)s of the team still have "
+                "it. Archive it instead: it disappears from the forms and stays "
+                "on their cards.",
+                role=role.name, count=wearing)))
+        name = role.name
+        role.unlink()
+        return request.redirect('/manage/roles?error=%s' % werkzeug.urls.url_quote(
+            _("%s was deleted.", name)))
 
     @http.route('/manage/roles/workshop/<int:role_id>', type='http', auth='user',
                 website=True, methods=['POST'], csrf=True, sitemap=False)

@@ -685,6 +685,7 @@ msgid "<span class=\"modryn_sub\">–</span>"
 msgstr "<span class=\"modryn_sub\">–</span>"
 
 #. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_checklists
 #: model_terms:ir.ui.view,arch_db:modryn_ops.manage_dress_form
 msgid "Save"
 msgstr "שמירה"
@@ -701,6 +702,7 @@ msgid "Name"
 msgstr "שם"
 
 #. module: modryn_ops
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_discount_code__note
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_task__note
 msgid "Note"
 msgstr "הערה"
@@ -717,6 +719,7 @@ msgid "Across every size."
 msgstr "סך הכול בכל המידות."
 
 #. module: modryn_ops
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_discount_code__active
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_dress_type__active
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_task_template__active
 msgid "Active"
@@ -729,6 +732,7 @@ msgstr "אירוע ביומן"
 
 #. module: modryn_ops
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_audit_log__create_uid
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_discount_code__create_uid
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_dress_type__create_uid
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_sale__create_uid
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_sale_line__create_uid
@@ -739,6 +743,7 @@ msgstr "נוצר על ידי"
 
 #. module: modryn_ops
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_audit_log__create_date
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_discount_code__create_date
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_dress_type__create_date
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_sale__create_date
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_sale_line__create_date
@@ -751,6 +756,7 @@ msgstr "נוצר בתאריך"
 #: model:ir.model.fields,field_description:modryn_ops.field_calendar_event__display_name
 #: model:ir.model.fields,field_description:modryn_ops.field_hr_employee__display_name
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_audit_log__display_name
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_discount_code__display_name
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_dress_type__display_name
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_queue_entry__display_name
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_sale__display_name
@@ -773,6 +779,7 @@ msgstr "עובדת"
 #: model:ir.model.fields,field_description:modryn_ops.field_calendar_event__id
 #: model:ir.model.fields,field_description:modryn_ops.field_hr_employee__id
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_audit_log__id
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_discount_code__id
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_dress_type__id
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_queue_entry__id
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_sale__id
@@ -787,6 +794,7 @@ msgstr "מזהה"
 
 #. module: modryn_ops
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_audit_log__write_uid
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_discount_code__write_uid
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_dress_type__write_uid
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_sale__write_uid
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_sale_line__write_uid
@@ -797,6 +805,7 @@ msgstr "עודכן לאחרונה על ידי"
 
 #. module: modryn_ops
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_audit_log__write_date
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_discount_code__write_date
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_dress_type__write_date
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_sale__write_date
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_sale_line__write_date
@@ -903,12 +912,14 @@ msgid "Kinds"
 msgstr "סוגים"
 
 #. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_checklists
 #: model_terms:ir.ui.view,arch_db:modryn_ops.manage_dress_form
 #: model_terms:ir.ui.view,arch_db:modryn_ops.manage_dresses
 msgid "Edit"
 msgstr "עריכה"
 
 #. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_checklists
 #: model_terms:ir.ui.view,arch_db:modryn_ops.manage_dress_form
 #: model_terms:ir.ui.view,arch_db:modryn_ops.manage_dresses
 msgid "Cancel"
@@ -1078,6 +1089,7 @@ msgstr "<span>להציג בחנות</span>"
 
 #. module: modryn_ops
 #: model_terms:ir.ui.view,arch_db:modryn_ops.manage_dress_form
+#: model_terms:ir.ui.view,arch_db:modryn_ops.sell_screen
 msgid "<option value=\"\">—</option>"
 msgstr "<option value=\"\">—</option>"
 
@@ -1374,6 +1386,8 @@ msgid "Nothing on the list yet."
 msgstr "עדיין אין כלום ברשימה."
 
 #. module: modryn_ops
+#. odoo-python
+#: code:addons/modryn_ops/models/audit_log.py:0
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_sale__discount_value
 #: model_terms:ir.ui.view,arch_db:modryn_ops.sell_screen
 msgid "Discount"
@@ -1702,3 +1716,126 @@ msgstr "<b class=\"d-none d-lg-block\">מחיר</b>"
 #: model_terms:ir.ui.view,arch_db:modryn_ops.products_kind_filter
 msgid "<span class=\"text-muted\">–</span>"
 msgstr "<span class=\"text-muted\">–</span>"
+
+#. module: modryn_ops
+#. odoo-python
+#: code:addons/modryn_ops/models/discount_code.py:0
+msgid "%(code)s has been used its %(count)s times."
+msgstr "%(code)s נוצל כבר %(count)s פעמים."
+
+#. module: modryn_ops
+#. odoo-python
+#: code:addons/modryn_ops/models/discount_code.py:0
+msgid "%(code)s stopped working on %(date)s."
+msgstr "%(code)s הפסיק לעבוד ב-%(date)s."
+
+#. module: modryn_ops
+#. odoo-python
+#: code:addons/modryn_ops/models/discount_code.py:0
+msgid "%(used)s of %(total)s used"
+msgstr "%(used)s מתוך %(total)s נוצלו"
+
+#. module: modryn_ops
+#. odoo-python
+#: code:addons/modryn_ops/models/discount_code.py:0
+msgid "%s has already been used."
+msgstr "%s כבר נוצל."
+
+#. module: modryn_ops
+#. odoo-python
+#: code:addons/modryn_ops/controllers/tasks.py:0
+msgid "%s was deleted."
+msgstr "%s נמחק."
+
+#. module: modryn_ops
+#. odoo-python
+#: code:addons/modryn_ops/models/discount_code.py:0
+msgid "A code has to work at least once."
+msgstr "קוד חייב לעבוד לפחות פעם אחת."
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.sell_screen
+msgid ""
+"A discount shows on the owner's screen with the reason\n"
+"                        beside it. Pick a code and it decides both — you do not\n"
+"                        need the two boxes beside it."
+msgstr ""
+"הנחה מופיעה במסך הבעלים עם הסיבה לצידה. בחירת קוד קובעת את שניהם — אין צורך "
+"בשתי המשבצות שלצידו."
+
+#. module: modryn_ops
+#: model:ir.model.fields.selection,name:modryn_ops.selection__modryn_discount_code__limit_kind__times
+msgid "A set number of times"
+msgstr "מספר פעמים קבוע"
+
+#. module: modryn_ops
+#: model:ir.model.fields.selection,name:modryn_ops.selection__modryn_discount_code__limit_kind__none
+msgid "As many times as they like"
+msgstr "כמה פעמים שרוצים"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_checklists
+msgid "Delete"
+msgstr "מחיקה"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_checklists
+msgid ""
+"Delete this item? It goes for good. What\n"
+"                                has already been ticked off stays."
+msgstr "למחוק את הפריט? הוא נעלם לתמיד. מה שכבר סומן נשאר."
+
+#. module: modryn_ops
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_discount_code__limit_kind
+msgid "How long it lasts"
+msgstr "לכמה זמן הוא תקף"
+
+#. module: modryn_ops
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_discount_code__max_uses
+msgid "How many times"
+msgstr "כמה פעמים"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_checklists
+msgid "Keep it"
+msgstr "להשאיר"
+
+#. module: modryn_ops
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_discount_code__use_until
+msgid "Last day it works"
+msgstr "היום האחרון שהוא עובד"
+
+#. module: modryn_ops
+#. odoo-python
+#: code:addons/modryn_ops/models/discount_code.py:0
+msgid "Say which day is the last day."
+msgstr "נא לציין מהו היום האחרון."
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_checklists
+msgid ""
+"Today's list keeps the old wording — the\n"
+"                                    change starts tomorrow morning."
+msgstr "הרשימה של היום נשארת בנוסח הישן — השינוי מתחיל מחר בבוקר."
+
+#. module: modryn_ops
+#: model:ir.model.fields.selection,name:modryn_ops.selection__modryn_discount_code__limit_kind__until
+msgid "Until a date"
+msgstr "עד תאריך"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.manage_checklists
+msgid "Yes, delete"
+msgstr "כן, למחוק"
+
+#. module: modryn_ops
+#. odoo-python
+#: code:addons/modryn_ops/models/discount_code.py:0
+msgid "no limit"
+msgstr "ללא הגבלה"
+
+#. module: modryn_ops
+#. odoo-python
+#: code:addons/modryn_ops/models/discount_code.py:0
+msgid "until %s"
+msgstr "עד %s"

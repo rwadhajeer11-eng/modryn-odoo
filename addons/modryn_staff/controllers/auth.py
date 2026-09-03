@@ -198,7 +198,7 @@ class ModrynStaffAuth(http.Controller):
     # language she reads. NOT her role, NOT her permission level, and NOT her ID
     # number - those are the owner's record of her, not her description of
     # herself, and letting her edit them would make the Team page advisory.
-    HER_OWN = ('city', 'street', 'backup_phone', 'gender')
+    HER_OWN = ('city', 'street', 'backup_phone', 'gender', 'birthday')
 
     def _is_staff(self):
         """Boutique staff, and not the public user.
@@ -271,6 +271,11 @@ class ModrynStaffAuth(http.Controller):
             'employee': employee,
             'documents': self._my_documents(employee),
             'genders': genders,
+            # Read off the field's own selection so the word she sees is the
+            # word the owner picked, in her language and not in English.
+            'level_label': dict(request.env['hr.employee']._fields[
+                'modryn_level'].get_description(request.env)['selection']).get(
+                    employee.modryn_level) or '',
             'langs': self._staff_langs(),
             'saved': saved,
             'error': error,
@@ -325,6 +330,9 @@ class ModrynStaffAuth(http.Controller):
                     'modryn_gender'].get_description(request.env)['selection'])
                 raw = (post.get('gender') or '').strip()
                 values['modryn_gender'] = raw if raw in valid else False
+            elif field == 'birthday':
+                # A blank date box posts '', and '' into a Date column raises.
+                values['modryn_birthday'] = (post.get(field) or '').strip() or False
             else:
                 values['modryn_%s' % field] = (post.get(field) or '').strip()
         me.write(values)

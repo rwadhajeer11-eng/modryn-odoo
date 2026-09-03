@@ -135,11 +135,24 @@
                                    class="form-control" min="0" step="1" dir="ltr"
                                    t-att-value="values.get('discount_value')"/>
                         </div>
-                        <div class="col-12 col-md-3">
+                        <!-- The boutique's OWN codes, by name, or nothing at
+                             all. It was a blank text box, and a blank text box
+                             on this screen could only ever be refused: the
+                             words it accepts are invented on a screen the woman
+                             at the counter cannot open, so she had no way to
+                             know one existed. A shop that has made no codes
+                             does not get the box. -->
+                        <div t-if="discount_codes" class="col-12 col-md-3">
                             <label class="form-label" for="discount_code">Code</label>
-                            <input type="text" id="discount_code" name="discount_code"
-                                   class="form-control" dir="ltr" autocomplete="off"
-                                   t-att-value="values.get('discount_code')"/>
+                            <select id="discount_code" name="discount_code"
+                                    class="form-select" dir="ltr">
+                                <option value="">&#8212;</option>
+                                <option t-foreach="discount_codes" t-as="rule"
+                                        t-att-value="rule['code']"
+                                        t-att-selected="'selected' if values.get('discount_code') == rule['code'] else None">
+                                    <t t-out="rule['code']"/> &#8212; <t t-out="rule['percent']"/>%
+                                </option>
+                            </select>
                         </div>
                         <div class="col-12 col-md-3">
                             <label class="form-label" for="discount_reason">Why</label>
@@ -150,7 +163,9 @@
                         </div>
                     </div>
                     <p class="modryn_sub mt-2 mb-0">
-                        A discount shows on the owner's screen with the reason beside it.
+                        A discount shows on the owner's screen with the reason
+                        beside it. Pick a code and it decides both — you do not
+                        need the two boxes beside it.
                     </p>
                 </section>
 

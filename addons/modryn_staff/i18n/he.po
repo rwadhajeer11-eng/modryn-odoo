@@ -1995,6 +1995,7 @@ msgstr "החלפה"
 #. module: modryn_staff
 #. odoo-javascript
 #: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
 msgid "Finished"
 msgstr "סיום"
 
@@ -3455,3 +3456,205 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
 msgid "<span class=\"text-muted\">–</span>"
 msgstr "<span class=\"text-muted\">–</span>"
+
+#. module: modryn_staff
+#. odoo-python
+#: code:addons/modryn_staff/controllers/manager.py:0
+msgid ""
+"%(kind)s cannot be deleted — %(count)s appointments say that is who is "
+"coming. Stop offering it instead."
+msgstr ""
+"אי אפשר למחוק את %(kind)s — %(count)s תורים אומרים שזו מי שמגיעה. עדיף "
+"להפסיק להציע אותה."
+
+#. module: modryn_staff
+#. odoo-python
+#: code:addons/modryn_staff/controllers/manage.py:0
+msgid ""
+"%(role)s cannot be deleted — %(count)s of the team still have it. Archive it"
+" instead: it disappears from the forms and stays on their cards."
+msgstr ""
+"אי אפשר למחוק את %(role)s — %(count)s מהצוות עדיין נושאות אותו. עדיף לארכב: "
+"הוא נעלם מהטפסים ונשאר על הכרטיסים שלהן."
+
+#. module: modryn_staff
+#. odoo-python
+#: code:addons/modryn_staff/controllers/manage.py:0
+#: code:addons/modryn_staff/controllers/manager.py:0
+msgid "%s was deleted."
+msgstr "%s נמחק."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid ""
+"<select id=\"code_limit\" name=\"limit_kind\" class=\"form-select\">\n"
+"                            <option value=\"none\">As many times as they like</option>\n"
+"                            <option value=\"times\">A set number of times</option>\n"
+"                            <option value=\"until\">Until a date</option>\n"
+"                        </select>"
+msgstr ""
+"<select id=\"code_limit\" name=\"limit_kind\" class=\"form-select\"><option "
+"value=\"none\">כמה פעמים שרוצים</option><option value=\"times\">מספר פעמים "
+"קבוע</option><option value=\"until\">עד תאריך</option></select>"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.staff_profile
+msgid "<span class=\"modryn_strong\">What you may open:</span>"
+msgstr "<span class=\"modryn_strong\">מה מותר לך לפתוח:</span>"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manage_roles
+msgid ""
+"<strong>Workshop</strong> marks the roles that do the sewing.\n"
+"                When a dress needs taking in, the job goes to the women in\n"
+"                those roles — that is the only thing the mark changes."
+msgstr ""
+"<strong>סדנה</strong> מסמן את התפקידים שעושים את התפירה. כששמלה צריכה תיקון,"
+" העבודה עוברת לנשים בתפקידים האלה — וזה כל מה שהסימון משנה."
+
+#. module: modryn_staff
+#. odoo-python
+#: code:addons/modryn_staff/controllers/manager.py:0
+msgid "A code has to work at least once."
+msgstr "קוד חייב לעבוד לפחות פעם אחת."
+
+#. module: modryn_staff
+#: model:ir.model.fields,field_description:modryn_staff.field_hr_employee__modryn_birthday
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+#: model_terms:ir.ui.view,arch_db:modryn_staff.staff_profile
+msgid "Date of birth"
+msgstr "תאריך לידה"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manage_roles
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "Delete"
+msgstr "מחיקה"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "Delete this one? It goes for good."
+msgstr "למחוק את זה? זה נעלם לתמיד."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manage_roles
+msgid ""
+"Delete this role? It goes for good, and\n"
+"                                takes its page access with it."
+msgstr "למחוק את התפקיד? הוא נעלם לתמיד, ולוקח איתו את הגישה לעמודים."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid ""
+"Every day follows the week below unless you say otherwise.\n"
+"                    Press a day to give it its own hours — the week you are\n"
+"                    away at a fair, the Thursday you open late, the holiday. A\n"
+"                    day with its own hours is marked, and it stops following\n"
+"                    the week until you hand it back."
+msgstr ""
+"כל יום הולך לפי השבוע שלמטה, אלא אם תגידי אחרת. לחצי על יום כדי לתת לו שעות "
+"משלו — השבוע שאת ביריד, יום חמישי שאת פותחת מאוחר, החג. יום עם שעות משלו "
+"מסומן, והוא מפסיק ללכת לפי השבוע עד שתחזירי אותו."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid ""
+"Fill this in once and every week uses it — this is what\n"
+"                    every day above follows until you give one its own hours.\n"
+"                    Every hour of every day is here, Friday and Saturday\n"
+"                    included: some boutiques work them, and some open in the\n"
+"                    evening. Nothing is decided for you."
+msgstr ""
+"מלאי את זה פעם אחת וכל שבוע ישתמש בו — זה מה שכל יום למעלה הולך לפיו עד "
+"שתתני לו שעות משלו. כל שעה בכל יום נמצאת כאן, שישי ושבת כלולים: יש בוטיקים "
+"שעובדים בהם, ויש שנפתחים בערב. שום דבר לא הוחלט בשבילך."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "Follow the week again"
+msgstr "לחזור לשבוע הקבוע"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "How long it lasts"
+msgstr "לכמה זמן הוא תקף"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "How many times"
+msgstr "כמה פעמים"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manage_roles
+msgid "In use — archive it"
+msgstr "בשימוש — לארכב"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manage_roles
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "Keep it"
+msgstr "להשאיר"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "Last day it works"
+msgstr "היום האחרון שהוא עובד"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "Save this day"
+msgstr "שמירת היום הזה"
+
+#. module: modryn_staff
+#. odoo-python
+#: code:addons/modryn_staff/controllers/manager.py:0
+msgid "Say which day is the last day."
+msgstr "נא לציין מהו היום האחרון."
+
+#. module: modryn_staff
+#: model:ir.model.fields,help:modryn_staff.field_hr_employee__modryn_birthday
+msgid "So the boutique knows when to wish her a happy one."
+msgstr "כדי שהבוטיק ידע מתי לאחל לה יום הולדת שמח."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "The months ahead"
+msgstr "החודשים הקרובים"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid ""
+"The number in a day is how many appointments the website\n"
+"                    may give away that day altogether. A gold day has hours of\n"
+"                    its own; the rest follow the week."
+msgstr ""
+"המספר בתוך יום הוא כמה תורים האתר רשאי לחלק באותו יום בסך הכול. יום בזהב הוא"
+" יום עם שעות משלו; השאר הולכים לפי השבוע."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "The week, every week"
+msgstr "השבוע, בכל שבוע"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid ""
+"This day has its own hours. Change them here, or\n"
+"                            hand it back to the week."
+msgstr "ליום הזה יש שעות משלו. אפשר לשנות אותן כאן, או להחזיר אותו לשבוע."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid ""
+"This day is following the week. The boxes start at\n"
+"                            what the week says — change any of them and this\n"
+"                            day stops following it."
+msgstr ""
+"היום הזה הולך לפי השבוע. המשבצות מתחילות במה שהשבוע אומר — שינוי של אחת מהן "
+"והיום הזה מפסיק ללכת לפיו."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manage_roles
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "Yes, delete"
+msgstr "כן, למחוק"

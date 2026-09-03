@@ -333,6 +333,29 @@
     margin-block-start: 4px;
 }
 
+// Deliberately quiet: it is the fallback, not the answer. A summary that
+// looks like a button competes with the names above it, which are the ones a
+// planner should read first.
+.modryn_planner_any {
+    margin-block-start: 6px;
+
+    > summary {
+        cursor: pointer;
+        font-size: 0.75rem;
+        color: $modryn-ink-muted;
+        list-style: none;
+
+        &::-webkit-details-marker { display: none; }
+
+        &::before {
+            content: "+ ";
+            font-weight: 700;
+        }
+    }
+
+    &[open] > summary::before { content: "2 "; }
+}
+
 .modryn_planner_pick {
     border: 1px solid transparent;
     cursor: pointer;

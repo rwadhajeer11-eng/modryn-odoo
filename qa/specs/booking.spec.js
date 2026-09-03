@@ -78,27 +78,45 @@ test('act 3c — a complete booking takes the slot off the grid @writes', async 
   // Its last slot, so act 3b's values[0] is never the same hour.
   const chosen = roomy[roomy.length - 1];
 
-  await page.locator('select[name="slot"]').selectOption(chosen);
-  await page.fill('input[name="name"]', 'QA Bride');
-  await page.fill('input[name="phone"]', qaPhone());
-  // WHO IS COMING, when the boutique has written a list to choose from. The
-  // list is per-boutique and may be empty, which is why this is conditional
-  // rather than a fill: a shop that has not written one is not asked, and a
-  // spec that always answered would be asserting a question that is not there.
-  const who = page.locator('select[name="customer_kind"]');
-  if (await who.count()) {
-    const options = (await who.locator('option').evaluateAll(
-      (os) => os.map((o) => o.value))).filter(Boolean);
-    await who.selectOption(options[0]);
+  // HOW MANY SEATS THAT HOUR HAS IS THE BOUTIQUE'S DECISION, and it is made on
+  // a screen built for making it. This act used to book once and assert the
+  // hour was gone, which is only true where an hour seats ONE — so the day the
+  // owner set a Sunday afternoon to five, a page doing correct arithmetic went
+  // red. Booking until it is full asserts the same thing at any capacity: what
+  // the grid offers and what the rows say agree.
+  //
+  // Bounded, because an unbounded "until it goes" is an infinite loop the first
+  // time the counting genuinely breaks — which is the bug this act exists to
+  // catch, and it should report it rather than hang.
+  const SEATS_MAX = 12;
+  let sold = 0;
+  let after = [];
+  while (sold < SEATS_MAX) {
+    await page.locator('select[name="slot"]').selectOption(chosen);
+    await page.fill('input[name="name"]', 'QA Bride');
+    await page.fill('input[name="phone"]', qaPhone());
+    // WHO IS COMING, when the boutique has written a list to choose from. The
+    // list is per-boutique and may be empty, which is why this is conditional
+    // rather than a fill: a shop that has not written one is not asked, and a
+    // spec that always answered would be asserting a question that is not there.
+    const who = page.locator('select[name="customer_kind"]');
+    if (await who.count()) {
+      const options = (await who.locator('option').evaluateAll(
+        (os) => os.map((o) => o.value))).filter(Boolean);
+      await who.selectOption(options[0]);
+    }
+    await page.locator('input[name="terms"]').check();
+    await submitFormWith(page, 'slot');
+    await expect(page).toHaveURL(/\/book\/confirmed\//);
+    sold += 1;
+
+    // The assertion curl cannot make cheaply: the grid the browser is shown
+    // next has counted the seat that was just sold.
+    await page.goto('/book');
+    after = (await page.locator('select[name="slot"] option').evaluateAll((os) => os.map((o) => o.value))).filter(Boolean);
+    if (!after.includes(chosen)) {
+      break;
+    }
   }
-  await page.locator('input[name="terms"]').check();
-  await submitFormWith(page, 'slot');
-
-  await expect(page).toHaveURL(/\/book\/confirmed\//);
-
-  // The assertion curl cannot make cheaply: the grid the browser is shown next
-  // no longer offers the hour that was just sold.
-  await page.goto('/book');
-  const after = (await page.locator('select[name="slot"] option').evaluateAll((os) => os.map((o) => o.value))).filter(Boolean);
-  expect(after, 'the sold slot is still on offer — the grid and the row disagree').not.toContain(chosen);
+  expect(after, `the hour was still on offer after ${sold} bookings — the grid and the rows disagree`).not.toContain(chosen);
 });

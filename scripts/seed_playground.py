@@ -107,10 +107,10 @@ say('accessories moved off the veil', moved)
 
 # ============================================================= who may book
 VISITORS = [
-    ('A bride', 'כלה', 'عروس', 'The one wearing it'),
+    ('A bride', 'כלה', 'عروس', 'זו שלובשת את השמלה'),
     ("A bride's sister", 'אחות של כלה', 'أخت العروس', ''),
     ('Mother of the bride', 'אמא של הכלה', 'أم العروس', ''),
-    ('An evening dress', 'שמלת ערב', 'فستان سهرة', 'Not a wedding'),
+    ('An evening dress', 'שמלת ערב', 'فستان سهرة', 'לא חתונה'),
 ]
 Visitor = env['modryn.customer.kind']
 made = 0
@@ -123,6 +123,11 @@ for index, (en, he, ar, note) in enumerate(VISITORS):
         made += 1
     who.with_context(lang='he_IL').name = he
     who.with_context(lang='ar_001').name = ar
+    # Filled in even on a kind that already exists, but never OVER a note the
+    # boutique has written: the seed is allowed to answer a blank and is not
+    # allowed to argue with the owner.
+    if note and not who.note:
+        who.note = note
 say('who may book (new)', made)
 
 # =========================================================== booking hours
@@ -171,16 +176,23 @@ if not Hours.with_context(active_test=False).search_count([('weekday', '=', '4')
     say('Friday opening window', 'added')
 
 # ============================================================ discount codes
+# One of each answer, so the screen shows what a limit looks like rather than
+# three identical rows saying "no limit".
 CODES = [
-    ('BRIDE10', 10, 'The autumn fair'),
-    ('SISTER5', 5, 'A sister of a bride we dressed'),
-    ('STAFF20', 20, 'Family and staff'),
+    ('BRIDE10', 10, 'יריד הסתיו', 'until', 0, 30),
+    ('SISTER5', 5, 'אחות של כלה שהלבשנו', 'times', 2, 0),
+    ('STAFF20', 20, 'משפחה וצוות', 'none', 1, 0),
 ]
 Code = env['modryn.discount.code']
 made = 0
-for word, percent, note in CODES:
+for word, percent, note, limit_kind, max_uses, days in CODES:
     if not Code.with_context(active_test=False).search_count([('code', '=ilike', word)]):
-        Code.create({'code': word, 'percent': percent, 'note': note})
+        Code.create({
+            'code': word, 'percent': percent, 'note': note,
+            'limit_kind': limit_kind,
+            'max_uses': max_uses or 1,
+            'use_until': (datetime.date.today() + datetime.timedelta(days=days)) if days else False,
+        })
         made += 1
 say('discount codes (new)', made)
 
@@ -365,8 +377,15 @@ for week in weeks:
                       for step in range(min(how_many, len(staff)))]
             slot.employee_ids = [(6, 0, chosen)]
             filled += 1
-        slot.published = True
-say('shift slots filled and published', filled)
+        # ONLY A WEEK THAT HAS ALREADY STARTED. Publishing is the manager's
+        # press, and doing it for her takes the press away: a published week
+        # disables the Publish button and freezes the availability form, so
+        # both look broken and neither is. The current week is published so the
+        # main screen has a rota to show; next week is left as a draft, which
+        # is what it is.
+        if week <= TODAY:
+            slot.published = True
+say('shift slots filled', filled)
 
 # ---------------------------------- her own rail, and her own follow-ups
 # The last two boxes on the main screen. Both read off the SIGNED-IN person,

@@ -2001,6 +2001,7 @@ msgstr "تغيير"
 #. module: modryn_staff
 #. odoo-javascript
 #: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
 msgid "Finished"
 msgstr "انتهاء"
 
@@ -3461,3 +3462,207 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
 msgid "<span class=\"text-muted\">–</span>"
 msgstr "<span class=\"text-muted\">–</span>"
+
+#. module: modryn_staff
+#. odoo-python
+#: code:addons/modryn_staff/controllers/manager.py:0
+msgid ""
+"%(kind)s cannot be deleted — %(count)s appointments say that is who is "
+"coming. Stop offering it instead."
+msgstr ""
+"لا يمكن حذف %(kind)s — %(count)s موعدًا تقول إنّ هذه هي القادمة. توقّفي عن "
+"عرضها بدلًا من ذلك."
+
+#. module: modryn_staff
+#. odoo-python
+#: code:addons/modryn_staff/controllers/manage.py:0
+msgid ""
+"%(role)s cannot be deleted — %(count)s of the team still have it. Archive it"
+" instead: it disappears from the forms and stays on their cards."
+msgstr ""
+"لا يمكن حذف %(role)s — ما زال %(count)s من الفريق يحملنه. أرشفيه بدلًا من "
+"ذلك: يختفي من النماذج ويبقى على بطاقاتهنّ."
+
+#. module: modryn_staff
+#. odoo-python
+#: code:addons/modryn_staff/controllers/manage.py:0
+#: code:addons/modryn_staff/controllers/manager.py:0
+msgid "%s was deleted."
+msgstr "تم حذف %s."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid ""
+"<select id=\"code_limit\" name=\"limit_kind\" class=\"form-select\">\n"
+"                            <option value=\"none\">As many times as they like</option>\n"
+"                            <option value=\"times\">A set number of times</option>\n"
+"                            <option value=\"until\">Until a date</option>\n"
+"                        </select>"
+msgstr ""
+"<select id=\"code_limit\" name=\"limit_kind\" class=\"form-select\"><option "
+"value=\"none\">بقدر ما يشاؤون</option><option value=\"times\">عدد محدّد من "
+"المرات</option><option value=\"until\">حتى تاريخ</option></select>"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.staff_profile
+msgid "<span class=\"modryn_strong\">What you may open:</span>"
+msgstr "<span class=\"modryn_strong\">ما يمكنكِ فتحه:</span>"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manage_roles
+msgid ""
+"<strong>Workshop</strong> marks the roles that do the sewing.\n"
+"                When a dress needs taking in, the job goes to the women in\n"
+"                those roles — that is the only thing the mark changes."
+msgstr ""
+"<strong>الورشة</strong> تُعلّم الأدوار التي تقوم بالخياطة. عندما يحتاج فستان"
+" إلى تضييق، تذهب المهمة إلى النساء في تلك الأدوار — وهذا كل ما يغيّره هذا "
+"التعليم."
+
+#. module: modryn_staff
+#. odoo-python
+#: code:addons/modryn_staff/controllers/manager.py:0
+msgid "A code has to work at least once."
+msgstr "يجب أن يعمل الكود مرة واحدة على الأقل."
+
+#. module: modryn_staff
+#: model:ir.model.fields,field_description:modryn_staff.field_hr_employee__modryn_birthday
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+#: model_terms:ir.ui.view,arch_db:modryn_staff.staff_profile
+msgid "Date of birth"
+msgstr "تاريخ الميلاد"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manage_roles
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "Delete"
+msgstr "حذف"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "Delete this one? It goes for good."
+msgstr "حذف هذا؟ يختفي نهائيًا."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manage_roles
+msgid ""
+"Delete this role? It goes for good, and\n"
+"                                takes its page access with it."
+msgstr "حذف هذا الدور؟ يختفي نهائيًا، ويأخذ معه صلاحيات الصفحات."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid ""
+"Every day follows the week below unless you say otherwise.\n"
+"                    Press a day to give it its own hours — the week you are\n"
+"                    away at a fair, the Thursday you open late, the holiday. A\n"
+"                    day with its own hours is marked, and it stops following\n"
+"                    the week until you hand it back."
+msgstr ""
+"كل يوم يتبع الأسبوع أدناه ما لم تقولي غير ذلك. اضغطي على يوم لتمنحيه ساعاته "
+"الخاصة — الأسبوع الذي تكونين فيه في معرض، الخميس الذي تفتحين فيه متأخرة، "
+"العطلة. اليوم الذي له ساعاته الخاصة يكون مُعلّمًا، ويتوقف عن اتّباع الأسبوع "
+"حتى تعيديه إليه."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid ""
+"Fill this in once and every week uses it — this is what\n"
+"                    every day above follows until you give one its own hours.\n"
+"                    Every hour of every day is here, Friday and Saturday\n"
+"                    included: some boutiques work them, and some open in the\n"
+"                    evening. Nothing is decided for you."
+msgstr ""
+"املئي هذا مرة واحدة ويستخدمه كل أسبوع — هذا ما يتبعه كل يوم في الأعلى حتى "
+"تمنحيه ساعاته الخاصة. كل ساعة من كل يوم موجودة هنا، الجمعة والسبت ضمنها: بعض"
+" البوتيكات تعمل فيهما، وبعضها يفتح مساءً. لم يُقرَّر شيء عنكِ."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "Follow the week again"
+msgstr "العودة إلى الأسبوع الثابت"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "How long it lasts"
+msgstr "إلى متى يبقى صالحًا"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "How many times"
+msgstr "كم مرة"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manage_roles
+msgid "In use — archive it"
+msgstr "قيد الاستخدام — أرشفيه"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manage_roles
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "Keep it"
+msgstr "الإبقاء عليه"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "Last day it works"
+msgstr "آخر يوم يعمل فيه"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "Save this day"
+msgstr "حفظ هذا اليوم"
+
+#. module: modryn_staff
+#. odoo-python
+#: code:addons/modryn_staff/controllers/manager.py:0
+msgid "Say which day is the last day."
+msgstr "يرجى تحديد اليوم الأخير."
+
+#. module: modryn_staff
+#: model:ir.model.fields,help:modryn_staff.field_hr_employee__modryn_birthday
+msgid "So the boutique knows when to wish her a happy one."
+msgstr "كي يعرف البوتيك متى يهنّئها بعيد ميلادها."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "The months ahead"
+msgstr "الأشهر القادمة"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid ""
+"The number in a day is how many appointments the website\n"
+"                    may give away that day altogether. A gold day has hours of\n"
+"                    its own; the rest follow the week."
+msgstr ""
+"الرقم داخل اليوم هو عدد المواعيد التي يجوز للموقع منحها في ذلك اليوم "
+"إجمالًا. اليوم الذهبي له ساعاته الخاصة؛ والبقية تتبع الأسبوع."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "The week, every week"
+msgstr "الأسبوع، في كل أسبوع"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid ""
+"This day has its own hours. Change them here, or\n"
+"                            hand it back to the week."
+msgstr "لهذا اليوم ساعاته الخاصة. غيّريها هنا، أو أعيديه إلى الأسبوع."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid ""
+"This day is following the week. The boxes start at\n"
+"                            what the week says — change any of them and this\n"
+"                            day stops following it."
+msgstr ""
+"هذا اليوم يتبع الأسبوع. تبدأ الخانات بما يقوله الأسبوع — غيّري أيًّا منها "
+"ويتوقف هذا اليوم عن اتّباعه."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manage_roles
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "Yes, delete"
+msgstr "نعم، احذفي"

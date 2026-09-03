@@ -123,7 +123,12 @@ class ModrynBooking(http.Controller):
         #
         # Each weekday maps to {hour: capacity}, so the seats come out of the
         # same read as the hours and no second query per day appears.
-        by_weekday = Hours.modryn_hours_by_weekday()
+        # Keyed by DATE and not by weekday, so a date the owner has written her
+        # own hours against answers for itself. Still two reads for the whole
+        # fortnight — see modryn_capacities_over for why that matters here.
+        dates = [(now_local + timedelta(days=offset)).date()
+                 for offset in range(LEAD_DAYS, DAYS_AHEAD + 1)]
+        by_date = Hours.modryn_capacities_over(dates)
         # And every blackout date in ONE search, for the same reason: asking
         # modryn_is_closed() inside the loop would put back the fourteen queries
         # by_weekday() was introduced to remove. The window is exactly the range
@@ -134,8 +139,6 @@ class ModrynBooking(http.Controller):
         # the fortnight, for the same reason as `closed` above.
         blocked_hours = request.env['modryn.closure'].sudo().modryn_closed_hours(
             (now_local + timedelta(days=LEAD_DAYS)).date(), last_day)
-        dates = [(now_local + timedelta(days=offset)).date()
-                 for offset in range(LEAD_DAYS, DAYS_AHEAD + 1)]
         # What the boutique can STAFF, on top of what the room can hold. Empty
         # unless something is installed that knows — modryn_roster caps a date by
         # the stylists its published rota puts on the floor. Asked once for the
@@ -146,7 +149,7 @@ class ModrynBooking(http.Controller):
         caps = Hours.modryn_daily_caps(dates)
         days = []
         for day in dates:
-            hours = by_weekday.get(str(day.weekday()), {})
+            hours = by_date.get(day, {})
             # No hours means shut, and a SHUT day is not a FULL one. A full day
             # is still rendered below, with a waitlist form, because she should
             # learn she could be first in line. A day the boutique does not open

@@ -376,6 +376,7 @@ msgstr "الأربعاء"
 
 #. module: modryn_booking
 #: model:ir.model.fields,field_description:modryn_booking.field_modryn_opening_hours__weekday
+#: model:ir.model.fields,field_description:modryn_booking.field_modryn_queue_hour__weekday
 msgid "Weekday"
 msgstr "يوم الأسبوع"
 
@@ -386,11 +387,13 @@ msgstr "تم تأكيد موعدكِ"
 
 #. module: modryn_booking
 #: model:ir.model.fields,field_description:modryn_booking.field_modryn_closure__name
+#: model:ir.model.fields,field_description:modryn_booking.field_modryn_customer_kind__name
 msgid "Name"
 msgstr "الاسم"
 
 #. module: modryn_booking
 #: model:ir.model.fields,field_description:modryn_booking.field_modryn_closure__active
+#: model:ir.model.fields,field_description:modryn_booking.field_modryn_customer_kind__active
 #: model:ir.model.fields,field_description:modryn_booking.field_modryn_opening_hours__active
 msgid "Active"
 msgstr "نشط"
@@ -402,39 +405,57 @@ msgstr "حدث في التقويم"
 
 #. module: modryn_booking
 #: model:ir.model.fields,field_description:modryn_booking.field_modryn_closure__create_uid
+#: model:ir.model.fields,field_description:modryn_booking.field_modryn_customer_kind__create_uid
 #: model:ir.model.fields,field_description:modryn_booking.field_modryn_opening_hours__create_uid
+#: model:ir.model.fields,field_description:modryn_booking.field_modryn_queue_day__create_uid
+#: model:ir.model.fields,field_description:modryn_booking.field_modryn_queue_hour__create_uid
 msgid "Created by"
 msgstr "أنشأه"
 
 #. module: modryn_booking
 #: model:ir.model.fields,field_description:modryn_booking.field_modryn_closure__create_date
+#: model:ir.model.fields,field_description:modryn_booking.field_modryn_customer_kind__create_date
 #: model:ir.model.fields,field_description:modryn_booking.field_modryn_opening_hours__create_date
+#: model:ir.model.fields,field_description:modryn_booking.field_modryn_queue_day__create_date
+#: model:ir.model.fields,field_description:modryn_booking.field_modryn_queue_hour__create_date
 msgid "Created on"
 msgstr "أُنشئ في"
 
 #. module: modryn_booking
 #: model:ir.model.fields,field_description:modryn_booking.field_calendar_event__display_name
 #: model:ir.model.fields,field_description:modryn_booking.field_modryn_closure__display_name
+#: model:ir.model.fields,field_description:modryn_booking.field_modryn_customer_kind__display_name
 #: model:ir.model.fields,field_description:modryn_booking.field_modryn_opening_hours__display_name
+#: model:ir.model.fields,field_description:modryn_booking.field_modryn_queue_day__display_name
+#: model:ir.model.fields,field_description:modryn_booking.field_modryn_queue_hour__display_name
 msgid "Display Name"
 msgstr "الاسم المعروض"
 
 #. module: modryn_booking
 #: model:ir.model.fields,field_description:modryn_booking.field_calendar_event__id
 #: model:ir.model.fields,field_description:modryn_booking.field_modryn_closure__id
+#: model:ir.model.fields,field_description:modryn_booking.field_modryn_customer_kind__id
 #: model:ir.model.fields,field_description:modryn_booking.field_modryn_opening_hours__id
+#: model:ir.model.fields,field_description:modryn_booking.field_modryn_queue_day__id
+#: model:ir.model.fields,field_description:modryn_booking.field_modryn_queue_hour__id
 msgid "ID"
 msgstr "المعرّف"
 
 #. module: modryn_booking
 #: model:ir.model.fields,field_description:modryn_booking.field_modryn_closure__write_uid
+#: model:ir.model.fields,field_description:modryn_booking.field_modryn_customer_kind__write_uid
 #: model:ir.model.fields,field_description:modryn_booking.field_modryn_opening_hours__write_uid
+#: model:ir.model.fields,field_description:modryn_booking.field_modryn_queue_day__write_uid
+#: model:ir.model.fields,field_description:modryn_booking.field_modryn_queue_hour__write_uid
 msgid "Last Updated by"
 msgstr "آخر تحديث بواسطة"
 
 #. module: modryn_booking
 #: model:ir.model.fields,field_description:modryn_booking.field_modryn_closure__write_date
+#: model:ir.model.fields,field_description:modryn_booking.field_modryn_customer_kind__write_date
 #: model:ir.model.fields,field_description:modryn_booking.field_modryn_opening_hours__write_date
+#: model:ir.model.fields,field_description:modryn_booking.field_modryn_queue_day__write_date
+#: model:ir.model.fields,field_description:modryn_booking.field_modryn_queue_hour__write_date
 msgid "Last Updated on"
 msgstr "آخر تحديث في"
 
@@ -444,6 +465,7 @@ msgid "How many online bookings an hour takes"
 msgstr "كم دور من الموقع بتاخد الساعة"
 
 #. module: modryn_booking
+#: model:ir.model.fields,field_description:modryn_booking.field_modryn_queue_day__how_many
 #: model:ir.model.fields,field_description:modryn_booking.field_modryn_queue_hour__how_many
 msgid "How many"
 msgstr "كم"
@@ -466,6 +488,7 @@ msgstr "هذا النوع موجود."
 
 #. module: modryn_booking
 #. odoo-python
+#: code:addons/modryn_booking/models/queue_day.py:0
 #: code:addons/modryn_booking/models/queue_hours.py:0
 msgid "An hour cannot take a negative number of bookings."
 msgstr "الساعة ما بتقدر تاخد عدد سالب من الأدوار."
@@ -489,6 +512,7 @@ msgid "Please say who is coming"
 msgstr "احكيلنا مين جايّة"
 
 #. module: modryn_booking
+#: model:ir.model.fields,field_description:modryn_booking.field_modryn_queue_day__hour
 #: model:ir.model.fields,field_description:modryn_booking.field_modryn_queue_hour__hour
 msgid "Hour"
 msgstr "الساعة"
@@ -507,3 +531,19 @@ msgstr "الترتيب"
 #: model_terms:ir.ui.view,arch_db:modryn_booking.booking_form
 msgid "<option value=\"\">— Choose —</option>"
 msgstr "<option value=\"\">— اختاري —</option>"
+
+#. module: modryn_booking
+#: model:ir.model.fields,field_description:modryn_booking.field_modryn_queue_day__day
+msgid "Day"
+msgstr "التاريخ"
+
+#. module: modryn_booking
+#: model:ir.model,name:modryn_booking.model_modryn_queue_day
+msgid "How many online bookings one date takes"
+msgstr "كم موعدًا من الموقع يستقبله يوم معيّن"
+
+#. module: modryn_booking
+#. odoo-python
+#: code:addons/modryn_booking/models/queue_day.py:0
+msgid "That hour is already set for that day."
+msgstr "هذه الساعة محدّدة لهذا اليوم بالفعل."

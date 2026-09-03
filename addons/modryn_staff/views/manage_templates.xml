@@ -60,8 +60,16 @@
     <template id="manage_roles" name="MODRYN roles">
         <t t-call="modryn_staff.manage_layout">
             <h1 class="mb-2">Roles</h1>
-            <p class="text-muted mb-4">
+            <p class="text-muted mb-2">
                 You decide the roles — add whatever the boutique needs.
+            </p>
+            <!-- The Workshop flag was a badge with no sentence anywhere near
+                 it. It decides who alterations land on, which is a real
+                 consequence, and the screen was leaving the owner to guess. -->
+            <p class="text-muted mb-4" style="max-width: 640px;">
+                <strong>Workshop</strong> marks the roles that do the sewing.
+                When a dress needs taking in, the job goes to the women in
+                those roles — that is the only thing the mark changes.
             </p>
 
             <div t-if="error" class="modryn_field_error mb-3" role="alert" t-out="error"/>
@@ -80,8 +88,28 @@
                         <td>
                             <t t-out="role.name"/>
                             <span t-if="role.is_workshop" class="badge text-bg-dark ms-2">Workshop</span>
+                            <!-- Asked on the row she pressed, in words, and
+                                 only ever after a press: this is the one
+                                 control on the screen that cannot be undone. -->
+                            <div t-if="role in confirming" class="modryn_field_error mt-2">
+                                <strong t-out="role.name"/>
+                                <div>Delete this role? It goes for good, and
+                                takes its page access with it.</div>
+                            </div>
                         </td>
                         <td class="text-end">
+                            <t t-if="role in confirming">
+                                <form t-attf-action="/manage/roles/delete/#{role.id}" method="post"
+                                      class="d-inline me-1">
+                                    <input type="hidden" name="csrf_token"
+                                           t-att-value="request.csrf_token()"/>
+                                    <button type="submit" class="btn btn-sm btn-danger">
+                                        Yes, delete
+                                    </button>
+                                </form>
+                                <a href="/manage/roles" class="btn btn-sm btn-outline-dark">Keep it</a>
+                            </t>
+                            <t t-else="">
                             <!-- Whether this role's members take the workshop's
                                  auto-assigned queue. A toggle, not a checkbox-and-
                                  save: one decision, one press, same as Archive. -->
@@ -103,6 +131,17 @@
                                     <t t-else="">Restore</t>
                                 </button>
                             </form>
+                            <!-- Offered ONLY where it can work. A role two
+                                 saleswomen carry cannot be deleted, and a
+                                 button that always refuses is worse than no
+                                 button: the row says why instead. -->
+                            <a t-if="not wearing.get(role.id)"
+                               t-attf-href="/manage/roles?confirm=#{role.id}"
+                               class="btn btn-sm btn-outline-danger ms-1">Delete</a>
+                            <span t-else="" class="modryn_sub ms-2">
+                                In use — archive it
+                            </span>
+                            </t>
                         </td>
                     </tr>
                 </tbody>

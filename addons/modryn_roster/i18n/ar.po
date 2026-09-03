@@ -1025,3 +1025,8 @@ msgstr "أي أجزاء من اليوم بتشغّليها"
 #: code:addons/modryn_roster/controllers/roster.py:0
 msgid "A schedule needs at least one part of the day."
 msgstr "السيدور بده على الأقل جزء واحد من اليوم."
+
+#. module: modryn_roster
+#: model_terms:ir.ui.view,arch_db:modryn_roster.manage_week_planner
+msgid "Someone else"
+msgstr "شخص آخر"

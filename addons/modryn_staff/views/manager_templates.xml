@@ -200,6 +200,13 @@
                     </div>
 
                     <div class="mb-3">
+                        <label class="form-label" for="birthday">Date of birth</label>
+                        <input type="date" id="birthday" name="birthday"
+                               class="form-control" dir="ltr"
+                               t-att-value="values.get('birthday', '')"/>
+                    </div>
+
+                    <div class="mb-3">
                         <label class="form-label" for="id_number">ID number</label>
                         <input type="text" id="id_number" name="id_number"
                                class="form-control" dir="ltr" inputmode="numeric"
@@ -371,6 +378,10 @@
                             <t t-if="member['backup_phone']">
                                 <dt>Second phone</dt>
                                 <dd dir="ltr" t-out="member['backup_phone']"/>
+                            </t>
+                            <t t-if="member['birthday']">
+                                <dt>Date of birth</dt>
+                                <dd dir="ltr" t-out="member['birthday']"/>
                             </t>
                             <t t-if="member['city'] or member['street']">
                                 <dt>Address</dt>
@@ -959,30 +970,160 @@
                     <tbody>
                         <tr t-foreach="queue_kinds" t-as="kind"
                             t-attf-class="#{'' if kind.active else 'modryn_archived'}">
-                            <td><strong t-out="kind.name"/></td>
+                            <td>
+                                <strong t-out="kind.name"/>
+                                <div t-if="kind in queue_kind_confirming"
+                                     class="modryn_field_error mt-2">
+                                    <div>Delete this one? It goes for good.</div>
+                                </div>
+                            </td>
                             <td class="text-muted" t-out="kind.note or ''"/>
                             <td class="text-end">
-                                <form t-attf-action="/manage/queue-kind/archive/#{kind.id}"
-                                      method="post" class="d-inline">
-                                    <input type="hidden" name="csrf_token"
-                                           t-att-value="request.csrf_token()"/>
-                                    <button type="submit" class="btn btn-sm btn-outline-dark">
-                                        <t t-if="kind.active">Stop offering it</t>
-                                        <t t-else="">Offer it again</t>
-                                    </button>
-                                </form>
+                                <t t-if="kind in queue_kind_confirming">
+                                    <form t-attf-action="/manage/queue-kind/delete/#{kind.id}"
+                                          method="post" class="d-inline me-1">
+                                        <input type="hidden" name="csrf_token"
+                                               t-att-value="request.csrf_token()"/>
+                                        <button type="submit" class="btn btn-sm btn-danger">
+                                            Yes, delete
+                                        </button>
+                                    </form>
+                                    <a href="/manage/team-screen?view=queue"
+                                       class="btn btn-sm btn-outline-dark">Keep it</a>
+                                </t>
+                                <t t-else="">
+                                    <form t-attf-action="/manage/queue-kind/archive/#{kind.id}"
+                                          method="post" class="d-inline">
+                                        <input type="hidden" name="csrf_token"
+                                               t-att-value="request.csrf_token()"/>
+                                        <button type="submit" class="btn btn-sm btn-outline-dark">
+                                            <t t-if="kind.active">Stop offering it</t>
+                                            <t t-else="">Offer it again</t>
+                                        </button>
+                                    </form>
+                                    <!-- Only where it can work: a kind that
+                                         appointments point at is a fact about
+                                         those brides, not a typo. -->
+                                    <a t-if="not queue_kind_booked.get(kind.id)"
+                                       t-attf-href="/manage/team-screen?view=queue&amp;confirm=#{kind.id}"
+                                       class="btn btn-sm btn-outline-danger ms-1">Delete</a>
+                                </t>
                             </td>
                         </tr>
                     </tbody>
                 </table>
 
-                <!-- ============ the grid ============ -->
-                <h2 class="h5 mb-2">How many an hour</h2>
+                <!-- ============ the month ============ -->
+                <h2 class="h5 mb-2">The months ahead</h2>
                 <p class="text-muted mb-3">
+                    Every day follows the week below unless you say otherwise.
+                    Press a day to give it its own hours — the week you are
+                    away at a fair, the Thursday you open late, the holiday. A
+                    day with its own hours is marked, and it stops following
+                    the week until you hand it back.
+                </p>
+
+                <div class="d-flex align-items-center gap-2 mb-2 flex-wrap">
+                    <a t-if="queue_prev"
+                       t-attf-href="/manage/team-screen?view=queue&amp;month=#{queue_prev}"
+                       class="btn btn-sm btn-outline-dark">&#8249;</a>
+                    <span t-else="" class="btn btn-sm btn-outline-dark disabled">&#8249;</span>
+                    <strong t-out="queue_month_label"/>
+                    <a t-if="queue_next"
+                       t-attf-href="/manage/team-screen?view=queue&amp;month=#{queue_next}"
+                       class="btn btn-sm btn-outline-dark">&#8250;</a>
+                    <span t-else="" class="btn btn-sm btn-outline-dark disabled">&#8250;</span>
+                </div>
+
+                <div class="modryn_scroll mb-3">
+                    <table class="table modryn_month align-middle">
+                        <thead>
+                            <tr>
+                                <th t-foreach="queue_weekday_heads" t-as="head"
+                                    class="text-center" t-out="head"/>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="queue_weeks" t-as="week">
+                                <td t-foreach="week" t-as="cell" class="p-1">
+                                    <!-- A past day is drawn and not pressable:
+                                         removing it would make the month
+                                         jump about, and nothing can be booked
+                                         into yesterday anyway. -->
+                                    <a t-if="cell['this_month'] and not cell['past']"
+                                       t-attf-href="/manage/team-screen?view=queue&amp;month=#{queue_month}&amp;day=#{cell['key']}"
+                                       t-attf-class="modryn_month_day#{' is_own' if cell['own'] else ''}#{' is_today' if cell['today'] else ''}#{' is_chosen' if queue_day and queue_day['key'] == cell['key'] else ''}">
+                                        <span class="modryn_month_num" t-out="cell['number']"/>
+                                        <span class="modryn_month_seats"
+                                              t-if="cell['seats']"><t t-out="cell['seats']"/></span>
+                                        <span class="modryn_month_seats is_shut"
+                                              t-else="">&#8212;</span>
+                                    </a>
+                                    <span t-elif="cell['this_month']"
+                                          class="modryn_month_day is_past">
+                                        <span class="modryn_month_num" t-out="cell['number']"/>
+                                    </span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <p class="modryn_sub mb-4">
+                    The number in a day is how many appointments the website
+                    may give away that day altogether. A gold day has hours of
+                    its own; the rest follow the week.
+                </p>
+
+                <!-- ============ one day ============ -->
+                <div t-if="queue_day" class="modryn_panel mb-4">
+                    <h3 class="h6 mb-2">
+                        <t t-out="queue_day['label']"/>
+                    </h3>
+                    <p class="modryn_sub">
+                        <t t-if="queue_day['own']">
+                            This day has its own hours. Change them here, or
+                            hand it back to the week.
+                        </t>
+                        <t t-else="">
+                            This day is following the week. The boxes start at
+                            what the week says — change any of them and this
+                            day stops following it.
+                        </t>
+                    </p>
+                    <form action="/manage/queue-day" method="post">
+                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                        <input type="hidden" name="day" t-att-value="queue_day['key']"/>
+                        <div class="modryn_dayhours mb-3">
+                            <label t-foreach="queue_day['hours']" t-as="slot"
+                                   class="modryn_dayhour">
+                                <span dir="ltr" t-out="slot['text']"/>
+                                <input type="number" min="0" max="20" step="1" dir="ltr"
+                                       t-attf-name="hour_#{str(slot['hour']).replace('.', '-')}"
+                                       t-att-value="slot['how_many']"
+                                       class="form-control form-control-sm modryn_queue_cell"/>
+                            </label>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Save this day</button>
+                    </form>
+                    <form t-if="queue_day['own']" action="/manage/queue-day/clear"
+                          method="post" class="mt-2">
+                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                        <input type="hidden" name="day" t-att-value="queue_day['key']"/>
+                        <button type="submit" class="btn btn-sm btn-outline-dark">
+                            Follow the week again
+                        </button>
+                    </form>
+                </div>
+
+                <!-- ============ the grid ============ -->
+                <h2 class="h5 mb-2">The week, every week</h2>
+                <p class="text-muted mb-3">
+                    Fill this in once and every week uses it — this is what
+                    every day above follows until you give one its own hours.
                     Every hour of every day is here, Friday and Saturday
-                    included — some boutiques work them, and some open in the
-                    evening. Nothing is decided for you: put a number where you
-                    want appointments and leave the rest at nothing.
+                    included: some boutiques work them, and some open in the
+                    evening. Nothing is decided for you.
                 </p>
 
                 <form action="/manage/queue-hours" method="post">
@@ -1055,6 +1196,30 @@
                         <label class="form-label" for="code_note">What it is for</label>
                         <input type="text" id="code_note" name="note" class="form-control"/>
                     </div>
+                    <!-- HOW LONG THE WORD LASTS. Both boxes are drawn always
+                         and the browser hides the one that does not apply; a
+                         box that appears only after the dropdown moves is a box
+                         nobody with JavaScript off can reach, and this form is
+                         plain HTML everywhere else. -->
+                    <div class="col-12 col-md-4">
+                        <label class="form-label" for="code_limit">How long it lasts</label>
+                        <select id="code_limit" name="limit_kind" class="form-select">
+                            <option value="none">As many times as they like</option>
+                            <option value="times">A set number of times</option>
+                            <option value="until">Until a date</option>
+                        </select>
+                    </div>
+                    <div class="col-6 col-md-4">
+                        <label class="form-label" for="code_times">How many times</label>
+                        <input type="number" id="code_times" name="max_uses"
+                               min="1" step="1" value="1" dir="ltr"
+                               class="form-control"/>
+                    </div>
+                    <div class="col-6 col-md-4">
+                        <label class="form-label" for="code_until">Last day it works</label>
+                        <input type="date" id="code_until" name="use_until" dir="ltr"
+                               class="form-control"/>
+                    </div>
                     <div class="col-12">
                         <button type="submit" class="btn btn-primary">Add the code</button>
                     </div>
@@ -1068,7 +1233,8 @@
                         <thead>
                             <tr>
                                 <th>The code</th><th>Percent off</th>
-                                <th>What it is for</th><th>Used</th><th/>
+                                <th>What it is for</th><th>Used</th>
+                                <th>How long it lasts</th><th/>
                             </tr>
                         </thead>
                         <tbody>
@@ -1078,6 +1244,15 @@
                                 <td dir="ltr"><t t-out="int(rule.percent)"/>%</td>
                                 <td t-out="rule.note or ''"/>
                                 <td dir="ltr" t-out="rule.times_used"/>
+                                <td>
+                                    <t t-out="rule.modryn_left()"/>
+                                    <!-- Said out loud on the row, because a
+                                         code that has run out still sits in
+                                         this table looking exactly like one
+                                         that works. -->
+                                    <span t-if="rule.modryn_spent()"
+                                          class="badge text-bg-secondary ms-1">Finished</span>
+                                </td>
                                 <td class="text-end">
                                     <form t-attf-action="/manage/codes/archive/#{rule.id}"
                                           method="post" class="d-inline">

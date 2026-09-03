@@ -42,7 +42,44 @@
                 </thead>
                 <tbody>
                     <tr t-foreach="templates" t-as="tpl">
-                        <td><span t-attf-class="#{'' if tpl.active else 'text-muted'}"><t t-esc="tpl.name"/></span></td>
+                        <!-- THE ROW BECOMES THE FORM. Editing in place rather
+                             than on a page of its own: this table is four
+                             columns wide and the thing she is fixing is a time
+                             she typed wrong, so taking her somewhere else to
+                             fix it is three screens for one number. -->
+                        <t t-if="tpl in editing">
+                            <td colspan="4">
+                                <form t-attf-action="/manage/checklists/edit/#{tpl.id}"
+                                      method="post" class="d-flex gap-2 flex-wrap align-items-center">
+                                    <input type="hidden" name="csrf_token"
+                                           t-att-value="request.csrf_token()"/>
+                                    <input type="text" name="name" class="form-control w-auto"
+                                           required="required" t-att-value="tpl.name"/>
+                                    <select name="kind" class="form-select w-auto">
+                                        <option value="opening"
+                                                t-att-selected="'selected' if tpl.kind == 'opening' else None">Opening</option>
+                                        <option value="closing"
+                                                t-att-selected="'selected' if tpl.kind == 'closing' else None">Closing</option>
+                                    </select>
+                                    <input type="time" name="due_time" class="form-control w-auto"
+                                           t-att-value="'%02d:%02d' % (int(tpl.due_hour), int(round((tpl.due_hour - int(tpl.due_hour)) * 60)) % 60)"/>
+                                    <button type="submit" class="btn btn-sm btn-primary">Save</button>
+                                    <a href="/manage/checklists" class="btn btn-sm btn-outline-dark">Cancel</a>
+                                </form>
+                                <p class="modryn_sub mb-0 mt-1">
+                                    Today's list keeps the old wording — the
+                                    change starts tomorrow morning.
+                                </p>
+                            </td>
+                        </t>
+                        <t t-else="">
+                        <td>
+                            <span t-attf-class="#{'' if tpl.active else 'text-muted'}"><t t-esc="tpl.name"/></span>
+                            <div t-if="tpl in confirming" class="modryn_field_error mt-2">
+                                <div>Delete this item? It goes for good. What
+                                has already been ticked off stays.</div>
+                            </div>
+                        </td>
                         <td>
                             <span class="modryn_badge is_muted">
                                 <t t-if="tpl.kind == 'opening'">Opening</t>
@@ -53,14 +90,30 @@
                             <t t-esc="'%02d:%02d' % (int(tpl.due_hour), int(round((tpl.due_hour - int(tpl.due_hour)) * 60)) % 60)"/>
                         </td>
                         <td class="text-end">
-                            <form t-attf-action="/manage/checklists/archive/#{tpl.id}" method="post" class="d-inline">
-                                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
-                                <button type="submit" class="btn btn-sm btn-outline-dark">
-                                    <t t-if="tpl.active">Archive</t>
-                                    <t t-else="">Restore</t>
-                                </button>
-                            </form>
+                            <t t-if="tpl in confirming">
+                                <form t-attf-action="/manage/checklists/delete/#{tpl.id}"
+                                      method="post" class="d-inline me-1">
+                                    <input type="hidden" name="csrf_token"
+                                           t-att-value="request.csrf_token()"/>
+                                    <button type="submit" class="btn btn-sm btn-danger">Yes, delete</button>
+                                </form>
+                                <a href="/manage/checklists" class="btn btn-sm btn-outline-dark">Keep it</a>
+                            </t>
+                            <t t-else="">
+                                <a t-attf-href="/manage/checklists?edit=#{tpl.id}"
+                                   class="btn btn-sm btn-outline-dark me-1">Edit</a>
+                                <form t-attf-action="/manage/checklists/archive/#{tpl.id}" method="post" class="d-inline">
+                                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                    <button type="submit" class="btn btn-sm btn-outline-dark">
+                                        <t t-if="tpl.active">Archive</t>
+                                        <t t-else="">Restore</t>
+                                    </button>
+                                </form>
+                                <a t-attf-href="/manage/checklists?confirm=#{tpl.id}"
+                                   class="btn btn-sm btn-outline-danger ms-1">Delete</a>
+                            </t>
                         </td>
+                        </t>
                     </tr>
                 </tbody>
             </table>

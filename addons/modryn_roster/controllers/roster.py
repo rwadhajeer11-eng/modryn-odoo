@@ -84,8 +84,10 @@ class ModrynRoster(http.Controller):
         Availability = request.env['modryn.availability'].sudo()
         week_map = Availability.modryn_week_map(start)
         slots = request.env['modryn.shift.slot'].sudo().modryn_ensure_week(start)
+        team = request.env['modryn.shift.slot']._modryn_team()
         return [slot._row(employee=employee,
-                          available_ids=week_map.get((slot.day, slot._shift_type()), []))
+                          available_ids=week_map.get((slot.day, slot._shift_type()), []),
+                          team=team)
                 for slot in slots]
 
     def _planner_days(self, start):

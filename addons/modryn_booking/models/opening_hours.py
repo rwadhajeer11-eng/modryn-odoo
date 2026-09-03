@@ -196,7 +196,22 @@ class ModrynOpeningHours(models.Model):
 
     @api.model
     def modryn_capacities_on(self, day_date):
-        """{hour_float: capacity_int} for that date. Empty dict means shut."""
+        """{hour_float: capacity_int} for that date. Empty dict means shut.
+
+        THE DATE IS ASKED FIRST. A day the owner has written hours against
+        answers for itself and the weekly pattern is not consulted at all —
+        which is what makes "we are at a fair on the 14th" expressible without
+        editing the week twice.
+
+        Hours set to zero are dropped here rather than returned as zero, so
+        every caller keeps its existing rule that a missing hour is an hour not
+        offered. A date whose every hour is zero therefore comes back empty,
+        and empty already means shut everywhere this is read.
+        """
+        named = self.env['modryn.queue.day'].modryn_on(day_date)
+        if named:
+            return {hour: how_many for hour, how_many in sorted(named.items())
+                    if how_many > 0}
         weekday = str(day_date.weekday())
         return self._capacities([('weekday', '=', weekday)]).get(weekday, {})
 
@@ -250,6 +265,36 @@ class ModrynOpeningHours(models.Model):
             hours = by_day.setdefault(window.weekday, set())
             hours.update(_starts(window.start_hour, window.end_hour))
         return {day: sorted(hours) for day, hours in by_day.items()}
+
+    @api.model
+    def modryn_capacities_over(self, dates):
+        """{date: {hour: capacity}} for a run of dates, in TWO reads.
+
+        The layered answer of modryn_capacities_on(), for a whole fortnight at
+        once. /book renders fourteen days and calling the single-date version
+        per day would put back exactly the round trips modryn_hours_by_weekday
+        was written to remove — one query per day against a table with five
+        rows in it, on the boutique's busiest public page.
+
+        The arithmetic is identical to the single-date version and deliberately
+        expressed in the same order: what she wrote against the DATE, then the
+        week she normally works. Two callers means two places to keep true, so
+        anything past the layering itself stays in _capacities().
+        """
+        if not dates:
+            return {}
+        named = self.env['modryn.queue.day'].modryn_days(min(dates), max(dates))
+        by_weekday = self.modryn_hours_by_weekday()
+        answer = {}
+        for day in dates:
+            hours = named.get(day)
+            if hours:
+                answer[day] = {hour: how_many
+                               for hour, how_many in sorted(hours.items())
+                               if how_many > 0}
+            else:
+                answer[day] = by_weekday.get(str(day.weekday()), {})
+        return answer
 
     @api.model
     def modryn_hours_by_weekday(self):

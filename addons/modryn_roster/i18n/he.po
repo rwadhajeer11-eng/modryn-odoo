@@ -1006,3 +1006,8 @@ msgstr "אילו חלקי יום את מפעילה"
 #: code:addons/modryn_roster/controllers/roster.py:0
 msgid "A schedule needs at least one part of the day."
 msgstr "סידור צריך לפחות חלק יום אחד."
+
+#. module: modryn_roster
+#: model_terms:ir.ui.view,arch_db:modryn_roster.manage_week_planner
+msgid "Someone else"
+msgstr "מישהי אחרת"

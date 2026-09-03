@@ -253,7 +253,19 @@ class ModrynShiftSlot(models.Model):
         self.ensure_one()
         return self.template_id.name or self.name
 
-    def _row(self, employee=None, available_ids=None):
+    def _modryn_team(self):
+        """The women this boutique could put on a shift.
+
+        Read once per grid and handed down, not searched per slot: twenty-one
+        cells would otherwise be twenty-one identical searches, and the only
+        symptom of that is a page that is quietly slow.
+        """
+        return self.env['hr.employee'].sudo().search([
+            ('modryn_level', 'in', ('owner', 'manager', 'staff')),
+            ('active', '=', True),
+        ], order='name')
+
+    def _row(self, employee=None, available_ids=None, team=None):
         """One real shift, for the manager's side of the grid.
 
         `available_ids` is handed in from modryn_week_map rather than looked up
@@ -273,6 +285,8 @@ class ModrynShiftSlot(models.Model):
             available_ids = self.env['modryn.availability'].sudo().modryn_week_map(
                 self.week_start).get((self.day, self._shift_type()), [])
         available = self.env['hr.employee'].sudo().browse(available_ids).exists()
+        if team is None:
+            team = self._modryn_team()
         shortages = self._shortages()
         mine = bool(employee and employee.id in available_ids)
         return {
@@ -292,6 +306,14 @@ class ModrynShiftSlot(models.Model):
                           for e in available if e.active],
             'working': [{'id': e.id, 'name': e.name, 'role': e.modryn_role_id.name or ''}
                         for e in self.employee_ids],
+            # EVERYBODY ELSE. Not a shortcut around the offer list — the offer
+            # list keeps its place at the top of the cell, because who put her
+            # hand up is what a planner wants to see first. This is the rest of
+            # the team, one press away, for the week somebody forgot to fill in
+            # the form and for the shift the manager needs her on regardless.
+            'others': [{'id': e.id, 'name': e.name, 'role': e.modryn_role_id.name or ''}
+                       for e in team
+                       if e not in self.employee_ids and e.id not in available_ids],
             'shortages': shortages,
             'short_total': sum(s['short'] for s in shortages),
             'i_am_available': mine,

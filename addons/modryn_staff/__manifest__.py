@@ -57,6 +57,7 @@ therefore never touch hr.employee directly.
         'web.assets_frontend': [
             'modryn_staff/static/src/floor/**/*',
             'modryn_staff/static/src/home/**/*',
+            'modryn_staff/static/src/manager/**/*',
         ],
     },
     'author': 'MODRYN',

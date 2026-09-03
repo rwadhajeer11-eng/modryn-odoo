@@ -11,7 +11,8 @@ controller here follows; an announcement reaches every phone in the shop, and
 that is not a thing a page grant should be able to hand out.
 """
 
-from datetime import datetime, timedelta
+import calendar
+from datetime import date, datetime, timedelta
 
 import pytz
 import werkzeug.urls
@@ -19,6 +20,7 @@ import werkzeug.urls
 from odoo import _, fields, http
 from odoo.exceptions import ValidationError
 from odoo.http import content_disposition, request
+from odoo.tools.misc import format_date
 from odoo.tools.translate import LazyTranslate
 
 from odoo.addons.modryn_booking.models.opening_hours import (
@@ -524,7 +526,11 @@ class ModrynManagerScreen(http.Controller):
                 error=request.params.get('error')))
         if view == 'queue':
             context.update(self._queue_hours_context(
-                error=request.params.get('error')))
+                error=request.params.get('error'),
+                confirm=request.params.get('confirm')))
+            context.update(self._queue_month_context(
+                month=request.params.get('month'),
+                day=request.params.get('day')))
         if view == 'codes':
             # THE MANAGER'S, not the owner's. She is the one who decides that
             # this week's fair gets ten percent, and making her find the owner
@@ -578,8 +584,124 @@ class ModrynManagerScreen(http.Controller):
         }
 
     # --------------------------------------------------------- booking hours
+    # A YEAR, and not further. Long enough for next season's fairs and every
+    # holiday, short enough that the month walker cannot wander into 2071 and
+    # leave her pressing "back" forty times.
+    QUEUE_MONTHS_AHEAD = 12
+
     @staticmethod
-    def _queue_hours_context(error=None):
+    def _queue_month_context(month=None, day=None):
+        """The month she is looking at, and the one date she opened.
+
+        Built from the calendar module rather than by counting days: the first
+        cell of the grid has to be the Sunday on or before the 1st, and the
+        arithmetic for that is exactly the arithmetic that is wrong by one when
+        it is written by hand in a template.
+        """
+        today = fields.Date.context_today(request.env['modryn.queue.day'])
+        first_allowed = today.replace(day=1)
+        # date(y, m, 1) walked forward QUEUE_MONTHS_AHEAD months, without
+        # depending on dateutil — the addon does not have it as a dependency
+        # and one line of modulo is cheaper than gaining one.
+        total = first_allowed.year * 12 + (first_allowed.month - 1) \
+            + ModrynManagerScreen.QUEUE_MONTHS_AHEAD
+        last_allowed = date(total // 12, total % 12 + 1, 1)
+
+        shown = first_allowed
+        if month:
+            try:
+                year_s, month_s = str(month).split('-')[:2]
+                shown = date(int(year_s), int(month_s), 1)
+            except (TypeError, ValueError):
+                shown = first_allowed
+        # Clamped rather than refused: a hand-typed month outside the year is a
+        # mistyped URL, and the nearest real month is a better answer than a
+        # 404 on a screen she reached by pressing an arrow.
+        shown = min(max(shown, first_allowed), last_allowed)
+
+        def step(base, delta):
+            n = base.year * 12 + (base.month - 1) + delta
+            return date(n // 12, n % 12 + 1, 1)
+
+        previous = step(shown, -1)
+        following = step(shown, 1)
+        last_day = date(shown.year, shown.month,
+                         calendar.monthrange(shown.year, shown.month)[1])
+
+        Day = request.env['modryn.queue.day'].sudo()
+        named = Day.modryn_days(shown, last_day)
+        Hours = request.env['modryn.opening.hours']
+        pattern = Hours.modryn_hours_by_weekday()
+
+        # The grid starts on the Sunday on or before the 1st and runs whole
+        # weeks, because that is what a month looks like on a wall.
+        start = shown - timedelta(days=(shown.weekday() + 1) % 7)
+        weeks, row = [], []
+        cursor = start
+        while cursor <= last_day or len(row) % 7:
+            hours = named.get(cursor)
+            from_pattern = hours is None
+            if from_pattern:
+                hours = pattern.get(str(cursor.weekday()), {})
+            seats = sum(count for count in hours.values() if count > 0)
+            row.append({
+                'date': cursor,
+                'key': cursor.strftime('%Y-%m-%d'),
+                'number': cursor.day,
+                'this_month': cursor.month == shown.month,
+                'past': cursor < today,
+                'today': cursor == today,
+                # Where the answer came from, and it is the only thing on this
+                # screen a manager cannot work out by looking: two identical
+                # cells, one of which will follow a change to the week and one
+                # of which will not.
+                'own': not from_pattern,
+                'seats': seats,
+                'open_hours': len([c for c in hours.values() if c > 0]),
+            })
+            if len(row) == 7:
+                weeks.append(row)
+                row = []
+            cursor += timedelta(days=1)
+        if row:
+            weeks.append(row)
+
+        chosen = None
+        if day:
+            try:
+                year_s, month_s, day_s = str(day).split('-')[:3]
+                picked = date(int(year_s), int(month_s), int(day_s))
+            except (TypeError, ValueError):
+                picked = None
+            if picked and first_allowed <= picked <= last_allowed:
+                own = Day.modryn_on(picked)
+                fallback = pattern.get(str(picked.weekday()), {})
+                source = own or fallback
+                chosen = {
+                    'key': picked.strftime('%Y-%m-%d'),
+                    'label': picked.strftime('%d.%m.%Y'),
+                    'own': bool(own),
+                    'hours': [{
+                        'hour': float(hour),
+                        'text': '%02d:00' % hour,
+                        'how_many': source.get(float(hour), 0),
+                    } for hour in range(24)],
+                }
+        return {
+            'queue_weeks': weeks,
+            'queue_month': shown.strftime('%Y-%m'),
+            'queue_month_label': '%s %s' % (
+                format_date(request.env, shown, date_format='LLLL'), shown.year),
+            'queue_prev': previous.strftime('%Y-%m')
+                          if previous >= first_allowed else None,
+            'queue_next': following.strftime('%Y-%m')
+                          if following <= last_allowed else None,
+            'queue_weekday_heads': [label for _code, label in _hours_weekdays()],
+            'queue_day': chosen,
+        }
+
+    @staticmethod
+    def _queue_hours_context(error=None, confirm=None):
         """The whole week, every hour of it, and the kinds she accepts.
 
         SEVEN DAYS AND TWENTY-FOUR HOURS, not the hours the door happens to be
@@ -615,13 +737,26 @@ class ModrynManagerScreen(http.Controller):
                         QUEUE_DEFAULT if float(hour) in open_today else 0),
                 } for hour in range(24)],
             })
+        kinds = request.env['modryn.customer.kind'].sudo().with_context(
+            active_test=False).search([])
+        Booking = request.env['calendar.event'].sudo()
+        confirming = kinds.browse()
+        if confirm and str(confirm).isdigit():
+            confirming = kinds.filtered(lambda k: k.id == int(confirm))
         return {
             'queue_error': error or '',
             'queue_days': days,
             # The hours, once, for the table's left-hand column.
             'queue_clock': ['%02d:00' % hour for hour in range(24)],
-            'queue_kinds': request.env['modryn.customer.kind'].sudo()
-                           .with_context(active_test=False).search([]),
+            'queue_kinds': kinds,
+            # Bookings per kind. The screen offers Delete only where deleting is
+            # possible; everywhere else it says why, which is better than a
+            # button that always refuses.
+            'queue_kind_booked': {
+                kind.id: Booking.search_count(
+                    [('modryn_customer_kind_id', '=', kind.id)])
+                for kind in kinds},
+            'queue_kind_confirming': confirming,
         }
 
     @http.route('/manage/queue-hours', type='http', auth='user', website=True,
@@ -663,6 +798,81 @@ class ModrynManagerScreen(http.Controller):
                 Queue.create({'weekday': key[0], 'hour': key[1],
                               'how_many': how_many})
         return request.redirect('/manage/team-screen?view=queue')
+
+    @http.route('/manage/queue-day', type='http', auth='user', website=True,
+                methods=['POST'], csrf=True, sitemap=False)
+    def queue_day_save(self, **post):
+        """One date's own hours, replacing whatever it had.
+
+        REPLACE-SET, exactly like the weekly grid next to it: the form posts
+        all twenty-four hours, so what is in the boxes when Save lands is what
+        that date is. Anything else and an hour cleared to nothing would keep
+        its old number, which is the bug the weekly grid was written to avoid.
+
+        A date is stored even when every hour is zero. "Open, and the website
+        gives nothing away" is a real answer and the ONLY way to say it — a
+        date with no rows at all falls back to the weekly pattern, which is a
+        different sentence entirely.
+        """
+        if not (access.is_manager() or access.can_view('boss')):
+            return access.deny()
+        raw = (post.get('day') or '').strip()
+        try:
+            day = datetime.strptime(raw, '%Y-%m-%d').date()
+        except (TypeError, ValueError):
+            return request.redirect('/manage/team-screen?view=queue')
+
+        Day = request.env['modryn.queue.day'].sudo()
+        form = request.httprequest.form
+        wanted = {}
+        for key in form.keys():
+            # hour_<hour with the dot as a dash>, the same shape the weekly
+            # grid posts, minus the weekday it does not need.
+            if not key.startswith('hour_'):
+                continue
+            try:
+                hour = float(key[5:].replace('-', '.'))
+                how_many = int(form.get(key) or 0)
+            except (TypeError, ValueError):
+                continue
+            if 0 <= hour < 24:
+                wanted[round(hour, 4)] = max(how_many, 0)
+        if not wanted:
+            return request.redirect('/manage/team-screen?view=queue')
+
+        existing = {round(row.hour, 4): row for row in Day.search([('day', '=', day)])}
+        for hour, how_many in wanted.items():
+            row = existing.get(hour)
+            if row:
+                row.how_many = how_many
+            else:
+                Day.create({'day': day, 'hour': hour, 'how_many': how_many})
+        return request.redirect(
+            '/manage/team-screen?view=queue&month=%s&day=%s'
+            % (day.strftime('%Y-%m'), day.strftime('%Y-%m-%d')))
+
+    @http.route('/manage/queue-day/clear', type='http', auth='user', website=True,
+                methods=['POST'], csrf=True, sitemap=False)
+    def queue_day_clear(self, **post):
+        """Give a date back to the weekly pattern.
+
+        Not the same as setting every hour to zero, and the screen says so:
+        zero everywhere means the shop is open and offering nothing online,
+        while clearing means the date has no opinion of its own and follows the
+        week again — including any later change to the week.
+        """
+        if not (access.is_manager() or access.can_view('boss')):
+            return access.deny()
+        raw = (post.get('day') or '').strip()
+        try:
+            day = datetime.strptime(raw, '%Y-%m-%d').date()
+        except (TypeError, ValueError):
+            return request.redirect('/manage/team-screen?view=queue')
+        request.env['modryn.queue.day'].sudo().search(
+            [('day', '=', day)]).unlink()
+        return request.redirect(
+            '/manage/team-screen?view=queue&month=%s&day=%s'
+            % (day.strftime('%Y-%m'), day.strftime('%Y-%m-%d')))
 
     @http.route('/manage/queue-kind/new', type='http', auth='user', website=True,
                 methods=['POST'], csrf=True, sitemap=False)
@@ -707,6 +917,39 @@ class ModrynManagerScreen(http.Controller):
             kind.active = not kind.active
         return request.redirect('/manage/team-screen?view=queue')
 
+    @http.route('/manage/queue-kind/delete/<int:kind_id>', type='http',
+                auth='user', website=True, methods=['POST'], csrf=True,
+                sitemap=False)
+    def queue_kind_delete(self, kind_id, **post):
+        """Gone for good — the door for a line typed by mistake.
+
+        Refused BY NAME once a booking points at the kind, and the field is
+        ondelete='restrict' underneath, so the refusal holds even if this check
+        is ever bypassed. A bride who said she was a bride must keep saying it:
+        deleting the kind would leave her appointment answering "who is coming"
+        with nothing, months after she came.
+        """
+        if not (access.is_manager() or access.can_view('boss')):
+            return access.deny()
+        kind = request.env['modryn.customer.kind'].sudo().with_context(
+            active_test=False).browse(kind_id).exists()
+        if not kind:
+            return request.redirect('/manage/team-screen?view=queue')
+        booked = request.env['calendar.event'].sudo().search_count(
+            [('modryn_customer_kind_id', '=', kind.id)])
+        if booked:
+            return request.redirect(
+                '/manage/team-screen?view=queue&error=%s'
+                % werkzeug.urls.url_quote(_(
+                    "%(kind)s cannot be deleted — %(count)s appointments say "
+                    "that is who is coming. Stop offering it instead.",
+                    kind=kind.name, count=booked)))
+        name = kind.name
+        kind.unlink()
+        return request.redirect(
+            '/manage/team-screen?view=queue&error=%s'
+            % werkzeug.urls.url_quote(_("%s was deleted.", name)))
+
     # ------------------------------------------------------- discount codes
     @http.route('/manage/codes/new', type='http', auth='user', website=True,
                 methods=['POST'], csrf=True, sitemap=False)
@@ -733,12 +976,31 @@ class ModrynManagerScreen(http.Controller):
         if not 0 < percent <= 100:
             return refuse(_("A discount is between 1 and 100 percent."))
 
+        # HOW LONG IT LASTS. Validated here rather than trusted: the three
+        # answers come from a dropdown, and anything else means the form was
+        # not the thing that posted.
+        limit_kind = post.get('limit_kind') or 'none'
+        if limit_kind not in ('none', 'times', 'until'):
+            limit_kind = 'none'
+        try:
+            max_uses = int(post.get('max_uses') or 1)
+        except (TypeError, ValueError):
+            max_uses = 0
+        if limit_kind == 'times' and max_uses < 1:
+            return refuse(_("A code has to work at least once."))
+        use_until = (post.get('use_until') or '').strip()
+        if limit_kind == 'until' and not use_until:
+            return refuse(_("Say which day is the last day."))
+
         try:
             with request.env.cr.savepoint():
                 request.env['modryn.discount.code'].sudo().create({
                     'code': code,
                     'percent': percent,
                     'note': (post.get('note') or '').strip(),
+                    'limit_kind': limit_kind,
+                    'max_uses': max_uses if limit_kind == 'times' else 1,
+                    'use_until': use_until if limit_kind == 'until' else False,
                 })
         except ValidationError as err:
             return refuse(err.args[0] if err.args else _("That code already exists."))

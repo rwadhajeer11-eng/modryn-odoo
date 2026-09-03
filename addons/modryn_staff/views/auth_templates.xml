@@ -119,6 +119,12 @@
                 </div>
 
                 <div class="mb-3">
+                    <label class="form-label" for="birthday">Date of birth</label>
+                    <input type="date" id="birthday" name="birthday" class="form-control"
+                           dir="ltr" t-att-value="employee.modryn_birthday or ''"/>
+                </div>
+
+                <div class="mb-3">
                     <label class="form-label" for="gender">Gender</label>
                     <select id="gender" name="gender" class="form-select">
                         <option value="">&#8212;</option>
@@ -156,6 +162,14 @@
                     <div t-if="employee.modryn_id_number">
                         <span class="modryn_strong">ID number:</span>
                         <span dir="ltr" t-out="employee.modryn_id_number"/>
+                    </div>
+                    <!-- What she is allowed to open. It was the one thing the
+                         owner types on the hire form that this page never
+                         repeated back, so a woman promoted to shift manager had
+                         no screen anywhere that said so. -->
+                    <div>
+                        <span class="modryn_strong">What you may open:</span>
+                        <t t-out="level_label"/>
                     </div>
                 </div>
 

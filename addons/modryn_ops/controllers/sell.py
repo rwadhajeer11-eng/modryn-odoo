@@ -67,7 +67,15 @@ class ModrynSell(http.Controller):
             [('user_id', '=', user.id)], limit=1)
 
     def _context(self, error=None, values=None):
+        # THE LIVE CODES, and only the ones that would actually work today.
+        # A spent code left in the list is a code she picks and is then refused
+        # for, which is the box's old uselessness wearing a dropdown.
+        codes = request.env['modryn.discount.code'].sudo().search([])
         return {
+            'discount_codes': [{
+                'code': rule.code,
+                'percent': int(rule.percent),
+            } for rule in codes if not rule.modryn_spent()],
             'rail': self._rail(),
             'staff': request.env['hr.employee'].sudo().search(
                 [], order='name'),
@@ -173,6 +181,13 @@ class ModrynSell(http.Controller):
         # her ten percent, and nobody would find out until the month is counted.
         if typed_code and not rule:
             return refuse(_("There is no discount code called %s.") % typed_code)
+        # A SPENT CODE IS REFUSED THE SAME WAY, and told apart from a code that
+        # never existed. She typed it correctly and it is finished, which is a
+        # different conversation to have with the bride standing there.
+        if rule:
+            spent = rule.modryn_spent()
+            if spent:
+                return refuse(spent)
         if rule:
             kind = 'percent'
             discount = rule.percent

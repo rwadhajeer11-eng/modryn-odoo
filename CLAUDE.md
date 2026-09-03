@@ -147,8 +147,8 @@ bella is `miri` and on qa it is `qaowner`; `admin` exists only on the separate
 `platform` database. Odoo's own `/web/login` labels its field "Email" and there
 are no email addresses on any of these accounts — it takes the USERNAME.
 
-**Green baseline** (2026-09-01): `verify.sh` reports **407 passed, 0 failed,
-6 skipped**, and the browser suite **35 passed, 1 skipped** (the skip is
+**Green baseline** (2026-09-04): `verify.sh` reports **407 passed, 0 failed,
+6 skipped**, and the browser suite **39 passed, 1 skipped** (the skip is
 `realsms.spec.js`, which needs Twilio credentials nobody should export here).
 Both are green. It was 409 on 31.08: two checks are DATA-conditional and
 stopped firing when playground litter was swept, not because anything was
@@ -174,6 +174,26 @@ hard way and both leaving `qa` in a state the next run measures:
 
 Before believing a red is yours: `git stash` and run the same spec against the
 previous commit. That has settled it every time this session.
+
+**Three things that made a green thing look red, all this session:**
+
+- **A fixture that presses a button for her.** `seed_playground.py` filled next
+  week's rota *and published it*. A published week disables Publish and freezes
+  the availability form, so "the button won't press" and "the team can't fill
+  it in" were one line of seed, not two bugs. A seeder may create; it may not
+  decide.
+- **`git stash` + an upgrade DROPS COLUMNS.** Stashing to compare against the
+  previous commit removes the field from the model, and the upgrade that
+  follows drops its column — then the pop puts the code back with the schema
+  gone, and every page touching it 500s with `column ... does not exist`. The
+  fix is another `-u <module>`, but the failure looks like your own change. Use
+  a worktree, or stash without upgrading.
+- **A spec that asserted a fixture.** `booking.spec.js` act 3c claimed "one
+  booking takes the hour off the grid", which is true only where an hour seats
+  ONE. The owner set a Sunday afternoon to five and the act went red against
+  correct arithmetic. Proved before touching it — read the hour's capacity and
+  its bookings — then rewritten to fill the hour, which is the same claim at any
+  capacity. **Read the capacity before believing act 3c.**
 
 **The gate does not look at anything.** It reads status codes and greps markup,
 so a screen can be green and still be wrong to a human eye — two tiles wearing
