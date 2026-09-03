@@ -218,3 +218,15 @@ body {
     // Digits do not jump about as the count changes.
     font-variant-numeric: tabular-nums;
 }
+
+// The collection's one press. Big and in the gold, because it is the only
+// control on that rail that does anything - the kind, the sizes and the price
+// all wait for it.
+.modryn_filter_go {
+    padding-block: .65rem;
+    font-size: 1.05rem;
+    letter-spacing: .02em;
+}
+
+// The price boxes sit under the sizes and read as part of the same list.
+.modryn_price_filter input { max-width: 6rem; }

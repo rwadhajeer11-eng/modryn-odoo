@@ -580,35 +580,46 @@ class ModrynManagerScreen(http.Controller):
     # --------------------------------------------------------- booking hours
     @staticmethod
     def _queue_hours_context(error=None):
-        """The grid to draw, and the kinds of visitor she accepts.
+        """The whole week, every hour of it, and the kinds she accepts.
 
-        ONE ROW PER HOUR THE DOOR IS OPEN, taken from the opening hours rather
-        than from the grid itself: an hour she has just set to none must stay on
-        the screen, or she could never set it back. The number shown is what she
-        said, or the default for an hour she has not spoken about.
+        SEVEN DAYS AND TWENTY-FOUR HOURS, not the hours the door happens to be
+        open. It drew the opening hours first and that was wrong twice over: it
+        showed five days because five days had windows, so a shop that works
+        Friday had nowhere to say so, and it stopped at six because the windows
+        did, so a shop open until ten at night could not offer nine.
+
+        PREFILLED FROM THE WEEK SHE ALREADY HAS. A boutique that has never
+        opened this screen sees its opening hours filled in with one each and
+        everything else at nothing - which is exactly what its website is doing
+        today. Her first save writes all of it down, and from then on this grid
+        is the whole answer.
         """
         Hours = request.env['modryn.opening.hours']
         Queue = request.env['modryn.queue.hour'].sudo()
         said = Queue.modryn_grid()
+        # Only when she has never spoken: after that, a blank cell means none
+        # and must not be quietly refilled from the door.
+        fallback = {} if said else Hours.modryn_open_hours_by_weekday()
+
         days = []
-        open_hours = Hours.modryn_open_hours_by_weekday()
         for code, label in _hours_weekdays():
-            hours = open_hours.get(code) or []
-            if not hours:
-                continue
+            open_today = set(fallback.get(code) or [])
             days.append({
                 'code': code,
                 'label': label,
                 'hours': [{
-                    'hour': hour,
-                    'text': '%02d:%02d' % (int(hour), round((hour % 1) * 60)),
-                    'how_many': said.get(code, {}).get(round(hour, 4),
-                                                       QUEUE_DEFAULT),
-                } for hour in hours],
+                    'hour': float(hour),
+                    'text': '%02d:00' % hour,
+                    'how_many': said.get(code, {}).get(
+                        float(hour),
+                        QUEUE_DEFAULT if float(hour) in open_today else 0),
+                } for hour in range(24)],
             })
         return {
             'queue_error': error or '',
             'queue_days': days,
+            # The hours, once, for the table's left-hand column.
+            'queue_clock': ['%02d:00' % hour for hour in range(24)],
             'queue_kinds': request.env['modryn.customer.kind'].sudo()
                            .with_context(active_test=False).search([]),
         }

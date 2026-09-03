@@ -51,24 +51,28 @@
     </template>
 
     <!--
-        WHAT KIND OF THING, asked before what size and what price.
+        ONE FILTER, ONE BUTTON.
 
-        It is the first question a bride actually has - "show me the evening
-        dresses" - and Odoo's shop could not ask it: its filters know about
-        product attributes and price and nothing else. The words come from the
-        boutique's own list under שמלות ואקססוריז - סוגים, so one shop offers
-        נסיכה and מרמייד and the next offers עדינה and צנועה.
+        Odoo's collection applies itself as you touch it: the size boxes
+        auto-submit on change and the price slider navigates the moment it is
+        released. Choosing a kind, then a size, then a price was three page
+        loads, and the page jumped under her hand twice on the way. Nothing
+        applies now until she presses the button, and then all of it does.
 
-        ITS OWN FORM, WITH A BUTTON. It began inside Odoo's attribute form,
-        which auto-submits on every tick: choosing two kinds meant two page
-        loads, and the page jumped under her hand after the first. She ticks as
-        many as she likes now and presses once.
+        WHAT KIND OF THING is asked first because it is the first question a
+        bride has - "show me the evening dresses" - and Odoo's shop could not
+        ask it at all: its filters know about product attributes and price and
+        nothing else. The words come from the boutique's own list under
+        שמלות ואקססוריז - סוגים, so one shop offers נסיכה and מרמייד and the
+        next offers עדינה and צנועה.
 
-        The cost of leaving that form is that this one has to carry the rest of
-        the state itself - the sizes, the price range, the sort order - or
-        choosing a kind would quietly throw her size away. That is what the
-        hidden inputs below are, and there is no other way round it: one form
-        posts one form's fields.
+        THE PRICE IS TWO PLAIN BOXES, not Odoo's slider - see the record that
+        switches that off. A slider that applies itself on release cannot live
+        inside a form that waits for a button.
+
+        js_attributes is REMOVED from the form's class. That class is what
+        Odoo's own handler binds the auto-submit to; leaving it and adding a
+        button would give her both behaviours at once.
 
         Priority 30: this arch is only correct after website_sale's own
         products_attributes has put the attribute block in, and views are
@@ -77,24 +81,18 @@
     <template id="products_kind_filter"
               inherit_id="website_sale.product_attribute_filters_form"
               priority="30"
-              name="MODRYN: filter the collection by kind">
-        <xpath expr="//form" position="before">
-            <form t-if="modryn_kinds" method="get" t-att-action="keep(kind=0)"
-                  class="nav-item mb-3 modryn_kind_filter">
-                <!-- Everything the OTHER form would have posted. Without these
-                     her size and her price range fall off the moment she picks
-                     a kind. -->
-                <t t-foreach="request.httprequest.args.getlist('attribute_values')"
-                   t-as="chosen">
-                    <input type="hidden" name="attribute_values" t-att-value="chosen"/>
-                </t>
-                <input t-if="request.params.get('min_price')" type="hidden"
-                       name="min_price" t-att-value="request.params.get('min_price')"/>
-                <input t-if="request.params.get('max_price')" type="hidden"
-                       name="max_price" t-att-value="request.params.get('max_price')"/>
-                <input t-if="request.params.get('order')" type="hidden"
-                       name="order" t-att-value="request.params.get('order')"/>
+              name="MODRYN: one filter with one button">
 
+        <xpath expr="//form" position="attributes">
+            <attribute name="t-attf-class">modryn_filter_form {{('accordion accordion-flush d-flex flex-column ' + ('border-bottom' if attributes else '')) if isMobile else 'position-relative mb-2'}}</attribute>
+            <!-- The kind and the price are read off the query string, so the
+                 form has to drop them or her old choice would ride along
+                 beside the new one. -->
+            <attribute name="t-att-action">keep(attribute_values=0, tags=0, kind=0, min_price=0, max_price=0)</attribute>
+        </xpath>
+
+        <xpath expr="//t[@t-set='visible_attributes']" position="before">
+            <div t-if="modryn_kinds" class="nav-item mb-3 modryn_kind_filter">
                 <h6 class="mb-3"><b class="d-none d-lg-block">Kind</b></h6>
                 <div t-foreach="modryn_kinds" t-as="kind" class="form-check">
                     <input type="checkbox" name="kind" t-att-value="kind.id"
@@ -104,10 +102,30 @@
                     <label class="form-check-label" t-attf-for="modryn_kind_#{kind.id}"
                            t-out="kind.name"/>
                 </div>
-                <button type="submit" class="btn btn-outline-dark btn-sm mt-2">
-                    Show these
-                </button>
-            </form>
+            </div>
+        </xpath>
+
+        <xpath expr="//form" position="inside">
+            <div class="nav-item mb-3 modryn_price_filter">
+                <h6 class="mb-3"><b class="d-none d-lg-block">Price</b></h6>
+                <div class="d-flex align-items-center gap-2">
+                    <input type="number" name="min_price" min="0" step="1" dir="ltr"
+                           class="form-control form-control-sm"
+                           t-att-value="request.params.get('min_price') or ''"
+                           placeholder="From"/>
+                    <span class="text-muted">–</span>
+                    <input type="number" name="max_price" min="0" step="1" dir="ltr"
+                           class="form-control form-control-sm"
+                           t-att-value="request.params.get('max_price') or ''"
+                           placeholder="To"/>
+                </div>
+            </div>
+
+            <!-- The one press. Big and in the boutique's own gold, because it
+                 is the only thing on this rail that does anything. -->
+            <button type="submit" class="btn btn-primary w-100 modryn_filter_go">
+                Show these
+            </button>
         </xpath>
     </template>
 
@@ -123,6 +141,30 @@
         this is that switch and not a rule painted over it.
     -->
     <record id="website_sale.search" model="ir.ui.view">
+        <field name="active" eval="False"/>
+    </record>
+
+    <!--
+        The magnifier in the header, off.
+
+        The box above the collection went first; this is the same box in the
+        header, on every page of the site. A bridal rail is thirty dresses and
+        the filters find them; a search icon beside the heart is one more thing
+        for a bride to wonder about and nothing she needs.
+
+        active="False" is the switch Odoo's own editor uses for this block.
+    -->
+    <record id="website.header_search_box" model="ir.ui.view">
+        <field name="active" eval="False"/>
+    </record>
+
+    <!--
+        And Odoo's price slider, off with it. The filter is one form with one
+        button now, and a slider that navigates the moment it is released
+        cannot be part of that: it would apply itself while she was still
+        choosing. Two plain boxes in the form say the same thing and wait.
+    -->
+    <record id="website_sale.filter_products_price" model="ir.ui.view">
         <field name="active" eval="False"/>
     </record>
 

@@ -3438,3 +3438,20 @@ msgstr ""
 "<i class=\"fa fa-list-ol\" aria-hidden=\"true\"/>\n"
 "                    <span class=\"modryn_strong\">שעות התורים</span>\n"
 "                    <span class=\"modryn_sub\">כמה תורים כל שעה מחלקת, ומי יכולה לבקש.</span>"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid ""
+"Every hour of every day is here, Friday and Saturday\n"
+"                    included — some boutiques work them, and some open in the\n"
+"                    evening. Nothing is decided for you: put a number where you\n"
+"                    want appointments and leave the rest at nothing."
+msgstr ""
+"כל שעה בכל יום נמצאת כאן, שישי ושבת כולל — יש בוטיקים שעובדים בהם, ויש "
+"שנפתחים בערב. שום דבר לא הוחלט בשבילך: שימי מספר איפה שאת רוצה תורים, והשאר "
+"נשארים על אפס."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "<span class=\"text-muted\">–</span>"
+msgstr "<span class=\"text-muted\">–</span>"

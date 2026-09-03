@@ -1446,6 +1446,22 @@
 // because the days do not share their hours: Thursday runs to nine and Sunday
 // stops at six, and a table would need a cell for every hour of every day with
 // most of them empty and none of them meaning anything.
+// The week as a table: twenty-four rows by seven columns. The cells are small
+// on purpose - the eye is scanning for the numbers that are not zero, and a
+// full-width box per cell would make a wall of white.
+.modryn_queue_table {
+    th, td { padding: .2rem .3rem; }
+    thead th { font-size: .85rem; white-space: nowrap; }
+    tbody th { font-variant-numeric: tabular-nums; white-space: nowrap; }
+}
+
+.modryn_queue_cell {
+    width: 3.4rem;
+    margin-inline: auto;
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+}
+
 .modryn_queue_grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(9.5rem, 1fr));

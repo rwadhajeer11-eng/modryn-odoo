@@ -978,29 +978,47 @@
 
                 <!-- ============ the grid ============ -->
                 <h2 class="h5 mb-2">How many an hour</h2>
-                <p t-if="not queue_days" class="modryn_empty">
-                    No opening hours yet, so there are no hours to give away. Set
-                    them on the opening hours screen first.
+                <p class="text-muted mb-3">
+                    Every hour of every day is here, Friday and Saturday
+                    included — some boutiques work them, and some open in the
+                    evening. Nothing is decided for you: put a number where you
+                    want appointments and leave the rest at nothing.
                 </p>
 
-                <form t-if="queue_days" action="/manage/queue-hours" method="post">
+                <form action="/manage/queue-hours" method="post">
                     <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
-                    <div class="modryn_queue_grid">
-                        <div t-foreach="queue_days" t-as="day" class="modryn_queue_day">
-                            <div class="modryn_strong mb-2" t-out="day['label']"/>
-                            <label t-foreach="day['hours']" t-as="slot"
-                                   class="modryn_queue_hour">
-                                <span dir="ltr" t-out="slot['text']"/>
-                                <!-- The dot in an hour becomes a dash: a name
-                                     with a dot in it is read as a nested field
-                                     by some form parsers, and this one has to
-                                     survive being read back apart. -->
-                                <input type="number" min="0" max="20" step="1" dir="ltr"
-                                       t-attf-name="hour_#{day['code']}_#{str(slot['hour']).replace('.', '-')}"
-                                       t-att-value="slot['how_many']"
-                                       class="form-control form-control-sm"/>
-                            </label>
-                        </div>
+                    <!-- A TABLE and not columns of labels: twenty-four rows by
+                         seven is a shape a person reads across as well as down,
+                         and the hour is written once at the start of its row
+                         instead of once in every cell. -->
+                    <div class="modryn_scroll">
+                        <table class="table modryn_queue_table align-middle">
+                            <thead>
+                                <tr>
+                                    <th/>
+                                    <th t-foreach="queue_days" t-as="day"
+                                        class="text-center" t-out="day['label']"/>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr t-foreach="queue_clock" t-as="clock">
+                                    <th scope="row" class="fw-normal" dir="ltr"
+                                        t-out="clock"/>
+                                    <td t-foreach="queue_days" t-as="day"
+                                        class="text-center">
+                                        <!-- The dot in an hour becomes a dash: a
+                                             name with a dot in it is read as a
+                                             nested field by some form parsers,
+                                             and this one is read back apart. -->
+                                        <input type="number" min="0" max="20" step="1"
+                                               dir="ltr"
+                                               t-attf-name="hour_#{day['code']}_#{str(day['hours'][clock_index]['hour']).replace('.', '-')}"
+                                               t-att-value="day['hours'][clock_index]['how_many']"
+                                               class="form-control form-control-sm modryn_queue_cell"/>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                     <button type="submit" class="btn btn-primary mt-3">Save the week</button>
                 </form>
@@ -1184,9 +1202,32 @@
                 <tbody>
                     <tr t-foreach="hours" t-as="h"
                         t-attf-class="#{'modryn_archived' if not h['active'] else ''}">
-                        <td t-out="h['day']"/>
-                        <td dir="ltr" t-out="h['opens']"/>
-                        <td dir="ltr" t-out="h['closes']"/>
+                        <!-- EDITABLE IN PLACE, all three at once. A window's day
+                             and start time carry a unique index and an archived
+                             one keeps its slot, so a time typed wrong could not
+                             be archived and re-added either - the only way out
+                             was the database. -->
+                        <td colspan="3">
+                            <form t-attf-action="/manage/hours/edit/#{h['id']}"
+                                  method="post" class="d-flex align-items-center gap-2 flex-wrap">
+                                <input type="hidden" name="csrf_token"
+                                       t-att-value="request.csrf_token()"/>
+                                <select name="weekday" class="form-select form-select-sm w-auto">
+                                    <t t-foreach="weekdays" t-as="day">
+                                        <option t-att-value="day[0]" t-out="day[1]"
+                                                t-att-selected="'selected' if day[0] == h['weekday'] else None"/>
+                                    </t>
+                                </select>
+                                <input type="time" name="opens" dir="ltr" step="900"
+                                       class="form-control form-control-sm w-auto"
+                                       t-att-value="h['opens']"/>
+                                <span class="text-muted">–</span>
+                                <input type="time" name="closes" dir="ltr" step="900"
+                                       class="form-control form-control-sm w-auto"
+                                       t-att-value="h['closes']"/>
+                                <button type="submit" class="btn btn-sm btn-outline-dark">Save</button>
+                            </form>
+                        </td>
                         <td class="text-end">
                             <form t-attf-action="/manage/hours/archive/#{h['id']}" method="post"
                                   class="d-inline">

@@ -599,6 +599,10 @@ class ModrynManage(http.Controller):
         return [{
             'id': h.id,
             'day': labels.get(h.weekday, h.weekday),
+            # The raw code as well as the label: the row is an editable
+            # form now and its day picker has to know which option is
+            # already chosen.
+            'weekday': h.weekday,
             'opens': Hours.modryn_hour_label(h.start_hour),
             'closes': Hours.modryn_hour_label(h.end_hour),
             'capacity': h.capacity,
@@ -691,13 +695,9 @@ class ModrynManage(http.Controller):
         if closes <= opens:
             return self._hours_bounce(
                 post, _("A day has to close after it opens"))
-        capacity = _to_capacity(post.get('capacity'))
-        # Checked here as well as by the model's @api.constrains, for the reason
-        # closure_new() checks its dates: the owner reads a sentence, not a
-        # traceback.
-        if capacity is None:
-            return self._hours_bounce(post, _(
-                "Please say how many fittings you can take at once — one or more"))
+        # Capacity is not asked for any more - how many an hour takes is a
+        # question the booking-hours grid answers, hour by hour. The column
+        # keeps its default of one so nothing that still reads it is surprised.
 
         taken = _("You already open at that time on that day")
         Hours = self._hours()
@@ -709,10 +709,55 @@ class ModrynManage(http.Controller):
             # poisoning the request's transaction.
             with request.env.cr.savepoint(), mute_logger('odoo.sql_db'):
                 Hours.create({
-                    'weekday': weekday, 'start_hour': opens, 'end_hour': closes,
-                    'capacity': capacity})
+                    'weekday': weekday, 'start_hour': opens, 'end_hour': closes})
         except (ValidationError, IntegrityError):
             return self._hours_bounce(post, taken)
+        return request.redirect('/manage/team-screen?view=hours')
+
+    @http.route('/manage/hours/edit/<int:hours_id>', type='http', auth='user',
+                website=True, methods=['POST'], csrf=True, sitemap=False)
+    def hours_edit(self, hours_id, **post):
+        """Correct a window she typed wrong.
+
+        WHY THIS HAD TO EXIST. A window's day and start time carry a unique
+        index, and an archived one keeps its slot - so a Sunday typed as
+        opening at 09:00 instead of 10:00 could not be archived and re-added,
+        and could not be changed either. The only way out was the database.
+        """
+        if not self._require_owner():
+            return request.not_found()
+        window = self._hours().with_context(active_test=False).browse(
+            hours_id).exists()
+        if not window:
+            return request.redirect('/manage/team-screen?view=hours')
+
+        weekday = post.get('weekday')
+        if weekday not in WEEK_ORDER:
+            return self._hours_bounce(post, _("Please choose a day"))
+        opens = _clock_to_float(post.get('opens'))
+        closes = _clock_to_float(post.get('closes'))
+        if opens is None or closes is None:
+            return self._hours_bounce(
+                post, _("Please enter an opening and a closing time"))
+        if closes <= opens:
+            return self._hours_bounce(
+                post, _("A day has to close after it opens"))
+
+        clash = self._hours().with_context(active_test=False).search_count([
+            ('id', '!=', window.id),
+            ('weekday', '=', weekday),
+            ('start_hour', '=', opens),
+        ])
+        if clash:
+            return self._hours_bounce(
+                post, _("You already open at that time on that day"))
+        try:
+            with request.env.cr.savepoint(), mute_logger('odoo.sql_db'):
+                window.write({'weekday': weekday, 'start_hour': opens,
+                              'end_hour': closes})
+        except (ValidationError, IntegrityError):
+            return self._hours_bounce(
+                post, _("You already open at that time on that day"))
         return request.redirect('/manage/team-screen?view=hours')
 
     @http.route('/manage/hours/archive/<int:hours_id>', type='http', auth='user',

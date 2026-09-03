@@ -31,6 +31,33 @@ class ModrynShopKinds(WebsiteSale):
         return [int(v) for v in request.httprequest.args.getlist('kind')
                 if str(v).isdigit()]
 
+    @staticmethod
+    def _get_attribute_value_dict(attribute_values):
+        """Read the size boxes as the form now posts them.
+
+        WHAT BROKE AND WHY. Odoo's size checkboxes are named `attribute_value`
+        and mean nothing to the controller on their own: its own JavaScript
+        collected them on every change, GROUPED them by attribute into
+        `attribute_values=<attribute>-<v1>,<v2>`, and navigated. Taking the
+        auto-submit away - so that a bride can tick three things and press once
+        - took the grouping with it, and the sizes silently stopped filtering
+        while still looking ticked.
+
+        The grouping is arithmetic, not interaction, so it belongs here. The
+        plain names are merged into whatever the parent found, which keeps a
+        link somebody bookmarked in the old `attribute_values` shape working.
+        """
+        grouped = WebsiteSale._get_attribute_value_dict(attribute_values)
+        for raw in request.httprequest.args.getlist('attribute_value'):
+            # "<attribute id>-<value id>", the shape the checkbox carries.
+            attribute, _, value = (raw or '').partition('-')
+            if not attribute.isdigit() or not value.isdigit():
+                continue
+            values = grouped.setdefault(int(attribute), [])
+            if int(value) not in values:
+                values.append(int(value))
+        return grouped
+
     def _shop_lookup_products(self, options, post, search, website):
         """Narrow what the search found to the kinds she asked for.
 
@@ -58,6 +85,10 @@ class ModrynShopKinds(WebsiteSale):
         values = super()._shop_get_query_url_kwargs(
             search, min_price, max_price, order=order, tags=tags, **kwargs)
         values['kind'] = request.httprequest.args.getlist('kind')
+        # The sizes as the form posts them, so paging and sorting keep them:
+        # the parent carries `attribute_values` out of the session, which the
+        # plain checkboxes never fill.
+        values['attribute_value'] = request.httprequest.args.getlist('attribute_value')
         return values
 
     def _get_additional_shop_values(self, values, **kwargs):

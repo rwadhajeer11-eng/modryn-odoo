@@ -1684,3 +1684,23 @@ msgstr "وريني ياهن"
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_discount_code__times_used
 msgid "Times Used"
 msgstr "عدد الاستخدامات"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.products_kind_filter
+msgid "From"
+msgstr "من"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.products_kind_filter
+msgid "To"
+msgstr "إلى"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.products_kind_filter
+msgid "<b class=\"d-none d-lg-block\">Price</b>"
+msgstr "<b class=\"d-none d-lg-block\">السعر</b>"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.products_kind_filter
+msgid "<span class=\"text-muted\">–</span>"
+msgstr "<span class=\"text-muted\">–</span>"

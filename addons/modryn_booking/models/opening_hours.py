@@ -141,33 +141,46 @@ class ModrynOpeningHours(models.Model):
         user: opening hours are printed on the shop door, there is nothing here
         to leak, and the alternative is a 500 on the storefront.
         """
-        # HOW MANY comes from the queue-hours grid now, not from the window.
-        # The window says the door is unlocked; the grid says how much of that
-        # time is on sale to strangers, hour by hour - which is a different
-        # question and the one a manager actually has. An hour the grid has
-        # nothing to say about takes DEFAULT_PER_HOUR, so a boutique that has
-        # never opened that screen behaves exactly as it did.
+        # THE GRID DECIDES, once she has said anything at all.
+        #
+        # It began as a modifier on the opening hours: the window said which
+        # hours existed and the grid said how many each took. That could not
+        # answer a shop that opens at eight in the evening, or one that works
+        # Friday - the grid could only speak about hours the window already
+        # offered, and it drew five days because five days had windows.
+        #
+        # So: a grid with ANY row in it is the whole answer, and the opening
+        # hours go back to being what a customer reads on the door. A grid with
+        # no rows at all falls back to the old behaviour - every open hour, one
+        # each - so a boutique that never touches the screen keeps the week it
+        # already had rather than waking up shut.
         grid = self.env['modryn.queue.hour'].modryn_grid()
+        if grid:
+            wanted = {}
+            for weekday, hours in grid.items():
+                live = {hour: how_many for hour, how_many in hours.items()
+                        if how_many > 0}
+                if live:
+                    wanted[weekday] = dict(sorted(live.items()))
+            # The domain still applies: modryn_capacities_on() asks for one
+            # weekday and must not be handed the whole week.
+            days = [term[2] for term in domain
+                    if isinstance(term, (list, tuple)) and term[0] == 'weekday']
+            if days:
+                wanted = {day: hours for day, hours in wanted.items()
+                          if day in days}
+            return wanted
 
         by_day = {}
         # search() drops archived rows by itself (active_test), which is how an
         # owner switches a window off without losing it.
         for window in self.sudo().search(domain):
             hours = by_day.setdefault(window.weekday, {})
-            said = grid.get(window.weekday, {})
             for hour in _starts(window.start_hour, window.end_hour):
-                how_many = said.get(round(hour, 4), DEFAULT_PER_HOUR)
-                if how_many <= 0:
-                    # Open, and deliberately not on sale online. Dropped from
-                    # the mapping entirely rather than offered with a zero: an
-                    # hour that appears with nothing behind it is an hour a
-                    # bride presses and is refused by.
-                    hours.pop(hour, None)
-                    continue
                 # Overlapping windows on one weekday: the roomier one wins.
                 # max() rather than last-write, so the answer does not depend on
                 # _order — and so an hour is never offered twice.
-                hours[hour] = max(hours.get(hour, 0), how_many)
+                hours[hour] = max(hours.get(hour, 0), DEFAULT_PER_HOUR)
         # Sorted keys, because callers render these in order and several of them
         # iterate the dict directly rather than sorting it themselves.
         return {day: dict(sorted(hours.items())) for day, hours in by_day.items()}
