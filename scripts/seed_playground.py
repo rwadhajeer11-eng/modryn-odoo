@@ -131,14 +131,27 @@ say('who may book (new)', made)
 # grid is empty, so a week set by hand is never overwritten.
 Queue = env['modryn.queue.hour']
 if not Queue.search_count([]):
+    # ONE SEAT AN HOUR, and the shape carries the interest instead: which
+    # hours are open on which day, Friday morning, Thursday evening, an hour
+    # shut at two.
+    #
+    # NOT because one is more realistic. Because the browser suite's act 3c
+    # books a slot and asserts the grid stops offering that hour, which is only
+    # true at one seat — at two it books one, one is left, the hour correctly
+    # stays, and a correct product fails a correct check because the fixture
+    # under both of them moved. verify.sh pins the old capacity column at 1 for
+    # this exact reason and cannot see the grid that replaced it.
+    #
+    # Two at eleven is five seconds of typing on the screen. It is not a thing
+    # a fixture should decide on behalf of a gate.
     WEEK = {
-        '6': [(10, 2), (11, 2), (12, 2), (13, 1), (14, 1), (15, 2), (16, 2), (17, 2)],
-        '0': [(10, 2), (11, 2), (12, 2), (13, 1), (14, 1), (15, 2), (16, 2), (17, 2)],
-        '1': [(10, 2), (11, 2), (12, 2), (13, 1), (14, 1), (15, 2), (16, 2), (17, 2)],
-        '2': [(10, 2), (11, 2), (12, 2), (13, 1), (14, 1), (15, 2), (16, 2), (17, 2)],
-        '3': [(10, 2), (11, 2), (12, 2), (13, 1), (14, 1), (15, 2), (16, 2),
-              (17, 3), (18, 3), (19, 3), (20, 2)],
-        '4': [(9, 2), (10, 2), (11, 2), (12, 1)],
+        '6': [(10, 1), (11, 1), (12, 1), (13, 1), (15, 1), (16, 1), (17, 1)],
+        '0': [(10, 1), (11, 1), (12, 1), (13, 1), (15, 1), (16, 1), (17, 1)],
+        '1': [(10, 1), (11, 1), (12, 1), (13, 1), (15, 1), (16, 1), (17, 1)],
+        '2': [(10, 1), (11, 1), (12, 1), (13, 1), (15, 1), (16, 1), (17, 1)],
+        '3': [(10, 1), (11, 1), (12, 1), (13, 1), (15, 1), (16, 1),
+              (17, 1), (18, 1), (19, 1), (20, 1)],
+        '4': [(9, 1), (10, 1), (11, 1), (12, 1)],
     }
     rows = 0
     for weekday, hours in WEEK.items():
@@ -256,6 +269,139 @@ if Sale.search_count([]) < 4:
         Sale.create(values)
         made += 1
     say('sales written', made)
+
+# ===================================================== the three empty screens
+#
+# NONE OF THESE WAS SHORT OF DATA. qa had 111 bookings, 38 closed ones and 65
+# shift slots, and all three screens still read as blank — because each of them
+# asks a narrower question than "is there any data":
+#
+#   the main screen  asks about TODAY and about the person signed in
+#   the reports      ask about THIS MONTH
+#   the shifts       ask about NEXT WEEK, published
+#
+# and the seed data answered none of those. Filling a table is not the same as
+# filling a screen.
+
+import datetime as _dt
+
+TODAY = _dt.date.today()
+Employee = env['hr.employee']
+# The three real ones. The "Roles Probe" rows are verify.sh's own litter and
+# putting a bride's fitting on one of them would be a lie on a screen.
+staff = Employee.search([('name', 'in', ['QA Owner', 'QA Manager',
+                                         'QA Seamstress'])], order='id')
+Event = env['calendar.event'].sudo()
+
+# ------------------------------------------------- the main screen: today
+# Every one of today's bookings gets a stylist, in turn, so whoever signs in
+# has something on her own screen rather than one of the three having all of
+# it and the other two an empty page.
+if staff:
+    today_start = _dt.datetime.combine(TODAY, _dt.time.min)
+    today_end = _dt.datetime.combine(TODAY, _dt.time.max)
+    todays = Event.search([('modryn_is_booking', '=', True),
+                           ('start', '>=', today_start),
+                           ('start', '<=', today_end)], order='start')
+    for index, event in enumerate(todays):
+        event.modryn_employee_id = staff[index % len(staff)].id
+    say("today's bookings given a stylist", len(todays))
+
+    # And a couple of walk-ins waiting for the owner, which is the other half
+    # of that screen.
+    Queue = env['modryn.queue.entry'].sudo()
+    waiting = Queue.search([('state', '=', 'waiting'),
+                            ('modryn_employee_id', '=', False)], limit=3)
+    for index, entry in enumerate(waiting):
+        entry.modryn_employee_id = staff[index % len(staff)].id
+    say('walk-ins given a stylist', len(waiting))
+
+# --------------------------------------------------- the reports: this month
+# Everything closed in qa was closed in AUGUST, and the report opens on the
+# current month — so a screen with a month of real numbers behind it showed
+# zeroes. Past bookings in THIS month get an outcome.
+month_start = _dt.datetime.combine(TODAY.replace(day=1), _dt.time.min)
+now = _dt.datetime.now()
+unclosed = Event.search([('modryn_is_booking', '=', True),
+                         ('start', '>=', month_start),
+                         ('start', '<', now),
+                         ('modryn_outcome', '=', False)], order='start')
+if unclosed and staff:
+    # Roughly half sold, a third not, the rest no-shows: a conversion rate a
+    # person can sanity-check rather than a column of one outcome.
+    PATTERN = ['sold', 'sold', 'not_sold', 'sold', 'no_show', 'not_sold']
+    PRICES = [4200, 7400, 8200, 9800, 11200, 13900]
+    closed = 0
+    for index, event in enumerate(unclosed):
+        outcome = PATTERN[index % len(PATTERN)]
+        who = staff[index % len(staff)]
+        values = {
+            'modryn_outcome': outcome,
+            'modryn_outcome_by_id': who.id,
+            'modryn_employee_id': event.modryn_employee_id.id or who.id,
+        }
+        if outcome == 'sold':
+            values['modryn_sale_amount'] = PRICES[index % len(PRICES)]
+        event.write(values)
+        closed += 1
+    say('bookings closed this month', closed)
+
+# ------------------------------------------------------- the shifts: next week
+# The screen opens on NEXT week and shows the published rota. qa's slots were
+# all unpublished and had nobody on them, so the grid was a week of empty
+# boxes on every tenant that had ever been seeded.
+Slot = env['modryn.shift.slot'].sudo()
+sunday = TODAY - _dt.timedelta(days=(TODAY.weekday() + 1) % 7)
+weeks = [sunday, sunday + _dt.timedelta(days=7)]
+filled = 0
+for week in weeks:
+    slots = Slot.search([('week_start', '=', week)], order='day')
+    for index, slot in enumerate(slots):
+        if not slot.employee_ids and staff:
+            # Two on an ordinary shift, all three on the Thursday evening -
+            # the one the templates already call busier.
+            how_many = 3 if slot.end_hour >= 20 else 2
+            chosen = [staff[(index + step) % len(staff)].id
+                      for step in range(min(how_many, len(staff)))]
+            slot.employee_ids = [(6, 0, chosen)]
+            filled += 1
+        slot.published = True
+say('shift slots filled and published', filled)
+
+# ---------------------------------- her own rail, and her own follow-ups
+# The last two boxes on the main screen. Both read off the SIGNED-IN person,
+# like the rest of it, and qa's twenty-three alterations belonged to nobody -
+# so every one of the three saw an empty rail and an empty follow-up list.
+Alteration = env['modryn.alteration.task'].sudo()
+loose = Alteration.search([('seamstress_id', '=', False),
+                           ('state', '!=', 'delivered')], limit=9)
+for index, task in enumerate(loose):
+    task.seamstress_id = staff[index % len(staff)].id if staff else False
+say('alterations given a seamstress', len(loose))
+
+# A follow-up each: the call after a fitting that did not end in a dress. Two
+# per person, so the list is a list rather than a single line.
+Task = env['modryn.task'].sudo()
+if staff and Task.search_count([('task_type', '=', 'follow_up'),
+                                ('state', '=', 'open')]) < 3:
+    AFTER = [
+        ('להתקשר אחרי המדידה', '050-7654321', 'רוני אלמוג'),
+        ('לשלוח תמונות של השובל', '052-8765432', 'עדי נחום'),
+        ('לבדוק אם החליטה', '054-9876543', 'מירב כהן'),
+    ]
+    made = 0
+    for index, (what, phone, who) in enumerate(AFTER):
+        Task.create({
+            'name': what,
+            'task_type': 'follow_up',
+            'employee_id': staff[index % len(staff)].id,
+            'state': 'open',
+            'customer_name': who,
+            'customer_phone': phone,
+            'due_at': _dt.datetime.now() + _dt.timedelta(days=index + 1),
+        })
+        made += 1
+    say('follow-ups written', made)
 
 env.cr.commit()
 
