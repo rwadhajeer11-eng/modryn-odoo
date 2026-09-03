@@ -77,51 +77,51 @@
                         </div>
                         <p t-if="not d['slots']" class="modryn_sub mb-0">Nothing on this day.</p>
                         <div t-else="" class="modryn_weekday_slots">
-                            <div t-foreach="d['slots']" t-as="s"
-                                 t-attf-class="modryn_weekslot #{'is_mine' if s['mine'] else ''}">
-                                <span class="modryn_badge is_muted"><t t-esc="s['type_label']"/></span>
-                                <span class="modryn_sub" dir="ltr"><t t-esc="s['hours']"/></span>
-                                <!-- The NAME, because a day can legitimately
-                                     carry two shifts of the same part of the day
-                                     at the same hours - bella runs exactly that
-                                     on Sundays - and without it the second row
-                                     reads as the page having duplicated the
-                                     first. unique(name, weekday) makes the name
-                                     the one field guaranteed to tell them
-                                     apart; hours and type are not constrained. -->
-                                <span class="modryn_sub"><t t-esc="s['name']"/></span>
-                                <t t-if="s['people']">
-                                    <span t-foreach="s['people']" t-as="p"
-                                          class="modryn_chip"><t t-esc="p"/></span>
-                                </t>
-                                <span t-else="" class="modryn_sub">Nobody yet</span>
-                            </div>
+                            <!-- THE HOURS, AND THE NAMES ON A CLICK. Seven
+                                 days of every name on every shift is a wall of
+                                 chips, and the question the week actually
+                                 answers at a glance is "when is the shop
+                                 open" — who is on it is the second question
+                                 and waits to be asked.
+
+                                 A <details> and not a script: it opens with no
+                                 JavaScript at all, it is a real disclosure to a
+                                 screen reader, and it survives the frontend
+                                 bundle failing to load. -->
+                            <details t-foreach="d['slots']" t-as="s"
+                                     t-attf-class="modryn_weekslot #{'is_mine' if s['mine'] else ''}">
+                                <summary>
+                                    <span class="modryn_badge is_muted"><t t-esc="s['type_label']"/></span>
+                                    <span class="modryn_sub" dir="ltr"><t t-esc="s['hours']"/></span>
+                                    <!-- The NAME, because a day can legitimately
+                                         carry two shifts of the same part of the
+                                         day at the same hours - bella runs
+                                         exactly that on Sundays - and without it
+                                         the second row reads as the page having
+                                         duplicated the first. unique(name,
+                                         weekday) makes the name the one field
+                                         guaranteed to tell them apart; hours and
+                                         type are not constrained. -->
+                                    <span class="modryn_sub"><t t-esc="s['name']"/></span>
+                                </summary>
+                                <div class="modryn_weekslot_people">
+                                    <t t-if="s['people']">
+                                        <span t-foreach="s['people']" t-as="p"
+                                              class="modryn_chip"><t t-esc="p"/></span>
+                                    </t>
+                                    <span t-else="" class="modryn_sub">Nobody yet</span>
+                                </div>
+                            </details>
                         </div>
                     </div>
                 </div>
             </section>
 
-            <!-- Today, kept as a one-line strip under the week. -->
-            <section t-if="home.get('shift')" class="modryn_panel mb-4">
-                <header class="modryn_panel_head"><h2>Today</h2></header>
-                <!-- No t-else here: the t-if it used to pair with moved into the
-                     "My shifts" panel above, and a t-else with no preceding t-if
-                     sibling is a QWeb error at RENDER time - the page would have
-                     500'd for every staff member, not failed to load once. -->
-                <div class="p-3">
-                    <t t-foreach="home['shift']" t-as="s">
-                        <div>
-                            <span class="modryn_strong" t-out="s['name']"/>
-                            <!-- dir="ltr", like the other three places this
-                                 same range is printed. Without it the bidi
-                                 algorithm reads "09:00-17:00" right to left
-                                 with the Hebrew around it and shows a shift
-                                 that ends before it starts. -->
-                            <span class="modryn_sub ms-2" dir="ltr" t-out="s['hours']"/>
-                        </div>
-                    </t>
-                </div>
-            </section>
+            <!-- "Today" used to be a one-line strip here, and it said what
+                 the two panels above it had both already said: her own shifts
+                 list today among the week, and the week marks today with a
+                 badge. A third copy of one fact is a screen that takes longer
+                 to read for nothing. -->
 
             <!-- My customers right now -->
             <section class="modryn_panel mb-4">

@@ -1486,3 +1486,25 @@
         font-variant-numeric: tabular-nums;
     }
 }
+
+// A shift on the week strip: the hours, and the names when she asks for them.
+.modryn_weekslot > summary {
+    cursor: pointer;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: .4rem;
+    flex-wrap: wrap;
+
+    &::-webkit-details-marker { display: none; }
+}
+
+.modryn_weekslot_people {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .3rem;
+    // Indented from the start edge, whichever edge that is: the chips read as
+    // belonging to the line above rather than as a second row of shifts.
+    margin-inline-start: .5rem;
+    margin-block-start: .35rem;
+}
