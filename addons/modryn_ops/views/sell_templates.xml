@@ -8,6 +8,22 @@
         <t t-call="modryn_staff.staff_layout">
             <t t-set="active_tab" t-value="'sell'"/>
 
+            <!-- TWO MODES, ONE COUNTER. Selling and renting happen at the
+                 same desk, to the same customer, and the only real difference
+                 is that a rental is not finished when the money is taken. Two
+                 pages would have meant two copies of "who is buying".
+
+                 Plain links, so both are addressable and the back button
+                 works — and neither form exists in the page until the server
+                 sent it, which is what stops the wrong one being posted. -->
+            <div class="modryn_till_modes mb-3">
+                <a href="/sell"
+                   t-attf-class="btn btn-sm #{'btn-primary' if mode != 'rent' else 'btn-outline-dark'}">Sell</a>
+                <a href="/sell?mode=rent"
+                   t-attf-class="btn btn-sm #{'btn-primary' if mode == 'rent' else 'btn-outline-dark'}">Rent out</a>
+            </div>
+
+            <t t-if="mode != 'rent'">
             <h1 class="mb-1">Sell</h1>
             <p class="modryn_sub mb-4">
                 What she is buying, what it comes to, and anything taken off.
@@ -200,6 +216,125 @@
 
                 <button type="submit" class="btn btn-dark">Record the sale</button>
             </form>
+            </t>
+
+            <!-- ============================ rent out ======================= -->
+            <t t-else="">
+            <h1 class="mb-1">Rent out</h1>
+            <p class="modryn_sub mb-4">
+                Which gown went out, what it is worth, what she paid to borrow
+                it, and when the wedding is. The wedding date is what the shop
+                counts from — a gown is late ten days after it, not ten days
+                after she collected it.
+            </p>
+
+            <div t-if="rented" class="modryn_panel p-3 mb-4 modryn_sold_ok">
+                <div class="modryn_strong">
+                    <t t-out="rented.dress_label"/> went out to
+                    <t t-out="rented.customer_name"/>
+                </div>
+                <div class="modryn_sub">
+                    The wedding is
+                    <span dir="ltr" t-esc="rented.wedding_date.strftime('%d.%m.%Y')"/>
+                </div>
+            </div>
+
+            <p t-if="error" class="modryn_error mb-3" t-out="error"/>
+
+            <form action="/sell/rent" method="post" class="modryn_rent_form">
+                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+
+                <section class="modryn_panel mb-4">
+                    <header class="modryn_panel_head"><h2>Who is renting</h2></header>
+                    <div class="row g-3">
+                        <div class="col-12 col-md-6">
+                            <label class="form-label" for="rent_name">Full name</label>
+                            <input type="text" id="rent_name" name="customer_name"
+                                   class="form-control" required="required"
+                                   t-att-value="values.get('customer_name')"/>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label class="form-label" for="rent_phone">Phone</label>
+                            <input type="tel" id="rent_phone" name="customer_phone"
+                                   class="form-control" dir="ltr"
+                                   t-att-value="values.get('customer_phone')"/>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="modryn_panel mb-4">
+                    <header class="modryn_panel_head"><h2>Which gown</h2></header>
+                    <div class="row g-3">
+                        <!-- Picked off the rail, and the ticket price and the
+                             kind come with it — two boxes the counter would
+                             otherwise be looking up with somebody waiting. A
+                             gown that is not on the rail is typed instead, so
+                             a borrowed sample is never a reason not to record
+                             a rental. -->
+                        <div class="col-12 col-md-6">
+                            <label class="form-label" for="rent_variant">From the rail</label>
+                            <select id="rent_variant" name="variant_id" class="form-select">
+                                <option value="">&#8212;</option>
+                                <option t-foreach="rail" t-as="v" t-key="v['id']"
+                                        t-att-value="v['id']" t-out="v['label']"/>
+                            </select>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label class="form-label" for="rent_label">Or write it</label>
+                            <input type="text" id="rent_label" name="dress_label"
+                                   class="form-control"
+                                   placeholder="A gown that is not on the rail"
+                                   t-att-value="values.get('dress_label')"/>
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <label class="form-label" for="rent_kind">Kind</label>
+                            <input type="text" id="rent_kind" name="dress_kind"
+                                   class="form-control"
+                                   t-att-value="values.get('dress_kind')"/>
+                        </div>
+                        <div class="col-6 col-md-4">
+                            <label class="form-label" for="rent_retail">What it is worth (₪)</label>
+                            <input type="number" id="rent_retail" name="retail_price"
+                                   min="0" step="1" dir="ltr" class="form-control"
+                                   t-att-value="values.get('retail_price')"/>
+                        </div>
+                        <div class="col-6 col-md-4">
+                            <label class="form-label" for="rent_price">What she paid to borrow it (₪)</label>
+                            <input type="number" id="rent_price" name="rental_price"
+                                   min="0" step="1" dir="ltr" class="form-control"
+                                   t-att-value="values.get('rental_price')"/>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="modryn_panel mb-4">
+                    <header class="modryn_panel_head"><h2>When</h2></header>
+                    <div class="row g-3">
+                        <div class="col-12 col-md-4">
+                            <label class="form-label" for="rent_taken">Taken on</label>
+                            <input type="date" id="rent_taken" name="taken_at"
+                                   class="form-control" dir="ltr"
+                                   t-att-value="values.get('taken_at')"/>
+                            <div class="form-text">Today, unless you say otherwise.</div>
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <label class="form-label" for="rent_wedding">The wedding</label>
+                            <input type="date" id="rent_wedding" name="wedding_date"
+                                   class="form-control" dir="ltr" required="required"
+                                   t-att-value="values.get('wedding_date')"/>
+                            <div class="form-text">The shop counts from this day.</div>
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <label class="form-label" for="rent_note">Anything to remember</label>
+                            <input type="text" id="rent_note" name="note"
+                                   class="form-control" t-att-value="values.get('note')"/>
+                        </div>
+                    </div>
+                </section>
+
+                <button type="submit" class="btn btn-dark">Record the rental</button>
+            </form>
+            </t>
         </t>
     </template>
 

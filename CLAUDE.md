@@ -127,6 +127,7 @@ MODRYN_SMS_DISABLED=1 ./scripts/new_boutique.sh noga  "Noga Couture"
 MODRYN_SMS_DISABLED=1 ./scripts/new_boutique.sh qa    "QA — not a boutique"
 # then per tenant, via odoo-bin shell:
 #   seed_catalog.py, seed_staff.py, seed_demo_web.py, seed_atelier.py
+# and on qa only: seed_playground.py, seed_rentals.py
 ```
 
 `seed_demo_web.py` and `seed_atelier.py` are missing from the README but are
@@ -148,7 +149,7 @@ bella is `miri` and on qa it is `qaowner`; `admin` exists only on the separate
 are no email addresses on any of these accounts — it takes the USERNAME.
 
 **Green baseline** (2026-09-04): `verify.sh` reports **407 passed, 0 failed,
-6 skipped**, and the browser suite **40 passed, 1 skipped** (the skip is
+6 skipped**, and the browser suite **41 passed, 1 skipped** (the skip is
 `realsms.spec.js`, which needs Twilio credentials nobody should export here).
 Both are green. It was 409 on 31.08: two checks are DATA-conditional and
 stopped firing when playground litter was swept, not because anything was
@@ -194,6 +195,13 @@ previous commit. That has settled it every time this session.
   correct arithmetic. Proved before touching it — read the hour's capacity and
   its bookings — then rewritten to fill the hour, which is the same claim at any
   capacity. **Read the capacity before believing act 3c.**
+
+**A class a script binds to is an interface, not decoration.** The rental form
+was given `modryn_sell` because it looked like the sale form, and `SellScreen`
+binds to exactly that selector — it started on a form with no basket and threw
+on its first `addEventListener`, which the shop sees as Odoo's "Oops! Something
+went wrong" over a page that is otherwise perfectly fine. Check what binds to a
+class before reusing it.
 
 **The gate does not look at anything.** It reads status codes and greps markup,
 so a screen can be green and still be wrong to a human eye — two tiles wearing

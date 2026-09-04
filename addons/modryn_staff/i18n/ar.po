@@ -1548,6 +1548,7 @@ msgstr "جدول العمل"
 
 #. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manage_roles
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
 msgid "Workshop"
 msgstr "الورشة"
 
@@ -2071,6 +2072,7 @@ msgstr "ما نزل ولا فستان عن الرفّ."
 #. module: modryn_staff
 #. odoo-javascript
 #: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
+#: model_terms:ir.ui.view,arch_db:modryn_staff.rental_rows
 msgid "Nothing matches that."
 msgstr "ما في نتيجة."
 
@@ -2080,6 +2082,7 @@ msgid "Off"
 msgstr "خارج الوردية"
 
 #. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
 #: model_terms:ir.ui.view,arch_db:modryn_staff.shift_supervisor
 msgid "On the floor"
 msgstr "داخل الوردية"
@@ -3761,3 +3764,228 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
 msgid "Delete this room? It goes for good."
 msgstr "حذف هذه الغرفة؟ تختفي نهائيًا."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid ""
+"<i class=\"fa fa-diamond\" aria-hidden=\"true\"/>\n"
+"                    <span class=\"modryn_strong\">Brides and dresses</span>\n"
+"                    <span class=\"modryn_sub\">Look a bride up by name or number — where she is right now, and everything she has ever bought.</span>"
+msgstr ""
+"<i class=\"fa fa-diamond\" aria-hidden=\"true\"/>\n"
+"                    <span class=\"modryn_strong\">العرايس والفساتين</span>\n"
+"                    <span class=\"modryn_sub\">دوّر على عروس بالاسم أو الرقم — وين هي هلق، وكل الي اشترته بأي وقت.</span>"
+
+#. module: modryn_staff
+#. odoo-python
+#: code:addons/modryn_staff/controllers/manager.py:0
+msgid "At the workshop — %s"
+msgstr "بالورشة — %s"
+
+#. module: modryn_staff
+#. odoo-python
+#: code:addons/modryn_staff/controllers/manager.py:0
+msgid "Booked for %s"
+msgstr "موعد بتاريخ %s"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "Brides and dresses"
+msgstr "العرايس والفساتين"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid ""
+"Nobody by that name or number — not on the floor, not\n"
+"                    booked, not at the workshop, and nothing ever sold."
+msgstr ""
+"ما في حدا بهالاسم أو الرقم — لا بالصالة، ولا عنده موعد، ولا بالورشة، ولا "
+"انباع إشي أبدًا."
+
+#. module: modryn_staff
+#. odoo-python
+#: code:addons/modryn_staff/controllers/manager.py:0
+msgid "She bought"
+msgstr "اشترى"
+
+#. module: modryn_staff
+#. odoo-python
+#: code:addons/modryn_staff/controllers/manager.py:0
+msgid "She came and did not buy"
+msgstr "إجا وما اشترى"
+
+#. module: modryn_staff
+#. odoo-python
+#: code:addons/modryn_staff/controllers/manager.py:0
+msgid "She did not come"
+msgstr "ما إجا"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid ""
+"Type a name or a number. Where she is right now comes\n"
+"                    first — with a stylist, on the floor, booked, or her gown\n"
+"                    at the workshop — and everything this boutique has ever\n"
+"                    sold her is underneath, however long ago."
+msgstr ""
+"اكتب اسم أو رقم. وين هو هلق بيطلع أول — مع بائع، بالصالة، عنده موعد، أو "
+"الفستان بالورشة — وكل الي باعه إياه البوتيك بأي وقت بيكون تحت، مهما كان من "
+"زمان."
+
+#. module: modryn_staff
+#. odoo-python
+#: code:addons/modryn_staff/controllers/manager.py:0
+msgid "Waiting on the floor"
+msgstr "مستني بالصالة"
+
+#. module: modryn_staff
+#. odoo-python
+#: code:addons/modryn_staff/controllers/manager.py:0
+msgid "With %s right now"
+msgstr "مع %s هلق"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "With her"
+msgstr "عند"
+
+#. module: modryn_staff
+#. odoo-python
+#: code:addons/modryn_staff/controllers/manager.py:0
+msgid "With somebody right now"
+msgstr "مع حدا هلق"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid ""
+"<i class=\"fa fa-refresh\" aria-hidden=\"true\"/>\n"
+"                    <span class=\"modryn_strong\">Rentals</span>\n"
+"                    <span class=\"modryn_sub\">Every gown out on loan — who has it, when the wedding is, and what has not come back.</span>"
+msgstr ""
+"<i class=\"fa fa-refresh\" aria-hidden=\"true\"/>\n"
+"                    <span class=\"modryn_strong\">التأجير</span>\n"
+"                    <span class=\"modryn_sub\">كل فستان طالع بالتأجير — عند مين، إمتى العرس، وشو لسا ما رجع.</span>"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "<span class=\"modryn_late_head\">Late</span>"
+msgstr "<span class=\"modryn_late_head\">تأخير</span>"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid ""
+"<span data-word=\"late\">days late</span>\n"
+"                    <span data-word=\"worth\">What it is worth</span>\n"
+"                    <span data-word=\"paid\">Paid to borrow it</span>\n"
+"                    <span data-word=\"taken\">Taken on</span>\n"
+"                    <span data-word=\"wedding\">The wedding</span>\n"
+"                    <span data-word=\"returned\">Back on the rail</span>\n"
+"                    <span data-word=\"out\">Still out</span>\n"
+"                    <span data-word=\"none\">Nothing matches that.</span>"
+msgstr ""
+"<span data-word=\"late\">يوم تأخير</span><span data-word=\"worth\">قديش "
+"بتسوى</span><span data-word=\"paid\">اندفع عشان الاستعارة</span><span data-"
+"word=\"taken\">انأخذت بتاريخ</span><span data-"
+"word=\"wedding\">العرس</span><span data-word=\"returned\">رجعت "
+"عالشمّاعة</span><span data-word=\"out\">لسا برّا</span><span data-"
+"word=\"none\">ما في إشي بيطابق.</span>"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "A name, a number, a gown, or a kind"
+msgstr "اسم، رقم، فستان أو نوع"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.rental_rows
+msgid "Back on the rail"
+msgstr "رجعت عالشمّاعة"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid ""
+"Everything still out, soonest wedding first. Type two letters to search all "
+"of it."
+msgstr "كل الي لسا برّا، أقرب عرس أول. اكتب حرفين عشان تدوّر بالكل."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "Find it"
+msgstr "دوّر"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.rental_rows
+msgid "It came back"
+msgstr "رجعت"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "Late"
+msgstr "تأخير"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.rental_rows
+msgid "Nothing is out on loan."
+msgstr "ما في ولا فستان بالتأجير."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.rental_rows
+msgid "Paid to borrow it"
+msgstr "اندفع عشان الاستعارة"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "Rentals"
+msgstr "التأجير"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.rental_rows
+msgid "Rented out by"
+msgstr "أجّرها"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.rental_rows
+msgid "Still out"
+msgstr "لسا برّا"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "Still out more than ten days after the wedding."
+msgstr "لسا برّا أكثر من عشر أيام بعد العرس."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.rental_rows
+msgid "Taken on"
+msgstr "انأخذت بتاريخ"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.rental_rows
+msgid "The wedding"
+msgstr "العرس"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.rental_rows
+msgid "What it is worth"
+msgstr "قديش بتسوى"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "What matches, gone out or come back."
+msgstr "الي بيطابق، طالع كان أو راجع."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+#: model_terms:ir.ui.view,arch_db:modryn_staff.rental_rows
+msgid "days late"
+msgstr "يوم تأخير"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid ""
+"still out more than ten\n"
+"                    days after the wedding."
+msgstr "لسا برّا أكثر من عشر أيام بعد العرس."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "· the wedding was"
+msgstr "· العرس كان"

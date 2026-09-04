@@ -50,6 +50,55 @@ const rowFor = (page, text) => page.locator('tr', { hasText: text });
 const roleRow = (page, name) =>
   page.locator('table.modryn_table').first().locator('tbody tr', { hasText: name });
 
+test('act 11 — a gown goes out on loan, is found by typing, and comes back @writes', async ({ page }) => {
+  await signInOwner(page);
+  const name = `Undo Rental ${STAMP}`;
+
+  // ---- out at the counter ------------------------------------------------
+  await page.goto('/sell?mode=rent');
+  await expect(page.locator('form[action="/sell/rent"]')).toBeVisible();
+  await page.fill('#rent_name', name);
+  await page.fill('#rent_phone', `+97250${STAMP}`);
+  await page.fill('#rent_label', 'Undo Gown');
+  await page.fill('#rent_kind', 'Undo Kind');
+  await page.fill('#rent_retail', '5000');
+  await page.fill('#rent_price', '900');
+  // A wedding ALREADY well past, so the row is late the moment it exists —
+  // the alternative is a spec that can only be written by waiting ten days.
+  const long_ago = new Date(Date.now() - 40 * 864e5).toISOString().slice(0, 10);
+  await page.fill('#rent_wedding', long_ago);
+  await page.locator('form[action="/sell/rent"] button[type=submit]').click();
+  await expect(page.locator('.modryn_sold_ok')).toContainText(name);
+
+  // ---- and the owner is told without going looking ----------------------
+  await page.goto('/manage/team-screen');
+  await expect(page.locator('.modryn_late_strip'),
+    'a gown forty days past the wedding did not reach the manager screen').toBeVisible();
+
+  await page.goto('/manage/team-screen?view=rentals');
+  // The PANEL's banner, not the strip above it: the strip carries the same
+  // class and is a count, so it never names anybody and could not contain this.
+  const banner = page.locator('.modryn_late_banner:not(.modryn_late_strip)');
+  await expect(banner).toContainText(name);
+
+  // ---- found by typing, from the second letter --------------------------
+  // Matched on the CLASS the card carries, never on a translated word: the
+  // frontend's language is a cookie and the same page says different words to
+  // different browser profiles.
+  const box = page.locator('#modryn_rental_q');
+  await box.fill(name.slice(0, 6));
+  const card = page.locator('article.modryn_rental', { hasText: name });
+  await expect(card).toHaveCount(1);
+  await expect(card, 'a gown past its grace was not marked late')
+    .toHaveClass(/is_late/);
+
+  // ---- and back on the rail ---------------------------------------------
+  await card.locator('form[action*="/manage/rentals/back/"] button').click();
+  await page.goto('/manage/team-screen?view=rentals');
+  await expect(page.locator('.modryn_late_banner:not(.modryn_late_strip)'),
+    'it came back and is still being called late').not.toContainText(name);
+});
+
 test('act 10a — a role added by mistake can be deleted, and one in use cannot @writes', async ({ page }) => {
   await signInOwner(page);
   const name = `Undo Role ${STAMP}`;
@@ -155,6 +204,7 @@ test('act 10d — a date can be given its own booking hours, and handed back @wr
   const days = page.locator('a.modryn_month_day');
   expect(await days.count(), 'the month drew no pressable day').toBeGreaterThan(0);
   const before = await days.count();
+  const ownBefore = await page.locator('a.modryn_month_day.is_own').count();
   const target = days.last();
   const key = (await target.getAttribute('href')).split('day=')[1];
   await target.click();
@@ -173,9 +223,11 @@ test('act 10d — a date can be given its own booking hours, and handed back @wr
   const own = page.locator(`a.modryn_month_day.is_own[href*="day=${key}"]`);
   await expect(own, 'the day did not take its own hours').toHaveCount(1);
   await expect(own).toContainText('4');
-  // Every other day is untouched: this is a date's own answer, not an edit to
-  // the week that every date follows.
-  expect(await page.locator('a.modryn_month_day.is_own').count()).toBe(1);
+  // ONE MORE than there were, not exactly one in total. A boutique that has
+  // already given another day its own hours is doing the right thing, and so
+  // is a run that ended badly and left one behind — neither is this act's
+  // business. What it means is "mine took them, and nothing else moved".
+  expect(await page.locator('a.modryn_month_day.is_own').count()).toBe(ownBefore + 1);
   expect(await page.locator('a.modryn_month_day').count()).toBe(before);
 
   await page.locator('form[action="/manage/queue-day/clear"] button').click();

@@ -140,12 +140,14 @@ msgid "Create a Customer"
 msgstr "יצירת לקוח"
 
 #. module: modryn_ops
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_rental__customer_name
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_sale__customer_name
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_task__customer_name
 msgid "Customer Name"
 msgstr "שם הלקוח"
 
 #. module: modryn_ops
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_rental__customer_phone
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_sale__customer_phone
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_task__customer_phone
 msgid "Customer Phone"
@@ -267,6 +269,7 @@ msgid "Item"
 msgstr "פריט"
 
 #. module: modryn_ops
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_rental__dress_kind
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_task_template__kind
 #: model:ir.model.fields,field_description:modryn_ops.field_product_product__modryn_type_id
 #: model:ir.model.fields,field_description:modryn_ops.field_product_template__modryn_type_id
@@ -671,6 +674,7 @@ msgstr "מה"
 #. module: modryn_ops
 #: model_terms:ir.ui.view,arch_db:modryn_ops.manage_audit
 #: model_terms:ir.ui.view,arch_db:modryn_ops.manage_checklists
+#: model_terms:ir.ui.view,arch_db:modryn_ops.sell_screen
 msgid "When"
 msgstr "מתי"
 
@@ -703,6 +707,7 @@ msgstr "שם"
 
 #. module: modryn_ops
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_discount_code__note
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_rental__note
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_task__note
 msgid "Note"
 msgstr "הערה"
@@ -734,6 +739,7 @@ msgstr "אירוע ביומן"
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_audit_log__create_uid
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_discount_code__create_uid
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_dress_type__create_uid
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_rental__create_uid
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_sale__create_uid
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_sale_line__create_uid
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_task__create_uid
@@ -745,6 +751,7 @@ msgstr "נוצר על ידי"
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_audit_log__create_date
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_discount_code__create_date
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_dress_type__create_date
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_rental__create_date
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_sale__create_date
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_sale_line__create_date
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_task__create_date
@@ -759,6 +766,7 @@ msgstr "נוצר בתאריך"
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_discount_code__display_name
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_dress_type__display_name
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_queue_entry__display_name
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_rental__display_name
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_sale__display_name
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_sale_line__display_name
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_task__display_name
@@ -782,6 +790,7 @@ msgstr "עובד"
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_discount_code__id
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_dress_type__id
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_queue_entry__id
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_rental__id
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_sale__id
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_sale_line__id
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_task__id
@@ -796,6 +805,7 @@ msgstr "מזהה"
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_audit_log__write_uid
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_discount_code__write_uid
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_dress_type__write_uid
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_rental__write_uid
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_sale__write_uid
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_sale_line__write_uid
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_task__write_uid
@@ -807,6 +817,7 @@ msgstr "עודכן לאחרונה על ידי"
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_audit_log__write_date
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_discount_code__write_date
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_dress_type__write_date
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_rental__write_date
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_sale__write_date
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_sale_line__write_date
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_task__write_date
@@ -1586,6 +1597,7 @@ msgstr "כמה שילמה"
 
 #. module: modryn_ops
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_sale_line__variant_id
+#: model_terms:ir.ui.view,arch_db:modryn_ops.sell_screen
 msgid "From the rail"
 msgstr "מהמתלה"
 
@@ -1911,3 +1923,161 @@ msgstr "מה יורד"
 #: code:addons/modryn_ops/models/discount_code.py:0
 msgid "from %s"
 msgstr "מ-%s"
+
+#. module: modryn_ops
+#: model:ir.model,name:modryn_ops.model_modryn_rental
+msgid "A gown out on rental"
+msgstr "שמלה שיצאה בהשכרה"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.sell_screen
+msgid "A gown that is not on the rail"
+msgstr "שמלה שלא נמצאת על המתלה"
+
+#. module: modryn_ops
+#. odoo-python
+#: code:addons/modryn_ops/models/rental.py:0
+msgid "A price cannot be negative."
+msgstr "מחיר לא יכול להיות שלילי."
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.sell_screen
+msgid "Anything to remember"
+msgstr "משהו שכדאי לזכור"
+
+#. module: modryn_ops
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_rental__returned_at
+msgid "Back on the rail"
+msgstr "חזרה למתלה"
+
+#. module: modryn_ops
+#. odoo-python
+#: code:addons/modryn_ops/models/rental.py:0
+msgid "It cannot come back before it went out."
+msgstr "היא לא יכולה לחזור לפני שיצאה."
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.sell_screen
+msgid "Or write it"
+msgstr "או לכתוב"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.sell_screen
+msgid "Record the rental"
+msgstr "רישום ההשכרה"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.sell_screen
+msgid "Rent out"
+msgstr "השכרה"
+
+#. module: modryn_ops
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_rental__employee_id
+msgid "Rented out by"
+msgstr "השכיר"
+
+#. module: modryn_ops
+#. odoo-python
+#: code:addons/modryn_ops/controllers/sell.py:0
+msgid "Say when the wedding is."
+msgstr "נא לציין מתי החתונה."
+
+#. module: modryn_ops
+#. odoo-python
+#: code:addons/modryn_ops/controllers/sell.py:0
+msgid "Say which gown went out."
+msgstr "נא לציין איזו שמלה יצאה."
+
+#. module: modryn_ops
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_rental__taken_at
+#: model_terms:ir.ui.view,arch_db:modryn_ops.sell_screen
+msgid "Taken on"
+msgstr "נלקחה בתאריך"
+
+#. module: modryn_ops
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_rental__variant_id
+msgid "The gown"
+msgstr "השמלה"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.sell_screen
+msgid "The shop counts from this day."
+msgstr "הבוטיק סופר מהיום הזה."
+
+#. module: modryn_ops
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_rental__wedding_date
+#: model_terms:ir.ui.view,arch_db:modryn_ops.sell_screen
+msgid "The wedding"
+msgstr "החתונה"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.sell_screen
+msgid "The wedding is"
+msgstr "החתונה בתאריך"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.sell_screen
+msgid "Today, unless you say otherwise."
+msgstr "היום, אלא אם תגיד אחרת."
+
+#. module: modryn_ops
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_rental__retail_price
+msgid "What it is worth"
+msgstr "כמה היא שווה"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.sell_screen
+msgid "What it is worth (₪)"
+msgstr "כמה היא שווה (₪)"
+
+#. module: modryn_ops
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_rental__rental_price
+msgid "What she paid to borrow it"
+msgstr "כמה שולם על ההשאלה"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.sell_screen
+msgid "What she paid to borrow it (₪)"
+msgstr "כמה שילם על ההשאלה (₪)"
+
+#. module: modryn_ops
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_rental__dress_label
+msgid "What went out"
+msgstr "מה יצא"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.sell_screen
+msgid "Which gown"
+msgstr "איזו שמלה"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.sell_screen
+msgid ""
+"Which gown went out, what it is worth, what she paid to borrow\n"
+"                it, and when the wedding is. The wedding date is what the shop\n"
+"                counts from — a gown is late ten days after it, not ten days\n"
+"                after she collected it."
+msgstr ""
+"איזו שמלה יצאה, כמה היא שווה, כמה שולם על ההשאלה, ומתי החתונה. תאריך החתונה "
+"הוא מה שהבוטיק סופר ממנו — שמלה מאחרת עשרה ימים אחריו, לא עשרה ימים אחרי "
+"שנלקחה."
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.sell_screen
+msgid "Who is renting"
+msgstr "מי שוכר"
+
+#. module: modryn_ops
+#: model_terms:ir.ui.view,arch_db:modryn_ops.sell_screen
+msgid "went out to"
+msgstr "יצאה אל"
+
+#. module: modryn_ops
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_rental__days_late
+msgid "Days late"
+msgstr "ימי איחור"
+
+#. module: modryn_ops
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_rental__is_late
+msgid "Late back"
+msgstr "חזרה באיחור"

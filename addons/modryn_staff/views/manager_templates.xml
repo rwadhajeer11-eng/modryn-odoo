@@ -17,6 +17,21 @@
                  team first.
                  Links and not a script: the back button works, a tile can be
                  sent to somebody as a URL, and there is no state to lose. -->
+            <!-- SEEN WITHOUT LOOKING. A gown a fortnight past the wedding
+                 and still out is the one thing on this screen worth
+                 interrupting somebody for, so it sits above the tiles in the
+                 same red the rentals list uses — she should not have to open
+                 anything to find out. -->
+            <a t-if="is_owner and rentals_late_count"
+               href="/manage/team-screen?view=rentals"
+               class="modryn_late_banner modryn_late_strip mb-4">
+                <span class="modryn_late_head">Late</span>
+                <span>
+                    <t t-out="rentals_late_count"/> still out more than ten
+                    days after the wedding.
+                </span>
+            </a>
+
             <div t-if="not view" class="modryn_tiles">
                 <a class="modryn_tile" href="/manage/team-screen?view=announce">
                     <i class="fa fa-bullhorn" aria-hidden="true"/>
@@ -54,8 +69,13 @@
                      the history of who bought what. -->
                 <a t-if="is_owner" class="modryn_tile" href="/manage/team-screen?view=sales">
                     <i class="fa fa-diamond" aria-hidden="true"/>
-                    <span class="modryn_strong">Dresses sold</span>
-                    <span class="modryn_sub">Look a bride up by name or number — what she bought, and what the workshop did to it.</span>
+                    <span class="modryn_strong">Brides and dresses</span>
+                    <span class="modryn_sub">Look a bride up by name or number — where she is right now, and everything she has ever bought.</span>
+                </a>
+                <a t-if="is_owner and has_rentals" class="modryn_tile" href="/manage/team-screen?view=rentals">
+                    <i class="fa fa-refresh" aria-hidden="true"/>
+                    <span class="modryn_strong">Rentals</span>
+                    <span class="modryn_sub">Every gown out on loan — who has it, when the wedding is, and what has not come back.</span>
                 </a>
                 <a t-if="is_owner" class="modryn_tile" href="/manage/team-screen?view=rooms">
                     <i class="fa fa-building" aria-hidden="true"/>
@@ -604,8 +624,12 @@
                  can read, and the question here is always about one bride. -->
             <section t-if="view == 'sales' and is_owner" class="modryn_panel mb-4">
                 <header class="modryn_panel_head">
-                    <h2>Dresses sold</h2>
+                    <h2>Brides and dresses</h2>
                 </header>
+                <!-- Renamed from "Dresses sold" when it stopped being only
+                     that. A heading that says "sold" over a card reading
+                     "at the workshop" is the kind of quiet lie that makes
+                     somebody stop trusting the whole screen. -->
 
                 <!-- A GET form: a search is a question, not a change, so the
                      back button works and one bride's history can be sent to
@@ -621,26 +645,40 @@
                 </form>
 
                 <p t-if="not sales_query" class="modryn_empty">
-                    Type a name or a number. Everything this boutique has ever
-                    sold is here, however long ago.
+                    Type a name or a number. Where she is right now comes
+                    first — with a stylist, on the floor, booked, or her gown
+                    at the workshop — and everything this boutique has ever
+                    sold her is underneath, however long ago.
                 </p>
                 <p t-elif="len(sales_query.strip()) &lt; sales_min" class="modryn_sub">
                     Two characters or more.
                 </p>
                 <p t-elif="not sales" class="modryn_empty">
-                    Nothing sold to anybody by that name or number.
+                    Nobody by that name or number — not on the floor, not
+                    booked, not at the workshop, and nothing ever sold.
                 </p>
 
                 <div t-else="" class="modryn_cards">
                     <article t-foreach="sales" t-as="sale"
                              t-key="'%s-%s' % (sale['kind'], sale['id'])"
-                             class="modryn_card">
+                             t-attf-class="modryn_card#{' modryn_card_open' if sale['open'] else ''}">
                         <div class="modryn_card_marks">
                             <span class="modryn_strong" t-out="sale['name']"/>
+                            <!-- WHERE SHE IS, said in words on every card. The
+                                 badge underneath still says which door she came
+                                 through, because the two are different facts:
+                                 "at the workshop" and "walk-in" are both true of
+                                 the same woman. -->
+                            <span t-attf-class="modryn_badge #{'is_wait' if sale['open'] else 'is_muted'}"
+                                  t-out="sale['stage']"/>
                             <span t-if="sale['kind'] == 'till'"
                                   class="modryn_badge is_muted">Sold at the counter</span>
                             <span t-elif="sale['kind'] == 'walkin'"
                                   class="modryn_badge is_muted">Walk-in</span>
+                            <span t-elif="sale['kind'] == 'workshop'"
+                                  class="modryn_badge is_muted">Workshop</span>
+                            <span t-elif="sale['kind'] == 'floor'"
+                                  class="modryn_badge is_muted">On the floor</span>
                             <span t-else="" class="modryn_badge is_muted">Booking</span>
                         </div>
                         <div t-if="sale['phone']" class="modryn_sub" dir="ltr"
@@ -651,6 +689,7 @@
                                 <dt>The dress</dt>
                                 <dd t-out="sale['dress']"/>
                             </t>
+                            <t t-if="not sale['open']">
                             <dt>What it came to</dt>
                             <dd dir="ltr">
                                 ₪<t t-esc="'{:,}'.format(sale['amount'])"/>
@@ -668,6 +707,14 @@
                             </t>
                             <t t-if="sale['by']">
                                 <dt>Sold by</dt>
+                                <dd t-out="sale['by']"/>
+                            </t>
+                            </t>
+                            <!-- An open row has no price and no seller yet, so
+                                 it says who is with her instead of printing ₪0
+                                 and a blank line where a name goes. -->
+                            <t t-if="sale['open'] and sale['by']">
+                                <dt>With her</dt>
                                 <dd t-out="sale['by']"/>
                             </t>
                             <!-- What came off the price, and why. The reason is
@@ -732,6 +779,88 @@
                         <p t-elif="not sale.get('altered_here')"
                            class="modryn_sub mb-0">Nothing was altered.</p>
                     </article>
+                </div>
+            </section>
+
+            <!-- ========================= rentals ========================= -->
+            <!-- A gown that went out and has not come back is money standing
+                 in somebody else's wardrobe, and nothing in this product could
+                 see it. The list is what is still out; the banner above it is
+                 what is late, and that one is drawn whether or not anybody
+                 searched for anything. -->
+            <section t-if="view == 'rentals' and is_owner and has_rentals" class="modryn_panel mb-4">
+                <header class="modryn_panel_head">
+                    <h2>Rentals</h2>
+                </header>
+
+                <!-- WITHOUT LOOKING. Ten days past the wedding and still out
+                     is the one thing on this screen nobody should have to go
+                     and find, so it is at the top, in red, before the search
+                     box and before the list. -->
+                <div t-if="rentals_late" class="modryn_late_banner mb-4" role="alert">
+                    <div class="modryn_late_head">Late</div>
+                    <div class="modryn_sub mb-2">
+                        Still out more than ten days after the wedding.
+                    </div>
+                    <div t-foreach="rentals_late" t-as="row" t-key="row['id']"
+                         class="modryn_late_row">
+                        <div>
+                            <span class="modryn_strong" t-out="row['name']"/>
+                            <span t-if="row['phone']" class="modryn_sub ms-2"
+                                  dir="ltr" t-out="row['phone']"/>
+                            <div class="modryn_sub">
+                                <t t-out="row['dress']"/>
+                                <t t-if="row['wedding']">
+                                    · the wedding was
+                                    <span dir="ltr" t-out="row['wedding']"/>
+                                </t>
+                            </div>
+                        </div>
+                        <span class="modryn_badge is_late">
+                            <t t-out="row['days_late']"/> days late
+                        </span>
+                    </div>
+                </div>
+
+                <!-- A GET form as well as the live one: the box answers from
+                     the second letter through /manage/rentals/search, and
+                     pressing Enter still works with JavaScript off. -->
+                <form action="/manage/team-screen" method="get"
+                      class="d-flex gap-2 align-items-center flex-wrap mb-3"
+                      id="modryn_rental_form">
+                    <input type="hidden" name="view" value="rentals"/>
+                    <input type="search" name="q" id="modryn_rental_q"
+                           class="form-control" style="max-width: 420px;"
+                           autocomplete="off"
+                           placeholder="A name, a number, a gown, or a kind"
+                           t-att-value="rentals_query"/>
+                    <button type="submit" class="btn btn-sm btn-outline-dark">Find it</button>
+                </form>
+
+                <p class="modryn_sub" id="modryn_rental_hint">
+                    <t t-if="rentals_searched">What matches, gone out or come back.</t>
+                    <t t-else="">Everything still out, soonest wedding first. Type two letters to search all of it.</t>
+                </p>
+
+                <!-- The rows the server drew. The live search replaces the
+                     contents of this same box, so there is one place a rental
+                     is ever rendered and the two cannot drift apart. -->
+                <div id="modryn_rental_rows" class="modryn_cards">
+                    <t t-call="modryn_staff.rental_rows"/>
+                </div>
+                <!-- The words the live search needs, rendered by the server so
+                     the translator can reach them: Odoo does not extract
+                     strings from JavaScript, and a sentence built in the
+                     script would be English forever. -->
+                <div class="d-none" id="modryn_rental_words">
+                    <span data-word="late">days late</span>
+                    <span data-word="worth">What it is worth</span>
+                    <span data-word="paid">Paid to borrow it</span>
+                    <span data-word="taken">Taken on</span>
+                    <span data-word="wedding">The wedding</span>
+                    <span data-word="returned">Back on the rail</span>
+                    <span data-word="out">Still out</span>
+                    <span data-word="none">Nothing matches that.</span>
                 </div>
             </section>
 
@@ -1627,6 +1756,68 @@
                 </div>
             </section>
         </t>
+    </template>
+
+    <!-- ONE rental row, called from the panel above and rebuilt by the live
+         search from the same fields. Its own template so the server-rendered
+         page and the as-you-type answer cannot start disagreeing about what a
+         rental looks like — which is the ordinary way a live search drifts
+         away from the page under it. -->
+    <template id="rental_rows" name="MODRYN rental rows">
+        <p t-if="not rentals" class="modryn_empty">
+            <t t-if="rentals_searched">Nothing matches that.</t>
+            <t t-else="">Nothing is out on loan.</t>
+        </p>
+        <article t-foreach="rentals" t-as="row" t-key="row['id']"
+                 t-attf-class="modryn_card modryn_rental#{' is_late' if row['late'] else ''}">
+            <div class="modryn_card_marks">
+                <span class="modryn_strong" t-out="row['name']"/>
+                <span t-if="row['late']" class="modryn_badge is_late">
+                    <t t-out="row['days_late']"/> days late
+                </span>
+                <span t-elif="not row['returned']" class="modryn_badge is_wait">Still out</span>
+                <span t-else="" class="modryn_badge is_free">Back on the rail</span>
+                <span t-if="row['kind']" class="modryn_badge is_muted" t-out="row['kind']"/>
+            </div>
+            <div t-if="row['phone']" class="modryn_sub" dir="ltr" t-out="row['phone']"/>
+            <div class="modryn_strong" t-out="row['dress']"/>
+            <dl class="modryn_person">
+                <t t-if="row['retail']">
+                    <dt>What it is worth</dt>
+                    <dd dir="ltr">₪<t t-esc="'{:,}'.format(row['retail'])"/></dd>
+                </t>
+                <t t-if="row['rental']">
+                    <dt>Paid to borrow it</dt>
+                    <dd dir="ltr">₪<t t-esc="'{:,}'.format(row['rental'])"/></dd>
+                </t>
+                <t t-if="row['taken']">
+                    <dt>Taken on</dt>
+                    <dd dir="ltr" t-out="row['taken']"/>
+                </t>
+                <t t-if="row['wedding']">
+                    <dt>The wedding</dt>
+                    <dd dir="ltr" t-out="row['wedding']"/>
+                </t>
+                <t t-if="row['returned']">
+                    <dt>Back on the rail</dt>
+                    <dd dir="ltr" t-out="row['returned']"/>
+                </t>
+                <t t-if="row['by']">
+                    <dt>Rented out by</dt>
+                    <dd t-out="row['by']"/>
+                </t>
+            </dl>
+            <div t-if="row['note']" class="modryn_sub" t-out="row['note']"/>
+            <form t-if="not row['returned']"
+                  t-attf-action="/manage/rentals/back/#{row['id']}" method="post"
+                  class="mt-2">
+                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                <input type="hidden" name="q" t-att-value="rentals_query"/>
+                <button type="submit" class="btn btn-sm btn-outline-dark">
+                    It came back
+                </button>
+            </form>
+        </article>
     </template>
 
 </odoo>

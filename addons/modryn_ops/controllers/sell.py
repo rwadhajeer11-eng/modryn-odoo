@@ -1,4 +1,4 @@
-from odoo import _, http
+from odoo import _, fields, http
 from odoo.http import request
 from odoo.tools.translate import LazyTranslate
 
@@ -90,10 +90,18 @@ class ModrynSell(http.Controller):
 
     @http.route('/sell', type='http', auth='user', website=True,
                 methods=['GET'], sitemap=False)
-    def sell_form(self, saved=None, **kw):
+    def sell_form(self, saved=None, mode=None, rented=None, **kw):
         if not access.can_view('sell'):
             return request.not_found()
         context = self._context()
+        # Which of the two the counter is on. Validated against the two that
+        # exist rather than passed through: an unknown mode would render a page
+        # with neither form on it and no way to tell why.
+        context['mode'] = 'rent' if mode == 'rent' else 'sell'
+        context['rented'] = request.env['modryn.rental'].sudo().browse(
+            int(rented)) if rented and str(rented).isdigit() else None
+        if context['rented'] and not context['rented'].exists():
+            context['rented'] = None
         context['saved'] = request.env['modryn.sale'].sudo().browse(
             int(saved)) if saved and saved.isdigit() else None
         if context['saved'] and not context['saved'].exists():
@@ -114,6 +122,82 @@ class ModrynSell(http.Controller):
                 context['saved_line'] = _("%(count)s item(s) · %(paid)s") % {
                     'count': len(sale.line_ids), 'paid': paid}
         return request.render('modryn_ops.sell_screen', context)
+
+    @http.route('/sell/rent', type='http', auth='user', website=True,
+                methods=['POST'], csrf=True, sitemap=False)
+    def rent_out(self, **post):
+        """A gown goes out, and the shop starts counting.
+
+        THE WEDDING DATE IS REQUIRED and the collection date is not, because
+        the wedding is what lateness is measured from — a rental without one
+        can never be late, which is the one thing this whole feature exists to
+        notice. Taken-on defaults to now, since that is what pressing the
+        button means.
+        """
+        if not access.can_view('sell'):
+            return request.not_found()
+        me = self._me()
+        if not me:
+            return request.not_found()
+
+        def refuse(message):
+            context = self._context(error=message, values=dict(post))
+            context['mode'] = 'rent'
+            context['rented'] = None
+            return request.render('modryn_ops.sell_screen', context)
+
+        name = (post.get('customer_name') or '').strip()
+        if not name:
+            return refuse(_("Please enter the customer's name."))
+        wedding = (post.get('wedding_date') or '').strip()
+        if not wedding:
+            return refuse(_("Say when the wedding is."))
+
+        # THE GOWN, from the rail or typed. The rail answer carries the kind
+        # and the ticket price with it, so picking one fills in two boxes the
+        # counter would otherwise have to look up while somebody waits.
+        variant = None
+        raw = (post.get('variant_id') or '').strip()
+        if raw.isdigit():
+            variant = request.env['product.product'].sudo().browse(
+                int(raw)).exists()
+        label = (post.get('dress_label') or '').strip()
+        kind = (post.get('dress_kind') or '').strip()
+        if variant:
+            size = variant.product_template_attribute_value_ids[:1].name
+            label = label or '%s%s' % (
+                variant.product_tmpl_id.name or '',
+                ' · %s' % size if size else '')
+            if not kind and 'modryn_type_id' in variant.product_tmpl_id._fields:
+                kind = variant.product_tmpl_id.modryn_type_id.name or ''
+        if not label:
+            return refuse(_("Say which gown went out."))
+
+        def money(key, fallback=0.0):
+            try:
+                return max(float(post.get(key) or 0), 0.0)
+            except (TypeError, ValueError):
+                return fallback
+
+        retail = money('retail_price')
+        if not retail and variant:
+            retail = round(variant.list_price or 0.0)
+
+        taken = (post.get('taken_at') or '').strip()
+        rental = request.env['modryn.rental'].sudo().create({
+            'customer_name': name,
+            'customer_phone': (post.get('customer_phone') or '').strip(),
+            'variant_id': variant.id if variant else False,
+            'dress_label': label,
+            'dress_kind': kind,
+            'retail_price': retail,
+            'rental_price': money('rental_price'),
+            'employee_id': me.id,
+            'taken_at': ('%s 12:00:00' % taken) if taken else fields.Datetime.now(),
+            'wedding_date': wedding,
+            'note': (post.get('note') or '').strip(),
+        })
+        return request.redirect('/sell?mode=rent&rented=%s' % rental.id)
 
     @http.route('/sell', type='http', auth='user', website=True,
                 methods=['POST'], csrf=True, sitemap=False)

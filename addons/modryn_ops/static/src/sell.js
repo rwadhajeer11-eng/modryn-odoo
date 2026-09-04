@@ -28,6 +28,11 @@ import { registry } from "@web/core/registry";
  * with a search box that does nothing. That has cost this project twice.
  */
 export class SellScreen extends Interaction {
+    // The SALE form only. The rental form on the same page is
+    // .modryn_rent_form deliberately: this Interaction reaches straight
+    // for the basket and the search box, so binding it to a form that
+    // has neither throws on the first line of start() and the shop sees
+    // Odoo's "Oops! Something went wrong" over a page that works.
     static selector = ".modryn_sell";
 
     setup() {

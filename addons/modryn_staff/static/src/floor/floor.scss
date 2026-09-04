@@ -1001,6 +1001,73 @@
     box-shadow: 0 1px 2px rgba(43, 33, 24, 0.04);
 }
 
+// LATE. A gown still out ten days after the wedding, shouted at the top of the
+// rentals screen before anybody searches for anything — the one thing here
+// that has to be seen without being looked for. Bright and framed on purpose:
+// this is money standing in somebody else's wardrobe.
+.modryn_late_banner {
+    border: 2px solid #C0392B;
+    border-radius: 12px;
+    padding: 12px 14px;
+    background: rgba(192, 57, 43, 0.06);
+}
+
+// The same frame as a strip: one line above the tiles, and a link, because
+// the only useful thing to do about it is go and look at the list.
+.modryn_late_strip {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    color: inherit;
+
+    &:hover { background: rgba(192, 57, 43, 0.10); }
+}
+
+.modryn_late_head {
+    color: #C0392B;
+    font-weight: 700;
+    font-size: 1.05rem;
+    letter-spacing: .02em;
+}
+
+.modryn_late_row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding-block: 6px;
+
+    + .modryn_late_row { border-top: 1px solid rgba(192, 57, 43, 0.2); }
+}
+
+// The same red on the card itself, so a row found through the search says the
+// same thing the banner did rather than looking like an ordinary rental.
+.modryn_rental.is_late {
+    border-color: #C0392B;
+    background: rgba(192, 57, 43, 0.05);
+}
+
+.modryn_badge.is_late {
+    color: #C0392B;
+    border-color: rgba(192, 57, 43, 0.6);
+    white-space: nowrap;
+}
+
+// The two doors at the counter.
+.modryn_till_modes {
+    display: flex;
+    gap: 8px;
+}
+
+// STILL HAPPENING. The bride search now mixes what is going on right now with
+// what happened in March, and the two sort into two blocks — so the open ones
+// need to be tellable apart at a glance rather than by reading each badge.
+.modryn_card_open {
+    border-color: $modryn-gold;
+    background: rgba(201, 162, 39, 0.05);
+}
+
 // The badges along the top of a card - a row that wraps rather than a column,
 // so a card with three marks does not become three lines tall.
 .modryn_card_marks {

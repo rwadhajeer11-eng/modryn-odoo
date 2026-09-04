@@ -8,3 +8,4 @@ from . import dress_type
 from . import dress
 from . import dress_stock
 from . import discount_code
+from . import rental

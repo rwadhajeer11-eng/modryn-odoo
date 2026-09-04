@@ -67,7 +67,7 @@
         </record>
         <record id="section_boss_sales" model="modryn.platform.section">
             <field name="screen_id" ref="screen_boss"/>
-            <field name="name">Dresses sold</field>
+            <field name="name">Brides and dresses</field>
             <field name="key">sales</field>
             <field name="sequence">50</field>
         </record>

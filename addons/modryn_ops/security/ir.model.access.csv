@@ -12,3 +12,5 @@ access_sale_line_internal,modryn.sale.line.internal,model_modryn_sale_line,base.
 access_sale_line_owner,modryn.sale.line.owner,model_modryn_sale_line,modryn_staff.group_boutique_owner,1,1,1,1
 access_discount_code_internal,modryn.discount.code.internal,model_modryn_discount_code,base.group_user,1,1,0,0
 access_discount_code_owner,modryn.discount.code.owner,model_modryn_discount_code,modryn_staff.group_boutique_owner,1,1,1,0
+access_rental_internal,modryn.rental.internal,model_modryn_rental,base.group_user,1,1,1,0
+access_rental_owner,modryn.rental.owner,model_modryn_rental,modryn_staff.group_boutique_owner,1,1,1,1
