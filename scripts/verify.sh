@@ -497,7 +497,7 @@ else
   grep -q "from .schema_guard import post_init_hook, pre_init_hook" addons/modryn_queue_poc/__init__.py \
     && ok "queue hooks are attributes of the package, where getattr() looks" \
     || bad "queue hook export" "hooks not re-exported from __init__.py"
-  QMANIFEST_V=$(grep -oE "19\.0\.[0-9.]+" addons/modryn_queue_poc/__manifest__.py | tail -1)
+  QMANIFEST_V=$(grep -E "^ *'version'" addons/modryn_queue_poc/__manifest__.py | grep -oE "19\.0\.[0-9.]+" | head -1)
   QMIG_V=$(basename "$(ls -d addons/modryn_queue_poc/migrations/19.0.* | sort -V | tail -1)")
   [ "$QMANIFEST_V" = "$QMIG_V" ] && ok "queue manifest $QMANIFEST_V matches migrations/$QMIG_V" \
     || bad "queue migration version" "manifest is $QMANIFEST_V but the newest migration dir is $QMIG_V"
@@ -1998,7 +1998,7 @@ for f in pre-migrate post-migrate; do
 done
 
 head_ "19. the migration is actually eligible"
-MANIFEST_V=$(grep -oE "19\.0\.[0-9.]+" addons/modryn_portal/__manifest__.py | tail -1)
+MANIFEST_V=$(grep -E "^ *'version'" addons/modryn_portal/__manifest__.py | grep -oE "19\.0\.[0-9.]+" | head -1)
 MIG_V=$(basename "$(ls -d addons/modryn_portal/migrations/19.0.* | sort -V | tail -1)")
 [ "$MANIFEST_V" = "$MIG_V" ] && ok "manifest $MANIFEST_V matches migrations/$MIG_V" \
   || bad "migration version" "manifest is $MANIFEST_V but the newest migration dir is $MIG_V"
@@ -2159,7 +2159,7 @@ grep -q "'pre_init_hook': 'pre_init_hook'" addons/modryn_ops/__manifest__.py \
 grep -q "from .schema_guard import post_init_hook, pre_init_hook" addons/modryn_ops/__init__.py \
   && ok "modryn_ops hooks are attributes of the package" || bad "modryn_ops hook wiring" "__init__.py does not re-export them"
 OPS_MIG=$(ls addons/modryn_ops/migrations/ 2>/dev/null | sort -V | tail -1)
-OPS_MAN=$(grep -oE "19\.0\.[0-9.]+" addons/modryn_ops/__manifest__.py | head -1)
+OPS_MAN=$(grep -E "^ *'version'" addons/modryn_ops/__manifest__.py | grep -oE "19\.0\.[0-9.]+" | head -1)
 [ "$OPS_MIG" = "$OPS_MAN" ] && ok "modryn_ops manifest $OPS_MAN matches migrations/$OPS_MIG" \
   || bad "modryn_ops migration eligibility" "manifest $OPS_MAN vs migrations/$OPS_MIG — the newer pair will never run"
 for db in $TENANTS; do

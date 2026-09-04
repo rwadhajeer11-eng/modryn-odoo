@@ -19,12 +19,12 @@ msgstr "(אזל המלאי)"
 #. module: modryn_booking
 #: model_terms:ir.ui.view,arch_db:modryn_booking.booking_form
 msgid "<option value=\"\">— Choose a time —</option>"
-msgstr "<option value=\"\">— בחרי מועד —</option>"
+msgstr "<option value=\"\">— בחר מועד —</option>"
 
 #. module: modryn_booking
 #: model_terms:ir.ui.view,arch_db:modryn_booking.booking_form
 msgid "<option value=\"\">— Choose your size —</option>"
-msgstr "<option value=\"\">— בחרי מידה —</option>"
+msgstr "<option value=\"\">— בחר מידה —</option>"
 
 #. module: modryn_booking
 #: model_terms:ir.ui.view,arch_db:modryn_booking.booking_confirmed
@@ -150,7 +150,7 @@ msgstr "פגישת ייעוץ: %s"
 #. module: modryn_booking
 #: model:ir.model.fields,field_description:modryn_booking.field_calendar_event__modryn_customer_phone
 msgid "Customer phone"
-msgstr "טלפון הלקוחה"
+msgstr "טלפון הלקוח"
 
 #. module: modryn_booking
 #: model:ir.model.fields,field_description:modryn_booking.field_modryn_closure__date_from
@@ -209,7 +209,7 @@ msgstr "כמה לקוחות הבוטיק יכול לקלוט בו-זמנית ב�
 #: model_terms:ir.ui.view,arch_db:modryn_booking.booking_form
 msgid ""
 "I've read and accept the boutique's cancellation, lateness and no-show terms"
-msgstr "קראתי ואני מאשרת את תנאי הביטול, האיחור ואי-ההגעה של הבוטיק"
+msgstr "קראתי ואני מאשר את תנאי הביטול, האיחור ואי-ההגעה של הבוטיק"
 
 #. module: modryn_booking
 #: model_terms:ir.ui.view,arch_db:modryn_booking.booking_form
@@ -219,7 +219,7 @@ msgstr "הצטרפי לרשימת ההמתנה"
 #. module: modryn_booking
 #: model_terms:ir.ui.view,arch_db:modryn_booking.booking_form
 msgid "Leave your number and we'll text you first if a place opens up."
-msgstr "השאירי מספר טלפון ונעדכן אותך ראשונה אם יתפנה מקום."
+msgstr "השאר מספר טלפון ונעדכן אותך ראשון אם יתפנה מקום."
 
 #. module: modryn_booking
 #. odoo-python
@@ -355,7 +355,7 @@ msgid ""
 "Uncheck to close only part of the day; the day still appears with its "
 "remaining hours."
 msgstr ""
-"בטלי את הסימון כדי לסגור רק חלק מהיום; היום ימשיך להופיע עם השעות שנותרו."
+"בטל את הסימון כדי לסגור רק חלק מהיום; היום ימשיך להופיע עם השעות שנותרו."
 
 #. module: modryn_booking
 #: model_terms:ir.ui.view,arch_db:modryn_booking.booking_form
@@ -472,7 +472,7 @@ msgstr "כמה"
 #. module: modryn_booking
 #: model:ir.model,name:modryn_booking.model_modryn_customer_kind
 msgid "A kind of visitor who may book"
-msgstr "סוג מבקרת שיכולה לקבוע תור"
+msgstr "סוג מבקר שיכול לקבוע תור"
 
 #. module: modryn_booking
 #: model:ir.model.fields,help:modryn_booking.field_modryn_customer_kind__note
@@ -483,7 +483,7 @@ msgstr "מוצג מתחת לשם בעמוד קביעת התור."
 #. odoo-python
 #: code:addons/modryn_booking/models/queue_hours.py:0
 msgid "That kind of visitor already exists."
-msgstr "סוג המבקרת הזה כבר קיים."
+msgstr "סוג המבקר הזה כבר קיים."
 
 #. module: modryn_booking
 #. odoo-python
@@ -502,13 +502,13 @@ msgstr "השעה הזו כבר ברשימה."
 #: model:ir.model.fields,field_description:modryn_booking.field_calendar_event__modryn_customer_kind_id
 #: model_terms:ir.ui.view,arch_db:modryn_booking.booking_form
 msgid "Who is coming"
-msgstr "מי מגיעה"
+msgstr "מי מגיע"
 
 #. module: modryn_booking
 #. odoo-python
 #: code:addons/modryn_booking/controllers/main.py:0
 msgid "Please say who is coming"
-msgstr "נא לציין מי מגיעה"
+msgstr "נא לציין מי מגיע"
 
 #. module: modryn_booking
 #: model:ir.model.fields,field_description:modryn_booking.field_modryn_queue_day__hour
@@ -529,7 +529,7 @@ msgstr "סדר"
 #. module: modryn_booking
 #: model_terms:ir.ui.view,arch_db:modryn_booking.booking_form
 msgid "<option value=\"\">— Choose —</option>"
-msgstr "<option value=\"\">— בחרי —</option>"
+msgstr "<option value=\"\">— בחר —</option>"
 
 #. module: modryn_booking
 #: model:ir.model.fields,field_description:modryn_booking.field_modryn_queue_day__day

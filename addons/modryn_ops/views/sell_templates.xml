@@ -150,7 +150,7 @@
                                 <option t-foreach="discount_codes" t-as="rule"
                                         t-att-value="rule['code']"
                                         t-att-selected="'selected' if values.get('discount_code') == rule['code'] else None">
-                                    <t t-out="rule['code']"/> &#8212; <t t-out="rule['percent']"/>%
+                                    <t t-out="rule['code']"/> &#8212; <t t-out="rule['takes_off']"/>
                                 </option>
                             </select>
                         </div>

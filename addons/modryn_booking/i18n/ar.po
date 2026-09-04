@@ -19,12 +19,12 @@ msgstr "(غير متوفر)"
 #. module: modryn_booking
 #: model_terms:ir.ui.view,arch_db:modryn_booking.booking_form
 msgid "<option value=\"\">— Choose a time —</option>"
-msgstr "<option value=\"\">— اختاري الموعد —</option>"
+msgstr "<option value=\"\">— اختر الموعد —</option>"
 
 #. module: modryn_booking
 #: model_terms:ir.ui.view,arch_db:modryn_booking.booking_form
 msgid "<option value=\"\">— Choose your size —</option>"
-msgstr "<option value=\"\">— اختاري مقاسكِ —</option>"
+msgstr "<option value=\"\">— اختر مقاسك —</option>"
 
 #. module: modryn_booking
 #: model_terms:ir.ui.view,arch_db:modryn_booking.booking_confirmed
@@ -109,7 +109,7 @@ msgstr "حجز البوتيك"
 #. module: modryn_booking
 #: model_terms:ir.ui.view,arch_db:modryn_booking.booking_form
 msgid "Call us and we'll find you a time"
-msgstr "اتصلوا بنا وسنجد لكِ موعداً"
+msgstr "اتصلوا بنا وسنجد لك موعداً"
 
 #. module: modryn_booking
 #: model:ir.model.fields,field_description:modryn_booking.field_modryn_closure__full_day
@@ -150,7 +150,7 @@ msgstr "استشارة: %s"
 #. module: modryn_booking
 #: model:ir.model.fields,field_description:modryn_booking.field_calendar_event__modryn_customer_phone
 msgid "Customer phone"
-msgstr "هاتف الزبونة"
+msgstr "هاتف الزبون"
 
 #. module: modryn_booking
 #: model:ir.model.fields,field_description:modryn_booking.field_modryn_closure__date_from
@@ -220,7 +220,7 @@ msgstr "انضمي إلى قائمة الانتظار"
 #. module: modryn_booking
 #: model_terms:ir.ui.view,arch_db:modryn_booking.booking_form
 msgid "Leave your number and we'll text you first if a place opens up."
-msgstr "اتركي رقمك وسنراسلك أولاً إذا شغر موعد."
+msgstr "اترك رقمك وسنراسلك أولاً إذا شغر موعد."
 
 #. module: modryn_booking
 #. odoo-python
@@ -336,7 +336,7 @@ msgstr "تم حجز هذا الموعد للتو، يُرجى اختيار مو�
 #. module: modryn_booking
 #: model_terms:ir.ui.view,arch_db:modryn_booking.booking_form
 msgid "The day you wanted is full?"
-msgstr "اليوم الذي أردتِه محجوز بالكامل؟"
+msgstr "اليوم الذي أردته محجوز بالكامل؟"
 
 #. module: modryn_booking
 #. odoo-python
@@ -361,7 +361,7 @@ msgstr ""
 #. module: modryn_booking
 #: model_terms:ir.ui.view,arch_db:modryn_booking.booking_form
 msgid "We'll hold this dress for your appointment"
-msgstr "سنحتفظ لكِ بهذا الفستان حتى موعدكِ"
+msgstr "سنحتفظ لك بهذا الفستان حتى موعدك"
 
 #. module: modryn_booking
 #: model_terms:ir.ui.view,arch_db:modryn_booking.booking_confirmed
@@ -383,7 +383,7 @@ msgstr "يوم الأسبوع"
 #. module: modryn_booking
 #: model_terms:ir.ui.view,arch_db:modryn_booking.booking_confirmed
 msgid "Your appointment is booked"
-msgstr "تم تأكيد موعدكِ"
+msgstr "تم تأكيد موعدك"
 
 #. module: modryn_booking
 #: model:ir.model.fields,field_description:modryn_booking.field_modryn_closure__name
@@ -473,7 +473,7 @@ msgstr "كم"
 #. module: modryn_booking
 #: model:ir.model,name:modryn_booking.model_modryn_customer_kind
 msgid "A kind of visitor who may book"
-msgstr "نوع زبونة بتقدر تحجز"
+msgstr "نوع زبون بتقدر تحجز"
 
 #. module: modryn_booking
 #: model:ir.model.fields,help:modryn_booking.field_modryn_customer_kind__note
@@ -530,7 +530,7 @@ msgstr "الترتيب"
 #. module: modryn_booking
 #: model_terms:ir.ui.view,arch_db:modryn_booking.booking_form
 msgid "<option value=\"\">— Choose —</option>"
-msgstr "<option value=\"\">— اختاري —</option>"
+msgstr "<option value=\"\">— اختر —</option>"
 
 #. module: modryn_booking
 #: model:ir.model.fields,field_description:modryn_booking.field_modryn_queue_day__day

@@ -545,7 +545,8 @@ class ModrynManagerScreen(http.Controller):
                     error=request.params.get('error')))
             elif view == 'rooms':
                 context.update(ModrynManage().rooms_context(
-                    error=request.params.get('error')))
+                    error=request.params.get('error'),
+                    confirm=request.params.get('confirm')))
             elif view == 'shop':
                 context.update(self._shop_details_context(
                     error=request.params.get('error')))
@@ -969,38 +970,47 @@ class ModrynManagerScreen(http.Controller):
         code = (post.get('code') or '').strip()
         if not code:
             return refuse(_("The code needs a word."))
-        try:
-            percent = float(post.get('percent') or 0)
-        except (TypeError, ValueError):
-            return refuse(_("A discount is between 1 and 100 percent."))
-        if not 0 < percent <= 100:
-            return refuse(_("A discount is between 1 and 100 percent."))
 
-        # HOW LONG IT LASTS. Validated here rather than trusted: the three
-        # answers come from a dropdown, and anything else means the form was
-        # not the thing that posted.
-        limit_kind = post.get('limit_kind') or 'none'
-        if limit_kind not in ('none', 'times', 'until'):
-            limit_kind = 'none'
+        # WHAT COMES OFF. Validated against the two the field actually has, not
+        # trusted: an unrecognised kind here would store a code that takes
+        # nothing off and looks exactly like one that works.
+        kind = post.get('value_kind') if post.get('value_kind') in ('percent', 'amount') \
+            else 'percent'
         try:
-            max_uses = int(post.get('max_uses') or 1)
+            value = float(post.get('value') or 0)
+        except (TypeError, ValueError):
+            value = 0.0
+        if kind == 'percent' and not 0 < value <= 100:
+            return refuse(_("A discount is between 1 and 100 percent."))
+        if kind == 'amount' and value <= 0:
+            return refuse(_("Say how many shekels come off."))
+
+        # WHEN AND FOR HOW MANY. Three boxes, each of which may be left empty,
+        # and empty means no limit. Nothing here picks between them — a code
+        # can carry a week and a headcount at the same time, which is the
+        # sentence a boutique actually says.
+        try:
+            max_uses = int(post.get('max_uses') or 0)
         except (TypeError, ValueError):
             max_uses = 0
-        if limit_kind == 'times' and max_uses < 1:
-            return refuse(_("A code has to work at least once."))
+        if max_uses < 0:
+            return refuse(_("A code cannot be used a negative number of times."))
+        starts_on = (post.get('starts_on') or '').strip()
         use_until = (post.get('use_until') or '').strip()
-        if limit_kind == 'until' and not use_until:
-            return refuse(_("Say which day is the last day."))
+        if starts_on and use_until and use_until < starts_on:
+            return refuse(_("The last day cannot come before the first."))
 
         try:
             with request.env.cr.savepoint():
                 request.env['modryn.discount.code'].sudo().create({
                     'code': code,
-                    'percent': percent,
+                    'value_kind': kind,
+                    'percent': value if kind == 'percent' else 0.0,
+                    'amount': value if kind == 'amount' else 0.0,
                     'note': (post.get('note') or '').strip(),
-                    'limit_kind': limit_kind,
-                    'max_uses': max_uses if limit_kind == 'times' else 1,
-                    'use_until': use_until if limit_kind == 'until' else False,
+                    'starts_on': starts_on or False,
+                    'use_until': use_until or False,
+                    'max_uses': max_uses,
                 })
         except ValidationError as err:
             return refuse(err.args[0] if err.args else _("That code already exists."))

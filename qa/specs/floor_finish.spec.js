@@ -37,13 +37,15 @@ const PEOPLE = requirePeople(TENANT);
 const BACK = '.modryn_team_back';
 const FINISHED = '.modryn_team_finish';
 
-// The dialog's own buttons carry no class, so these are matched on text in the
-// three languages the product ships. NOT anchored with ^...$: hasText tests the
-// rendered text, which carries the whitespace the template indents with.
-const TOOK_IT = /She took this one|היא לקחה את זו|أخذت هاي/i;
-const NO_BUY = /She left without buying|היא יצאה בלי לקנות|طلعت بدون شراء/i;
-const CLOSE = /^\s*(Close|סגירה|إغلاق)\s*$/i;
-const ALTER = /needs altering|צריכה תיקון|بدّه تعديل/i;
+// BY CLASS, never by the words on the button. These four used to be matched on
+// their text in three languages, and the day the Hebrew wording changed the
+// product went red without a line of its behaviour moving — the frontend's
+// language is a cookie, so the same page says different words to different
+// browser profiles. The classes exist only for this; no stylesheet reads them.
+const TOOK_IT = '.modryn_outcome_sold';
+const NO_BUY = '.modryn_outcome_not_sold';
+const CLOSE = '.modryn_finish_close';
+const ALTER = '.modryn_open_workshop';
 
 // Each act signs in, walks through the shift door, waits for an OWL board to
 // paint and then finishes two or three customers through a dialog. The 30s
@@ -173,7 +175,7 @@ test('@writes a customer is listed under the woman holding her, and goes back to
   await walkIn.locator(FINISHED).first().click();
   const modal = page.locator('.modryn_modal');
   await expect(modal).toBeVisible({ timeout: 20000 });
-  await modal.locator('button').filter({ hasText: CLOSE }).click();
+  await modal.locator(CLOSE).click();
   await expect(modal).toBeHidden({ timeout: 15000 });
   await expect(clients, 'pressing Finished removed her before she was answered for')
     .toHaveCount(before + 1);
@@ -279,7 +281,7 @@ test('@writes the dress is found by typing, confirmed, and comes off the rail', 
   await expect(modal.locator('.modryn_dress_picked')).toBeVisible();
 
   // ---- it asks before it takes -------------------------------------------
-  await modal.locator('button').filter({ hasText: TOOK_IT }).click();
+  await modal.locator(TOOK_IT).click();
   const confirm = modal.locator('.modryn_finish_confirm');
   await expect(confirm, 'it took the dress without asking').toBeVisible();
   // The sentence names the count it is about to change - both numbers, because
@@ -295,10 +297,10 @@ test('@writes the dress is found by typing, confirmed, and comes off the rail', 
   // look like unfinished paperwork. It is a question she opens now.
   await expect(modal.locator('input[type="date"]'),
     'the workshop form is open before anybody asked for it').toHaveCount(0);
-  await modal.locator('button').filter({ hasText: ALTER }).click();
+  await modal.locator(ALTER).click();
   await expect(modal.locator('input[type="date"]'),
     'asking for the workshop did not open it').toBeVisible();
-  await modal.locator('button').filter({ hasText: CLOSE }).click();
+  await modal.locator(CLOSE).click();
   await expect(modal).toBeHidden({ timeout: 15000 });
 
   // ---- and the count actually moved --------------------------------------
@@ -322,12 +324,12 @@ test('@writes the dress is found by typing, confirmed, and comes off the rail', 
   }
 
   // ---- and the other ending takes nothing --------------------------------
-  await modal.locator('button').filter({ hasText: NO_BUY }).click();
+  await modal.locator(NO_BUY).click();
   const lost = modal.locator('.modryn_finish_confirm');
   await expect(lost, 'it recorded a lost sale without asking').toBeVisible();
   await lost.locator('button').first().click();
   await expect(modal.locator('.modryn_outcome_done')).toBeVisible({ timeout: 20000 });
-  await modal.locator('button').filter({ hasText: CLOSE }).click();
+  await modal.locator(CLOSE).click();
   await expect(modal).toBeHidden({ timeout: 15000 });
 
   await finishNextWalkIn();
@@ -341,7 +343,7 @@ test('@writes the dress is found by typing, confirmed, and comes off the rail', 
     expect(await stockOnHit(still.first()),
       'a customer who bought nothing still moved the count').toBe(stockBefore - 1);
   }
-  await modal.locator('button').filter({ hasText: CLOSE }).click();
+  await modal.locator(CLOSE).click();
   await expect(modal).toBeHidden({ timeout: 15000 });
 
   // That last one was never answered for, so she is still held. Back in the

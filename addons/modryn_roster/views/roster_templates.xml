@@ -108,7 +108,7 @@
                      here" without "here is where you can" is the same dead end
                      the blank refusal was. -->
                 <t t-elif="lock_reason == 'published'">
-                    <span class="modryn_badge is_muted">Published</span>
+                    <span class="modryn_badge is_muted modryn_published_badge">Published</span>
                     The schedule for this week is out, so it can no longer be
                     changed here — ask your manager. What you offered is below.
                     Use <strong>Following week</strong> to answer for the next one.
@@ -133,7 +133,7 @@
                  cannot read it, and a grey grid of ticks is not something
                  anybody reads off a phone. -->
             <div t-if="me and not is_manager and not can_edit" class="modryn_panel mb-3">
-                <div class="modryn_strong mb-1">What you offered</div>
+                <div class="modryn_strong mb-1 modryn_offered_title">What you offered</div>
                 <t t-if="my_picks">
                     <div t-foreach="my_picks" t-as="p" class="modryn_sub">
                         <span t-out="p['weekday']"/>
@@ -272,7 +272,7 @@
         <section t-if="is_manager" class="modryn_panel mb-4 modryn_planner">
             <header class="modryn_panel_head">
                 <h2>Next week's rota</h2>
-                <span t-if="week_published" class="modryn_badge is_free">Published</span>
+                <span t-if="week_published" class="modryn_badge is_free modryn_published_badge">Published</span>
                 <span t-elif="window_open_now" class="modryn_badge is_wait">Open for answers</span>
                 <span t-else="" class="modryn_badge is_muted">Closed</span>
             </header>

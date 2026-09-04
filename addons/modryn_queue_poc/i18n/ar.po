@@ -40,12 +40,12 @@ msgstr "تمت المناداة"
 #. module: modryn_queue_poc
 #: model:ir.model.fields,field_description:modryn_queue_poc.field_modryn_queue_entry__client_type
 msgid "Client Type"
-msgstr "نوع العميلة"
+msgstr "نوع العميل"
 
 #. module: modryn_queue_poc
 #: model_terms:ir.ui.view,arch_db:modryn_queue_poc.checkin_form
 msgid "Client type"
-msgstr "نوع العميلة"
+msgstr "نوع العميل"
 
 #. module: modryn_queue_poc
 #: model_terms:ir.ui.view,arch_db:modryn_queue_poc.verify_form
@@ -66,7 +66,7 @@ msgstr "إنهاء"
 #. module: modryn_queue_poc
 #: model_terms:ir.ui.view,arch_db:modryn_queue_poc.verify_form
 msgid "Enter your code"
-msgstr "أدخلي الرمز"
+msgstr "أدخل الرمز"
 
 #. module: modryn_queue_poc
 #. odoo-javascript
@@ -113,7 +113,7 @@ msgid ""
 "Make yourself at home — feel free to browse while you wait.\n"
 "                            We'll text you when we're ready."
 msgstr ""
-"اعتبري نفسك في بيتك — تجوّلي بحرية بينما تنتظرين. سنراسلك عندما نكون جاهزين."
+"اعتبر نفسك في بيتك — تجوّل بحرية بينما تنتظر. سنراسلك عندما نكون جاهزين."
 
 #. module: modryn_queue_poc
 #: model:ir.ui.menu,name:modryn_queue_poc.menu_modryn_queue_root
@@ -181,12 +181,12 @@ msgstr "يرجى إدخال الاسم الكامل"
 #. module: modryn_queue_poc
 #: model_terms:ir.ui.view,arch_db:modryn_queue_poc.ticket
 msgid "Prefer a scheduled visit?"
-msgstr "تفضلين موعدًا محددًا؟"
+msgstr "تفضل موعدًا محددًا؟"
 
 #. module: modryn_queue_poc
 #: model:ir.model.fields.selection,name:modryn_queue_poc.selection__modryn_queue_entry__client_type__evening
 msgid "Regular customer"
-msgstr "عميلة عادية"
+msgstr "عميل عادي"
 
 #. module: modryn_queue_poc
 #: model_terms:ir.ui.view,arch_db:modryn_queue_poc.queue_sign
@@ -213,7 +213,7 @@ msgstr "البدء من جديد"
 #. odoo-python
 #: code:addons/modryn_queue_poc/controllers/main.py:0
 msgid "Start again to get a new code."
-msgstr "ابدئي من جديد للحصول على رمز جديد."
+msgstr "ابدأ من جديد للحصول على رمز جديد."
 
 #. module: modryn_queue_poc
 #. odoo-javascript
@@ -230,7 +230,7 @@ msgstr "شكرًا لزيارتك"
 #. odoo-python
 #: code:addons/modryn_queue_poc/controllers/main.py:0
 msgid "That code has expired. Start again to get a new one."
-msgstr "انتهت صلاحية الرمز. ابدئي من جديد للحصول على رمز جديد."
+msgstr "انتهت صلاحية الرمز. ابدأ من جديد للحصول على رمز جديد."
 
 #. module: modryn_queue_poc
 #. odoo-python
@@ -263,7 +263,7 @@ msgstr "تم إرسال رموز كثيرة إلى هذا الرقم. حاولي
 #. odoo-python
 #: code:addons/modryn_queue_poc/controllers/main.py:0
 msgid "Too many wrong codes. Start again to get a new one."
-msgstr "رموز خاطئة كثيرة. ابدئي من جديد للحصول على رمز جديد."
+msgstr "رموز خاطئة كثيرة. ابدأ من جديد للحصول على رمز جديد."
 
 #. module: modryn_queue_poc
 #: model:ir.model.fields,field_description:modryn_queue_poc.field_modryn_queue_entry__turn_notified_at
@@ -306,7 +306,7 @@ msgstr "قيد في طابور الاستقبال"
 #. odoo-python
 #: code:addons/modryn_queue_poc/controllers/main.py:0
 msgid "We couldn't send the code. Check the number and try again."
-msgstr "لم نتمكن من إرسال الرمز. تحققي من الرقم وحاولي مرة أخرى."
+msgstr "لم نتمكن من إرسال الرمز. تحقق من الرقم وحاولي مرة أخرى."
 
 #. module: modryn_queue_poc
 #: model_terms:ir.ui.view,arch_db:modryn_queue_poc.ticket
@@ -323,7 +323,7 @@ msgstr "أرسلنا رمزًا من 6 أرقام إلى"
 msgid ""
 "We'd love to give you our full attention — book a fitting\n"
 "                            and the boutique is yours."
-msgstr "نودّ أن نمنحك كامل اهتمامنا — احجزي موعد قياس ويكون البوتيك كله لكِ."
+msgstr "نودّ أن نمنحك كامل اهتمامنا — احجزي موعد قياس ويكون البوتيك كله لك."
 
 #. module: modryn_queue_poc
 #: model_terms:ir.ui.view,arch_db:modryn_queue_poc.ticket
@@ -370,7 +370,7 @@ msgid ""
 "You're in the queue — and you're next. We'll be with you in a moment. Your "
 "ticket: %(link)s"
 msgstr ""
-"أنتِ في قائمة الانتظار — ودورك التالي. سنكون معك بعد لحظات. تذكرتك: %(link)s"
+"أنت في قائمة الانتظار — ودورك التالي. سنكون معك بعد لحظات. تذكرتك: %(link)s"
 
 #. module: modryn_queue_poc
 #. odoo-python
@@ -378,7 +378,7 @@ msgstr ""
 msgid ""
 "You're in the queue. We'll text you when you're next. Your ticket: %(link)s"
 msgstr ""
-"أنتِ في قائمة الانتظار. سنرسل لك رسالة عندما يحين دورك. تذكرتك: %(link)s"
+"أنت في قائمة الانتظار. سنرسل لك رسالة عندما يحين دورك. تذكرتك: %(link)s"
 
 #. module: modryn_queue_poc
 #: model_terms:ir.ui.view,arch_db:modryn_queue_poc.ticket

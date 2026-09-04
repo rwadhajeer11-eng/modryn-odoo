@@ -80,22 +80,22 @@ msgstr "יצירת משימה"
 #. module: modryn_atelier
 #: model:ir.model.fields,field_description:modryn_atelier.field_modryn_alteration_task__partner_id
 msgid "Customer"
-msgstr "לקוחה"
+msgstr "לקוח"
 
 #. module: modryn_atelier
 #: model:ir.model.fields,field_description:modryn_atelier.field_modryn_alteration_task__customer_name
 msgid "Customer Name"
-msgstr "שם הלקוחה"
+msgstr "שם הלקוח"
 
 #. module: modryn_atelier
 #: model:ir.model.fields,field_description:modryn_atelier.field_modryn_alteration_task__customer_phone
 msgid "Customer Phone"
-msgstr "טלפון הלקוחה"
+msgstr "טלפון הלקוח"
 
 #. module: modryn_atelier
 #: model_terms:ir.ui.view,arch_db:modryn_atelier.dashboard
 msgid "Customer name"
-msgstr "שם הלקוחה"
+msgstr "שם הלקוח"
 
 #. module: modryn_atelier
 #: model:ir.model.fields.selection,name:modryn_atelier.selection__modryn_alteration_task__state__delivered
@@ -189,7 +189,7 @@ msgstr "משימה חדשה"
 #. module: modryn_atelier
 #: model_terms:ir.ui.view,arch_db:modryn_atelier.dashboard
 msgid "No staff to show."
-msgstr "אין עובדות להצגה."
+msgstr "אין עובדים להצגה."
 
 #. module: modryn_atelier
 #: model:ir.model.fields.selection,name:modryn_atelier.selection__modryn_alteration_task__priority__1
@@ -244,7 +244,7 @@ msgstr "נא להזין שם"
 #. odoo-python
 #: code:addons/modryn_atelier/controllers/atelier.py:0
 msgid "Please enter the customer's name"
-msgstr "נא להזין את שם הלקוחה"
+msgstr "נא להזין את שם הלקוח"
 
 #. module: modryn_atelier
 #: model:ir.model.fields,field_description:modryn_atelier.field_modryn_alteration_task__priority
@@ -276,7 +276,7 @@ msgstr "שמירה"
 #: model:ir.model.fields,field_description:modryn_atelier.field_modryn_alteration_task__seamstress_id
 #: model_terms:ir.ui.view,arch_db:modryn_atelier.dashboard
 msgid "Seamstress"
-msgstr "תופרת"
+msgstr "תופר"
 
 #. module: modryn_atelier
 #. odoo-python
@@ -304,7 +304,7 @@ msgstr "חלק הבגד כבר קיים."
 #. odoo-python
 #: code:addons/modryn_atelier/models/alteration_task.py:0
 msgid "That staff member is archived."
-msgstr "העובדת נמצאת בארכיון."
+msgstr "העובד נמצא בארכיון."
 
 #. module: modryn_atelier
 #: model_terms:ir.ui.view,arch_db:modryn_atelier.manage_pieces
@@ -417,7 +417,7 @@ msgstr "לא הצלחנו לקרוא את התאריך."
 #. odoo-python
 #: code:addons/modryn_atelier/controllers/atelier.py:0
 msgid "That job belongs to somebody else."
-msgstr "העבודה הזאת שייכת למישהי אחרת."
+msgstr "העבודה הזאת שייכת למישהו אחר."
 
 #. module: modryn_atelier
 #. odoo-python

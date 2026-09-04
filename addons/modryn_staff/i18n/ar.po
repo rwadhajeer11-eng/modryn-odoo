@@ -103,12 +103,12 @@ msgid ""
 msgstr ""
 "عطلة، أو زفاف، أو جرد. اليوم المغلق يختفي تماماً من\n"
 "                صفحة الحجز — بلا مواعيد، وبلا قائمة انتظار أيضاً، لأنه\n"
-"                لا يوجد ما يُنتظر. اتركي التاريخ الثاني فارغاً لإغلاق\n"
+"                لا يوجد ما يُنتظر. اترك التاريخ الثاني فارغاً لإغلاق\n"
 "                يوم واحد.\n"
 "                <br/>\n"
-"                لإغلاق جزء من اليوم فقط — تغلقين الساعة 14:00 من أجل زفاف —\n"
-"                املئي الوقتين أيضاً. يبقى اليوم ظاهراً، ويعرض\n"
-"                الساعات التي تفتحين فيها."
+"                لإغلاق جزء من اليوم فقط — تغلق الساعة 14:00 من أجل زفاف —\n"
+"                املأ الوقتين أيضاً. يبقى اليوم ظاهراً، ويعرض\n"
+"                الساعات التي تفتح فيها."
 
 #. module: modryn_staff
 #. odoo-python
@@ -135,7 +135,7 @@ msgstr "إضافة"
 #. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
 msgid "Add a team member"
-msgstr "إضافة موظفة"
+msgstr "إضافة موظف"
 
 #. module: modryn_staff
 #. odoo-javascript
@@ -146,13 +146,13 @@ msgstr "إضافة إلى الطابور"
 #. module: modryn_staff
 #: model:res.groups,comment:modryn_staff.group_boutique_owner
 msgid "Adds employees, defines roles, and everything a manager can do."
-msgstr "تضيف الموظفات، وتحدد الوظائف، وكل ما تستطيعه مديرة المناوبة."
+msgstr "تضيف الموظفات، وتحدد الوظائف، وكل ما تستطيعه مدير المناوبة."
 
 #. module: modryn_staff
 #. odoo-javascript
 #: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
 msgid "All closed. Well done."
-msgstr "أُغلقت كلها. أحسنتِ."
+msgstr "أُغلقت كلها. أحسنت."
 
 #. module: modryn_staff
 #. odoo-javascript
@@ -176,13 +176,13 @@ msgstr "المبلغ (₪)"
 #. odoo-javascript
 #: code:addons/modryn_staff/static/src/floor/floor_board.js:0
 msgid "An outcome is already recorded. Only a manager can change it."
-msgstr "النتيجة مسجلة بالفعل. المديرة وحدها تستطيع تغييرها."
+msgstr "النتيجة مسجلة بالفعل. المدير وحدها تستطيع تغييرها."
 
 #. module: modryn_staff
 #. odoo-javascript
 #: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
 msgid "Any manager"
-msgstr "أي مديرة"
+msgstr "أي مدير"
 
 #. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.lang_toggle
@@ -251,7 +251,7 @@ msgstr "قيد الخدمة"
 #. module: modryn_staff
 #: model:res.groups,name:modryn_staff.group_boutique_owner
 msgid "Boutique owner"
-msgstr "مالكة البوتيك"
+msgstr "مالك البوتيك"
 
 #. module: modryn_staff
 #: model:ir.model,name:modryn_staff.model_modryn_staff_role
@@ -351,12 +351,12 @@ msgstr "المسجل حالياً:"
 #. module: modryn_staff
 #: model:ir.model,name:modryn_staff.model_modryn_room_occupant_mixin
 msgid "Customer card in a fitting room"
-msgstr "بطاقة عميلة في غرفة قياس"
+msgstr "بطاقة عميل في غرفة قياس"
 
 #. module: modryn_staff
 #: model:ir.model,name:modryn_staff.model_modryn_helper_mixin
 msgid "Customer card with helpers"
-msgstr "بطاقة عميلة مع مساعدات"
+msgstr "بطاقة عميل مع مساعدين"
 
 #. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
@@ -385,7 +385,7 @@ msgstr "إنهاء"
 #. odoo-javascript
 #: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
 msgid "Drag a name onto a customer to assign her."
-msgstr "اسحبي الاسم إلى العميلة لإسنادها."
+msgstr "اسحب الاسم إلى العميل لإسناده."
 
 #. module: modryn_staff
 #. odoo-javascript
@@ -407,13 +407,13 @@ msgstr "تعديل"
 #. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
 msgid "Edit team member"
-msgstr "تعديل بيانات الموظفة"
+msgstr "تعديل بيانات الموظف"
 
 #. module: modryn_staff
 #. odoo-python
 #: code:addons/modryn_staff/controllers/auth.py:0
 msgid "Enter your username and password."
-msgstr "أدخلي اسم المستخدم وكلمة المرور."
+msgstr "أدخل اسم المستخدم وكلمة المرور."
 
 #. module: modryn_staff
 #: model:ir.model.fields,field_description:modryn_staff.field_modryn_floor_helper__entry_id
@@ -506,7 +506,7 @@ msgstr "تمت المعالجة"
 #. module: modryn_staff
 #: model:ir.model,name:modryn_staff.model_modryn_floor_helper
 msgid "Helper assigned to a customer"
-msgstr "مساعدة مُسندة إلى عميلة"
+msgstr "مساعدة مُسندة إلى عميل"
 
 #. module: modryn_staff
 #: model:ir.model.fields,field_description:modryn_staff.field_calendar_event__modryn_helper_ids
@@ -555,14 +555,14 @@ msgstr "رقم الهوية"
 #. module: modryn_staff
 #: model:ir.model.fields,help:modryn_staff.field_hr_employee__modryn_id_number
 msgid "Identity-card or passport number. Only the owner can see this."
-msgstr "رقم بطاقة الهوية أو جواز السفر. المالكة وحدها ترى هذا."
+msgstr "رقم بطاقة الهوية أو جواز السفر. المالك وحدها ترى هذا."
 
 #. module: modryn_staff
 #. odoo-javascript
 #: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
 msgid ""
 "If the gown needs work, open a task for the workshop. Otherwise just skip."
-msgstr "إذا كان الفستان يحتاج إلى عمل، افتحي مهمة للورشة. وإلا فتخطي."
+msgstr "إذا كان الفستان يحتاج إلى عمل، افتح مهمة للورشة. وإلا فتخطي."
 
 #. module: modryn_staff
 #. odoo-python
@@ -627,7 +627,7 @@ msgstr "ذكر"
 #. odoo-python
 #: code:addons/modryn_staff/controllers/manage.py:0
 msgid "manager"
-msgstr "مديرة"
+msgstr "مدير"
 
 #. module: modryn_staff
 #. odoo-javascript
@@ -700,8 +700,8 @@ msgid ""
 "Name your rooms the way your team says them out loud. When someone\n"
 "                calls for help, the room is what tells a colleague where to go."
 msgstr ""
-"سمّي غرفك بالأسماء التي ينطقها فريقك بصوت عالٍ. عندما تطلب إحداهن\n"
-"                المساعدة، اسم الغرفة هو ما يدل زميلتها على المكان."
+"سمّي غرفك بالأسماء التي ينطقها فريقك بصوت عالٍ. عندما يطلب أحدهم\n"
+"                المساعدة، اسم الغرفة هو ما يدل زميله على المكان."
 
 #. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.staff_notifications
@@ -712,7 +712,7 @@ msgstr "جديد"
 #. odoo-python
 #: code:addons/modryn_staff/models/assignment.py:0
 msgid "New customer for you: %s"
-msgstr "عميلة جديدة لكِ: %s"
+msgstr "عميل جديد لك: %s"
 
 #. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manage_roles
@@ -739,7 +739,7 @@ msgstr "لا أيام إغلاق — صفحة الحجز تعرض كل الأي�
 #. odoo-javascript
 #: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
 msgid "No one answered"
-msgstr "لم تردّ إحداهن"
+msgstr "لم يردّ أحد"
 
 #. module: modryn_staff
 #. odoo-javascript
@@ -774,7 +774,7 @@ msgstr "لم تحضر"
 #. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.staff_home
 msgid "Nobody is assigned to you right now."
-msgstr "لا توجد عميلة مُسندة إليكِ الآن."
+msgstr "لا يوجد عميل مُسند إليك الآن."
 
 #. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.staff_home
@@ -791,7 +791,7 @@ msgstr "عادية"
 #. odoo-javascript
 #: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
 msgid "Not purchased yet"
-msgstr "لم تشترِ بعد"
+msgstr "لم يشترِ بعد"
 
 #. module: modryn_staff
 #. odoo-javascript
@@ -896,7 +896,7 @@ msgstr "يفتح"
 #: code:addons/modryn_staff/controllers/manage.py:0
 #: model:ir.model.fields.selection,name:modryn_staff.selection__hr_employee__modryn_level__owner
 msgid "Owner"
-msgstr "مالكة"
+msgstr "مالك"
 
 #. module: modryn_staff
 #: model:ir.model,name:modryn_staff.model_modryn_role_page
@@ -1034,31 +1034,31 @@ msgstr "يرجى إدخال وقت فتح ووقت إغلاق"
 #. odoo-python
 #: code:addons/modryn_staff/controllers/auth.py:0
 msgid "Please enter your name."
-msgstr "اكتبي اسمك."
+msgstr "اكتب اسمك."
 
 #. module: modryn_staff
 #. odoo-javascript
 #: code:addons/modryn_staff/static/src/floor/floor_board.js:0
 msgid "Please pick a due date — the workshop queue runs on it."
-msgstr "اختاري موعد التسليم — طابور الورشة يعتمد عليه."
+msgstr "اختر موعد التسليم — طابور الورشة يعتمد عليه."
 
 #. module: modryn_staff
 #. odoo-javascript
 #: code:addons/modryn_staff/static/src/floor/floor_board.js:0
 msgid "Please pick a priority."
-msgstr "اختاري الأولوية."
+msgstr "اختر الأولوية."
 
 #. module: modryn_staff
 #. odoo-python
 #: code:addons/modryn_staff/controllers/manage.py:0
 msgid "Please say how many fittings you can take at once — one or more"
-msgstr "حددي عدد القياسات التي يمكنك استقبالها في وقت واحد — واحد أو أكثر"
+msgstr "حدد عدد القياسات التي يمكنك استقبالها في وقت واحد — واحد أو أكثر"
 
 #. module: modryn_staff
 #. odoo-python
 #: code:addons/modryn_staff/controllers/manage.py:0
 msgid "Please say what the closure is for"
-msgstr "حددي سبب الإغلاق"
+msgstr "حدد سبب الإغلاق"
 
 #. module: modryn_staff
 #: model:ir.model.fields.selection,name:modryn_staff.selection__hr_employee__modryn_gender__other
@@ -1081,7 +1081,7 @@ msgstr "الأولوية"
 #. odoo-javascript
 #: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
 msgid "Profile"
-msgstr "بطاقة العميلة"
+msgstr "بطاقة العميل"
 
 #. module: modryn_staff
 #. odoo-javascript
@@ -1109,7 +1109,7 @@ msgstr "استقبال"
 #. odoo-javascript
 #: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
 msgid "Regular customer"
-msgstr "عميلة عادية"
+msgstr "عميل عادي"
 
 #. module: modryn_staff
 #: model:ir.model.fields.selection,name:modryn_staff.selection__modryn_sos_call__state__resolved
@@ -1183,17 +1183,17 @@ msgstr "تخدم"
 #. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.staff_profile
 msgid "Set by the owner"
-msgstr "محدّد من المالكة"
+msgstr "محدّد من المالك"
 
 #. module: modryn_staff
 #: model:ir.model.constraint,message:modryn_staff.constraint_modryn_floor_helper_event_uniq
 msgid "She is already helping with this appointment."
-msgstr "هي تساعد بالفعل في هذا الموعد."
+msgstr "هو يساعد بالفعل في هذا الموعد."
 
 #. module: modryn_staff
 #: model:ir.model.constraint,message:modryn_staff.constraint_modryn_floor_helper_entry_uniq
 msgid "She is already helping with this walk-in."
-msgstr "هي تساعد بالفعل في هذه الزيارة بدون موعد."
+msgstr "هو يساعد بالفعل في هذه الزيارة بدون موعد."
 
 #. module: modryn_staff
 #. odoo-javascript
@@ -1213,7 +1213,7 @@ msgstr "ستصلها رسالة ودّية مع رابط لحجز موعد جد�
 #: model:ir.model.fields.selection,name:modryn_staff.selection__hr_employee__modryn_level__manager
 #: model:res.groups,name:modryn_staff.group_shift_manager
 msgid "Shift manager"
-msgstr "مديرة المناوبة"
+msgstr "مدير المناوبة"
 
 #. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.staff_login
@@ -1249,14 +1249,14 @@ msgstr "إحدى الموظفات تحمل رقم الهوية هذا بالفع
 #. odoo-javascript
 #: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
 msgid "Someone is on the way."
-msgstr "إحداهن في الطريق إليكِ."
+msgstr "أحدهم في الطريق إليك."
 
 #. module: modryn_staff
 #. odoo-javascript
 #: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
 #: model_terms:ir.ui.view,arch_db:modryn_staff.shift_supervisor
 msgid "Someone needs help"
-msgstr "إحداهن تحتاج إلى مساعدة"
+msgstr "أحدهم يحتاج إلى مساعدة"
 
 #. module: modryn_staff
 #. odoo-python
@@ -1264,18 +1264,18 @@ msgstr "إحداهن تحتاج إلى مساعدة"
 #: model:ir.model.fields.selection,name:modryn_staff.selection__hr_employee__modryn_level__staff
 #: model:res.groups,name:modryn_staff.group_boutique_staff
 msgid "Staff"
-msgstr "موظفة"
+msgstr "موظف"
 
 #. module: modryn_staff
 #. odoo-python
 #: code:addons/modryn_staff/controllers/manage.py:0
 msgid "staff"
-msgstr "موظفة"
+msgstr "موظف"
 
 #. module: modryn_staff
 #: model:ir.model,name:modryn_staff.model_modryn_staff_notify
 msgid "Staff assignment SMS"
-msgstr "رسالة إسناد للموظفة"
+msgstr "رسالة إسناد للموظف"
 
 #. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.staff_login
@@ -1379,9 +1379,9 @@ msgid ""
 "                will offer that hour twice."
 msgstr ""
 "الساعات التي يستقبل فيها البوتيك القياسات. هذا بالضبط ما تعرضه\n"
-"                صفحة الحجز — غيّريها هنا وترى العميلة التالية المواعيد الجديدة.\n"
-"                يمكن أن يكون لليوم نافذتان إذا كنت تغلقين بعد الظهر، وإذا\n"
-"                كان بإمكان عروسين الحضور في الساعة نفسها، فقولي ذلك — وستعرض صفحة\n"
+"                صفحة الحجز — غيّرها هنا ويرى العميل التالي المواعيد الجديدة.\n"
+"                يمكن أن يكون لليوم نافذتان إذا كنت تغلق بعد الظهر، وإذا\n"
+"                كان بإمكان عروسين الحضور في الساعة نفسها، فقل ذلك — وستعرض صفحة\n"
 "                الحجز تلك الساعة مرتين."
 
 #. module: modryn_staff
@@ -1430,9 +1430,9 @@ msgid ""
 "                every page here; every staff member always has her own\n"
 "                <em>My day</em> page."
 msgstr ""
-"أشّري على الصفحات التي يمكن لكل وظيفة فتحها. مديرات المناوبة يرين دائماً\n"
-"                كل صفحة هنا؛ وكل موظفة لديها دائماً صفحة\n"
-"                <em>يومي</em> الخاصة بها."
+"أشّر على الصفحات التي يمكن لكل وظيفة فتحها. مديرو المناوبة يرون دائماً\n"
+"                كل صفحة هنا؛ وكل موظف لديه دائماً صفحة\n"
+"                <em>يومي</em> الخاصة به."
 
 #. module: modryn_staff
 #. odoo-javascript
@@ -1481,7 +1481,7 @@ msgstr "في الانتظار"
 #. odoo-javascript
 #: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
 msgid "Waiting for someone to answer…"
-msgstr "في انتظار رد إحداهن…"
+msgstr "في انتظار رد أحدهم…"
 
 #. module: modryn_staff
 #. odoo-python
@@ -1510,7 +1510,7 @@ msgstr "تاريخ الزفاف"
 #. odoo-javascript
 #: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
 msgid "What do you need? (optional)"
-msgstr "ماذا تحتاجين؟ (اختياري)"
+msgstr "ماذا تحتاج؟ (اختياري)"
 
 #. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
@@ -1527,7 +1527,7 @@ msgstr "ما اشترته"
 #. odoo-javascript
 #: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
 msgid "Who do you need?"
-msgstr "من تحتاجين؟"
+msgstr "من تحتاج؟"
 
 #. module: modryn_staff
 #. odoo-python
@@ -1555,28 +1555,28 @@ msgstr "الورشة"
 #. odoo-python
 #: code:addons/modryn_staff/controllers/manage.py:0
 msgid "You already open at that time on that day"
-msgstr "أنتِ تفتحين بالفعل في ذلك الوقت من ذلك اليوم"
+msgstr "أنت تفتح بالفعل في ذلك الوقت من ذلك اليوم"
 
 #. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manage_roles
 msgid "You decide the roles — add whatever the boutique needs."
-msgstr "أنتِ تحددين الوظائف — أضيفي ما يحتاجه البوتيك."
+msgstr "أنت تحدد الوظائف — أضف ما يحتاجه البوتيك."
 
 #. module: modryn_staff
 #. odoo-javascript
 #: code:addons/modryn_staff/static/src/floor/floor_board.js:0
 msgid "You don't have permission for that."
-msgstr "ليست لديكِ صلاحية لذلك."
+msgstr "ليست لديك صلاحية لذلك."
 
 #. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.staff_home
 msgid "You're not on this week's published rota."
-msgstr "إنتِ مش مشمولة بسيدور هذا الأسبوع المنشور."
+msgstr "إنت مش مشمولة بسيدور هذا الأسبوع المنشور."
 
 #. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.staff_home
 msgid "Your rail is clear — new work is assigned automatically when it lands."
-msgstr "رفّك فارغ — العمل الجديد يُسند إليكِ تلقائياً عند وصوله."
+msgstr "رفّك فارغ — العمل الجديد يُسند إليك تلقائياً عند وصوله."
 
 #. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.no_access
@@ -1587,7 +1587,7 @@ msgid ""
 msgstr ""
 "وظيفتك لا تشمل هذه الصفحة. الروابط أعلاه هي\n"
 "                    التي تخصك — إذا كان يجب أن تكون هذه الصفحة إحداها،\n"
-"                    فاطلبي من المالكة منحها لوظيفتك."
+"                    فاطلب من المالك منحها لوظيفتك."
 
 #. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.staff_home
@@ -1596,8 +1596,8 @@ msgid ""
 "                on the Team page. Until then you'll only see what is assigned\n"
 "                to you by name, and the pages your role would open are closed."
 msgstr ""
-"وظيفتك لسا ما انحددت — اطلبي من المالكة تختارلك وحدة بصفحة الفريق. لحد هديك "
-"بتشوفي بس اللي مشمول باسمك، والصفحات اللي وظيفتك بتفتحها مسكّرة."
+"وظيفتك لسا ما انحددت — اطلب من المالك تختارلك وحدة بصفحة الفريق. لحد هديك "
+"بتشوف بس اللي مشمول باسمك، والصفحات اللي وظيفتك بتفتحها مسكّرة."
 
 #. module: modryn_staff
 #. odoo-javascript
@@ -1609,7 +1609,7 @@ msgstr "— إسناد —"
 #. odoo-javascript
 #: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
 msgid "— Choose a dress —"
-msgstr "— اختاري فستاناً —"
+msgstr "— اختر فستاناً —"
 
 #. module: modryn_staff
 #. odoo-javascript
@@ -1727,7 +1727,7 @@ msgstr "الاسم المعروض"
 #: model:ir.model.fields,field_description:modryn_staff.field_modryn_floor_helper__employee_id
 #: model:ir.model.fields,field_description:modryn_staff.field_modryn_shift_attendance__employee_id
 msgid "Employee"
-msgstr "موظفة"
+msgstr "موظف"
 
 #. module: modryn_staff
 #: model:ir.model,name:modryn_staff.model_ir_http
@@ -1806,12 +1806,12 @@ msgstr "لم يتم رفع أي ملف بعد."
 #. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.staff_profile
 msgid "Only you and the boutique owner can open these."
-msgstr "أنتِ ومالكة البوتيك فقط يمكنكما فتحها."
+msgstr "أنت ومالك البوتيك فقط يمكنكما فتحها."
 
 #. module: modryn_staff
 #: model:ir.model.fields,help:modryn_staff.field_hr_employee__modryn_role_ids
 msgid "Owner-defined job roles, for example Sales and Seamstress."
-msgstr "أدوار تحدّدها مالكة البوتيك، مثل المبيعات والخياطة."
+msgstr "أدوار تحدّدها مالك البوتيك، مثل المبيعات والخياطة."
 
 #. module: modryn_staff
 #. odoo-python
@@ -1848,7 +1848,7 @@ msgstr "الترتيب"
 #. module: modryn_staff
 #: model:ir.model,name:modryn_staff.model_modryn_staff_notification
 msgid "Something a staff member should see"
-msgstr "شيء يجب أن تراه الموظفة"
+msgstr "شيء يجب أن تراه الموظف"
 
 #. module: modryn_staff
 #: model:ir.model.fields,field_description:modryn_staff.field_modryn_sos_call__state
@@ -1892,7 +1892,7 @@ msgid ""
 "                Your roles and permission level are set by the owner."
 msgstr ""
 "حافظي على هذه التفاصيل محدّثة كي يتمكّن البوتيك من الوصول إليك دائمًا.\n"
-"                الأدوار ومستوى الصلاحية تحدّدهما مالكة البوتيك.\n"
+"                الأدوار ومستوى الصلاحية تحدّدهما مالك البوتيك.\n"
 "            "
 
 #. module: modryn_staff
@@ -1953,7 +1953,7 @@ msgstr "على الأرض منذ"
 #. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.floor_start
 msgid "— the floor opens once you are on it."
-msgstr "— الأرض بتفتح لمّا تكوني عليها."
+msgstr "— الأرض بتفتح لمّا تكون عليها."
 
 #. module: modryn_staff
 #: model:ir.model.fields,field_description:modryn_staff.field_hr_employee__modryn_on_shift_since
@@ -1967,12 +1967,12 @@ msgid ""
 "                nothing here to show. Ask the owner to add you on the Team page."
 msgstr ""
 "هذا الحساب لسّه مش مربوط بحدا من الطاقم، فما في إشي نعرضه هون.\n"
-"                اطلبي من مالكة البوتيك تضيفك بصفحة الطاقم."
+"                اطلب من مالك البوتيك تضيفك بصفحة الطاقم."
 
 #. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.shift_supervisor
 msgid "<span class=\"modryn_sub\">With her now</span>"
-msgstr "<span class=\"modryn_sub\">معها الآن</span>"
+msgstr "<span class=\"modryn_sub\">معه الآن</span>"
 
 #. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.shift_supervisor
@@ -2021,7 +2021,7 @@ msgstr "ما دخلت اليوم"
 #: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
 msgid ""
 "If the gown needs work, open a task for the workshop. Otherwise you're done."
-msgstr "إذا الفستان بدّه شغل، افتحي مهمّة للورشة. غير هيك خلصتِ."
+msgstr "إذا الفستان بدّه شغل، افتح مهمّة للورشة. غير هيك خلصت."
 
 #. module: modryn_staff
 #. odoo-javascript
@@ -2088,13 +2088,13 @@ msgstr "داخل الوردية"
 #. odoo-javascript
 #: code:addons/modryn_staff/static/src/floor/floor_board.js:0
 msgid "Pick which dress she took first."
-msgstr "أوّلًا اختاري أي فستان أخذت."
+msgstr "أوّلًا اختر أي فستان أخذت."
 
 #. module: modryn_staff
 #. odoo-javascript
 #: code:addons/modryn_staff/static/src/floor/floor_board.js:0
 msgid "Record that %s left without buying anything?"
-msgstr "نسجّل إنّ %s طلعت بدون ما تشتري إشي؟"
+msgstr "نسجّل إنّ %s طلع بدون ما يشتري إشي؟"
 
 #. module: modryn_staff
 #. odoo-javascript
@@ -2113,7 +2113,7 @@ msgstr "أخذت هاي"
 #: code:addons/modryn_staff/controllers/supervisor.py:0
 #: model_terms:ir.ui.view,arch_db:modryn_staff.shift_supervisor
 msgid "Shift supervisor"
-msgstr "مسؤولة الوردية"
+msgstr "مسؤول الوردية"
 
 #. module: modryn_staff
 #. odoo-javascript
@@ -2158,7 +2158,7 @@ msgstr "مين بالوردية، من إمتى، ومع مين."
 #. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.shift_supervisor
 msgid "With her now"
-msgstr "معها الآن"
+msgstr "معه الآن"
 
 #. module: modryn_staff
 #. odoo-javascript
@@ -2223,7 +2223,7 @@ msgstr "%(count)s كمان لاحقًا اليوم وما في حدا عليهم
 #. module: modryn_staff
 #: model:ir.model.constraint,message:modryn_staff.constraint_modryn_shift_attendance_one_open_spell
 msgid "That employee is already on the floor."
-msgstr "الموظفة أصلًا داخل الوردية."
+msgstr "الموظف أصلًا داخل الوردية."
 
 #. module: modryn_staff
 #. odoo-javascript
@@ -2306,7 +2306,7 @@ msgid ""
 "That only goes to you. Tick somebody else, or tick nobody to\n"
 "                    tell the whole team."
 msgstr ""
-"هاي بتوصل إلك بس. علّمي على حدا تاني، أو ما تعلّمي على حدا\n"
+"هاي بتوصل إلك بس. علّم على حدا تاني، أو ما تعلّم على حدا\n"
 "                    عشان توصل لكل الطاقم."
 
 #. module: modryn_staff
@@ -2327,7 +2327,7 @@ msgstr "الأشياء الي بتوصل لكل الطاقم."
 #. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
 msgid "Tick nobody and it goes to the whole team."
-msgstr "بدون ما تعلّمي على حدا — بتروح لكل الطاقم."
+msgstr "بدون ما تعلّم على حدا — بتروح لكل الطاقم."
 
 #. module: modryn_staff
 #: model:ir.model.fields,field_description:modryn_staff.field_modryn_announcement__employee_ids
@@ -2347,7 +2347,7 @@ msgstr "مين بعتها"
 #. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
 msgid "Write the message first."
-msgstr "أوّلًا اكتبي الرسالة."
+msgstr "أوّلًا اكتب الرسالة."
 
 #. module: modryn_staff
 #. odoo-python
@@ -2432,8 +2432,8 @@ msgid ""
 "Her signed papers live here. She can read her own on My\n"
 "                    details; she cannot add to them or remove them."
 msgstr ""
-"أوراقها الموقّعة بتنحفظ هون. بتشوف تبعتها بـ\"تفاصيلي\"؛\n"
-"                    ما بتقدر تضيف ولا تمحي."
+"أوراقه الموقّعة بتنحفظ هون. بيشوف تبعه بـ\"تفاصيلي\"؛\n"
+"                    ما بيقدر يضيف ولا يمحي."
 
 #. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
@@ -2449,7 +2449,7 @@ msgstr "حفظ"
 #. odoo-python
 #: code:addons/modryn_staff/controllers/manager.py:0
 msgid "Choose a file first."
-msgstr "أوّلًا اختاري ملف."
+msgstr "أوّلًا اختر ملف."
 
 #. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.staff_profile
@@ -2462,8 +2462,8 @@ msgid ""
 "What the boutique has on file for you. Only you and the\n"
 "                    owner can open these; your manager adds them."
 msgstr ""
-"الي البوتيك حافظه إلك. بس إنتِ والمالكة بتقدروا تفتحوا؛\n"
-"                    المسؤولة هي الي بتضيف."
+"الي البوتيك حافظه إلك. بس إنت والمالك بتقدروا تفتحوا؛\n"
+"                    المسؤول هو الي بيضيف."
 
 #. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.staff_profile
@@ -2511,7 +2511,7 @@ msgstr "وحدة منهن لسّا مفتوحة، وبتنعدّ لهلأ."
 #. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.staff_profile
 msgid "You were not on the floor that month."
-msgstr "ما كنتِ بالوردية بهالشهر."
+msgstr "ما كنت بالوردية بهالشهر."
 
 #. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.staff_profile
@@ -2520,7 +2520,7 @@ msgid ""
 "                    time you open the floor board."
 msgstr ""
 "لسّا ما انسجّل إشي — الساعات بتبلّش تتعدّ أوّل مرّة\n"
-"                    بتفتحي فيها شاشة الوردية."
+"                    بيفتح فيها شاشة الوردية."
 
 #. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
@@ -2545,7 +2545,7 @@ msgstr ""
 "<i class=\"fa fa-clock-o\" aria-hidden=\"true\"/>\n"
 "                    <span class=\"modryn_strong\">ساعاتي</span>\n"
 "                    <span class=\"modryn_sub\">\n"
-"                        قدّيش كنتِ بالوردية، يوم بيوم.\n"
+"                        قدّيش كنت بالوردية، يوم بيوم.\n"
 "                    </span>"
 
 #. module: modryn_staff
@@ -2574,7 +2574,7 @@ msgid ""
 msgstr ""
 "<i class=\"fa fa-users\" aria-hidden=\"true\"/>\n"
 "                    <span class=\"modryn_strong\">الطاقم</span>\n"
-"                    <span class=\"modryn_sub\">مين بتشتغل هون، والأوراق بالملفّ.</span>"
+"                    <span class=\"modryn_sub\">مين بيشتغل هون، والأوراق بالملفّ.</span>"
 
 #. module: modryn_staff
 #. odoo-javascript
@@ -2608,13 +2608,13 @@ msgstr "مسح"
 #. odoo-javascript
 #: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
 msgid "Find a customer"
-msgstr "بحث عن زبونة"
+msgstr "بحث عن زبون"
 
 #. module: modryn_staff
 #. odoo-python
 #: code:addons/modryn_staff/controllers/floor.py:0
 msgid "Finish with %(names)s before you go."
-msgstr "خلّصي مع %(names)s قبل ما تروحي."
+msgstr "خلّص مع %(names)s قبل ما تروح."
 
 #. module: modryn_staff
 #. odoo-javascript
@@ -2651,7 +2651,7 @@ msgstr "ما في حدا بهيك."
 #. odoo-javascript
 #: code:addons/modryn_staff/static/src/floor/floor_board.xml:0
 msgid "She reads this before she walks over."
-msgstr "بتقرا هاي قبل ما تيجي."
+msgstr "بيقرا هاي قبل ما ييجي."
 
 #. module: modryn_staff
 #. odoo-javascript
@@ -2669,7 +2669,7 @@ msgstr "مين"
 #. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
 msgid "Adding somebody, or changing what she may do, is the owner's."
-msgstr "إضافة موظفة، أو تغيير شو مسموح إلها، تبع المالكة."
+msgstr "إضافة موظف، أو تغيير شو مسموح إلها، تبع المالك."
 
 #. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
@@ -2688,8 +2688,8 @@ msgid ""
 "                    holds. She can read her own on My details; she cannot add to\n"
 "                    them or remove them."
 msgstr ""
-"كل الي البوتيك بيعرفه عنها، والأوراق الي حافظها. بتشوف\n"
-"                    تبعتها بـ\"تفاصيلي\"؛ ما بتقدر تضيف ولا تمحي."
+"كل الي البوتيك بيعرفه عنه، والأوراق الي حافظها. بتشوف\n"
+"                    تبعتها بـ\"تفاصيلي\"؛ ما بيقدر يضيف ولا يمحي."
 
 #. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
@@ -2699,7 +2699,7 @@ msgstr "تلفون إضافي"
 #. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
 msgid "With"
-msgstr "معها"
+msgstr "معه"
 
 #. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
@@ -2721,7 +2721,7 @@ msgid ""
 msgstr ""
 "<i class=\"fa fa-building\" aria-hidden=\"true\"/>\n"
 "                    <span class=\"modryn_strong\">غرف القياس</span>\n"
-"                    <span class=\"modryn_sub\">الغرف الي بتقدري تدخّلي فيها زبونة.</span>"
+"                    <span class=\"modryn_sub\">الغرف الي بتقدر تدخّلي فيها زبون.</span>"
 
 #. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
@@ -2765,7 +2765,7 @@ msgstr ""
 #. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
 msgid "<option value=\"\">Choose someone</option>"
-msgstr "<option value=\"\">اختاري عاملة</option>"
+msgstr "<option value=\"\">اختر عامل</option>"
 
 #. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
@@ -2788,8 +2788,8 @@ msgid ""
 "An earlier shift of hers was never closed, so it covers this time too. Fill "
 "in when she left that one first."
 msgstr ""
-"وردية سابقة لها لم تُغلق أبدًا، فهي تغطي هذا الوقت أيضًا. عبّئي أولًا متى "
-"أنهتها."
+"وردية سابقة له لم تُغلق أبدًا، فهي تغطي هذا الوقت أيضًا. عبّئ أولًا متى "
+"أنهاها."
 
 #. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
@@ -2799,7 +2799,7 @@ msgstr "الدخول"
 #. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
 msgid "Choose someone to see the months she has worked."
-msgstr "اختاري عاملة لرؤية الأشهر التي عملتها."
+msgstr "اختر عامل لرؤية الأشهر التي عملتها."
 
 #. module: modryn_staff
 #. odoo-python
@@ -2816,7 +2816,7 @@ msgstr "ساعات العمل"
 #. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
 msgid "Leave <em>went off</em> empty if she is still on the floor."
-msgstr "اتركي <em>الخروج</em> فارغًا إذا كانت ما زالت على الأرض."
+msgstr "اترك <em>الخروج</em> فارغًا إذا كانت ما زالت على الأرض."
 
 #. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
@@ -2831,7 +2831,7 @@ msgid ""
 "Nothing recorded for her yet — hours start counting\n"
 "                        the first time she opens the floor board."
 msgstr ""
-"لم يُسجَّل لها شيء بعد — الساعات تبدأ بالعدّ أول مرة تفتح فيها لوح الأرض."
+"لم يُسجَّل له شيء بعد — الساعات تبدأ بالعدّ أول مرة يفتح فيها لوح الأرض."
 
 #. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
@@ -2844,7 +2844,7 @@ msgid ""
 "One of these is still running and counts up to now. If\n"
 "                            she has gone home, fill in when she left."
 msgstr ""
-"واحدة منها ما زالت جارية وتَعُدّ حتى الآن. إذا ذهبت للبيت، عبّئي متى خرجت."
+"واحدة منها ما زالت جارية وتَعُدّ حتى الآن. إذا ذهب للبيت، عبّئ متى خرج."
 
 #. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
@@ -2863,8 +2863,8 @@ msgid ""
 "She was added, but that file is too large — the limit is 10 MB. Open her "
 "account to try again."
 msgstr ""
-"تمت إضافتها، لكن الملف كبير جدًا — الحد هو 10 ميغابايت. افتحي حسابها لتجربي "
-"مرة أخرى."
+"تمت إضافته، لكن الملف كبير جدًا — الحد هو 10 ميغابايت. افتح حسابه لتجرب مرة "
+"أخرى."
 
 #. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
@@ -2889,7 +2889,7 @@ msgstr "لم يكن بالإمكان الحفظ."
 #. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
 msgid "That crosses another shift of hers the same day."
-msgstr "هذا يتقاطع مع وردية أخرى لها في اليوم نفسه."
+msgstr "هذا يتقاطع مع وردية أخرى له في اليوم نفسه."
 
 #. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manage_roles
@@ -2900,9 +2900,9 @@ msgid ""
 "                it is shown so you can see the whole shop, not because it can be\n"
 "                handed over."
 msgstr ""
-"علّمي الصفحات التي يحق لكل دور فتحها. مسؤولات الوردية يرين دائمًا كل صفحة "
-"هنا؛ ولكل عاملة دائمًا صفحة <em>يومي</em> الخاصة بها. القفل يعني أن الصفحة "
-"لك وحدك — تُعرض لتري المحل كله، لا لأنه يمكن تسليمها."
+"علّم الصفحات التي يحق لكل دور فتحها. مسؤولو الوردية يرون دائمًا كل صفحة هنا؛"
+" ولكل عامل دائمًا صفحة <em>يومي</em> الخاصة به. القفل يعني أن الصفحة لك وحدك"
+" — تُعرض لترى المحل كله، لا لأنه يمكن تسليمها."
 
 #. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
@@ -2922,12 +2922,12 @@ msgstr "مَن غادرت"
 #. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
 msgid "Write the time as HH:MM, like 09:30."
-msgstr "اكتبي الوقت بصيغة HH:MM، مثل 09:30."
+msgstr "اكتب الوقت بصيغة HH:MM، مثل 09:30."
 
 #. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manage_roles
 msgid "Yours only"
-msgstr "لكِ وحدك"
+msgstr "لك وحدك"
 
 #. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
@@ -2946,7 +2946,7 @@ msgid ""
 "A padlock means the page is yours alone — it is shown so you can\n"
 "                see the whole shop, not because it can be handed over."
 msgstr ""
-"القفل يعني أن الصفحة لكِ وحدك — تُعرض لتري المحل كله، لا لأنه يمكن تسليمها."
+"القفل يعني أن الصفحة لك وحدك — تُعرض لترى المحل كله، لا لأنه يمكن تسليمها."
 
 #. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.shift_supervisor
@@ -2977,7 +2977,7 @@ msgstr "بعد %(minutes)s دقائق"
 #. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.supervisor_actions
 msgid "Nobody is on the floor to hand her to."
-msgstr "ما في ولا وحدة على الأرض لتسليمها لها."
+msgstr "ما في ولا حدا على الأرض لتسليمها له."
 
 #. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.shift_supervisor
@@ -3011,7 +3011,7 @@ msgid ""
 msgstr ""
 "<i class=\"fa fa-diamond\" aria-hidden=\"true\"/>\n"
 "                    <span class=\"modryn_strong\">الفساتين الي انباعت</span>\n"
-"                    <span class=\"modryn_sub\">دوّري على عروس بالاسم أو الرقم — شو اشترت، وشو عملت فيها الورشة.</span>"
+"                    <span class=\"modryn_sub\">دوّر على عروس بالاسم أو الرقم — شو اشترى، وشو عملت فيها الورشة.</span>"
 
 #. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
@@ -3026,7 +3026,7 @@ msgstr "اسم أو رقم تلفون"
 #. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
 msgid "Find her"
-msgstr "دوّري عليها"
+msgstr "دوّر عليها"
 
 #. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
@@ -3038,7 +3038,7 @@ msgstr "حرفين أو أكتر."
 msgid ""
 "Type a name or a number. Everything this boutique has ever\n"
 "                    sold is here, however long ago."
-msgstr "اكتبي اسم أو رقم. كل إشي باعه هالبوتيك موجود هون، مهما كان من زمان."
+msgstr "اكتب اسم أو رقم. كل إشي باعه هالبوتيك موجود هون، مهما كان من زمان."
 
 #. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
@@ -3103,12 +3103,12 @@ msgstr "آخر تغيير عمله"
 #. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.supervisor_actions
 msgid "Give her to"
-msgstr "تسليمها لعاملة"
+msgstr "تسليمها لعامل"
 
 #. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.supervisor_actions
 msgid "Hand her to"
-msgstr "نقلها لعاملة تانية"
+msgstr "نقلها لعامل تانية"
 
 #. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.supervisor_actions
@@ -3129,7 +3129,7 @@ msgid ""
 msgstr ""
 "<i class=\"fa fa-binoculars\" aria-hidden=\"true\"/>\n"
 "                    <span class=\"modryn_strong\">شو صار هون</span>\n"
-"                    <span class=\"modryn_sub\">التخفيضات الي انعطت وليش، ومين طلبت مساعدة.</span>"
+"                    <span class=\"modryn_sub\">التخفيضات الي انعطت وليش، ومين طلب مساعدة.</span>"
 
 #. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
@@ -3155,7 +3155,7 @@ msgstr "تخفيض"
 #. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
 msgid "Called for help"
-msgstr "طلبت مساعدة"
+msgstr "طلب مساعدة"
 
 #. module: modryn_staff
 #. odoo-python
@@ -3167,7 +3167,7 @@ msgstr "نادت %(who)s"
 #. odoo-python
 #: code:addons/modryn_staff/controllers/manager.py:0
 msgid "Called whoever was free"
-msgstr "نادت الي كانت فاضية"
+msgstr "نادى الي كان فاضي"
 
 #. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
@@ -3197,7 +3197,7 @@ msgid ""
 "                    what the contact page answers with — change it here and the\n"
 "                    next visitor sees the new one."
 msgstr ""
-"شو بتعرفه الزبونة عنك. هاد الي بيطلع بأول الموقع، وبآخر كل صفحة، وبصفحة "
+"شو بتعرفه الزبون عنك. هاد الي بيطلع بأول الموقع، وبآخر كل صفحة، وبصفحة "
 "التواصل — غيّريه هون والزائرة الجاي بتشوف الجديد."
 
 #. module: modryn_staff
@@ -3216,7 +3216,7 @@ msgid ""
 "Leave this empty and the phone above is used. Fill it in\n"
 "                            only if WhatsApp is on another line."
 msgstr ""
-"اتركيها فاضية وبينستخدم التلفون الي فوق. عبّيها بس إذا الواتساب على خط تاني."
+"اتركها فاضية وبينستخدم التلفون الي فوق. عبّيها بس إذا الواتساب على خط تاني."
 
 #. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
@@ -3264,8 +3264,8 @@ msgid ""
 "                    itself. Percent only — a fixed sum would give a veil away\n"
 "                    and take a tenth off a gown."
 msgstr ""
-"كلمة، وقديش بتنزّل. الكاش بيسأل عنها بالاسم: الي عالكاش بتكتب الكلمة بدل ما "
-"تقرر مبلغ، والسبب بيتكتب لحاله بشاشة صاحبة المحل. نسبة بس — مبلغ ثابت بيعطي "
+"كلمة، وقديش بتنزّل. الكاش بيسأل عنها بالاسم: الي عالكاش بيكتب الكلمة بدل ما "
+"يقرر مبلغ، والسبب بيتكتب لحاله بشاشة صاحب المحل. نسبة بس — مبلغ ثابت بيعطي "
 "الطرحة ببلاش وبينزّل عُشر من الفستان."
 
 #. module: modryn_staff
@@ -3351,9 +3351,9 @@ msgid ""
 "                    telephone, four on a Thursday evening. An hour set to none\n"
 "                    stays open; it simply is not offered online."
 msgstr ""
-"ساعات الفتح بتقول إمتى الباب مفتوح. هون بتقولي قديش من هالوقت الموقع بيقدر "
+"ساعات الفتح بتقول إمتى الباب مفتوح. هون بتقول قديش من هالوقت الموقع بيقدر "
 "يوزّع — تنتين بالحداشر، ولا واحد بالتنتين لأن هالساعة محجوزة للعرايس الي "
-"بتحكي بالتلفون، أربعة الخميس بالمسا. الساعة الي بتحطيها صفر بتضل مفتوحة؛ بس "
+"بتحكي بالتلفون، أربعة الخميس بالمسا. الساعة الي بتحطها صفر بتضل مفتوحة؛ بس "
 "ما بتنعرض بالموقع."
 
 #. module: modryn_staff
@@ -3369,7 +3369,7 @@ msgid ""
 "                    be. Whoever books has to say which she is."
 msgstr ""
 "القائمة هي القاعدة. محل بيستقبل عرايس بس بيكتب هون سطر واحد، وصفحة الحجز "
-"بتعرض خيار واحد. الي بتحجز لازم تقول شو هي."
+"بتعرض خيار واحد. الي بيحجز لازم يقول شو هو."
 
 #. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
@@ -3392,8 +3392,8 @@ msgid ""
 "Nobody listed yet. Until you add one, anybody may ask for an\n"
 "                    appointment without saying who she is."
 msgstr ""
-"ما في حدا بالقائمة لسا. لحد ما تضيفي، أي وحدة بتقدر تطلب دور بدون ما تقول شو"
-" هي."
+"ما في حدا بالقائمة لسا. لحد ما تضيف، أي حدا بيقدر يطلب دور بدون ما يقول شو "
+"هو."
 
 #. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
@@ -3421,7 +3421,7 @@ msgstr ""
 #. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
 msgid "Save the week"
-msgstr "احفظي الأسبوع"
+msgstr "احفظ الأسبوع"
 
 #. module: modryn_staff
 #. odoo-python
@@ -3455,7 +3455,7 @@ msgid ""
 "                    want appointments and leave the rest at nothing."
 msgstr ""
 "كل ساعة بكل يوم موجودة هون، الجمعة والسبت كمان — في محلات بتشتغل فيهن، وفي "
-"محلات بتفتح بالمسا. ما في إشي متقرّر عنك: حطي رقم وين ما بدك أدوار، والباقي "
+"محلات بتفتح بالمسا. ما في إشي متقرّر عنك: حط رقم وين ما بدك أدوار، والباقي "
 "بيضل صفر."
 
 #. module: modryn_staff
@@ -3470,7 +3470,7 @@ msgid ""
 "%(kind)s cannot be deleted — %(count)s appointments say that is who is "
 "coming. Stop offering it instead."
 msgstr ""
-"لا يمكن حذف %(kind)s — %(count)s موعدًا تقول إنّ هذه هي القادمة. توقّفي عن "
+"لا يمكن حذف %(kind)s — %(count)s موعدًا تقول إنّ هذه هي القادمة. توقّف عن "
 "عرضها بدلًا من ذلك."
 
 #. module: modryn_staff
@@ -3480,7 +3480,7 @@ msgid ""
 "%(role)s cannot be deleted — %(count)s of the team still have it. Archive it"
 " instead: it disappears from the forms and stays on their cards."
 msgstr ""
-"لا يمكن حذف %(role)s — ما زال %(count)s من الفريق يحملنه. أرشفيه بدلًا من "
+"لا يمكن حذف %(role)s — ما زال %(count)s من الفريق يحملنه. أرشفه بدلًا من "
 "ذلك: يختفي من النماذج ويبقى على بطاقاتهنّ."
 
 #. module: modryn_staff
@@ -3506,7 +3506,7 @@ msgstr ""
 #. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.staff_profile
 msgid "<span class=\"modryn_strong\">What you may open:</span>"
-msgstr "<span class=\"modryn_strong\">ما يمكنكِ فتحه:</span>"
+msgstr "<span class=\"modryn_strong\">ما يمكنك فتحه:</span>"
 
 #. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manage_roles
@@ -3559,10 +3559,10 @@ msgid ""
 "                    day with its own hours is marked, and it stops following\n"
 "                    the week until you hand it back."
 msgstr ""
-"كل يوم يتبع الأسبوع أدناه ما لم تقولي غير ذلك. اضغطي على يوم لتمنحيه ساعاته "
-"الخاصة — الأسبوع الذي تكونين فيه في معرض، الخميس الذي تفتحين فيه متأخرة، "
+"كل يوم يتبع الأسبوع أدناه ما لم تقل غير ذلك. اضغط على يوم لتمنحه ساعاته "
+"الخاصة — الأسبوع الذي تكون فيه في معرض، الخميس الذي تفتح فيه متأخرًا، "
 "العطلة. اليوم الذي له ساعاته الخاصة يكون مُعلّمًا، ويتوقف عن اتّباع الأسبوع "
-"حتى تعيديه إليه."
+"حتى تعيده إليه."
 
 #. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
@@ -3573,9 +3573,9 @@ msgid ""
 "                    included: some boutiques work them, and some open in the\n"
 "                    evening. Nothing is decided for you."
 msgstr ""
-"املئي هذا مرة واحدة ويستخدمه كل أسبوع — هذا ما يتبعه كل يوم في الأعلى حتى "
-"تمنحيه ساعاته الخاصة. كل ساعة من كل يوم موجودة هنا، الجمعة والسبت ضمنها: بعض"
-" البوتيكات تعمل فيهما، وبعضها يفتح مساءً. لم يُقرَّر شيء عنكِ."
+"املأ هذا مرة واحدة ويستخدمه كل أسبوع — هذا ما يتبعه كل يوم في الأعلى حتى "
+"تمنحه ساعاته الخاصة. كل ساعة من كل يوم موجودة هنا، الجمعة والسبت ضمنها: بعض "
+"البوتيكات تعمل فيهما، وبعضها يفتح مساءً. لم يُقرَّر شيء عنك."
 
 #. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
@@ -3594,8 +3594,9 @@ msgstr "كم مرة"
 
 #. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manage_roles
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
 msgid "In use — archive it"
-msgstr "قيد الاستخدام — أرشفيه"
+msgstr "قيد الاستخدام — أرشفه"
 
 #. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manage_roles
@@ -3649,7 +3650,7 @@ msgstr "الأسبوع، في كل أسبوع"
 msgid ""
 "This day has its own hours. Change them here, or\n"
 "                            hand it back to the week."
-msgstr "لهذا اليوم ساعاته الخاصة. غيّريها هنا، أو أعيديه إلى الأسبوع."
+msgstr "لهذا اليوم ساعاته الخاصة. غيّرها هنا، أو أعيديه إلى الأسبوع."
 
 #. module: modryn_staff
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
@@ -3658,7 +3659,7 @@ msgid ""
 "                            what the week says — change any of them and this\n"
 "                            day stops following it."
 msgstr ""
-"هذا اليوم يتبع الأسبوع. تبدأ الخانات بما يقوله الأسبوع — غيّري أيًّا منها "
+"هذا اليوم يتبع الأسبوع. تبدأ الخانات بما يقوله الأسبوع — غيّر أيًّا منها "
 "ويتوقف هذا اليوم عن اتّباعه."
 
 #. module: modryn_staff
@@ -3666,3 +3667,97 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
 msgid "Yes, delete"
 msgstr "نعم، احذفي"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid ""
+"<select id=\"code_kind\" name=\"value_kind\" class=\"form-select\">\n"
+"                            <option value=\"percent\">A percentage</option>\n"
+"                            <option value=\"amount\">A sum of money</option>\n"
+"                        </select>"
+msgstr ""
+"<select id=\"code_kind\" name=\"value_kind\" class=\"form-select\"><option "
+"value=\"percent\">نسبة مئوية</option><option value=\"amount\">مبلغ من "
+"المال</option></select>"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid ""
+"<span class=\"modryn_code_pct\">How many percent</span>\n"
+"                            <span class=\"modryn_code_ils\" hidden=\"hidden\">How many shekels</span>"
+msgstr ""
+"<span class=\"modryn_code_pct\">كم بالمئة</span><span "
+"class=\"modryn_code_ils\" hidden=\"hidden\">كم شيكل</span>"
+
+#. module: modryn_staff
+#. odoo-python
+#: code:addons/modryn_staff/controllers/manager.py:0
+msgid "A code cannot be used a negative number of times."
+msgstr "ما بينفع يُستعمل الكود عدد مرات سالب."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid ""
+"A word, and what it takes off. The till offers your codes\n"
+"                    by name: whoever is at the counter picks the word instead of\n"
+"                    deciding an amount, and the reason on the owner's screen\n"
+"                    writes itself. A percentage is the safer answer — two\n"
+"                    hundred shekels is a tenth off a gown and the whole of a\n"
+"                    veil — but a sum is yours to choose."
+msgstr ""
+"كلمة، وقدّيش بتنزّل. الكاشير بيعرض أكوادك بالاسم: الي واقف عالكاشير بيختار "
+"الكلمة بدل ما يقرّر مبلغ، والسبب بشاشة المالك بينكتب لحاله. النسبة المئوية "
+"هي الجواب الأأمن — مئتين شيكل هنّ عُشر فستان وطرحة كاملة — بس المبلغ خيارك "
+"إنت."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "First day it works"
+msgstr "أول يوم يعمل فيه"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "How many people may use it"
+msgstr "كم شخص بيقدر يستعمله"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "Leave any of these empty for no limit."
+msgstr "فيك تترك أي واحدة منها فاضية — وقتها بلا حدّ."
+
+#. module: modryn_staff
+#. odoo-python
+#: code:addons/modryn_staff/controllers/manager.py:0
+msgid "Say how many shekels come off."
+msgstr "يرجى تحديد كم شيكل ينزل."
+
+#. module: modryn_staff
+#. odoo-python
+#: code:addons/modryn_staff/controllers/manager.py:0
+msgid "The last day cannot come before the first."
+msgstr "ما بينفع يكون اليوم الأخير قبل اليوم الأول."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "What comes off"
+msgstr "شو بينزل"
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "Not started yet"
+msgstr "لسا ما بلّش"
+
+#. module: modryn_staff
+#. odoo-python
+#: code:addons/modryn_staff/controllers/manage.py:0
+msgid ""
+"%(room)s cannot be deleted — %(count)s cards remember standing in it. "
+"Archive it instead: it disappears from the board and stays on those cards."
+msgstr ""
+"ما بينفع تمحي %(room)s — %(count)s بطاقة بتتذكر إنها وقفت فيها. أرشفها بدل "
+"هيك: بتختفي من اللوح وبتضل عالبطاقات."
+
+#. module: modryn_staff
+#: model_terms:ir.ui.view,arch_db:modryn_staff.manager_screen
+msgid "Delete this room? It goes for good."
+msgstr "حذف هذه الغرفة؟ تختفي نهائيًا."

@@ -50,7 +50,7 @@ msgid ""
 "A place has opened up on %(date)s. It's yours for the next %(hours)s hours: "
 "%(link)s"
 msgstr ""
-"شغر موعد في %(date)s. إنه محجوز لكِ خلال الساعات %(hours)s القادمة: %(link)s"
+"شغر موعد في %(date)s. إنه محجوز لك خلال الساعات %(hours)s القادمة: %(link)s"
 
 #. module: modryn_portal
 #: model_terms:ir.ui.view,arch_db:modryn_portal.booking_confirmed_ics
@@ -86,7 +86,7 @@ msgstr "إلغاء الموعد"
 #. module: modryn_portal
 #: model_terms:ir.ui.view,arch_db:modryn_portal.cancel_confirm
 msgid "Cancel this appointment?"
-msgstr "هل تريدين إلغاء هذا الموعد؟"
+msgstr "هل تريد إلغاء هذا الموعد؟"
 
 #. module: modryn_portal
 #: model_terms:ir.ui.view,arch_db:modryn_portal.booking_link
@@ -133,12 +133,12 @@ msgstr "متابعة"
 #. module: modryn_portal
 #: model:ir.model.fields.selection,name:modryn_portal.selection__calendar_event__modryn_cancelled_by__customer
 msgid "Customer"
-msgstr "العميلة"
+msgstr "العميل"
 
 #. module: modryn_portal
 #: model:ir.model,name:modryn_portal.model_modryn_otp_code
 msgid "Customer login code"
-msgstr "رمز دخول العميلة"
+msgstr "رمز دخول العميل"
 
 #. module: modryn_portal
 #: model:ir.model.fields,field_description:modryn_portal.field_modryn_day_waitlist__day
@@ -153,12 +153,12 @@ msgstr "وضع العرض التجريبي — الرمز الخاص بك هو"
 #. module: modryn_portal
 #: model_terms:ir.ui.view,arch_db:modryn_portal.verify
 msgid "Enter your code"
-msgstr "أدخلي الرمز"
+msgstr "أدخل الرمز"
 
 #. module: modryn_portal
 #: model_terms:ir.ui.view,arch_db:modryn_portal.login
 msgid "Enter your phone number and we will text you a code."
-msgstr "أدخلي رقم هاتفك وسنرسل لك رمزًا في رسالة نصية."
+msgstr "أدخل رقم هاتفك وسنرسل لك رمزًا في رسالة نصية."
 
 #. module: modryn_portal
 #: model:ir.model.fields.selection,name:modryn_portal.selection__modryn_day_waitlist__state__expired
@@ -363,7 +363,7 @@ msgstr "تسجيل الخروج"
 #. module: modryn_portal
 #: model:ir.model.constraint,message:modryn_portal.constraint_modryn_day_waitlist_modryn_one_offer_per_day
 msgid "Someone else already holds the offer for that day."
-msgstr "عرض هذا اليوم محجوز لعميلة أخرى بالفعل."
+msgstr "عرض هذا اليوم محجوز لعميل آخر بالفعل."
 
 #. module: modryn_portal
 #. odoo-python
@@ -502,7 +502,7 @@ msgstr "نعم، ألغِ الموعد"
 #. module: modryn_portal
 #: model:ir.model.constraint,message:modryn_portal.constraint_modryn_day_waitlist_phone_day_uniq
 msgid "You are already on the waitlist for that day."
-msgstr "أنتِ مسجّلة بالفعل في قائمة الانتظار لهذا اليوم."
+msgstr "أنت مسجّل بالفعل في قائمة الانتظار لهذا اليوم."
 
 #. module: modryn_portal
 #: model_terms:ir.ui.view,arch_db:modryn_portal.bookings
@@ -512,7 +512,7 @@ msgstr "ليس لديك مواعيد قادمة."
 #. module: modryn_portal
 #: model_terms:ir.ui.view,arch_db:modryn_portal.waitlist_joined
 msgid "You're on the list"
-msgstr "أنتِ على القائمة"
+msgstr "أنت على القائمة"
 
 #. module: modryn_portal
 #: model_terms:ir.ui.view,arch_db:modryn_portal.booking_link
@@ -547,7 +547,7 @@ msgstr "· مقاس"
 #. module: modryn_portal
 #: model_terms:ir.ui.view,arch_db:modryn_portal.claim_form
 msgid "— it's yours if you'd like it."
-msgstr "— إنه لكِ إذا رغبتِ به."
+msgstr "— إنه لك إذا رغبت به."
 
 #. module: modryn_portal
 #: model:ir.model.fields,field_description:modryn_portal.field_modryn_day_waitlist__name

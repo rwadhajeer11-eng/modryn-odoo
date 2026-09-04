@@ -40,12 +40,12 @@ msgstr "נקראה"
 #. module: modryn_queue_poc
 #: model:ir.model.fields,field_description:modryn_queue_poc.field_modryn_queue_entry__client_type
 msgid "Client Type"
-msgstr "סוג לקוחה"
+msgstr "סוג לקוח"
 
 #. module: modryn_queue_poc
 #: model_terms:ir.ui.view,arch_db:modryn_queue_poc.checkin_form
 msgid "Client type"
-msgstr "סוג לקוחה"
+msgstr "סוג לקוח"
 
 #. module: modryn_queue_poc
 #: model_terms:ir.ui.view,arch_db:modryn_queue_poc.verify_form
@@ -66,7 +66,7 @@ msgstr "סיום"
 #. module: modryn_queue_poc
 #: model_terms:ir.ui.view,arch_db:modryn_queue_poc.verify_form
 msgid "Enter your code"
-msgstr "הזיני את הקוד"
+msgstr "הזן את הקוד"
 
 #. module: modryn_queue_poc
 #. odoo-javascript
@@ -186,12 +186,12 @@ msgstr "מעדיפה לקבוע תור מראש?"
 #. module: modryn_queue_poc
 #: model:ir.model.fields.selection,name:modryn_queue_poc.selection__modryn_queue_entry__client_type__evening
 msgid "Regular customer"
-msgstr "לקוחה רגילה"
+msgstr "לקוח רגיל"
 
 #. module: modryn_queue_poc
 #: model_terms:ir.ui.view,arch_db:modryn_queue_poc.queue_sign
 msgid "Scan the code to join the queue"
-msgstr "סרקי את הקוד כדי להצטרף לתור"
+msgstr "סרוק את הקוד כדי להצטרף לתור"
 
 #. module: modryn_queue_poc
 #: model_terms:ir.ui.view,arch_db:modryn_queue_poc.checkin_form
@@ -323,7 +323,7 @@ msgstr "שלחנו קוד בן 6 ספרות אל"
 msgid ""
 "We'd love to give you our full attention — book a fitting\n"
 "                            and the boutique is yours."
-msgstr "נשמח להקדיש לך את מלוא תשומת הלב — קבעי מדידה והבוטיק כולו שלך."
+msgstr "נשמח להקדיש לך את מלוא תשומת הלב — קבע מדידה והבוטיק כולו שלך."
 
 #. module: modryn_queue_poc
 #: model_terms:ir.ui.view,arch_db:modryn_queue_poc.ticket
@@ -369,25 +369,25 @@ msgstr "ברוכה הבאה"
 msgid ""
 "You're in the queue — and you're next. We'll be with you in a moment. Your "
 "ticket: %(link)s"
-msgstr "את בתור — ואת הבאה בתור. נהיה איתך עוד רגע. הכרטיס שלך: %(link)s"
+msgstr "אתה בתור — ואתה הבא בתור. נהיה איתך עוד רגע. הכרטיס שלך: %(link)s"
 
 #. module: modryn_queue_poc
 #. odoo-python
 #: code:addons/modryn_queue_poc/models/queue_entry.py:0
 msgid ""
 "You're in the queue. We'll text you when you're next. Your ticket: %(link)s"
-msgstr "את בתור. נעדכן אותך בהודעה כשיגיע תורך. הכרטיס שלך: %(link)s"
+msgstr "אתה בתור. נעדכן אותך בהודעה כשיגיע תורך. הכרטיס שלך: %(link)s"
 
 #. module: modryn_queue_poc
 #: model_terms:ir.ui.view,arch_db:modryn_queue_poc.ticket
 msgid "You're next"
-msgstr "את הבאה בתור"
+msgstr "אתה הבא בתור"
 
 #. module: modryn_queue_poc
 #. odoo-python
 #: code:addons/modryn_queue_poc/models/queue_entry.py:0
 msgid "You're next — we'll be with you in a moment."
-msgstr "את הבאה בתור — נהיה איתך עוד רגע."
+msgstr "אתה הבא בתור — נהיה איתך עוד רגע."
 
 #. module: modryn_queue_poc
 #: model_terms:ir.ui.view,arch_db:modryn_queue_poc.queue_sign

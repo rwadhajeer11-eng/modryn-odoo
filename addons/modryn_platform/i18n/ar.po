@@ -1004,7 +1004,7 @@ msgstr "قوائم المهام"
 #. module: modryn_platform
 #: model_terms:ir.ui.view,arch_db:modryn_platform.plans
 msgid "Delete this tier"
-msgstr "امحي هذه الباقة"
+msgstr "امحُ هذه الباقة"
 
 #. module: modryn_platform
 #: model:modryn.platform.screen,name:modryn_platform.screen_dresses
@@ -1120,7 +1120,7 @@ msgstr "بيع"
 #. module: modryn_platform
 #: model:modryn.platform.screen,name:modryn_platform.screen_supervisor
 msgid "Shift supervisor"
-msgstr "مسؤولة الوردية"
+msgstr "مسؤول الوردية"
 
 #. module: modryn_platform
 #: model:modryn.platform.screen,name:modryn_platform.screen_shifts

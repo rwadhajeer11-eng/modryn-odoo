@@ -27,7 +27,7 @@ msgstr ""
 #. module: modryn_ops
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_audit_log__actor_name
 msgid "Actor Name"
-msgstr "اسم المنفِّذة"
+msgstr "اسم المنفِّذ"
 
 #. module: modryn_ops
 #: model:ir.model.fields.selection,name:modryn_ops.selection__modryn_task__task_type__adhoc
@@ -122,7 +122,7 @@ msgstr "مكتملة"
 #. module: modryn_ops
 #: model:ir.model,name:modryn_ops.model_res_partner
 msgid "Contact"
-msgstr "الزبونة"
+msgstr "الزبون"
 
 #. module: modryn_ops
 #: model_terms:ir.ui.view,arch_db:modryn_ops.manage_reports
@@ -137,19 +137,19 @@ msgstr "نسبة التحويل"
 #. module: modryn_ops
 #: model:ir.model,website_form_label:modryn_ops.model_res_partner
 msgid "Create a Customer"
-msgstr "إنشاء زبونة"
+msgstr "إنشاء زبون"
 
 #. module: modryn_ops
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_sale__customer_name
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_task__customer_name
 msgid "Customer Name"
-msgstr "اسم الزبونة"
+msgstr "اسم الزبون"
 
 #. module: modryn_ops
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_sale__customer_phone
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_task__customer_phone
 msgid "Customer Phone"
-msgstr "هاتف الزبونة"
+msgstr "هاتف الزبون"
 
 #. module: modryn_ops
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_task__day
@@ -170,7 +170,7 @@ msgstr "تاريخ الإنجاز"
 #. module: modryn_ops
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_task__done_by_id
 msgid "Done By"
-msgstr "المنجِزة"
+msgstr "المنجِز"
 
 #. module: modryn_ops
 #. odoo-python
@@ -337,7 +337,7 @@ msgstr "Modryn تاريخ النتيجة"
 #. module: modryn_ops
 #: model:ir.model.fields,field_description:modryn_ops.field_calendar_event__modryn_outcome_by_id
 msgid "Modryn Outcome By"
-msgstr "Modryn مسجِّلة النتيجة"
+msgstr "Modryn مسجِّل النتيجة"
 
 #. module: modryn_ops
 #: model:ir.model.fields,field_description:modryn_ops.field_calendar_event__modryn_outcome_note
@@ -380,13 +380,13 @@ msgstr "الجديد"
 #. odoo-python
 #: code:addons/modryn_ops/models/task.py:0
 msgid "New task for you: %(name)s — %(customer)s"
-msgstr "مهمة جديدة لكِ: %(name)s — %(customer)s"
+msgstr "مهمة جديدة لك: %(name)s — %(customer)s"
 
 #. module: modryn_ops
 #. odoo-python
 #: code:addons/modryn_ops/models/task.py:0
 msgid "New task for you: %s"
-msgstr "مهمة جديدة لكِ: %s"
+msgstr "مهمة جديدة لك: %s"
 
 #. module: modryn_ops
 #: model_terms:ir.ui.view,arch_db:modryn_ops.manage_audit
@@ -426,7 +426,7 @@ msgstr "مش عالموقع"
 #. module: modryn_ops
 #: model:ir.model.fields.selection,name:modryn_ops.selection__res_partner__modryn_category__not_purchased
 msgid "Not purchased"
-msgstr "لم تشترِ"
+msgstr "لم يشترِ"
 
 #. module: modryn_ops
 #: model:ir.model.fields.selection,name:modryn_ops.selection__calendar_event__modryn_outcome__not_sold
@@ -488,7 +488,7 @@ msgstr "يُرجى إدخال الاسم"
 #. odoo-python
 #: code:addons/modryn_ops/controllers/dresses.py:0
 msgid "Please enter a whole number"
-msgstr "اكتبي رقم صحيح"
+msgstr "اكتب رقم صحيح"
 
 #. module: modryn_ops
 #: model:ir.model.fields.selection,name:modryn_ops.selection__res_partner__modryn_category__purchased
@@ -770,7 +770,7 @@ msgstr "الاسم المعروض"
 #: model:ir.model,name:modryn_ops.model_hr_employee
 #: model:ir.model.fields,field_description:modryn_ops.field_modryn_task__employee_id
 msgid "Employee"
-msgstr "موظفة"
+msgstr "موظف"
 
 #. module: modryn_ops
 #: model:ir.model.fields,field_description:modryn_ops.field_calendar_event__id
@@ -998,13 +998,13 @@ msgid ""
 "Nothing here yet. Press <strong>Add one</strong> to put your first\n"
 "                dress on the rail."
 msgstr ""
-"ما في إشي هون بعد. اضغطي <strong>إضافة</strong> لتحطّي\n"
+"ما في إشي هون بعد. اضغط <strong>إضافة</strong> لتحطّي\n"
 "                أول فستان على الشمّاعة."
 
 #. module: modryn_ops
 #: model_terms:ir.ui.view,arch_db:modryn_ops.manage_dresses
 msgid "One size. Set how many there are from <strong>Edit</strong>."
-msgstr "مقاس واحد. حدّدي كم في من <strong>تعديل</strong>."
+msgstr "مقاس واحد. حدّد كم في من <strong>تعديل</strong>."
 
 #. module: modryn_ops
 #: model_terms:ir.ui.view,arch_db:modryn_ops.manage_dress_form
@@ -1036,7 +1036,7 @@ msgstr "السعر (₪)"
 #. module: modryn_ops
 #: model_terms:ir.ui.view,arch_db:modryn_ops.manage_dress_form
 msgid "What you would tell a bride about it."
-msgstr "شو بتحكي للعروس عنها."
+msgstr "شو بتحكي للعروس عنه."
 
 #. module: modryn_ops
 #: model_terms:ir.ui.view,arch_db:modryn_ops.manage_dress_form
@@ -1066,9 +1066,9 @@ msgid ""
 "                        had</strong>, so take it out only when the boutique\n"
 "                        really stops carrying it."
 msgstr ""
-"مفصولة بفواصل. اتركيها فاضية لمقاس واحد — هينوما مثلًا.\n"
+"مفصولة بفواصل. اتركها فاضية لمقاس واحد — هينوما مثلًا.\n"
 "                        <strong>شيل مقاس بيمحي كم كان عندك منه</strong>،\n"
-"                        فشيليه بس لما البوتيك فعلًا يبطّل يحمله."
+"                        فشيله بس لما البوتيك فعلًا يبطّل يحمله."
 
 #. module: modryn_ops
 #: model_terms:ir.ui.view,arch_db:modryn_ops.manage_dress_kinds
@@ -1076,7 +1076,7 @@ msgid ""
 "Your own words for what you sell — נסיכה, מרמייד, הינומה. Mark the\n"
 "                ones that are accessories: those are asked for without sizes."
 msgstr ""
-"كلماتك انتي لشو بتبيعي — نسيخا، ميرمييد، هينوما. علّمي\n"
+"كلماتك إنت لشو بتبيع — نسيخا، ميرمييد، هينوما. علّمي\n"
 "                الي منهن إكسسوارات: هدول بينطلبوا بدون مقاسات."
 
 #. module: modryn_ops
@@ -1111,7 +1111,7 @@ msgid ""
 "This one has gone. Come and see us — we will find you\n"
 "                    something like it."
 msgstr ""
-"هذا الفستان خلص. تعالي شوفينا — بنلاقيلك إشي\n"
+"هذا الفستان خلص. تعال شوفنا — بنلاقيلك إشي\n"
 "                    شبيه."
 
 #. module: modryn_ops
@@ -1266,7 +1266,7 @@ msgid ""
 "Every month the boutique has traded. The figures at the top\n"
 "                    of this page are the month you are in now."
 msgstr ""
-"كل شهر اشتغل فيه البوتيك. الأرقام الي فوق بالصفحة هي الشهر الي انتِ فيه هلق."
+"كل شهر اشتغل فيه البوتيك. الأرقام الي فوق بالصفحة هي الشهر الي إنت فيه هلق."
 
 #. module: modryn_ops
 #: model_terms:ir.ui.view,arch_db:modryn_ops.manage_reports
@@ -1330,12 +1330,12 @@ msgstr "بيع"
 #. module: modryn_ops
 #: model_terms:ir.ui.view,arch_db:modryn_ops.sell_screen
 msgid "What she is buying, what it comes to, and anything taken off."
-msgstr "شو عم تشتري، قديش بتطلع، وشو نزل من الحق."
+msgstr "شو عم يشتري، قديش بيطلع، وشو نزل من الحق."
 
 #. module: modryn_ops
 #: model_terms:ir.ui.view,arch_db:modryn_ops.sell_screen
 msgid "Who is buying"
-msgstr "مين عم تشتري"
+msgstr "مين عم يشتري"
 
 #. module: modryn_ops
 #: model_terms:ir.ui.view,arch_db:modryn_ops.sell_screen
@@ -1345,12 +1345,12 @@ msgstr "الاسم الكامل"
 #. module: modryn_ops
 #: model_terms:ir.ui.view,arch_db:modryn_ops.sell_screen
 msgid "What she is buying"
-msgstr "شو عم تشتري"
+msgstr "شو عم يشتري"
 
 #. module: modryn_ops
 #: model_terms:ir.ui.view,arch_db:modryn_ops.sell_screen
 msgid "Find it by name, kind, serial number or barcode"
-msgstr "دوّري بالاسم، النوع، الرقم التسلسلي أو الباركود"
+msgstr "دوّر بالاسم، النوع، الرقم التسلسلي أو الباركود"
 
 #. module: modryn_ops
 #: model_terms:ir.ui.view,arch_db:modryn_ops.sell_screen
@@ -1436,7 +1436,7 @@ msgstr "أخت عروس لبّسناها"
 #. module: modryn_ops
 #: model_terms:ir.ui.view,arch_db:modryn_ops.sell_screen
 msgid "A discount shows on the owner's screen with the reason beside it."
-msgstr "التخفيض بيبين بشاشة صاحبة المحل ومعه السبب."
+msgstr "التخفيض بيبين بشاشة صاحب المحل ومعه السبب."
 
 #. module: modryn_ops
 #: model_terms:ir.ui.view,arch_db:modryn_ops.sell_screen
@@ -1482,7 +1482,7 @@ msgstr "<option value=\"\">— لسا ولا حدا —</option>"
 #. module: modryn_ops
 #: model_terms:ir.ui.view,arch_db:modryn_ops.sell_screen
 msgid "Record the sale"
-msgstr "سجّلي البيعة"
+msgstr "سجّل البيعة"
 
 #. module: modryn_ops
 #: model_terms:ir.ui.view,arch_db:modryn_ops.sell_screen
@@ -1505,7 +1505,7 @@ msgstr "%(count)s أغراض · %(paid)s · %(discount)s تخفيض"
 #. odoo-python
 #: code:addons/modryn_ops/controllers/sell.py:0
 msgid "Please enter the customer's name."
-msgstr "اكتبي اسم الزبونة."
+msgstr "اكتب اسم الزبون."
 
 #. module: modryn_ops
 #. odoo-python
@@ -1517,19 +1517,19 @@ msgstr "ضيفي إشي واحد عالأقل."
 #. odoo-python
 #: code:addons/modryn_ops/controllers/sell.py:0
 msgid "Say why the discount was given."
-msgstr "اكتبي ليش انعطى التخفيض."
+msgstr "اكتب ليش انعطى التخفيض."
 
 #. module: modryn_ops
 #. odoo-python
 #: code:addons/modryn_ops/controllers/sell.py:0
 msgid "Enter how much comes off."
-msgstr "اكتبي قديش بينزل من الحق."
+msgstr "اكتب قديش بينزل من الحق."
 
 #. module: modryn_ops
 #. odoo-python
 #: code:addons/modryn_ops/controllers/sell.py:0
 msgid "Say what was altered."
-msgstr "اكتبي شو التعديل."
+msgstr "اكتب شو التعديل."
 
 #. module: modryn_ops
 #: model:ir.model,name:modryn_ops.model_modryn_sale
@@ -1629,7 +1629,7 @@ msgstr "انسخيه"
 #. module: modryn_ops
 #: model_terms:ir.ui.view,arch_db:modryn_ops.manage_dresses
 msgid "Open it"
-msgstr "افتحيه"
+msgstr "افتحه"
 
 #. module: modryn_ops
 #: model_terms:ir.ui.view,arch_db:modryn_ops.manage_dresses
@@ -1762,8 +1762,8 @@ msgid ""
 "                        beside it. Pick a code and it decides both — you do not\n"
 "                        need the two boxes beside it."
 msgstr ""
-"يظهر الخصم في شاشة المالكة مع سببه بجانبه. اختيار كود يحدّد الاثنين — لا "
-"حاجة للخانتين المجاورتين."
+"يظهر الخصم في شاشة المالك مع سببه بجانبه. اختيار كود يحدّد الاثنين — لا حاجة"
+" للخانتين المجاورتين."
 
 #. module: modryn_ops
 #: model:ir.model.fields.selection,name:modryn_ops.selection__modryn_discount_code__limit_kind__times
@@ -1841,3 +1841,75 @@ msgstr "بلا حدّ"
 #: code:addons/modryn_ops/models/discount_code.py:0
 msgid "until %s"
 msgstr "حتى %s"
+
+#. module: modryn_ops
+#. odoo-python
+#: code:addons/modryn_ops/models/discount_code.py:0
+msgid "%(code)s does not start until %(date)s."
+msgstr "%(code)s ما بيبلّش قبل %(date)s."
+
+#. module: modryn_ops
+#. odoo-python
+#: code:addons/modryn_ops/models/discount_code.py:0
+msgid "%(first)s to %(last)s"
+msgstr "من %(first)s إلى %(last)s"
+
+#. module: modryn_ops
+#. odoo-python
+#: code:addons/modryn_ops/models/discount_code.py:0
+msgid "%(used)s of %(total)s people"
+msgstr "%(used)s من %(total)s أشخاص"
+
+#. module: modryn_ops
+#. odoo-python
+#: code:addons/modryn_ops/models/discount_code.py:0
+msgid "A code cannot be used a negative number of times."
+msgstr "ما بينفع يُستعمل الكود عدد مرات سالب."
+
+#. module: modryn_ops
+#: model:ir.model.fields.selection,name:modryn_ops.selection__modryn_discount_code__value_kind__percent
+msgid "A percentage"
+msgstr "نسبة مئوية"
+
+#. module: modryn_ops
+#: model:ir.model.fields.selection,name:modryn_ops.selection__modryn_discount_code__value_kind__amount
+msgid "A sum of money"
+msgstr "مبلغ من المال"
+
+#. module: modryn_ops
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_discount_code__starts_on
+msgid "First day it works"
+msgstr "أول يوم يعمل فيه"
+
+#. module: modryn_ops
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_discount_code__max_uses
+msgid "How many people may use it"
+msgstr "كم شخص بيقدر يستعمله"
+
+#. module: modryn_ops
+#. odoo-python
+#: code:addons/modryn_ops/models/discount_code.py:0
+msgid "Say how many shekels come off."
+msgstr "يرجى تحديد كم شيكل ينزل."
+
+#. module: modryn_ops
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_discount_code__amount
+msgid "Shekels off"
+msgstr "شيكل خصم"
+
+#. module: modryn_ops
+#. odoo-python
+#: code:addons/modryn_ops/models/discount_code.py:0
+msgid "The last day cannot come before the first."
+msgstr "ما بينفع يكون اليوم الأخير قبل اليوم الأول."
+
+#. module: modryn_ops
+#: model:ir.model.fields,field_description:modryn_ops.field_modryn_discount_code__value_kind
+msgid "What comes off"
+msgstr "شو بينزل"
+
+#. module: modryn_ops
+#. odoo-python
+#: code:addons/modryn_ops/models/discount_code.py:0
+msgid "from %s"
+msgstr "من %s"

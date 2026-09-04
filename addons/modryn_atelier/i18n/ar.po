@@ -78,22 +78,22 @@ msgstr "إنشاء المهمة"
 #. module: modryn_atelier
 #: model:ir.model.fields,field_description:modryn_atelier.field_modryn_alteration_task__partner_id
 msgid "Customer"
-msgstr "الزبونة"
+msgstr "الزبون"
 
 #. module: modryn_atelier
 #: model:ir.model.fields,field_description:modryn_atelier.field_modryn_alteration_task__customer_name
 msgid "Customer Name"
-msgstr "اسم الزبونة"
+msgstr "اسم الزبون"
 
 #. module: modryn_atelier
 #: model_terms:ir.ui.view,arch_db:modryn_atelier.dashboard
 msgid "Customer name"
-msgstr "اسم الزبونة"
+msgstr "اسم الزبون"
 
 #. module: modryn_atelier
 #: model:ir.model.fields,field_description:modryn_atelier.field_modryn_alteration_task__customer_phone
 msgid "Customer Phone"
-msgstr "هاتف الزبونة"
+msgstr "هاتف الزبون"
 
 #. module: modryn_atelier
 #: model:ir.model.fields.selection,name:modryn_atelier.selection__modryn_alteration_task__state__delivered
@@ -178,7 +178,7 @@ msgstr "منخفضة"
 #. odoo-python
 #: code:addons/modryn_atelier/models/alteration_task.py:0
 msgid "New alteration for you: %s"
-msgstr "تعديل جديد لكِ: %s"
+msgstr "تعديل جديد لك: %s"
 
 #. module: modryn_atelier
 #: model_terms:ir.ui.view,arch_db:modryn_atelier.manage_pieces
@@ -258,7 +258,7 @@ msgstr "يُرجى إدخال اسم"
 #. odoo-python
 #: code:addons/modryn_atelier/controllers/atelier.py:0
 msgid "Please enter the customer's name"
-msgstr "يُرجى إدخال اسم الزبونة"
+msgstr "يُرجى إدخال اسم الزبون"
 
 #. module: modryn_atelier
 #: model:ir.model.fields,field_description:modryn_atelier.field_modryn_alteration_task__priority
@@ -313,14 +313,14 @@ msgstr "هذا الجزء موجود بالفعل."
 #. odoo-python
 #: code:addons/modryn_atelier/models/alteration_task.py:0
 msgid "That staff member is archived."
-msgstr "هذه الموظفة مؤرشفة."
+msgstr "هذه الموظف مؤرشفة."
 
 #. module: modryn_atelier
 #: model_terms:ir.ui.view,arch_db:modryn_atelier.manage_pieces
 msgid ""
 "The parts of a garment your workshop alters. Add whatever this boutique "
 "needs."
-msgstr "أجزاء الفستان التي تعدّلها ورشتك. أضيفي ما يحتاجه هذا البوتيك."
+msgstr "أجزاء الفستان التي تعدّلها ورشتك. أضف ما يحتاجه هذا البوتيك."
 
 #. module: modryn_atelier
 #: model_terms:ir.ui.view,arch_db:modryn_atelier.dashboard
@@ -420,7 +420,7 @@ msgstr "ما قدرنا نقرأ التاريخ."
 #. odoo-python
 #: code:addons/modryn_atelier/controllers/atelier.py:0
 msgid "That job belongs to somebody else."
-msgstr "هالشغلة تبع وحدة تانية."
+msgstr "هالشغلة تبع حدا تاني."
 
 #. module: modryn_atelier
 #. odoo-python

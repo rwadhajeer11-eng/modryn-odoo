@@ -177,21 +177,29 @@ if not Hours.with_context(active_test=False).search_count([('weekday', '=', '4')
 
 # ============================================================ discount codes
 # One of each answer, so the screen shows what a limit looks like rather than
-# three identical rows saying "no limit".
+# three identical rows saying "no limit". Read as:
+#   word, kind, how much, note, days it runs for (0 = no dates), headcount.
 CODES = [
-    ('BRIDE10', 10, 'יריד הסתיו', 'until', 0, 30),
-    ('SISTER5', 5, 'אחות של כלה שהלבשנו', 'times', 2, 0),
-    ('STAFF20', 20, 'משפחה וצוות', 'none', 1, 0),
+    ('BRIDE10', 'percent', 10, 'יריד הסתיו', 30, 20),
+    ('SISTER5', 'percent', 5, 'אחות של כלה שהלבשנו', 0, 2),
+    ('VEIL200', 'amount', 200, 'הנחה על הינומה', 0, 0),
 ]
 Code = env['modryn.discount.code']
 made = 0
-for word, percent, note, limit_kind, max_uses, days in CODES:
+for word, kind, value, note, days, max_uses in CODES:
     if not Code.with_context(active_test=False).search_count([('code', '=ilike', word)]):
         Code.create({
-            'code': word, 'percent': percent, 'note': note,
-            'limit_kind': limit_kind,
-            'max_uses': max_uses or 1,
-            'use_until': (datetime.date.today() + datetime.timedelta(days=days)) if days else False,
+            'code': word,
+            'value_kind': kind,
+            'percent': value if kind == 'percent' else 0.0,
+            'amount': value if kind == 'amount' else 0.0,
+            'note': note,
+            # A period starting today, so the playground always has a live one
+            # rather than a code that expired the week the seed was written.
+            'starts_on': datetime.date.today() if days else False,
+            'use_until': (datetime.date.today()
+                          + datetime.timedelta(days=days)) if days else False,
+            'max_uses': max_uses,
         })
         made += 1
 say('discount codes (new)', made)

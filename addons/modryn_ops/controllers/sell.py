@@ -74,7 +74,9 @@ class ModrynSell(http.Controller):
         return {
             'discount_codes': [{
                 'code': rule.code,
-                'percent': int(rule.percent),
+                # Rendered by the model, so the counter reads "₪200" or "10%"
+                # in the same words the manager's own screen uses.
+                'takes_off': rule.modryn_takes_off(),
             } for rule in codes if not rule.modryn_spent()],
             'rail': self._rail(),
             'staff': request.env['hr.employee'].sudo().search(
@@ -189,8 +191,12 @@ class ModrynSell(http.Controller):
             if spent:
                 return refuse(spent)
         if rule:
-            kind = 'percent'
-            discount = rule.percent
+            # THE CODE DECIDES BOTH, kind and number. Hard-coding 'percent'
+            # here was right while a code could only be a percentage, and would
+            # now quietly turn a two-hundred-shekel code into two hundred
+            # percent — a sale that hands money back.
+            kind = rule.value_kind
+            discount = rule.percent if kind == 'percent' else rule.amount
             reason = rule.code
 
         if not name:

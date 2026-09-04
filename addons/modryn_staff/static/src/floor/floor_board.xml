@@ -912,9 +912,9 @@
                         </div>
                     </div>
                     <div t-else="" class="d-flex flex-wrap gap-2 mb-4">
-                        <button class="btn btn-primary"
+                        <button class="btn btn-primary modryn_outcome_sold"
                                 t-on-click="() => this.askOutcome('sold')">She took this one</button>
-                        <button class="btn btn-outline-dark"
+                        <button class="btn btn-outline-dark modryn_outcome_not_sold"
                                 t-on-click="() => this.askOutcome('not_sold')">She left without buying</button>
                     </div>
                     </t>
@@ -926,7 +926,7 @@
                          So it is a question she opens, not a form she closes. -->
                     <t t-if="state.finish.outcome === 'sold' and !state.finish.workshop">
                         <hr class="my-4"/>
-                        <button class="btn btn-outline-dark"
+                        <button class="btn btn-outline-dark modryn_open_workshop"
                                 t-on-click="openWorkshop">The gown needs altering</button>
                     </t>
 
@@ -990,7 +990,7 @@
                         <!-- Not "Skip" any more: by the time she reaches this
                              row the ending is recorded, and calling that "skip"
                              reads as throwing it away. -->
-                        <button class="btn btn-link" t-on-click="closeFinish">Close</button>
+                        <button class="btn btn-link modryn_finish_close" t-on-click="closeFinish">Close</button>
                     </div>
                 </div>
             </div>

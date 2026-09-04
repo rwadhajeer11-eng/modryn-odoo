@@ -1168,11 +1168,12 @@
             <section t-if="view == 'codes'" class="modryn_panel mb-4">
                 <h1 class="mb-2">Discount codes</h1>
                 <p class="text-muted mb-4">
-                    A word, and what it takes off. The till asks for it by name:
-                    whoever is at the counter types the word instead of deciding
-                    an amount, and the reason on the owner's screen writes
-                    itself. Percent only — a fixed sum would give a veil away
-                    and take a tenth off a gown.
+                    A word, and what it takes off. The till offers your codes
+                    by name: whoever is at the counter picks the word instead of
+                    deciding an amount, and the reason on the owner's screen
+                    writes itself. A percentage is the safer answer — two
+                    hundred shekels is a tenth off a gown and the whole of a
+                    veil — but a sum is yours to choose.
                 </p>
 
                 <div t-if="codes_error" class="modryn_field_error mb-3" role="alert"
@@ -1186,38 +1187,50 @@
                         <input type="text" id="code_word" name="code" dir="ltr"
                                class="form-control" required="required"/>
                     </div>
-                    <div class="col-6 col-md-3">
-                        <label class="form-label" for="code_percent">Percent off</label>
-                        <input type="number" id="code_percent" name="percent"
-                               min="1" max="100" step="1" dir="ltr"
+                    <div class="col-6 col-md-4">
+                        <label class="form-label" for="code_kind">What comes off</label>
+                        <select id="code_kind" name="value_kind" class="form-select">
+                            <option value="percent">A percentage</option>
+                            <option value="amount">A sum of money</option>
+                        </select>
+                    </div>
+                    <div class="col-6 col-md-4">
+                        <label class="form-label" for="code_percent">
+                            <span class="modryn_code_pct">How many percent</span>
+                            <span class="modryn_code_ils" hidden="hidden">How many shekels</span>
+                        </label>
+                        <input type="number" id="code_percent" name="value"
+                               min="1" step="1" dir="ltr"
                                class="form-control" required="required"/>
                     </div>
                     <div class="col-12 col-md-5">
                         <label class="form-label" for="code_note">What it is for</label>
                         <input type="text" id="code_note" name="note" class="form-control"/>
                     </div>
-                    <!-- HOW LONG THE WORD LASTS. Both boxes are drawn always
-                         and the browser hides the one that does not apply; a
-                         box that appears only after the dropdown moves is a box
-                         nobody with JavaScript off can reach, and this form is
-                         plain HTML everywhere else. -->
-                    <div class="col-12 col-md-4">
-                        <label class="form-label" for="code_limit">How long it lasts</label>
-                        <select id="code_limit" name="limit_kind" class="form-select">
-                            <option value="none">As many times as they like</option>
-                            <option value="times">A set number of times</option>
-                            <option value="until">Until a date</option>
-                        </select>
+                    <!-- WHEN, AND FOR HOW MANY. Three boxes and no mode: each
+                         can be left empty, empty means no limit, and a code can
+                         carry a week AND a headcount at once — which the
+                         dropdown that used to sit here could not say. Plain
+                         HTML, so the form is fillable with JavaScript off. -->
+                    <div class="col-12">
+                        <p class="modryn_sub mb-1">
+                            Leave any of these empty for no limit.
+                        </p>
                     </div>
                     <div class="col-6 col-md-4">
-                        <label class="form-label" for="code_times">How many times</label>
-                        <input type="number" id="code_times" name="max_uses"
-                               min="1" step="1" value="1" dir="ltr"
+                        <label class="form-label" for="code_from">First day it works</label>
+                        <input type="date" id="code_from" name="starts_on" dir="ltr"
                                class="form-control"/>
                     </div>
                     <div class="col-6 col-md-4">
                         <label class="form-label" for="code_until">Last day it works</label>
                         <input type="date" id="code_until" name="use_until" dir="ltr"
+                               class="form-control"/>
+                    </div>
+                    <div class="col-12 col-md-4">
+                        <label class="form-label" for="code_times">How many people may use it</label>
+                        <input type="number" id="code_times" name="max_uses"
+                               min="0" step="1" dir="ltr" placeholder="0"
                                class="form-control"/>
                     </div>
                     <div class="col-12">
@@ -1232,7 +1245,7 @@
                     <table class="table align-middle" style="max-width: 700px;">
                         <thead>
                             <tr>
-                                <th>The code</th><th>Percent off</th>
+                                <th>The code</th><th>What comes off</th>
                                 <th>What it is for</th><th>Used</th>
                                 <th>How long it lasts</th><th/>
                             </tr>
@@ -1241,16 +1254,21 @@
                             <tr t-foreach="codes" t-as="rule"
                                 t-attf-class="#{'' if rule.active else 'text-muted'}">
                                 <td dir="ltr"><strong t-out="rule.code"/></td>
-                                <td dir="ltr"><t t-out="int(rule.percent)"/>%</td>
+                                <td dir="ltr" t-out="rule.modryn_takes_off()"/>
                                 <td t-out="rule.note or ''"/>
                                 <td dir="ltr" t-out="rule.times_used"/>
                                 <td>
                                     <t t-out="rule.modryn_left()"/>
                                     <!-- Said out loud on the row, because a
-                                         code that has run out still sits in
-                                         this table looking exactly like one
-                                         that works. -->
-                                    <span t-if="rule.modryn_spent()"
+                                         code that cannot be used today still
+                                         sits in this table looking exactly like
+                                         one that works. Two words and not one:
+                                         a code that starts next week is waiting,
+                                         not finished. -->
+                                    <t t-set="state" t-value="rule.modryn_status()"/>
+                                    <span t-if="state == 'waiting'"
+                                          class="badge text-bg-light ms-1">Not started yet</span>
+                                    <span t-elif="state"
                                           class="badge text-bg-secondary ms-1">Finished</span>
                                 </td>
                                 <td class="text-end">
@@ -1525,8 +1543,27 @@
                 <tbody>
                     <tr t-foreach="rooms" t-as="room" t-key="room.id"
                         t-attf-class="#{'modryn_archived' if not room.active else ''}">
-                        <td t-out="room.name"/>
+                        <td>
+                            <t t-out="room.name"/>
+                            <div t-if="room in rooms_confirming"
+                                 class="modryn_field_error mt-2">
+                                <div>Delete this room? It goes for good.</div>
+                            </div>
+                        </td>
                         <td class="text-end">
+                            <t t-if="room in rooms_confirming">
+                                <form t-attf-action="/manage/rooms/delete/#{room.id}"
+                                      method="post" class="d-inline me-1">
+                                    <input type="hidden" name="csrf_token"
+                                           t-att-value="request.csrf_token()"/>
+                                    <button type="submit" class="btn btn-sm btn-danger">
+                                        Yes, delete
+                                    </button>
+                                </form>
+                                <a href="/manage/team-screen?view=rooms"
+                                   class="btn btn-sm btn-outline-dark">Keep it</a>
+                            </t>
+                            <t t-else="">
                             <form t-attf-action="/manage/rooms/archive/#{room.id}" method="post"
                                   class="d-inline">
                                 <input type="hidden" name="csrf_token"
@@ -1536,6 +1573,13 @@
                                     <t t-else="">Restore</t>
                                 </button>
                             </form>
+                            <!-- Only where it can work. A room brides have
+                                 stood in is a fact about them, not a typo. -->
+                            <a t-if="not rooms_used.get(room.id)"
+                               t-attf-href="/manage/team-screen?view=rooms&amp;confirm=#{room.id}"
+                               class="btn btn-sm btn-outline-danger ms-1">Delete</a>
+                            <span t-else="" class="modryn_sub ms-2">In use — archive it</span>
+                            </t>
                         </td>
                     </tr>
                 </tbody>

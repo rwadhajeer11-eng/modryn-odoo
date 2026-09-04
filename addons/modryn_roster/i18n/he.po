@@ -35,7 +35,7 @@ msgid ""
 "                                            <span class=\"visually-hidden\">I can work this</span>"
 msgstr ""
 "<i class=\"fa fa-check\" aria-hidden=\"true\"/>\n"
-"                                            <span class=\"visually-hidden\">אני יכולה לעבוד</span>"
+"                                            <span class=\"visually-hidden\">אני יכול לעבוד</span>"
 
 #. module: modryn_roster
 #: model_terms:ir.ui.view,arch_db:modryn_roster.manage_shifts
@@ -236,7 +236,7 @@ msgstr "שישי"
 #. odoo-javascript
 #: code:addons/modryn_roster/static/src/roster.js:0
 msgid "I can work this"
-msgstr "אני יכולה לעבוד"
+msgstr "אני יכול לעבוד"
 
 #. module: modryn_roster
 #: model_terms:ir.ui.view,arch_db:modryn_roster.roster_page
@@ -279,17 +279,17 @@ msgstr "עדיין אין יעדים"
 #. module: modryn_roster
 #: model_terms:ir.ui.view,arch_db:modryn_roster.roster_page
 msgid "Nobody has offered yet"
-msgstr "עדיין אף אחת לא הציעה"
+msgstr "עדיין אף אחד לא הציע"
 
 #. module: modryn_roster
 #: model_terms:ir.ui.view,arch_db:modryn_roster.manage_shifts
 msgid "Nobody has sent their week yet."
-msgstr "עדיין אף אחת לא שלחה את השבוע שלה."
+msgstr "עדיין אף אחד לא שלח את השבוע שלו."
 
 #. module: modryn_roster
 #: model_terms:ir.ui.view,arch_db:modryn_roster.roster_page
 msgid "Nobody rostered yet"
-msgstr "עדיין לא שובצה אף אחת"
+msgstr "עדיין לא שובץ אף אחד"
 
 #. module: modryn_roster
 #: model_terms:ir.ui.view,arch_db:modryn_roster.roster_page
@@ -305,7 +305,7 @@ msgstr "לא בסידור היום"
 #. module: modryn_roster
 #: model_terms:ir.ui.view,arch_db:modryn_roster.roster_page
 msgid "Offered this shift:"
-msgstr "הציעו את עצמן למשמרת:"
+msgstr "הציעו את עצמם למשמרת:"
 
 #. module: modryn_roster
 #: model:ir.model,name:modryn_roster.model_modryn_opening_hours
@@ -331,13 +331,13 @@ msgstr "חלק היום"
 #. odoo-python
 #: code:addons/modryn_roster/controllers/roster.py:0
 msgid "Please choose a day"
-msgstr "בחרי יום"
+msgstr "בחר יום"
 
 #. module: modryn_roster
 #. odoo-python
 #: code:addons/modryn_roster/controllers/roster.py:0
 msgid "Please enter a date and a time for both."
-msgstr "הזיני תאריך ושעה לשניהם."
+msgstr "הזן תאריך ושעה לשניהם."
 
 #. module: modryn_roster
 #. odoo-python
@@ -349,7 +349,7 @@ msgstr "יש להזין שם"
 #. odoo-python
 #: code:addons/modryn_roster/controllers/roster.py:0
 msgid "Please enter an opening and a closing time"
-msgstr "הזיני שעת פתיחה ושעת סגירה"
+msgstr "הזן שעת פתיחה ושעת סגירה"
 
 #. module: modryn_roster
 #. odoo-python
@@ -360,7 +360,7 @@ msgstr "יש להזין שעות תקינות"
 #. module: modryn_roster
 #: model_terms:ir.ui.view,arch_db:modryn_roster.roster_page
 msgid "Press every shift you can work. Then write us a note and send it."
-msgstr "לחצי על כל משמרת שאת יכולה לעבוד. אחר כך כתבי לנו הערה ושלחי."
+msgstr "לחץ על כל משמרת שאתה יכול לעבוד. אחר כך כתוב לנו הערה ושלח."
 
 #. module: modryn_roster
 #: model_terms:ir.ui.view,arch_db:modryn_roster.roster_page
@@ -422,7 +422,7 @@ msgid ""
 "Saved. That time has already gone for the week of %s — nobody can answer for"
 " it. Set times for just this week below to reopen it."
 msgstr ""
-"נשמר. הזמן הזה כבר חלף עבור השבוע של %s — אף אחת לא יכולה לענות עליו. קבעי "
+"נשמר. הזמן הזה כבר חלף עבור השבוע של %s — אף אחד לא יכול לענות עליו. קבע "
 "למטה שעות לשבוע הזה בלבד כדי לפתוח אותו מחדש."
 
 #. module: modryn_roster
@@ -445,7 +445,7 @@ msgstr "עדכון"
 #. module: modryn_roster
 #: model:ir.model.constraint,message:modryn_roster.constraint_modryn_availability_day_type_employee_uniq
 msgid "She has already offered to work that shift."
-msgstr "היא כבר הציעה את עצמה למשמרת הזו."
+msgstr "הוא כבר הציע את עצמו למשמרת הזו."
 
 #. module: modryn_roster
 #. odoo-python
@@ -485,7 +485,7 @@ msgstr "שעת התחלה"
 #. module: modryn_roster
 #: model_terms:ir.ui.view,arch_db:modryn_roster.manage_shifts
 msgid "Started, not sent"
-msgstr "התחילה, לא נשלחה"
+msgstr "התחיל, לא נשלח"
 
 #. module: modryn_roster
 #: model:ir.model.fields,field_description:modryn_roster.field_modryn_roster_week__closes_at
@@ -535,7 +535,7 @@ msgstr "היום הזה לא נמצא בשבוע הזה."
 #. module: modryn_roster
 #: model:ir.model.constraint,message:modryn_roster.constraint_modryn_roster_submission_week_employee_uniq
 msgid "That person has already answered for that week."
-msgstr "היא כבר ענתה לשבוע הזה."
+msgstr "הוא כבר ענה לשבוע הזה."
 
 #. module: modryn_roster
 #: model:ir.model.constraint,message:modryn_roster.constraint_modryn_roster_week_week_uniq
@@ -569,14 +569,14 @@ msgstr "המשמרת הזו כבר קיימת ביום הזה."
 msgid ""
 "That week is already being worked — set the times for a week that is still "
 "being planned."
-msgstr "השבוע הזה כבר בעבודה — קבעי את השעות לשבוע שעדיין בתכנון."
+msgstr "השבוע הזה כבר בעבודה — קבע את השעות לשבוע שעדיין בתכנון."
 
 #. module: modryn_roster
 #. odoo-python
 #: code:addons/modryn_roster/controllers/roster.py:0
 #: code:addons/modryn_roster/models/availability.py:0
 msgid "That week is already published - ask your manager to change it."
-msgstr "השבוע הזה כבר פורסם — פני לאחראית המשמרת לשינוי."
+msgstr "השבוע הזה כבר פורסם — פנה לאחראי המשמרת לשינוי."
 
 #. module: modryn_roster
 #. odoo-python
@@ -600,7 +600,7 @@ msgstr "אלה השעות שבהן הצוות עונה"
 #. odoo-python
 #: code:addons/modryn_roster/controllers/roster.py:0
 msgid "Those dates aren't near the week you're planning."
-msgstr "התאריכים האלה רחוקים מהשבוע שאת מתכננת."
+msgstr "התאריכים האלה רחוקים מהשבוע שאתה מתכנן."
 
 #. module: modryn_roster
 #. odoo-python
@@ -613,7 +613,7 @@ msgstr "חמישי"
 msgid ""
 "Tick who is working. A shift turns amber when it is short of the roles it "
 "needs."
-msgstr "סמני מי עובדת. משמרת נצבעת בכתום כשחסר בה תפקיד שהיא צריכה."
+msgstr "סמן מי עובד. משמרת נצבעת בכתום כשחסר בה תפקיד שהיא צריכה."
 
 #. module: modryn_roster
 #. odoo-python
@@ -658,7 +658,7 @@ msgstr "סידור עבודה"
 #. module: modryn_roster
 #: model:ir.model.fields,field_description:modryn_roster.field_modryn_shift_slot__employee_ids
 msgid "Working"
-msgstr "עובדות"
+msgstr "עובדים"
 
 #. module: modryn_roster
 #: model:ir.model.fields,field_description:modryn_roster.field_modryn_shift_slot__name
@@ -723,7 +723,7 @@ msgstr "שם לתצוגה"
 #: model:ir.model.fields,field_description:modryn_roster.field_modryn_availability__employee_id
 #: model:ir.model.fields,field_description:modryn_roster.field_modryn_roster_submission__employee_id
 msgid "Employee"
-msgstr "עובדת"
+msgstr "עובד"
 
 #. module: modryn_roster
 #: model:ir.model.fields,field_description:modryn_roster.field_modryn_availability__id
@@ -788,8 +788,8 @@ msgid ""
 "                    week being planned."
 msgstr ""
 "<span class=\"modryn_badge is_muted\">השבוע הזה</span>\n"
-"                    את כבר עובדת השבוע הזה, אז אין מה למלא עבורו.\n"
-"                    לחצי על <strong>השבוע הבא</strong> כדי למלא את השבוע שמתוכנן עכשיו."
+"                    אתה כבר עובד השבוע הזה, אז אין מה למלא עבורו.\n"
+"                    לחץ על <strong>השבוע הבא</strong> כדי למלא את השבוע שמתוכנן עכשיו."
 
 #. module: modryn_roster
 #. odoo-python
@@ -852,8 +852,8 @@ msgid ""
 msgstr ""
 "<span class=\"modryn_badge is_muted\">פורסם</span>\n"
 "                    סידור העבודה לשבוע הזה יצא, ולא ניתן לשנות\n"
-"                    אותו כאן — פני לאחראית המשמרת. מה שהצעת מופיע למטה.\n"
-"                    לחצי על <strong>השבוע הבא</strong> כדי לענות עליו."
+"                    אותו כאן — פנה לאחראי המשמרת. מה שהצעת מופיע למטה.\n"
+"                    לחץ על <strong>השבוע הבא</strong> כדי לענות עליו."
 
 #. module: modryn_roster
 #: model_terms:ir.ui.view,arch_db:modryn_roster.roster_page
@@ -875,7 +875,7 @@ msgid ""
 msgstr ""
 "<span class=\"modryn_badge is_free\">פורסם</span>\n"
 "                <span class=\"modryn_sub ms-2\">\n"
-"                    הצוות רואה את השבוע הזה, והזמינות סגורה. בקשי שינוי\n"
+"                    הצוות רואה את השבוע הזה, והזמינות סגורה. בקש שינוי\n"
 "                    על המשמרת עצמה.\n"
 "                </span>"
 
@@ -887,7 +887,7 @@ msgid ""
 "                </span>"
 msgstr ""
 "<span class=\"modryn_sub\">\n"
-"                    כולן מקבלות הודעה, גם מי שלא בסידור.\n"
+"                    כולם מקבלים הודעה, גם מי שלא בסידור.\n"
 "                </span>"
 
 #. module: modryn_roster
@@ -918,7 +918,7 @@ msgstr "אין משמרת."
 #. module: modryn_roster
 #: model_terms:ir.ui.view,arch_db:modryn_roster.manage_week_planner
 msgid "Nobody offered."
-msgstr "אף אחת לא הציעה."
+msgstr "אף אחד לא הציע."
 
 #. module: modryn_roster
 #: model_terms:ir.ui.view,arch_db:modryn_roster.manage_week_planner
@@ -999,7 +999,7 @@ msgstr "השבוע שממלאים"
 #. module: modryn_roster
 #: model_terms:ir.ui.view,arch_db:modryn_roster.manage_week_planner
 msgid "Which parts of the day you run"
-msgstr "אילו חלקי יום את מפעילה"
+msgstr "אילו חלקי יום אתה מפעיל"
 
 #. module: modryn_roster
 #. odoo-python
@@ -1010,4 +1010,17 @@ msgstr "סידור צריך לפחות חלק יום אחד."
 #. module: modryn_roster
 #: model_terms:ir.ui.view,arch_db:modryn_roster.manage_week_planner
 msgid "Someone else"
-msgstr "מישהי אחרת"
+msgstr "מישהו אחר"
+
+#. module: modryn_roster
+#: model_terms:ir.ui.view,arch_db:modryn_roster.roster_page
+msgid ""
+"<span class=\"modryn_badge is_muted modryn_published_badge\">Published</span>\n"
+"                    The schedule for this week is out, so it can no longer be\n"
+"                    changed here — ask your manager. What you offered is below.\n"
+"                    Use <strong>Following week</strong> to answer for the next one."
+msgstr ""
+"<span class=\"modryn_badge is_muted modryn_published_badge\">פורסם</span>\n"
+"                    סידור העבודה לשבוע הזה יצא, ולא ניתן לשנות\n"
+"                    אותו כאן — פנה לאחראי המשמרת. מה שהצעת מופיע למטה.\n"
+"                    לחץ על <strong>השבוע הבא</strong> כדי לענות עליו."

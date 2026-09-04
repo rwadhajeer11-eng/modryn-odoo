@@ -369,7 +369,7 @@ msgstr "يُرجى إدخال ساعات صالحة"
 #. module: modryn_roster
 #: model_terms:ir.ui.view,arch_db:modryn_roster.roster_page
 msgid "Press every shift you can work. Then write us a note and send it."
-msgstr "اضغطي كل مناوبة تستطيعين العمل فيها. ثم اكتبي لنا ملاحظة وأرسليها."
+msgstr "اضغط كل مناوبة تستطيع العمل فيها. ثم اكتب لنا ملاحظة وأرسليها."
 
 #. module: modryn_roster
 #: model_terms:ir.ui.view,arch_db:modryn_roster.roster_page
@@ -432,7 +432,7 @@ msgid ""
 " it. Set times for just this week below to reopen it."
 msgstr ""
 "تم الحفظ. لكن هذا الوقت قد مضى بالنسبة لأسبوع %s — لا يمكن لأحد الرد عليه. "
-"حدّدي بالأسفل أوقاتًا لهذا الأسبوع وحده لإعادة فتحه."
+"حدّد بالأسفل أوقاتًا لهذا الأسبوع وحده لإعادة فتحه."
 
 #. module: modryn_roster
 #: model_terms:ir.ui.view,arch_db:modryn_roster.roster_page
@@ -544,7 +544,7 @@ msgstr "هذا اليوم ليس داخل ذلك الأسبوع."
 #. module: modryn_roster
 #: model:ir.model.constraint,message:modryn_roster.constraint_modryn_roster_submission_week_employee_uniq
 msgid "That person has already answered for that week."
-msgstr "لقد ردّت هذه الموظفة عن ذلك الأسبوع بالفعل."
+msgstr "لقد ردّت هذه الموظف عن ذلك الأسبوع بالفعل."
 
 #. module: modryn_roster
 #: model:ir.model.constraint,message:modryn_roster.constraint_modryn_roster_week_week_uniq
@@ -579,14 +579,14 @@ msgid ""
 "That week is already being worked — set the times for a week that is still "
 "being planned."
 msgstr ""
-"هذا الأسبوع قيد العمل بالفعل — حدّدي الأوقات لأسبوع ما زال قيد التخطيط."
+"هذا الأسبوع قيد العمل بالفعل — حدّد الأوقات لأسبوع ما زال قيد التخطيط."
 
 #. module: modryn_roster
 #. odoo-python
 #: code:addons/modryn_roster/controllers/roster.py:0
 #: code:addons/modryn_roster/models/availability.py:0
 msgid "That week is already published - ask your manager to change it."
-msgstr "هذا الأسبوع منشور بالفعل - اطلبي من مديرة المناوبة تغييره."
+msgstr "هذا الأسبوع منشور بالفعل - اطلب من مدير المناوبة تغييره."
 
 #. module: modryn_roster
 #. odoo-python
@@ -625,7 +625,7 @@ msgid ""
 "Tick who is working. A shift turns amber when it is short of the roles it "
 "needs."
 msgstr ""
-"علّمي مَن تعمل. تتحول المناوبة إلى اللون البرتقالي عندما ينقصها دور تحتاجه."
+"علّم مَن يعمل. تتحول المناوبة إلى اللون البرتقالي عندما ينقصها دور تحتاجه."
 
 #. module: modryn_roster
 #. odoo-python
@@ -735,7 +735,7 @@ msgstr "الاسم المعروض"
 #: model:ir.model.fields,field_description:modryn_roster.field_modryn_availability__employee_id
 #: model:ir.model.fields,field_description:modryn_roster.field_modryn_roster_submission__employee_id
 msgid "Employee"
-msgstr "موظفة"
+msgstr "موظف"
 
 #. module: modryn_roster
 #: model:ir.model.fields,field_description:modryn_roster.field_modryn_availability__id
@@ -800,8 +800,8 @@ msgid ""
 "                    week being planned."
 msgstr ""
 "<span class=\"modryn_badge is_muted\">هذا الأسبوع</span>\n"
-"                    أنتِ تعملين هذا الأسبوع بالفعل، فلا يوجد ما تملئينه له.\n"
-"                    اضغطي <strong>الأسبوع التالي</strong> لتعبئة الأسبوع الجاري تخطيطه."
+"                    أنت تعمل هذا الأسبوع بالفعل، فلا يوجد ما تملأه له.\n"
+"                    اضغط <strong>الأسبوع التالي</strong> لتعبئة الأسبوع الجاري تخطيطه."
 
 #. module: modryn_roster
 #. odoo-python
@@ -845,7 +845,7 @@ msgid ""
 "This week is already being worked - you can only answer for the week being "
 "planned."
 msgstr ""
-"هذا الأسبوع قيد العمل بالفعل — يمكنكِ الإجابة فقط عن الأسبوع الجاري تخطيطه."
+"هذا الأسبوع قيد العمل بالفعل — يمكنك الإجابة فقط عن الأسبوع الجاري تخطيطه."
 
 #. module: modryn_roster
 #: model_terms:ir.ui.view,arch_db:modryn_roster.roster_page
@@ -853,13 +853,13 @@ msgid ""
 "This week is closed for answers. You can see what you offered,\n"
 "                    but it can no longer be changed here."
 msgstr ""
-"هذا الأسبوع مغلق للإجابات. يمكنكِ رؤية ما عرضتِه،\n"
+"هذا الأسبوع مغلق للإجابات. يمكنك رؤية ما عرضته،\n"
 "                    لكن لم يعد بالإمكان تغييره هنا."
 
 #. module: modryn_roster
 #: model_terms:ir.ui.view,arch_db:modryn_roster.roster_page
 msgid "What you offered"
-msgstr "ما عرضتِه"
+msgstr "ما عرضته"
 
 #. module: modryn_roster
 #: model_terms:ir.ui.view,arch_db:modryn_roster.roster_page
@@ -871,8 +871,8 @@ msgid ""
 msgstr ""
 "<span class=\"modryn_badge is_muted\">نُشر</span>\n"
 "                    جدول العمل لهذا الأسبوع صدر، ولم يعد بالإمكان تغييره\n"
-"                    هنا — راجعي مسؤولة الوردية. ما عرضتِه يظهر في الأسفل.\n"
-"                    اضغطي <strong>الأسبوع التالي</strong> للإجابة عن الأسبوع القادم."
+"                    هنا — راجع مسؤول الوردية. ما عرضته يظهر في الأسفل.\n"
+"                    اضغط <strong>الأسبوع التالي</strong> للإجابة عن الأسبوع القادم."
 
 #. module: modryn_roster
 #: model_terms:ir.ui.view,arch_db:modryn_roster.roster_page
@@ -881,7 +881,7 @@ msgid ""
 "                    What you offered is below, and it stands as it is."
 msgstr ""
 ".\n"
-"                    ما عرضتِه يظهر في الأسفل، ويبقى كما هو."
+"                    ما عرضته يظهر في الأسفل، ويبقى كما هو."
 
 #. module: modryn_roster
 #: model_terms:ir.ui.view,arch_db:modryn_roster.roster_page
@@ -894,7 +894,7 @@ msgid ""
 msgstr ""
 "<span class=\"modryn_badge is_free\">نُشر</span>\n"
 "                <span class=\"modryn_sub ms-2\">\n"
-"                    الطاقم بيشوف هذا الأسبوع، والتوفّر مسكّر. اطلبي التغيير\n"
+"                    الطاقم بيشوف هذا الأسبوع، والتوفّر مسكّر. اطلب التغيير\n"
 "                    على الوردية نفسها.\n"
 "                </span>"
 
@@ -975,8 +975,8 @@ msgid ""
 "                answer for it. Move to the week being planned to set when\n"
 "                submissions open."
 msgstr ""
-"هالأسبوع صار قيد الشغل، فما ضل إشي يتجاوب عنه. روحي للأسبوع الي عم بينتخطط "
-"عشان تحددي إمتى بتفتح الإجابة."
+"هالأسبوع صار قيد الشغل، فما ضل إشي يتجاوب عنه. روح للأسبوع الي عم بينتخطط "
+"عشان تحدد إمتى بتفتح الإجابة."
 
 #. module: modryn_roster
 #: model_terms:ir.ui.view,arch_db:modryn_roster.roster_page
@@ -1030,3 +1030,16 @@ msgstr "السيدور بده على الأقل جزء واحد من اليوم.
 #: model_terms:ir.ui.view,arch_db:modryn_roster.manage_week_planner
 msgid "Someone else"
 msgstr "شخص آخر"
+
+#. module: modryn_roster
+#: model_terms:ir.ui.view,arch_db:modryn_roster.roster_page
+msgid ""
+"<span class=\"modryn_badge is_muted modryn_published_badge\">Published</span>\n"
+"                    The schedule for this week is out, so it can no longer be\n"
+"                    changed here — ask your manager. What you offered is below.\n"
+"                    Use <strong>Following week</strong> to answer for the next one."
+msgstr ""
+"<span class=\"modryn_badge is_muted modryn_published_badge\">نُشر</span>\n"
+"                    جدول العمل لهذا الأسبوع صدر، ولم يعد بالإمكان تغييره\n"
+"                    هنا — راجع مسؤول الوردية. ما عرضته يظهر في الأسفل.\n"
+"                    اضغط <strong>الأسبوع التالي</strong> للإجابة عن الأسبوع القادم."

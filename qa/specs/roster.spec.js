@@ -110,7 +110,7 @@ async function pickWeek(page) {
     // other lock is one the manager can lift by setting the window herself,
     // which is exactly what these acts do next.
     if (!(await grid.getAttribute('class')).includes('is_locked')
-        || !(await page.locator('.modryn_badge', { hasText: /Published|פורסם|نُشر/ }).count())) {
+        || !(await page.locator('.modryn_published_badge').count())) {
       WEEK = `/roster?week=${offset}`;
       return WEEK;
     }
@@ -335,8 +335,9 @@ test('@writes the deadline passing locks the grid, and she can still read her ow
   // is not something anyone reads back off a phone.
   await expect(page.locator('.modryn_avail_cell[data-type="middle"]').nth(2))
     .toHaveClass(/is_on/);
-  await expect(page.locator('.modryn_panel', { hasText: /What you offered|מה שהצעת|ما عرضتِه/ })
-    .first()).toBeVisible();
+  // BY CLASS, not by the words in the panel: the wording is translated, and a
+  // spec that reads it is a spec that fails when a translation is corrected.
+  await expect(page.locator('.modryn_offered_title').first()).toBeVisible();
 
   // Put the week back the way the other specs expect to find it: the window
   // open, and her offer withdrawn only if this act was the one that made it.

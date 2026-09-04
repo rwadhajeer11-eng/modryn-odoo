@@ -587,17 +587,42 @@ class ModrynManage(http.Controller):
         return request.redirect('/manage/roles')
 
     # -------------------------------------------------------- fitting rooms
-    def rooms_context(self, error=None):
+    @staticmethod
+    def _room_cards(room):
+        """How many cards remember standing in this room, ever.
+
+        BOTH doors into a fitting room are counted — an appointment and a
+        walk-in are separate models that share the occupant mixin — because
+        counting one of them is how a room with history still offers a Delete
+        button that then destroys it.
+        """
+        total = 0
+        for model in ('calendar.event', 'modryn.queue.entry'):
+            if model in request.env:
+                total += request.env[model].sudo().with_context(
+                    active_test=False).search_count(
+                        [('modryn_room_id', '=', room.id)])
+        return total
+
+    def rooms_context(self, error=None, confirm=None):
         """The fitting rooms, wherever the panel is drawn.
 
         Public for the same reason hours_context is: the manager's screen renders
         that panel now, and one builder with two readers cannot start disagreeing
         about which rooms are archived.
         """
+        rooms = request.env['modryn.fitting.room'].sudo().with_context(
+            active_test=False).search([])
+        confirming = rooms.browse()
+        if confirm and str(confirm).isdigit():
+            confirming = rooms.filtered(lambda r: r.id == int(confirm))
         return {
-            'rooms': request.env['modryn.fitting.room'].sudo().with_context(
-                active_test=False).search([]),
+            'rooms': rooms,
             'rooms_error': error,
+            'rooms_confirming': confirming,
+            # Offered only where it can work: a room cards point at is a fact
+            # about brides who stood in it, not a typo.
+            'rooms_used': {room.id: self._room_cards(room) for room in rooms},
         }
 
     @http.route('/manage/rooms', type='http', auth='user', website=True, sitemap=False)
@@ -638,6 +663,37 @@ class ModrynManage(http.Controller):
             # Archive, never delete: cards still point at this room.
             room.active = not room.active
         return request.redirect('/manage/team-screen?view=rooms')
+
+    @http.route('/manage/rooms/delete/<int:room_id>', type='http', auth='user',
+                website=True, methods=['POST'], csrf=True, sitemap=False)
+    def rooms_delete(self, room_id, **post):
+        """Gone for good — but only while nothing remembers it.
+
+        Refused BY NAME once any card points at the room, with the alternative
+        in the same sentence. The link is ondelete='set null' underneath, so
+        deleting would not break anything; it would quietly empty "where was
+        she" on every card that stood there, which is worse than breaking.
+        """
+        if not self._require_owner():
+            return request.not_found()
+        room = request.env['modryn.fitting.room'].sudo().with_context(
+            active_test=False).browse(room_id).exists()
+        if not room:
+            return request.redirect('/manage/team-screen?view=rooms')
+        used = self._room_cards(room)
+        if used:
+            return request.redirect(
+                '/manage/team-screen?view=rooms&error=%s'
+                % werkzeug.urls.url_quote(_(
+                    "%(room)s cannot be deleted — %(count)s cards remember "
+                    "standing in it. Archive it instead: it disappears from the "
+                    "board and stays on those cards.",
+                    room=room.name, count=used)))
+        name = room.name
+        room.unlink()
+        return request.redirect(
+            '/manage/team-screen?view=rooms&error=%s'
+            % werkzeug.urls.url_quote(_("%s was deleted.", name)))
 
     # -------------------------------------------------------- opening hours
     def _hours(self):

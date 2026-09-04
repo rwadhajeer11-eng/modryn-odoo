@@ -148,7 +148,7 @@ bella is `miri` and on qa it is `qaowner`; `admin` exists only on the separate
 are no email addresses on any of these accounts — it takes the USERNAME.
 
 **Green baseline** (2026-09-04): `verify.sh` reports **407 passed, 0 failed,
-6 skipped**, and the browser suite **39 passed, 1 skipped** (the skip is
+6 skipped**, and the browser suite **40 passed, 1 skipped** (the skip is
 `realsms.spec.js`, which needs Twilio credentials nobody should export here).
 Both are green. It was 409 on 31.08: two checks are DATA-conditional and
 stopped firing when playground litter was swept, not because anything was
@@ -245,6 +245,34 @@ loaded, not as they sit on disk), export a `.pot`, and build each new entry
 The Odoo 19 CLI is **not** `--i18n-export`, which fails with "no such option" and
 writes nothing. Load the result with
 `-u <modules> --load-language=he_IL,ar_001 --i18n-overwrite`.
+
+**The UI addresses a MAN.** Hebrew and Arabic force a gender on nearly every
+verb aimed at the reader, and the product used to pick feminine throughout. It
+does not any more: `he.po` and `ar.po` were rewritten in September 2026 and any
+new string has to match. The English msgids still say "she" about the team —
+they were left alone deliberately, because changing a msgid orphans every
+translation bound to it, and English is not a language this boutique reads.
+
+**Checking that is harder than it looks, and two traps ate a whole pass:**
+
+- **A word list can never be complete.** Both languages build the second person
+  feminine from ANY verb — Hebrew ת…י, Arabic ت…ين — so `תגידי` sat on the
+  screen through two "clean" checks that were looking for a fixed list of
+  verbs. Match the SHAPE, then read every hit: `מלאי` is also *stock*, `ראי` is
+  a *mirror*, `تسلسلي` is a *serial number*, and `שעה לא יכולה` is correct
+  because an hour is grammatically feminine.
+- **`\b` in JavaScript is ASCII-only.** A regex like `/\bתגידי\b/` can never
+  match, because Hebrew letters are not word characters to it — the boundary
+  fails at both ends and the check reports zero forever. Use
+  `(?<![\u0590-\u05ff])` lookarounds. And `\s` inside a template literal is
+  just `s`; write `[ ]+`. **Prove any such checker against a string you know is
+  bad before believing its zero.**
+
+**Never write a browser spec that matches translated words.** Two did —
+`floor_finish.spec.js` said so in its own comment — and both went red the day a
+translation was corrected, with nothing in the product moved. Every one of them
+now matches a class (`.modryn_outcome_sold`, `.modryn_published_badge`); those
+classes exist for identity only and no stylesheet reads them.
 
 **Why the reference lines matter**, and it has cost hours three times: a
 `model_terms` translation binds to the **view it names**, not to the word. A

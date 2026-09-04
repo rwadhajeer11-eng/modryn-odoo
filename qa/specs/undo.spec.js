@@ -128,6 +128,24 @@ test('act 10c — a checklist item can be corrected in place, and removed @write
   await expect(rowFor(page, name)).toHaveCount(0);
 });
 
+test('act 10e — a fitting room typed by mistake can be deleted @writes', async ({ page }) => {
+  await signInOwner(page);
+  const name = `Undo Room ${STAMP}`;
+
+  await page.goto('/manage/team-screen?view=rooms');
+  await page.fill('form[action="/manage/rooms/new"] input[name="name"]', name);
+  await submitFormWith(page, 'name');
+  const row = page.locator('tr', { hasText: name });
+  await expect(row).toHaveCount(1);
+
+  await row.locator('a[href*="confirm="]').click();
+  await expect(page.locator('.modryn_field_error'), 'Delete acted without asking').toBeVisible();
+  await expect(page.locator('tr', { hasText: name })).toHaveCount(1);
+
+  await page.locator('form[action*="/manage/rooms/delete/"] button').click();
+  await expect(page.locator('tr', { hasText: name })).toHaveCount(0);
+});
+
 test('act 10d — a date can be given its own booking hours, and handed back @writes', async ({ page }) => {
   await signInOwner(page);
   await page.goto('/manage/team-screen?view=queue');

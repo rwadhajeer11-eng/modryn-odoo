@@ -28,7 +28,7 @@ the hooks this module defines.
     # something _auto_init creates by itself. There is nothing to convert -
     # every existing walk-in is correctly "no outcome recorded" - so a
     # migration script would have nothing to do but log that it ran.
-    'version': '19.0.1.5.0',
+    'version': '19.0.1.6.0',
     'depends': ['modryn_staff', 'modryn_portal'],
     'data': [
         'security/ir.model.access.csv',
